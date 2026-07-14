@@ -1085,6 +1085,53 @@ function saveHomeStudyState(changedId = null, score = undefined) {
 }
 saveHomeStudyState();
 
+// Speaking Mode is an optional layer; default mode keeps the existing UX.
+const LEARNING_MODE_STORAGE_KEY = "value_time_learning_mode_v1";
+const SPEAKING_SPEED_STORAGE_KEY = "value_time_speaking_speed_v1";
+const SPEAKING_EXPRESSION_STORAGE_KEY = "value_time_speaking_expressions_v1";
+let learningMode = (() => {
+  try { return localStorage.getItem(LEARNING_MODE_STORAGE_KEY) === "speaking" ? "speaking" : "default"; }
+  catch { return "default"; }
+})();
+let speakingSpeed = (() => {
+  try { return Number(localStorage.getItem(SPEAKING_SPEED_STORAGE_KEY)) === 0.8 ? 0.8 : 1; }
+  catch { return 1; }
+})();
+let speakingExpressionDone = (() => {
+  try { return JSON.parse(localStorage.getItem(SPEAKING_EXPRESSION_STORAGE_KEY) || "[]"); }
+  catch { return []; }
+})();
+
+function applyLearningMode(mode) {
+  learningMode = mode === "speaking" ? "speaking" : "default";
+  document.documentElement.dataset.mode = learningMode;
+  if (document.body) document.body.dataset.mode = learningMode;
+  try { localStorage.setItem(LEARNING_MODE_STORAGE_KEY, learningMode); } catch {}
+}
+
+function saveSpeakingSpeed(speed) {
+  speakingSpeed = speed === 0.8 ? 0.8 : 1;
+  try { localStorage.setItem(SPEAKING_SPEED_STORAGE_KEY, String(speakingSpeed)); } catch {}
+}
+
+function speakText(text, repeat = 1) {
+  if (!text || !("speechSynthesis" in window)) return;
+  // Preserve the original Silent-mode playback behavior exactly.
+  if (learningMode !== "speaking") {
+    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    return;
+  }
+  speechSynthesis.cancel();
+  for (let index = 0; index < repeat; index++) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = speakingSpeed;
+    speechSynthesis.speak(utterance);
+  }
+}
+
+applyLearningMode(learningMode);
+
 // 사용자가 고른 화면 모드를 새로고침 후에도 유지합니다.
 const THEME_STORAGE_KEY = "today_learning_theme_v3";
 const LEGACY_THEME_STORAGE_KEYS = ["today_learning_theme_v2", "worthy_life_theme"];
@@ -1155,10 +1202,10 @@ function sidebar() {
 
 function header(title = "오늘의 학습") {
   const toeicQuickLink = state.page === "home"
-    ? `<a class="header-toeic-link" href="https://www.hackers.co.kr/?c=s_toeic/toeic_study/drc" target="_blank" rel="noopener noreferrer" aria-label="해커스 매일 토익 RC 풀기 새 창에서 열기"><span>RC</span><b>매일 토익 RC 풀기</b>${icon("arrow",14)}</a>`
+    ? `<a class="header-toeic-link" href="https://www.hackers.co.kr/?c=s_toeic/toeic_study/drc" target="_blank" rel="noopener noreferrer" aria-label="해커스 매일 토익 RC 풀기 새 창에서 열기"><span>RC</span><b>매일 토익 RC 풀기</b>${icon("arrow",14)}</a><button class="header-ted-link" type="button" data-page="ted" aria-label="TED 학습 바로가기"><span>TED</span><b>TED 바로가기</b>${icon("arrow",14)}</button><a class="header-bbc-link" href="https://www.bbc.co.uk/learningenglish/english/course/towards-advanced" target="_blank" rel="noopener noreferrer" aria-label="BBC Learning English Towards Advanced 새 창에서 열기"><span>BBC</span><b>BBC Learning</b>${icon("arrow",14)}</a>`
     : "";
 
-  return `<header><button class="mobile-menu" aria-label="메뉴">${icon("menu")}</button><div class="header-title-block"><p class="eyebrow">MONDAY, JULY 13</p><div class="header-title-row"><h1>${title}</h1>${toeicQuickLink}</div></div><div class="header-actions"><div class="mini-streak">${icon("flame",18)} <b>12</b> day streak</div><button class="theme-toggle" type="button" data-theme-toggle aria-label="${currentTheme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}" title="화면 모드 변경">${icon(currentTheme === "dark" ? "sun" : "moon",18)}</button><button class="avatar" aria-label="Kai 사용자 프로필">Kai</button></div></header>`;
+  return `<header><button class="mobile-menu" aria-label="메뉴">${icon("menu")}</button><div class="header-title-block"><p class="eyebrow">MONDAY, JULY 13</p><div class="header-title-row"><h1>${title}</h1>${toeicQuickLink}</div></div><div class="header-actions"><div class="learning-mode-switch" role="group" aria-label="학습 모드 선택"><button class="${learningMode === "default" ? "active" : ""}" type="button" data-learning-mode="default" aria-pressed="${learningMode === "default"}">Silent</button><button class="${learningMode === "speaking" ? "active" : ""}" type="button" data-learning-mode="speaking" aria-pressed="${learningMode === "speaking"}">${icon("mic",14)} Speaking</button></div><div class="mini-streak">${icon("flame",18)} <b>12</b> day streak</div><button class="theme-toggle" type="button" data-theme-toggle aria-label="${currentTheme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}" title="화면 모드 변경">${icon(currentTheme === "dark" ? "sun" : "moon",18)}</button><button class="avatar" aria-label="Kai 사용자 프로필">Kai</button></div></header>`;
 }
 
 function checklist(date = state.selectedDate) {
@@ -1313,8 +1360,10 @@ function homePage() {
       : completed > 0
         ? "좋은 시작이에요. 한 걸음씩 이어가 보세요."
         : "가볍게 하나부터 시작해 보세요. 오늘도 충분히 잘할 수 있어요.";
+  const speakingMission = learningMode === "speaking" ? `<section class="speaking-home-mission" aria-labelledby="speaking-mission-title"><div><span>${icon("mic",18)} SPEAKING MODE</span><h2 id="speaking-mission-title">오늘의 영어를 소리 내어 말해보세요</h2><p>한 문장씩 듣고 따라 말한 뒤, 다시 듣거나 다음 문장으로 넘어가세요.</p></div><div><button type="button" data-page="ted">${icon("play",16)} 쉐도잉 시작</button><button type="button" data-page="sentence">핵심 문장 말하기 ${icon("arrow",14)}</button></div></section>` : "";
 
   return `${header()}<main class="home-dashboard-page">
+  ${speakingMission}
   <section class="home-routine-guide" aria-label="오늘의 추천 학습 순서"><div class="home-routine-copy"><span class="home-routine-label">${icon("spark", 16)} 오늘의 추천 루틴</span><strong>${todayRoutine.title}</strong></div><div class="home-routine-flow">${todayRoutine.items.map((id,index) => { const item=homeStudyItems.find(entry=>entry.id===id); return `${index ? `<i>${icon("chevron",13)}</i>` : ""}<b>${Number(item.number)}. ${item.title}</b>`; }).join("")}</div></section>
   <div class="home-dashboard-layout">
     <section class="home-study-section" aria-labelledby="home-study-title"><div class="home-study-heading"><div><p class="eyebrow">DAILY ROUTINE</p><h3 id="home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${homeStudyItems.length} 완료</span></div>
@@ -1358,15 +1407,17 @@ function tedStudyPage() {
   const isSentenceComplete = completedSentences.includes(sentenceIndex);
   const completedCount = completedSentences.filter(index => index < dailySentences.length).length;
   const sentenceProgress = Math.round((completedCount / dailySentences.length) * 100);
+  const speakingModeBadge = learningMode === "speaking" ? `<div class="ted-speaking-goal"><span>${icon("mic",15)} SPEAKING MODE</span><b>오늘의 목표: 핵심 5문장을 듣고 직접 말하기</b><small>듣기 → 따라 말하기 → 다시 듣기 → 완료</small></div>` : "";
 
   return `${header("오늘의 TED 학습")}<main class="ted-study-page">
     <div class="ted-study-toolbar"><button type="button" data-ted-back>${icon("chevron", 15)} 오늘의 학습으로</button><span>${lesson.scheduledDate} 등록 · 전체 문장 완료까지 고정</span></div>
+    ${speakingModeBadge}
     <section class="ted-hero-card">
       <div class="ted-video-wrap"><iframe src="${embedUrl}?rel=0" title="TED: ${lesson.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
       <aside class="ted-live-transcript" aria-labelledby="ted-live-title"><div class="ted-live-head"><div><p>TED DAILY LESSON</p><h2 id="ted-live-title">전체 학습 문장</h2></div><span>등록 문장 ${transcriptLines.length.toLocaleString()}개</span></div><div class="ted-talk-title"><strong>${lesson.title}</strong><small>${lesson.speaker} · ${lesson.duration} · ${lesson.level} · 영상과 별도로 자유롭게 스크롤하세요.</small></div>
         <ol>${transcriptLines.map((line, index) => {
           const isClear = masteredSourceIndexes.includes(index);
-          return `<li><article class="ted-transcript-line ${isClear ? "clear" : ""}" data-ted-transcript-card="${index}"><span>${String(index + 1).padStart(2, "0")}</span><div><b>${line.en}</b><small>${line.ko || (line.time ? `원문 구간 ${line.time}` : "")}</small><button class="ted-transcript-clear ${isClear ? "active" : ""}" type="button" data-ted-transcript-clear="${index}" aria-pressed="${isClear}">${icon("check", 12)} ${isClear ? "Clear 완료" : "Clear"}</button></div></article></li>`;
+          return `<li><article class="ted-transcript-line ${isClear ? "clear" : ""}" data-ted-transcript-card="${index}"><span>${String(index + 1).padStart(2, "0")}</span><div><b>${line.en}</b><small>${line.ko || (line.time ? `원문 구간 ${line.time}` : "")}</small><div class="ted-transcript-actions"><button class="ted-transcript-play" type="button" data-speak="${line.en.replaceAll('"', '&quot;')}" aria-label="${index + 1}번 문장 듣기">${icon("volume", 12)} 듣기</button><button class="ted-transcript-clear ${isClear ? "active" : ""}" type="button" data-ted-transcript-clear="${index}" aria-pressed="${isClear}">${icon("check", 12)} ${isClear ? "Clear 완료" : "Clear"}</button></div></div></article></li>`;
         }).join("")}</ol>
         <footer><span>${suppliedTranscript.length ? "사용자가 제공한 전체 스크립트를 문장 단위로 표시합니다." : "강연 내용을 바탕으로 재구성한 개인 학습용 문장입니다."}</span><a href="${lesson.transcriptUrl}" target="_blank" rel="noopener noreferrer">TED 공식 전체 스크립트 ${icon("arrow", 13)}</a></footer>
       </aside>
@@ -1379,18 +1430,23 @@ function tedStudyPage() {
           <div class="ted-focus-label"><span data-ted-sentence-label>오늘 ${sentenceIndex + 1}번 · 원문 ${sentence.sourceIndex + 1}번${sentence.time ? ` · ${sentence.time}` : ""}</span><b data-ted-clear-status>${isSentenceComplete ? `${icon("check", 13)} 클리어 완료` : "학습 중"}</b></div>
           <p data-ted-focus-en>${sentence.en}</p>
           <button class="ted-listen-button" type="button" data-ted-focus-listen data-speak="${sentence.en.replaceAll('"', '&quot;')}" aria-label="현재 영어 문장 듣기">${icon("volume", 17)} 문장 듣기</button>
+          ${learningMode === "speaking" ? `<div class="ted-speaking-controls" aria-label="말하기 재생 설정"><span>재생 속도</span><button class="${speakingSpeed === 0.8 ? "active" : ""}" type="button" data-speaking-speed="0.8">0.8×</button><button class="${speakingSpeed === 1 ? "active" : ""}" type="button" data-speaking-speed="1">1.0×</button><button type="button" data-speaking-replay="${sentence.en.replaceAll('"', '&quot;')}">${icon("volume",14)} Repeat aloud</button></div>` : ""}
           <div class="ted-focus-translation"><span>학습 메모</span><strong data-ted-focus-ko>${sentence.ko || "제공된 영어 원문을 의미 단위로 끊어 직접 해석해 보세요."}</strong></div>
           <div class="ted-shadowing-guide"><span>1. 문장을 듣고 의미를 확인하세요.</span><span>2. 화면을 보며 천천히 따라 말하세요.</span><span>3. 화면을 덜 보고 자연스럽게 말해보세요.</span></div>
         </article>
         <div class="ted-step-actions">
           <button type="button" data-ted-sentence-prev ${sentenceIndex === 0 ? "disabled" : ""}>${icon("arrow", 15)} 이전 문장</button>
-          <button class="ted-clear-button ${isSentenceComplete ? "completed" : ""}" type="button" data-ted-sentence-clear>${icon("check", 16)} ${isSentenceComplete ? "클리어 완료" : "이 문장 클리어"}</button>
+          <button class="ted-clear-button ${isSentenceComplete ? "completed" : ""}" type="button" data-ted-sentence-clear>${icon("check", 16)} ${isSentenceComplete ? (learningMode === "speaking" ? "말하기 완료" : "클리어 완료") : (learningMode === "speaking" ? "I said it" : "이 문장 클리어")}</button>
           <button type="button" data-ted-sentence-next ${sentenceIndex >= dailySentences.length - 1 || !isSentenceComplete ? "disabled" : ""}>다음 문장 ${icon("arrow", 15)}</button>
         </div>
         <p class="ted-step-message" data-ted-step-message aria-live="polite">${courseComplete ? `전체 ${transcriptLines.length}문장을 모두 클리어했어요! 새로운 TED 영상을 등록할 수 있습니다.` : completedCount === dailySentences.length ? "오늘의 5문장을 모두 클리어했어요! 다음 학습일에는 미완료 문장부터 이어집니다." : isSentenceComplete ? "잘했어요. 이제 다음 문장으로 넘어갈 수 있어요." : "충분히 듣고 따라 말한 뒤 클리어 버튼을 눌러주세요."}</p>
       </section>
       <aside class="ted-expression-panel"><div class="ted-section-heading"><div><p class="eyebrow">KEY EXPRESSIONS</p><h3>오늘의 5문장 핵심 표현</h3></div><span>자동 선택 3개</span></div>
-        <div>${dailyExpressions.map((item, index) => `<article><span>${index + 1}</span><h4>${item.term}</h4><p>${item.meaning}</p><small>${item.example}</small><button type="button" data-speak="${item.term.replaceAll('"', '&quot;')}" aria-label="${item.term} 발음 듣기">${icon("volume", 14)}</button></article>`).join("")}</div>
+        <div>${dailyExpressions.map((item, index) => {
+          const expressionKey = `${lesson.id}:${index}:${item.term}`;
+          const expressionDone = speakingExpressionDone.includes(expressionKey);
+          return `<article class="${learningMode === "speaking" && expressionDone ? "speaking-done" : ""}"><span>${index + 1}</span><h4>${item.term}</h4><p>${item.meaning}</p><small>${item.example}</small><button type="button" data-speak="${item.term.replaceAll('"', '&quot;')}" aria-label="${item.term} 발음 듣기">${icon("volume", 14)}</button>${learningMode === "speaking" ? `<div class="expression-speaking-actions"><button type="button" data-speaking-replay="${item.example.replaceAll('"', '&quot;')}">${icon("volume",12)} 예문 듣기</button><button type="button" data-speaking-repeat="${item.example.replaceAll('"', '&quot;')}">3회 반복</button><button class="${expressionDone ? "active" : ""}" type="button" data-speaking-expression-done="${expressionKey.replaceAll('"', '&quot;')}" aria-pressed="${expressionDone}">${icon("check",12)} ${expressionDone ? "완료" : "말했어요"}</button></div>` : ""}</article>`;
+        }).join("")}</div>
         <section class="ted-routine"><b>${icon("check", 16)} 추천 학습 루틴</b><p>영상 1회 시청 → 스크립트 확인 → 문장별 쉐도잉 3회 → 핵심 표현 복습</p></section>
       </aside>
     </div>
@@ -1432,6 +1488,8 @@ function updateTedSentenceStepView(lesson) {
   const listenButton = panel.querySelector("[data-ted-focus-listen]");
   listenButton.dataset.speak = sentence.en;
   listenButton.setAttribute("aria-label", `${index + 1}번 영어 문장 듣기`);
+  const replayButton = panel.querySelector("[data-speaking-replay]");
+  if (replayButton) replayButton.dataset.speakingReplay = sentence.en;
 
   const previousButton = panel.querySelector("[data-ted-sentence-prev]");
   const nextButton = panel.querySelector("[data-ted-sentence-next]");
@@ -1439,7 +1497,7 @@ function updateTedSentenceStepView(lesson) {
   previousButton.disabled = index === 0;
   nextButton.disabled = index >= dailySentences.length - 1 || !isComplete;
   clearButton.classList.toggle("completed", isComplete);
-  clearButton.innerHTML = `${icon("check", 16)} ${isComplete ? "클리어 완료" : "이 문장 클리어"}`;
+  clearButton.innerHTML = `${icon("check", 16)} ${isComplete ? (learningMode === "speaking" ? "말하기 완료" : "클리어 완료") : (learningMode === "speaking" ? "I said it" : "이 문장 클리어")}`;
   panel.querySelector("[data-ted-step-message]").textContent = courseComplete
     ? `전체 ${transcriptLength}문장을 모두 클리어했어요! 새로운 TED 영상을 등록할 수 있습니다.`
     : completedCount === dailySentences.length
@@ -1923,6 +1981,12 @@ function bindEvents(){
     const item = { youtube: videoId };
     video.src = makeYouTubeEmbedUrl(item.youtube);
   }
+  document.querySelectorAll("[data-learning-mode]").forEach(button => button.addEventListener("click", event => {
+    const selectedMode = event.currentTarget.dataset.learningMode;
+    if (selectedMode === learningMode) return;
+    applyLearningMode(selectedMode);
+    render();
+  }));
   document.querySelector("[data-theme-toggle]")?.addEventListener("click", () => {
     saveTheme(currentTheme === "dark" ? "light" : "dark");
     const toggle = document.querySelector("[data-theme-toggle]");
@@ -2078,7 +2142,31 @@ function bindEvents(){
     event.currentTarget.setAttribute("aria-label", `${word} 예문 Sentence Clear ${!cleared ? "해제" : "완료"}`);
     updateVocabClearCard(card);
   }));
-  document.querySelectorAll("[data-speak]").forEach(el=>el.addEventListener("click",e=>{speechSynthesis.speak(new SpeechSynthesisUtterance(e.currentTarget.dataset.speak));}));
+  document.querySelectorAll("[data-speak]").forEach(el=>el.addEventListener("click",e=>{
+    document.querySelectorAll(".speaking-active").forEach(item => item.classList.remove("speaking-active"));
+    e.currentTarget.closest(".ted-transcript-line,.ted-focus-sentence,.ted-expression-panel article")?.classList.add("speaking-active");
+    speakText(e.currentTarget.dataset.speak);
+  }));
+  document.querySelectorAll("[data-speaking-replay]").forEach(button => button.addEventListener("click", event => {
+    speakText(event.currentTarget.dataset.speakingReplay);
+  }));
+  document.querySelectorAll("[data-speaking-repeat]").forEach(button => button.addEventListener("click", event => {
+    speakText(event.currentTarget.dataset.speakingRepeat, 3);
+  }));
+  document.querySelectorAll("[data-speaking-speed]").forEach(button => button.addEventListener("click", event => {
+    saveSpeakingSpeed(Number(event.currentTarget.dataset.speakingSpeed));
+    document.querySelectorAll("[data-speaking-speed]").forEach(item => item.classList.toggle("active", Number(item.dataset.speakingSpeed) === speakingSpeed));
+  }));
+  document.querySelectorAll("[data-speaking-expression-done]").forEach(button => button.addEventListener("click", event => {
+    const key = event.currentTarget.dataset.speakingExpressionDone;
+    const isDone = speakingExpressionDone.includes(key);
+    speakingExpressionDone = isDone ? speakingExpressionDone.filter(item => item !== key) : [...speakingExpressionDone, key];
+    try { localStorage.setItem(SPEAKING_EXPRESSION_STORAGE_KEY, JSON.stringify(speakingExpressionDone)); } catch {}
+    event.currentTarget.classList.toggle("active", !isDone);
+    event.currentTarget.setAttribute("aria-pressed", String(!isDone));
+    event.currentTarget.innerHTML = `${icon("check",12)} ${!isDone ? "완료" : "말했어요"}`;
+    event.currentTarget.closest(".ted-expression-panel article")?.classList.toggle("speaking-done", !isDone);
+  }));
   document.querySelectorAll("[data-vocab-target]").forEach(el=>el.addEventListener("click", e => {
     const scrollPosition = window.scrollY;
     state.vocabPage = Number(e.currentTarget.dataset.vocabTarget);

@@ -322,3 +322,48 @@ html[data-theme="dark"] .ted-transcript-line.clear small{color:#a9cce0}
 .ted-transcript-line b{font-size:calc(15px + 2pt)}
 .ted-transcript-line small{font-size:calc(12px + 2pt)}
 @media(max-width:700px){.ted-transcript-line b{font-size:calc(14px + 2pt)}.ted-transcript-line small{font-size:calc(11px + 2pt)}}
+
+/* Reserve banner space between the page title and the TOEIC RC quick link. */
+.header-title-row .header-toeic-link{margin-left:10cm}
+@media(max-width:1200px){.header-title-row .header-toeic-link{margin-left:2cm}}
+@media(max-width:700px){.header-title-row .header-toeic-link{margin-left:0}}
+
+/* TED quick-access banner beside the TOEIC RC banner. */
+.header-ted-link{display:flex;align-items:center;gap:8px;height:34px;padding:5px 11px 5px 6px;border:1px solid #bfd8e8;border-radius:10px;background:#eaf4fb;color:#205f87;font:inherit;font-size:11px;white-space:nowrap;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+.header-ted-link span{display:grid;place-items:center;width:31px;height:24px;border-radius:7px;background:#2f80b7;color:#fff;font:700 9px Georgia}
+.header-ted-link b{font-size:11px}
+.header-ted-link svg{width:13px;transition:transform .2s ease}
+.header-ted-link:hover{border-color:#88b7d5;background:#dceefa;transform:translateY(-1px)}
+.header-ted-link:hover svg{transform:translateX(2px)}
+html[data-theme="dark"] .header-ted-link{border-color:#355b73;background:#1f3543;color:#9dcae5}
+@media(max-width:700px){.header-ted-link{height:32px;padding:4px 8px 4px 5px}.header-ted-link span{width:28px;height:24px}.header-ted-link b{font-size:10px}}
+@media(max-width:480px){.header-ted-link b{display:none}.header-ted-link{gap:5px;padding-right:6px}}
+
+/* BBC Learning English external quick-access banner. */
+.header-bbc-link{display:flex;align-items:center;gap:8px;height:34px;padding:5px 11px 5px 6px;border:1px solid #e2c3c3;border-radius:10px;background:#fbefef;color:#842f34;text-decoration:none;font-size:11px;white-space:nowrap;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+.header-bbc-link span{display:grid;place-items:center;width:31px;height:24px;border-radius:7px;background:#bb1919;color:#fff;font:700 9px Arial,sans-serif;letter-spacing:.3px}
+.header-bbc-link b{font-size:11px}
+.header-bbc-link svg{width:13px;transition:transform .2s ease}
+.header-bbc-link:hover{border-color:#cf9292;background:#f8e1e1;transform:translateY(-1px)}
+.header-bbc-link:hover svg{transform:translateX(2px)}
+html[data-theme="dark"] .header-bbc-link{border-color:#704144;background:#40272b;color:#e6a9ad}
+@media(max-width:700px){.header-bbc-link{height:32px;padding:4px 8px 4px 5px}.header-bbc-link span{width:28px;height:24px}.header-bbc-link b{font-size:10px}}
+@media(max-width:480px){.header-bbc-link b{display:none}.header-bbc-link{gap:5px;padding-right:6px}}
+
+/* Optional Speaking Mode layer. Default mode keeps the existing page layouts. */
+.learning-mode-toggle{display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid #cedbd7;border-radius:10px;background:#f5f8f7;color:#60716d;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}.learning-mode-toggle.active{border-color:#377ba7;background:#e2f1fb;color:#23658f;box-shadow:0 5px 14px rgba(43,111,153,.15)}.learning-mode-toggle.active svg{color:#2474a5}html[data-theme="dark"] .learning-mode-toggle{border-color:#3b4c52;background:#223038;color:#a8b7b3}html[data-theme="dark"] .learning-mode-toggle.active{border-color:#5b98bd;background:#23475d;color:#d3efff}
+.speaking-home-mission{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:12px;padding:20px 23px;border:1px solid #8ebbd5;border-radius:16px;background:linear-gradient(120deg,#eaf6fd,#ddecf7);box-shadow:0 10px 25px rgba(45,107,146,.12)}.speaking-home-mission>div:first-child>span{display:flex;align-items:center;gap:6px;color:#23678f;font-size:9px;font-weight:900;letter-spacing:1.1px}.speaking-home-mission h2{margin:6px 0 4px;color:#173e61;font-size:20px}.speaking-home-mission p{margin:0;color:#557689;font-size:11px}.speaking-home-mission>div:last-child{display:flex;gap:8px}.speaking-home-mission button{display:flex;align-items:center;gap:6px;padding:10px 13px;border:1px solid #80abc5;border-radius:9px;background:#fff;color:#285f81;font-size:10px;font-weight:800;cursor:pointer}.speaking-home-mission button:first-child{border-color:#2d78a5;background:#2d78a5;color:#fff}html[data-theme="dark"] .speaking-home-mission{border-color:#446f88;background:linear-gradient(120deg,#1e3c4d,#203544)}html[data-theme="dark"] .speaking-home-mission h2{color:#d8effd}html[data-theme="dark"] .speaking-home-mission p{color:#a8c3d2}
+.ted-speaking-goal{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:12px;padding:12px 15px;border:1px solid #8dbbd6;border-radius:12px;background:#e9f5fc;color:#245f83}.ted-speaking-goal>span{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:900;letter-spacing:1px}.ted-speaking-goal>b{font-size:12px}.ted-speaking-goal>small{color:#5f8195;font-size:9px}html[data-theme="dark"] .ted-speaking-goal{border-color:#426d86;background:#203b4b;color:#c7e8fa}
+.ted-speaking-controls{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px}.ted-speaking-controls>span{margin-right:2px;color:#71827d;font-size:9px;font-weight:800}.ted-speaking-controls button{display:flex;align-items:center;gap:4px;padding:7px 9px;border:1px solid #c9d9df;border-radius:8px;background:#fff;color:#557681;font-size:9px;font-weight:800;cursor:pointer}.ted-speaking-controls button.active{border-color:#397fa9;background:#397fa9;color:#fff}
+.ted-transcript-actions{display:flex;align-items:center;gap:6px;margin-top:9px}.ted-transcript-actions .ted-transcript-clear{margin-top:0}.ted-transcript-play{display:none;align-items:center;gap:4px;padding:6px 9px;border:1px solid #bcd2de;border-radius:8px;background:#fff;color:#326f91;font-size:9px;font-weight:800;cursor:pointer}html[data-mode="speaking"] .ted-transcript-play{display:inline-flex}html[data-mode="speaking"] .ted-transcript-line.speaking-active{border-color:#3181b2;background:#e1f1fb;box-shadow:0 0 0 2px rgba(49,129,178,.14)}html[data-theme="dark"][data-mode="speaking"] .ted-transcript-line.speaking-active{background:#21465b}
+.expression-speaking-actions{display:flex!important;position:static!important;align-items:center;flex-wrap:wrap;gap:5px!important;margin-top:11px!important}.expression-speaking-actions button{position:static!important;display:flex!important;align-items:center;gap:4px;padding:6px 8px!important;border:1px solid #c8d9df!important;border-radius:8px!important;background:#fff!important;color:#557681!important;font-size:8px!important;font-weight:800;cursor:pointer}.expression-speaking-actions button.active{border-color:#397fa9!important;background:#397fa9!important;color:#fff!important}html[data-mode="speaking"] .ted-expression-panel article.speaking-done{border-color:#4f91bc;background:linear-gradient(180deg,#e7f4fc,#cfe7f6);box-shadow:0 8px 20px rgba(44,103,143,.16)}html[data-theme="dark"][data-mode="speaking"] .ted-expression-panel article.speaking-done{border-color:#69a5ca;background:linear-gradient(180deg,#24475c,#1e3b4e)}
+@media(max-width:900px){.learning-mode-toggle span{display:none}.speaking-home-mission{align-items:flex-start;flex-direction:column}.ted-speaking-goal{grid-template-columns:1fr}.ted-speaking-goal>small{display:block}}
+@media(max-width:600px){.speaking-home-mission>div:last-child{width:100%;flex-direction:column}.speaking-home-mission button{justify-content:center;width:100%}}
+
+/* Two-button Silent / Speaking mode selector. */
+.learning-mode-switch{display:flex;align-items:center;padding:3px;border:1px solid #cedbd7;border-radius:11px;background:#f1f5f3}.learning-mode-switch button{display:flex;align-items:center;justify-content:center;gap:4px;height:28px;padding:0 9px;border:0;border-radius:8px;background:transparent;color:#71807c;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}.learning-mode-switch button.active{background:#fff;color:#245f83;box-shadow:0 2px 7px rgba(35,73,64,.13)}.learning-mode-switch button[data-learning-mode="speaking"].active{background:#397fa9;color:#fff}html[data-theme="dark"] .learning-mode-switch{border-color:#3b4c52;background:#1d2a31}html[data-theme="dark"] .learning-mode-switch button{color:#9eafaa}html[data-theme="dark"] .learning-mode-switch button.active{background:#2c4656;color:#d8effd}
+@media(max-width:700px){.learning-mode-switch button{padding:0 7px}.learning-mode-switch button svg{display:none}}
+
+/* Enlarge vocabulary example and translation sentences by 2pt. */
+.vocab-today-item blockquote b,.vocab-today-item blockquote span{font-size:calc(13px + 2pt)}
+@media(max-width:700px){.vocab-today-item blockquote b,.vocab-today-item blockquote span{font-size:calc(12px + 2pt)}}
