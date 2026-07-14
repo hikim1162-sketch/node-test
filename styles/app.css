@@ -287,3 +287,33 @@ header h1{font-size:calc(17px + 2pt)}
 /* Enlarge the ValueTime brand title and subtitle by 2pt. */
 .brand-copy b{font-size:calc(22px + 2pt)}
 .brand-copy small{font-size:calc(8px + 2pt)}
+
+/* Daily sentence: one featured sentence followed by a vocabulary-style grid. */
+.sentence-featured-list{margin-bottom:26px}
+.sentence-featured-item{padding:24px;border-color:#9fc8bc;background:linear-gradient(145deg,#f4fbf8,#eaf5f1);box-shadow:0 12px 28px rgba(31,101,88,.1)}
+.sentence-featured-item .sentence-today-title h4{font-size:24px}
+.sentence-featured-item .sentence-today-top>span{min-width:58px;background:#216b5d;color:#fff}
+.sentence-library-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 0 12px;padding-top:20px;border-top:1px solid var(--line)}
+.sentence-library-head h3{margin:0;font-size:18px}
+.sentence-library-head p{margin:0;color:#788783;font-size:10px}
+.sentence-library-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+html[data-theme="dark"] .sentence-featured-item{border-color:#47796f;background:linear-gradient(145deg,#203a38,#1b302f)}
+@media(max-width:760px){.sentence-featured-item{padding:19px}.sentence-featured-item .sentence-today-title h4{font-size:21px}.sentence-library-head{align-items:flex-start;flex-direction:column;gap:5px}.sentence-library-list{grid-template-columns:1fr}}
+
+/* Keep pagination arrows directly beside the page-number group. */
+.vocab-page-navigation,.sentence-page-navigation{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px}
+.vocab-page-numbers,.sentence-page-numbers{flex:0 1 auto;justify-content:center;gap:5px;margin-right:5mm;margin-left:5mm}
+.vocab-page-navigation>small,.sentence-page-navigation>small{flex:0 0 100%;width:100%;margin-top:2px;text-align:center}
+@media(max-width:760px){.sentence-page-navigation{display:flex;gap:4px}.sentence-page-numbers{justify-content:center}}
+
+/* TED transcript clear state, shared with the daily TED mastery progress. */
+.ted-transcript-clear{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin-top:9px;padding:6px 9px;border:1px solid #cfdcd8;border-radius:8px;background:#fff;color:#667b75;font-size:9px;font-weight:800;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease}
+.ted-transcript-clear:hover{border-color:#79a9c5;background:#eef6fb;color:#2d6f95}
+.ted-transcript-clear.active{border-color:#397fa9;background:#397fa9;color:#fff}
+.ted-transcript-line.clear{border-color:#4f91bc;background:linear-gradient(180deg,#e7f4fc,#cfe7f6);box-shadow:0 8px 20px rgba(44,103,143,.17)}
+.ted-transcript-line.clear>span{background:#397fa9;color:#fff}
+.ted-transcript-line.clear b{color:#1f5f88}
+.ted-transcript-line.clear small{color:#527b94}
+html[data-theme="dark"] .ted-transcript-line.clear{border-color:#69a5ca;background:linear-gradient(180deg,#24475c,#1e3b4e);box-shadow:0 9px 22px rgba(0,0,0,.25)}
+html[data-theme="dark"] .ted-transcript-line.clear b{color:#d7efff}
+html[data-theme="dark"] .ted-transcript-line.clear small{color:#a9cce0}

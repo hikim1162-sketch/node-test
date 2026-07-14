@@ -1165,7 +1165,7 @@ function checklist(date = state.selectedDate) {
   const completed = state.history[date] || [];
   const label = date === "2026-07-13" ? "오늘" : `${Number(date.slice(5,7))}월 ${Number(date.slice(8))}일`;
   return `<section class="panel checklist-panel"><div class="panel-head"><div><p class="eyebrow">MY DAILY PLAN</p><h2>${label}의 학습 체크</h2></div><span class="count-pill">${completed.length} / 4 완료</span></div>
-  <div class="check-items">${Object.entries(CATEGORIES).map(([key, c]) => `<button class="check-row ${completed.includes(key) ? "done" : ""}" data-check="${key}" data-date="${date}"><span class="custom-check">${completed.includes(key) ? icon("check",15) : ""}</span><span class="check-copy"><b>${c.label} 학습</b><small>${key === "word" ? "오늘의 단어 5개" : key === "sentence" ? "핵심 문장 1개" : key === "drama" ? "표현 클립 1개" : "영문 기사 1편"}</small></span><span class="go">${completed.includes(key) ? "완료" : "시작"} ${icon("chevron",15)}</span></button>`).join("")}</div>
+  <div class="check-items">${Object.entries(CATEGORIES).map(([key, c]) => `<button class="check-row ${completed.includes(key) ? "done" : ""}" data-check="${key}" data-date="${date}"><span class="custom-check">${completed.includes(key) ? icon("check",15) : ""}</span><span class="check-copy"><b>${c.label} 학습</b><small>${key === "word" ? "오늘의 단어 10개" : key === "sentence" ? "핵심 문장 1개" : key === "drama" ? "표현 클립 1개" : "영문 기사 1편"}</small></span><span class="go">${completed.includes(key) ? "완료" : "시작"} ${icon("chevron",15)}</span></button>`).join("")}</div>
   <div class="progress-meta"><span>오늘의 진행률</span><b>${completed.length * 25}%</b></div><div class="progress"><i style="width:${completed.length * 25}%"></i></div></section>`;
 }
 
@@ -1197,7 +1197,7 @@ function getMixedVocabularyWords() {
   while (mixed.length < words.length) {
     const pageInitials = new Set();
     const page = [];
-    while (page.length < 5 && mixed.length + page.length < words.length) {
+    while (page.length < 10 && mixed.length + page.length < words.length) {
       const candidates = buckets
         .filter(bucket => bucket.items.length && !pageInitials.has(bucket.initial))
         .sort((a, b) => b.items.length - a.items.length || orderRank.get(a.initial) - orderRank.get(b.initial));
@@ -1221,14 +1221,14 @@ var mixedVocabularyWords = getMixedVocabularyWords();
 
 function getTodayVocabWords(dateKey = localDateKey()) {
   mixedVocabularyWords ||= getMixedVocabularyWords();
-  const pageSize = 5;
+  const pageSize = 10;
   const pageCount = Math.ceil(mixedVocabularyWords.length / pageSize);
   const pageIndex = getDailyVocabPageIndex(pageCount, dateKey);
   return mixedVocabularyWords.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 }
 
 function vocabularyPage() {
-  const vocabPageSize = 5;
+  const vocabPageSize = 10;
   const orderedWords = mixedVocabularyWords;
   const vocabPageCount = Math.ceil(orderedWords.length / vocabPageSize);
   const todayKey = localDateKey();
@@ -1364,7 +1364,10 @@ function tedStudyPage() {
     <section class="ted-hero-card">
       <div class="ted-video-wrap"><iframe src="${embedUrl}?rel=0" title="TED: ${lesson.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
       <aside class="ted-live-transcript" aria-labelledby="ted-live-title"><div class="ted-live-head"><div><p>TED DAILY LESSON</p><h2 id="ted-live-title">전체 학습 문장</h2></div><span>등록 문장 ${transcriptLines.length.toLocaleString()}개</span></div><div class="ted-talk-title"><strong>${lesson.title}</strong><small>${lesson.speaker} · ${lesson.duration} · ${lesson.level} · 영상과 별도로 자유롭게 스크롤하세요.</small></div>
-        <ol>${transcriptLines.map((line, index) => `<li><article class="ted-transcript-line"><span>${String(index + 1).padStart(2, "0")}</span><div><b>${line.en}</b><small>${line.ko || (line.time ? `원문 구간 ${line.time}` : "")}</small></div></article></li>`).join("")}</ol>
+        <ol>${transcriptLines.map((line, index) => {
+          const isClear = masteredSourceIndexes.includes(index);
+          return `<li><article class="ted-transcript-line ${isClear ? "clear" : ""}" data-ted-transcript-card="${index}"><span>${String(index + 1).padStart(2, "0")}</span><div><b>${line.en}</b><small>${line.ko || (line.time ? `원문 구간 ${line.time}` : "")}</small><button class="ted-transcript-clear ${isClear ? "active" : ""}" type="button" data-ted-transcript-clear="${index}" aria-pressed="${isClear}">${icon("check", 12)} ${isClear ? "Clear 완료" : "Clear"}</button></div></article></li>`;
+        }).join("")}</ol>
         <footer><span>${suppliedTranscript.length ? "사용자가 제공한 전체 스크립트를 문장 단위로 표시합니다." : "강연 내용을 바탕으로 재구성한 개인 학습용 문장입니다."}</span><a href="${lesson.transcriptUrl}" target="_blank" rel="noopener noreferrer">TED 공식 전체 스크립트 ${icon("arrow", 13)}</a></footer>
       </aside>
     </section>
@@ -1633,7 +1636,7 @@ function dailyTestPage() {
       </section>
 
       <aside class="test-side-stack">${dailyTestScoreCard(scores)}
-        <section class="panel test-guide-card"><p class="eyebrow">STUDY GUIDE</p><h3>Daily Test 안내</h3><ul><li><b>RC 문제</b><span>20문제 은행을 날짜별 새 순서로 점검</span></li><li><b>단어 테스트</b><span>오늘의 단어 5개에서 출제</span></li><li><b>문장 학습</b><span>오늘의 한 문장으로 의미·패턴·활용 점검</span></li></ul><small>같은 날에는 문제와 순서가 유지되고, 날짜가 바뀌면 새로운 세트가 준비됩니다.</small></section>
+        <section class="panel test-guide-card"><p class="eyebrow">STUDY GUIDE</p><h3>Daily Test 안내</h3><ul><li><b>RC 문제</b><span>20문제 은행을 날짜별 새 순서로 점검</span></li><li><b>단어 테스트</b><span>오늘의 단어 10개에서 출제</span></li><li><b>문장 학습</b><span>오늘의 한 문장으로 의미·패턴·활용 점검</span></li></ul><small>같은 날에는 문제와 순서가 유지되고, 날짜가 바뀌면 새로운 세트가 준비됩니다.</small></section>
       </aside>
     </div>`;
   } else if (type === "wrong") {
@@ -1762,24 +1765,29 @@ function sentencePage() {
   const pageGroupStart = Math.floor(state.sentencePage / 10) * 10;
   const visiblePages = Array.from({ length: Math.min(10, pageCount - pageGroupStart) }, (_, index) => pageGroupStart + index);
   const savedSentenceItems = state.savedSentences.map(id => sentenceLessons.find(item => item.id === id)).filter(Boolean).slice(-5);
+  const representativeSentence = pageSentences[0];
+  const additionalSentences = pageSentences.slice(1);
+  const sentenceCard = (lesson, index, featured = false) => {
+    const understood = state.understoodSentences.includes(lesson.id);
+    const spoken = state.clearedSentences.includes(lesson.id);
+    const saved = state.savedSentences.includes(lesson.id);
+    const allClear = understood && spoken;
+    return `<article class="sentence-today-item ${featured ? "sentence-featured-item" : ""} ${understood ? "understood" : ""} ${spoken ? "spoken" : ""} ${allClear ? "all-clear" : ""}" data-sentence-card="${lesson.id}">
+      <div class="sentence-today-top"><span>${featured ? "TODAY" : String(state.sentencePage * pageSize + index + 1).padStart(4, "0")}</span><em>${lesson.category}</em><div><button class="sentence-understand-toggle ${understood ? "active" : ""}" type="button" data-understand-sentence="${lesson.id}" aria-pressed="${understood}">${icon("check",13)} Meaning Clear</button><button class="sentence-save-toggle ${saved ? "active" : ""}" type="button" data-save-sentence="${lesson.id}" aria-pressed="${saved}" aria-label="문장 ${saved ? "저장 취소" : "저장"}">${icon("bookmark",17)}</button></div></div>
+      <div class="sentence-today-title"><h4>${lesson.en}</h4><button type="button" data-speak="${lesson.en}" aria-label="영어 문장 듣기">${icon("volume",19)}</button></div><p>${lesson.ko}</p>
+      <div class="sentence-pattern-box"><span>${icon("spark",15)}</span><div><b>${lesson.pattern}</b><p>${lesson.meaning}</p></div></div>
+      <button class="sentence-speaking-clear ${spoken ? "active" : ""}" type="button" data-clear-sentence="${lesson.id}" aria-pressed="${spoken}">${icon("check",14)} Sentence Clear</button>
+      <a href="${lesson.sourceUrl}" target="_blank" rel="noopener noreferrer">출처 안내 · ${lesson.source} ${icon("arrow",12)}</a>
+    </article>`;
+  };
 
   return `${header("매일 1문장")}<main class="sentence-dashboard-page">
     <div class="sentence-dashboard-layout">
       <section class="sentence-learning-panel">
-        <div class="sentence-list-head"><div><h3>오늘의 TOEIC 문장</h3><p>의미와 말하기를 각각 Clear하고 매일 5문장을 완성해보세요.</p></div><b>${pageSentences.length} SENTENCES · <span data-sentence-clear-count>${allClearCount}</span> ALL CLEAR</b></div>
-        <div class="sentence-today-list">${pageSentences.map((lesson, index) => {
-          const understood = state.understoodSentences.includes(lesson.id);
-          const spoken = state.clearedSentences.includes(lesson.id);
-          const saved = state.savedSentences.includes(lesson.id);
-          const allClear = understood && spoken;
-          return `<article class="sentence-today-item ${understood ? "understood" : ""} ${spoken ? "spoken" : ""} ${allClear ? "all-clear" : ""}" data-sentence-card="${lesson.id}">
-            <div class="sentence-today-top"><span>${String(state.sentencePage * pageSize + index + 1).padStart(4, "0")}</span><em>${lesson.category}</em><div><button class="sentence-understand-toggle ${understood ? "active" : ""}" type="button" data-understand-sentence="${lesson.id}" aria-pressed="${understood}">${icon("check",13)} Meaning Clear</button><button class="sentence-save-toggle ${saved ? "active" : ""}" type="button" data-save-sentence="${lesson.id}" aria-pressed="${saved}" aria-label="문장 ${saved ? "저장 취소" : "저장"}">${icon("bookmark",17)}</button></div></div>
-            <div class="sentence-today-title"><h4>${lesson.en}</h4><button type="button" data-speak="${lesson.en}" aria-label="영어 문장 듣기">${icon("volume",19)}</button></div><p>${lesson.ko}</p>
-            <div class="sentence-pattern-box"><span>${icon("spark",15)}</span><div><b>${lesson.pattern}</b><p>${lesson.meaning}</p></div></div>
-            <button class="sentence-speaking-clear ${spoken ? "active" : ""}" type="button" data-clear-sentence="${lesson.id}" aria-pressed="${spoken}">${icon("check",14)} Sentence Clear</button>
-            <a href="${lesson.sourceUrl}" target="_blank" rel="noopener noreferrer">출처 안내 · ${lesson.source} ${icon("arrow",12)}</a>
-          </article>`;
-        }).join("")}</div>
+        <div class="sentence-list-head"><div><h3>오늘 외울 대표 문장</h3><p>상단 문장 하나를 먼저 듣고, 뜻을 이해한 뒤 소리 내어 말해보세요.</p></div><b>${pageSentences.length} SENTENCES · <span data-sentence-clear-count>${allClearCount}</span> ALL CLEAR</b></div>
+        <div class="sentence-featured-list">${representativeSentence ? sentenceCard(representativeSentence, 0, true) : ""}</div>
+        <div class="sentence-library-head"><h3>문장 목록</h3><p>대표 문장 학습 후 다양한 패턴의 문장을 이어서 익혀보세요.</p></div>
+        <div class="sentence-today-list sentence-library-list">${additionalSentences.map((lesson, index) => sentenceCard(lesson, index + 1)).join("")}</div>
         <nav class="sentence-page-navigation" aria-label="TOEIC 문장 목록 페이지 이동"><button class="sentence-page-edge" type="button" data-sentence-target="0" ${state.sentencePage === 0 ? "disabled" : ""} aria-label="첫 페이지로 이동">&laquo;</button><button class="sentence-page-edge" type="button" data-sentence-target="${Math.max(0, state.sentencePage - 1)}" ${state.sentencePage === 0 ? "disabled" : ""} aria-label="이전 페이지로 이동">&lsaquo;</button><span class="sentence-page-numbers">${visiblePages.map(pageIndex => `<button class="${pageIndex === state.sentencePage ? "active" : ""}" type="button" data-sentence-target="${pageIndex}" ${pageIndex === state.sentencePage ? 'aria-current="page"' : ""}>${pageIndex + 1}</button>`).join("")}</span><button class="sentence-page-edge" type="button" data-sentence-target="${Math.min(pageCount - 1, state.sentencePage + 1)}" ${state.sentencePage === pageCount - 1 ? "disabled" : ""} aria-label="다음 페이지로 이동">&rsaquo;</button><button class="sentence-page-edge" type="button" data-sentence-target="${pageCount - 1}" ${state.sentencePage === pageCount - 1 ? "disabled" : ""} aria-label="마지막 페이지로 이동">&raquo;</button><small>${state.sentencePage + 1} / ${pageCount} 페이지</small></nav>
       </section>
       <aside class="sentence-dashboard-side">
@@ -1960,6 +1968,30 @@ function bindEvents(){
     }
     updateTedSentenceStepView(lesson);
   });
+  document.querySelectorAll("[data-ted-transcript-clear]").forEach(button => button.addEventListener("click", event => {
+    const lesson = getEligibleTedLessons().find(item => item.id === state.tedLessonId) || getDailyTedLesson();
+    if (!lesson) return;
+    const sourceIndex = Number(event.currentTarget.dataset.tedTranscriptClear);
+    const mastered = getTedMasteredSourceIndexes(lesson.id);
+    const isClear = mastered.includes(sourceIndex);
+    const updatedMastered = isClear
+      ? mastered.filter(index => index !== sourceIndex)
+      : [...mastered, sourceIndex];
+    saveTedMasteredSourceIndexes(lesson.id, updatedMastered);
+
+    const card = event.currentTarget.closest("[data-ted-transcript-card]");
+    card?.classList.toggle("clear", !isClear);
+    event.currentTarget.classList.toggle("active", !isClear);
+    event.currentTarget.setAttribute("aria-pressed", String(!isClear));
+    event.currentTarget.innerHTML = `${icon("check", 12)} ${!isClear ? "Clear 완료" : "Clear"}`;
+
+    const dailySentences = getDailyTedStudySentences(lesson);
+    if (dailySentences.every(item => updatedMastered.includes(item.sourceIndex))) {
+      homeStudyState.checked.ted = true;
+      saveHomeStudyState("ted");
+    }
+    updateTedSentenceStepView(lesson);
+  }));
   document.querySelectorAll("[data-home-study-page]").forEach(card => {
     const openStudyPage = () => navigateTo(card.dataset.homeStudyPage, { url: card.dataset.homeStudyLink });
     card.addEventListener("click", openStudyPage);
@@ -2048,11 +2080,12 @@ function bindEvents(){
   }));
   document.querySelectorAll("[data-speak]").forEach(el=>el.addEventListener("click",e=>{speechSynthesis.speak(new SpeechSynthesisUtterance(e.currentTarget.dataset.speak));}));
   document.querySelectorAll("[data-vocab-target]").forEach(el=>el.addEventListener("click", e => {
+    const scrollPosition = window.scrollY;
     state.vocabPage = Number(e.currentTarget.dataset.vocabTarget);
     localStorage.setItem("value_time_vocab_page", String(state.vocabPage));
     localStorage.setItem("value_time_vocab_page_date", localDateKey());
     render();
-    document.querySelector(".vocab-today-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.scrollTo(0, scrollPosition);
   }));
   document.querySelector("[data-vocab-complete]")?.addEventListener("click", () => {
     homeStudyState.checked.words = true;
@@ -2089,11 +2122,12 @@ function bindEvents(){
     render();
   }));
   document.querySelectorAll("[data-sentence-target]").forEach(button => button.addEventListener("click", event => {
+    const scrollPosition = window.scrollY;
     state.sentencePage = Number(event.currentTarget.dataset.sentenceTarget);
     localStorage.setItem("value_time_sentence_page", String(state.sentencePage));
     localStorage.setItem("value_time_sentence_page_date", localDateKey());
     render();
-    document.querySelector(".sentence-learning-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.scrollTo(0, scrollPosition);
   }));
   document.querySelector("[data-sentence-complete]")?.addEventListener("click", () => {
     homeStudyState.checked.sentence = true;

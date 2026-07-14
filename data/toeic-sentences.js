@@ -138,14 +138,16 @@ const templates = [
 
 const SOURCE_URL = "https://www.eu.ets.org/toeic/test-takers/about/listening-reading.html";
 
-export const toeicSentences = templates.flatMap((template, templateIndex) =>
-  scenarios.map((scenario, scenarioIndex) => {
+// Interleave grammar patterns instead of grouping 50 near-identical sentences
+// together. Each page now contains different structures, topics and intents.
+export const toeicSentences = scenarios.flatMap((scenario, scenarioIndex) =>
+  templates.map((template, templateIndex) => {
     const [en, ko] = template.build(scenario);
     const nextScenario = scenarios[(scenarioIndex + 1) % scenarios.length];
     const [applicationEn, applicationKo] = template.build(nextScenario);
     return {
       id: `toeic-sentence-${String(templateIndex * scenarios.length + scenarioIndex + 1).padStart(4, "0")}`,
-      rank: templateIndex * scenarios.length + scenarioIndex + 1,
+      rank: scenarioIndex * templates.length + templateIndex + 1,
       en,
       ko,
       pattern: template.pattern,
