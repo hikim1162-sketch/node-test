@@ -1092,7 +1092,12 @@ const SPEAKING_EXPRESSION_STORAGE_KEY = "value_time_speaking_expressions_v1";
 const AUDIENCE_MODE_STORAGE_KEY = "value_time_audience_mode_v1";
 const CHILD_NAME_STORAGE_KEY = "value_time_child_name_v1";
 const KIDS_PROGRESS_STORAGE_KEY = "value_time_kids_progress_v1";
+const KIDS_HISTORY_STORAGE_KEY = "value_time_kids_history_v1";
 const KIDS_INTRO_STORAGE_KEY = "value_time_kids_intro_seen_v1";
+const KIDS_WORD_DAY_OFFSET_STORAGE_KEY = "value_time_kids_word_day_offset_v1";
+const KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY = "value_time_kids_word_day_offset_date_v1";
+const KIDS_SENTENCE_PAGE_STORAGE_KEY = "value_time_kids_sentence_page_v1";
+const KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY = "value_time_kids_sentence_page_date_v1";
 let learningMode = (() => {
   try { return localStorage.getItem(LEARNING_MODE_STORAGE_KEY) === "speaking" ? "speaking" : "default"; }
   catch { return "default"; }
@@ -1117,15 +1122,39 @@ let showKidsIntro = (() => {
   try { return localStorage.getItem(KIDS_INTRO_STORAGE_KEY) !== "true"; }
   catch { return true; }
 })();
+let kidsHistory = (() => {
+  try { return JSON.parse(localStorage.getItem(KIDS_HISTORY_STORAGE_KEY) || "{}") || {}; }
+  catch { return {}; }
+})();
 let kidsProgress = (() => {
   try {
     const stored = JSON.parse(localStorage.getItem(KIDS_PROGRESS_STORAGE_KEY) || "null");
+    if (stored?.date && stored.date !== localDateKey()) {
+      kidsHistory[stored.date] = kidsEntryFromProgress(stored);
+      saveKidsHistory();
+    }
     return stored?.date === localDateKey() ? stored : { date: localDateKey(), completed: {}, words: [], parent: {} };
   } catch { return { date: localDateKey(), completed: {}, words: [], parent: {} }; }
 })();
 let kidsFlippedWords = [];
 let kidsWordQuizStep = 0;
 let kidsTestAnswers = {};
+let kidsWordDayOffset = (() => {
+  try {
+    return localStorage.getItem(KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY) === localDateKey()
+      ? Math.max(0, Number(localStorage.getItem(KIDS_WORD_DAY_OFFSET_STORAGE_KEY) || 0))
+      : 0;
+  }
+  catch { return 0; }
+})();
+let kidsSentencePageIndex = (() => {
+  try {
+    return localStorage.getItem(KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY) === localDateKey()
+      ? Math.max(0, Number(localStorage.getItem(KIDS_SENTENCE_PAGE_STORAGE_KEY) || 0))
+      : 0;
+  }
+  catch { return 0; }
+})();
 
 function applyLearningMode(mode) {
   learningMode = mode === "speaking" ? "speaking" : "default";
@@ -1161,13 +1190,171 @@ function saveChildName(name) {
   } catch {}
 }
 
+function kidsEntryFromProgress(progress = kidsProgress) {
+  return {
+    completed: { ...(progress.completed || {}) },
+    words: [...(progress.words || [])],
+    wordSessions: { ...(progress.wordSessions || {}) },
+    sentenceSessions: { ...(progress.sentenceSessions || {}) },
+    readingSessions: { ...(progress.readingSessions || {}) },
+    storySessions: { ...(progress.storySessions || {}) },
+    songSessions: { ...(progress.songSessions || {}) },
+    testSessions: { ...(progress.testSessions || {}) },
+    parent: { ...(progress.parent || {}) },
+  };
+}
+
+function saveKidsHistory() {
+  try { localStorage.setItem(KIDS_HISTORY_STORAGE_KEY, JSON.stringify(kidsHistory)); } catch {}
+}
+
 function saveKidsProgress() {
+  kidsProgress.date = kidsProgress.date || localDateKey();
+  kidsHistory[kidsProgress.date] = kidsEntryFromProgress(kidsProgress);
   try { localStorage.setItem(KIDS_PROGRESS_STORAGE_KEY, JSON.stringify(kidsProgress)); } catch {}
+  saveKidsHistory();
 }
 
 function setKidsComplete(id, complete = true) {
+  if (id === "words") {
+    const wordDateKey = getKidsWordDateKey();
+    const progress = getKidsWordProgress(wordDateKey);
+    progress.completed = complete;
+    if (!complete) progress.quizStep = 0;
+    progress.lastCompletedAt = complete ? Date.now() : null;
+    saveKidsWordProgress(wordDateKey, progress);
+    return;
+  }
+  if (id === "sentence") {
+    const sentenceKey = getKidsSentencePageKey();
+    const progress = getKidsSentenceProgress(sentenceKey);
+    progress.completed = complete;
+    progress.lastCompletedAt = complete ? Date.now() : null;
+    saveKidsSentenceProgress(sentenceKey, progress);
+    return;
+  }
   kidsProgress.completed[id] = complete;
+  const session = getKidsDailySession(id);
+  session.completed = complete;
+  session.lastCompletedAt = complete ? Date.now() : null;
   saveKidsProgress();
+}
+
+function resetKidsSession(id) {
+  if (id === "words") {
+    const wordDateKey = getKidsWordDateKey();
+    saveKidsWordProgress(wordDateKey, { words: [], quizStep: 0, completed: false, lastCompletedAt: null });
+    kidsFlippedWords = [];
+    return;
+  }
+  if (id === "sentence") {
+    const sentenceKey = getKidsSentencePageKey();
+    saveKidsSentenceProgress(sentenceKey, { listened: false, meaningShown: false, repeated: false, completed: false, lastCompletedAt: null });
+    return;
+  }
+  if (id === "test") kidsTestAnswers = {};
+  const collectionName = `${id}Sessions`;
+  kidsProgress[collectionName] = kidsProgress[collectionName] || {};
+  kidsProgress[collectionName][localDateKey()] = {};
+  kidsProgress.completed[id] = false;
+  saveKidsProgress();
+}
+
+function offsetDateKey(offset = 0) {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + offset);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getKidsWordDateKey() {
+  return `kids-word-page-${kidsWordDayOffset}`;
+}
+
+function saveKidsWordDayOffset() {
+  try {
+    localStorage.setItem(KIDS_WORD_DAY_OFFSET_STORAGE_KEY, String(kidsWordDayOffset));
+    localStorage.setItem(KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY, localDateKey());
+  } catch {}
+}
+
+function getKidsSentencePageKey() {
+  return `kids-sentence-page-${kidsSentencePageIndex}`;
+}
+
+function saveKidsSentencePageIndex() {
+  try {
+    localStorage.setItem(KIDS_SENTENCE_PAGE_STORAGE_KEY, String(kidsSentencePageIndex));
+    localStorage.setItem(KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY, localDateKey());
+  } catch {}
+}
+
+function getKidsWordProgress(dateKey = getKidsWordDateKey()) {
+  kidsProgress.wordSessions = kidsProgress.wordSessions || {};
+
+  if (!kidsProgress.wordSessions[dateKey]) {
+    kidsProgress.wordSessions[dateKey] = {
+      words: [],
+      quizStep: 0,
+      completed: false,
+      lastCompletedAt: null,
+    };
+  }
+
+  return kidsProgress.wordSessions[dateKey];
+}
+
+function saveKidsWordProgress(dateKey, progress) {
+  kidsProgress.wordSessions = kidsProgress.wordSessions || {};
+  kidsProgress.wordSessions[dateKey] = progress;
+
+  if (dateKey === getKidsWordDateKey()) {
+    kidsProgress.words = [...progress.words];
+    kidsWordQuizStep = progress.quizStep;
+    kidsProgress.completed.words = Boolean(progress.completed);
+  }
+
+  saveKidsProgress();
+}
+
+function getKidsSentenceProgress(sentenceKey = getKidsSentencePageKey()) {
+  kidsProgress.sentenceSessions = kidsProgress.sentenceSessions || {};
+
+  if (!kidsProgress.sentenceSessions[sentenceKey]) {
+    kidsProgress.sentenceSessions[sentenceKey] = {
+      listened: false,
+      meaningShown: false,
+      repeated: false,
+      completed: false,
+      lastCompletedAt: null,
+    };
+  }
+
+  return kidsProgress.sentenceSessions[sentenceKey];
+}
+
+function saveKidsSentenceProgress(sentenceKey, progress) {
+  kidsProgress.sentenceSessions = kidsProgress.sentenceSessions || {};
+  kidsProgress.sentenceSessions[sentenceKey] = progress;
+
+  if (sentenceKey === getKidsSentencePageKey()) {
+    kidsProgress.completed.sentence = Boolean(progress.completed);
+  }
+
+  saveKidsProgress();
+}
+
+function getKidsDailySession(id, initial = {}) {
+  const collectionName = `${id}Sessions`;
+  kidsProgress[collectionName] = kidsProgress[collectionName] || {};
+  const dateKey = localDateKey();
+  if (!kidsProgress[collectionName][dateKey]) {
+    kidsProgress[collectionName][dateKey] = { ...initial, completed: Boolean(kidsProgress.completed[id]), lastCompletedAt: null };
+  }
+  return kidsProgress[collectionName][dateKey];
 }
 
 function saveSpeakingSpeed(speed) {
@@ -1215,7 +1402,7 @@ function saveTheme(theme) {
 saveTheme(currentTheme);
 
 let state = {
-  page: "home", selectedDate: "2026-07-13", calendarMonth: 6, calendarYear: 2026,
+  page: "home", selectedDate: localDateKey(), calendarMonth: new Date().getMonth(), calendarYear: new Date().getFullYear(),
   history: JSON.parse(localStorage.getItem("worthy_life_history") || "null") || defaultHistory,
   savedWords: JSON.parse(localStorage.getItem("worthy_life_words") || "[]"),
   knownWords: JSON.parse(localStorage.getItem("value_time_known_words_v1") || "[]"),
@@ -1254,7 +1441,7 @@ function icon(name, size = 20) {
 function navItem(id, label, ico) { return `<button class="nav-item ${state.page === id ? "active" : ""}" data-page="${id}">${icon(ico)}<span>${label}</span></button>`; }
 function sidebar() {
   const todayDone = (state.history["2026-07-13"] || []).length;
-  const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}`;
+  const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}<p class="nav-label space">MY SPACE</p>${navItem("calendar", "학습 캘린더", "calendar")}`;
   const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("drama", "미드 학습", "play")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "영어 문제 풀이", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
   return `<aside class="sidebar">
     <button class="brand" type="button" data-page="home" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Make your time more valuable.</small></span></button>
@@ -1283,7 +1470,8 @@ function wordCard(wordIndex = null, navigable = false) {
   const index = wordIndex === null ? new Date().getDate() % words.length : wordIndex;
   const word = words[index];
   const saved = state.savedWords.includes(word.word);
-  return `<section class="word-card ${navigable ? "vocabulary-card" : ""}"><div class="word-top"><span class="soft-badge">${navigable ? `WORD ${index + 1} OF ${words.length}` : "WORD OF THE DAY"}</span><button class="save ${saved ? "saved" : ""}" data-save="${word.word}" aria-label="단어 저장">${icon("bookmark")}</button></div><div class="word-title"><h2>${word.word}</h2><button class="sound" data-speak="${word.word}">${icon("volume",19)}</button></div><p class="phonetic">${word.phonetic} <span>${word.type}</span></p><h3>${word.meaning}</h3><p class="definition">${word.definition}</p><div class="example"><b>“${word.example}”</b><span>${word.translation}</span></div><a class="word-source" href="${word.sourceUrl}" target="_blank" rel="noopener noreferrer" aria-label="${word.word} 단어 출처 사전 새 창에서 열기"><span>사전 출처</span><b>${word.source}</b>${icon("arrow",14)}</a>${navigable ? `<div class="word-navigation"><button data-word-nav="-1" aria-label="이전 단어">${icon("arrow",19)} <span>이전 단어</span></button><div>${words.map((_,i)=>`<i class="${i===index?"active":""}"></i>`).join("")}</div><button data-word-nav="1" aria-label="다음 단어"><span>다음 단어</span> ${icon("arrow",19)}</button></div>` : `<button class="text-link" data-page="words">단어 더 학습하기 ${icon("arrow",16)}</button>`}</section>`;
+  const example = vocabNaturalExample(word, index);
+  return `<section class="word-card ${navigable ? "vocabulary-card" : ""}"><div class="word-top"><span class="soft-badge">${navigable ? `WORD ${index + 1} OF ${words.length}` : "WORD OF THE DAY"}</span><button class="save ${saved ? "saved" : ""}" data-save="${word.word}" aria-label="단어 저장">${icon("bookmark")}</button></div><div class="word-title"><h2>${word.word}</h2><button class="sound" data-speak="${word.word}">${icon("volume",19)}</button></div><p class="phonetic">${vocabPhonetic(word)} <span>${word.type}</span></p><button class="vocab-meaning-cover word-meaning-cover" type="button" data-vocab-meaning-toggle aria-expanded="false"><span>뜻 보기</span><strong>${word.meaning}</strong></button><p class="definition">${word.definition}</p><div class="example"><b>“${example.en}”</b><span>${example.ko}</span></div><a class="word-source" href="${word.sourceUrl}" target="_blank" rel="noopener noreferrer" aria-label="${word.word} 단어 출처 사전 새 창에서 열기"><span>사전 출처</span><b>${word.source}</b>${icon("arrow",14)}</a>${navigable ? `<div class="word-navigation"><button data-word-nav="-1" aria-label="이전 단어">${icon("arrow",19)} <span>이전 단어</span></button><div>${words.map((_,i)=>`<i class="${i===index?"active":""}"></i>`).join("")}</div><button data-word-nav="1" aria-label="다음 단어"><span>다음 단어</span> ${icon("arrow",19)}</button></div>` : `<button class="text-link" data-page="words">단어 더 학습하기 ${icon("arrow",16)}</button>`}</section>`;
 }
 
 // 한 페이지 안에서 같은 첫 글자가 몰리지 않도록 알파벳별 묶음을 균형 있게 섞습니다.
@@ -1337,9 +1525,145 @@ function getTodayVocabWords(dateKey = localDateKey()) {
   return mixedVocabularyWords.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 }
 
+function vocabPhonetic(word) {
+  const raw = String(word.phonetic || "").trim();
+  if (raw) return raw.startsWith("/") || raw.startsWith("[") ? raw : `/${raw}/`;
+  return `/${String(word.word || "").toLowerCase()}/`;
+}
+
+function vocabPartHint(word) {
+  const term = String(word.word || "").toLowerCase();
+  const meaning = String(word.meaning || "");
+  if (meaning.includes("하다") || meaning.includes("시키다") || meaning.includes("되다")) return "verb";
+  if (/(able|ible|ive|al|ous|ful|less|ent|ant|ic|ary|ory)$/.test(term)) return "adjective";
+  if (/(tion|sion|ment|ity|ness|ance|ence|cy|ship|ism|er|or)$/.test(term)) return "noun";
+  return "noun";
+}
+
+function vocabNaturalExampleLegacy(word, seed = 0) {
+  const term = String(word?.word || "").trim().toLowerCase();
+  const meaning = String(word?.meaning || "핵심 뜻");
+  const part = vocabPartHint(word);
+  const safeTerm = term || "word";
+  const mark = sentence => String(sentence || "Example unavailable.").replace(new RegExp(`\\b${safeTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"), match => `<mark>${match}</mark>`);
+  const generic = !word.example || /^The meaning of "/.test(word.example);
+  if (!generic) {
+    return { en: mark(word.example), ko: word.translation || `예문에서 '${term}'는 '${meaning}'의 의미로 쓰였습니다.` };
+  }
+  const verbTemplates = [
+    `Researchers try to ${term} the results before they publish the report.`,
+    `Students learn to ${term} key ideas when they read a difficult passage.`,
+    `The manager asked the team to ${term} the plan before Friday.`,
+    `Writers often ${term} complex ideas with clear examples.`,
+  ];
+  const adjectiveTemplates = [
+    `The teacher gave a ${term} explanation that everyone could understand.`,
+    `A ${term} decision can change the direction of the whole project.`,
+    `Her ${term} answer helped the group solve the problem.`,
+    `The article describes a ${term} change in modern society.`,
+  ];
+  const nounTemplates = [
+    `The ${term} became the main topic of the class discussion.`,
+    `The article explains why the ${term} is important in daily life.`,
+    `A clear understanding of the ${term} helped students answer the question.`,
+    `Many people noticed the ${term} after reading the report.`,
+  ];
+  const pool = part === "verb" ? verbTemplates : part === "adjective" ? adjectiveTemplates : nounTemplates;
+  const sentence = pool[Math.abs(dateSeed(`${safeTerm}-${seed}`)) % pool.length] || "Example unavailable.";
+  return {
+    en: mark(sentence),
+    ko: `예문에서 '${safeTerm}'는 '${meaning}'의 의미로 쓰였습니다.`,
+  };
+}
+
+const VOCAB_CURATED_EXAMPLES = {
+  cognitive: {
+    partOfSpeech: "adjective",
+    meaning: "인지의, 인지적인",
+    exampleSentence: "Reading puzzles can improve children's cognitive skills.",
+    exampleTranslation: "독서 퍼즐은 아이들의 인지 능력을 향상시킬 수 있다.",
+    exampleSource: "curated",
+  },
+  alloy: {
+    partOfSpeech: "noun",
+    meaning: "합금",
+    exampleSentence: "This bike frame is made from a light aluminum alloy.",
+    exampleTranslation: "이 자전거 프레임은 가벼운 알루미늄 합금으로 만들어졌다.",
+    exampleSource: "curated",
+  },
+  shift: {
+    partOfSpeech: "noun",
+    meaning: "변화, 전환",
+    exampleSentence: "There was a sudden shift in the weather this afternoon.",
+    exampleTranslation: "오늘 오후 날씨에 갑작스러운 변화가 있었다.",
+    exampleSource: "curated",
+  },
+  parallel: {
+    partOfSpeech: "adjective",
+    meaning: "평행한",
+    exampleSentence: "The two roads run parallel to each other.",
+    exampleTranslation: "그 두 도로는 서로 평행하게 이어진다.",
+    exampleSource: "curated",
+  },
+  eventual: {
+    partOfSpeech: "adjective",
+    meaning: "결국의, 최종적인",
+    exampleSentence: "Her eventual success came after years of steady practice.",
+    exampleTranslation: "그녀의 최종적인 성공은 수년간의 꾸준한 연습 끝에 찾아왔다.",
+    exampleSource: "curated",
+  },
+  diagnosis: {
+    partOfSpeech: "noun",
+    meaning: "진단",
+    exampleSentence: "The doctor made a diagnosis after reviewing the test results.",
+    exampleTranslation: "의사는 검사 결과를 검토한 뒤 진단을 내렸다.",
+    exampleSource: "curated",
+  },
+};
+
+function isGenericVocabExample(example = "") {
+  const value = String(example || "").trim();
+  return !value
+    || /^The meaning of "/i.test(value)
+    || /\bis useful in this sentence\b/i.test(value)
+    || /\bis a word\b/i.test(value)
+    || /^I like\s+\w+\.?$/i.test(value);
+}
+
+function vocabNaturalExample(word, seed = 0) {
+  const term = String(word?.word || "").trim().toLowerCase();
+  const curated = VOCAB_CURATED_EXAMPLES[term];
+  const storedSentence = word?.exampleSentence || (!isGenericVocabExample(word?.example) ? word.example : "");
+  const sentence = curated?.exampleSentence || storedSentence;
+  const translation = curated?.exampleTranslation || word?.exampleTranslation || word?.translation || "";
+  const safeTerm = term || String(word?.word || "").trim();
+  const mark = value => {
+    const raw = String(value || "").trim();
+    if (!raw || !safeTerm) return raw;
+    const escaped = safeTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return raw.replace(new RegExp(`\\b${escaped}\\b`, "i"), match => `<mark>${match}</mark>`);
+  };
+
+  if (!sentence) {
+    return {
+      ready: false,
+      en: "예문 준비 중입니다.",
+      ko: "뜻과 품사에 맞는 자연스러운 예문을 검수하고 있어요.",
+    };
+  }
+
+  return {
+    ready: true,
+    partOfSpeech: curated?.partOfSpeech || word?.partOfSpeech || word?.type || vocabPartHint(word),
+    meaning: curated?.meaning || word?.meaning || "",
+    en: mark(sentence),
+    ko: translation || "예문 속 문맥으로 단어의 뜻을 확인해 보세요.",
+  };
+}
+
 function vocabularyPage() {
   const vocabPageSize = 10;
-  const orderedWords = mixedVocabularyWords;
+  const orderedWords = (mixedVocabularyWords || getMixedVocabularyWords()).filter(word => word?.word);
   const vocabPageCount = Math.ceil(orderedWords.length / vocabPageSize);
   const todayKey = localDateKey();
   if (localStorage.getItem("value_time_vocab_page_date") !== todayKey) {
@@ -1368,7 +1692,8 @@ function vocabularyPage() {
           const known = state.knownWords.includes(word.word);
           const sentenceClear = state.clearedWordSentences.includes(word.word);
           const allClear = known && sentenceClear;
-          return `<article class="vocab-today-item ${known ? "known" : ""} ${sentenceClear ? "sentence-cleared" : ""} ${allClear ? "all-clear" : ""}"><div class="vocab-today-top"><div><h4>${word.word}</h4><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",17)}</button><span>${word.phonetic}</span></div><div class="vocab-card-actions"><em>${typeLabel(word.type)}</em><button class="vocab-known-toggle ${known ? "active" : ""}" type="button" data-known-word="${word.word}" aria-pressed="${known}" aria-label="${word.word} Word Clear ${known ? "해제" : "완료"}">${icon("check",14)} <span>Word Clear</span></button><button class="save ${saved ? "saved" : ""}" type="button" data-save="${word.word}" aria-label="${word.word} 단어 ${saved ? "저장 취소" : "저장"}">${icon("bookmark",18)}</button></div></div><span class="vocab-known-chip">${icon("check",12)} <span data-vocab-clear-label>${allClear ? "ALL CLEAR" : known ? "WORD CLEAR" : "SENTENCE CLEAR"}</span></span><strong>${word.meaning}</strong><p>${word.definition}</p><blockquote><b>${word.example}</b><span>${word.translation}</span><button class="vocab-sentence-clear ${sentenceClear ? "active" : ""}" type="button" data-clear-word-sentence="${word.word}" aria-pressed="${sentenceClear}" aria-label="${word.word} 예문 Sentence Clear ${sentenceClear ? "해제" : "완료"}">${icon("check",13)} Sentence Clear</button></blockquote><a href="${word.sourceUrl}" target="_blank" rel="noopener noreferrer">사전 출처 · ${word.source} ${icon("arrow",12)}</a></article>`;
+          const example = vocabNaturalExample(word, state.vocabPage);
+          return `<article class="vocab-today-item ${known ? "known" : ""} ${sentenceClear ? "sentence-cleared" : ""} ${allClear ? "all-clear" : ""}"><div class="vocab-today-top"><div><h4>${word.word}</h4><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",17)}</button><span class="vocab-phonetic">${vocabPhonetic(word)}</span></div><div class="vocab-card-actions"><em>${typeLabel(word.type)}</em><button class="vocab-known-toggle ${known ? "active" : ""}" type="button" data-known-word="${word.word}" aria-pressed="${known}" aria-label="${word.word} Word Clear ${known ? "해제" : "완료"}">${icon("check",14)} <span>Word Clear</span></button><button class="save ${saved ? "saved" : ""}" type="button" data-save="${word.word}" aria-label="${word.word} 단어 ${saved ? "저장 취소" : "저장"}">${icon("bookmark",18)}</button></div></div><span class="vocab-known-chip">${icon("check",12)} <span data-vocab-clear-label>${allClear ? "ALL CLEAR" : known ? "WORD CLEAR" : "SENTENCE CLEAR"}</span></span><button class="vocab-meaning-cover" type="button" data-vocab-meaning-toggle aria-expanded="false"><span>뜻 보기</span><strong>${word.meaning}</strong></button><p>${word.definition}</p><blockquote class="${example.ready ? "" : "vocab-example-empty"}"><b>${example.en}</b><span>${example.ko}</span><button class="vocab-sentence-clear ${sentenceClear ? "active" : ""}" type="button" data-clear-word-sentence="${word.word}" aria-pressed="${sentenceClear}" aria-label="${word.word} 예문 Sentence Clear ${sentenceClear ? "해제" : "완료"}">${icon("check",13)} Sentence Clear</button></blockquote><a href="${word.sourceUrl}" target="_blank" rel="noopener noreferrer">사전 출처 · ${word.source} ${icon("arrow",12)}</a></article>`;
         }).join("")}</div>
         <nav class="vocab-page-navigation" aria-label="단어 목록 페이지 이동">
           <button class="vocab-page-edge" type="button" data-vocab-target="0" ${state.vocabPage === 0 ? "disabled" : ""} aria-label="첫 페이지로 이동">&laquo;</button>
@@ -1927,20 +2252,99 @@ function placeholderPage() {
   const [title]=map[state.page]; return `${header(title)}<main class="journal-page"><div class="placeholder-grid">${wordCard()}${checklist("2026-07-13")}</div></main>`;
 }
 
-const KIDS_WORDS = [
-  { word:"apple", meaning:"사과", example:"I like apples.", emoji:"🍎" },
-  { word:"happy", meaning:"행복한", example:"I am happy today.", emoji:"😊" },
-  { word:"school", meaning:"학교", example:"I go to school.", emoji:"🏫" },
-  { word:"rabbit", meaning:"토끼", example:"The rabbit can jump.", emoji:"🐰" },
-  { word:"blue", meaning:"파란색", example:"The sky is blue.", emoji:"💙" },
-  { word:"family", meaning:"가족", example:"I love my family.", emoji:"👨‍👩‍👧" },
-  { word:"book", meaning:"책", example:"This is my book.", emoji:"📘" },
-  { word:"friend", meaning:"친구", example:"You are my friend.", emoji:"🤝" },
-  { word:"water", meaning:"물", example:"I drink water.", emoji:"💧" },
-  { word:"star", meaning:"별", example:"I see a star.", emoji:"⭐" },
-  { word:"run", meaning:"달리다", example:"I can run fast.", emoji:"🏃" },
-  { word:"music", meaning:"음악", example:"I like music.", emoji:"🎵" },
+const KIDS_BASE_WORDS = [
+  { word:"apple", meaning:"사과", example:"I like apples.", emoji:"🍎", imageUrl:"https://loremflickr.com/640/420/red,apple,fruit?lock=11", imageType:"photo", imageReviewed:true },
+  { word:"happy", meaning:"행복한", example:"I am happy today.", emoji:"😊", imageType:"illustration", imageReviewed:false },
+  { word:"school", meaning:"학교", example:"I go to school.", emoji:"🏫", imageUrl:"https://loremflickr.com/640/420/school,building?lock=13", imageType:"photo", imageReviewed:true },
+  { word:"rabbit", meaning:"토끼", example:"The rabbit can jump.", emoji:"🐰", imageUrl:"https://loremflickr.com/640/420/rabbit,animal?lock=14", imageType:"photo", imageReviewed:true },
+  { word:"blue", meaning:"파란색", example:"The sky is blue.", emoji:"💙", imageType:"illustration", imageReviewed:false },
+  { word:"family", meaning:"가족", example:"I love my family.", emoji:"👨‍👩‍👧", imageUrl:"https://loremflickr.com/640/420/family,people?lock=16", imageType:"photo", imageReviewed:true },
+  { word:"book", meaning:"책", example:"This is my book.", emoji:"📘", imageUrl:"https://loremflickr.com/640/420/book,reading?lock=17", imageType:"photo", imageReviewed:true },
+  { word:"friend", meaning:"친구", example:"You are my friend.", emoji:"🤝", imageUrl:"https://loremflickr.com/640/420/friends,children?lock=18", imageType:"photo", imageReviewed:true },
+  { word:"water", meaning:"물", example:"I drink water.", emoji:"💧", imageUrl:"https://loremflickr.com/640/420/water,glass?lock=19", imageType:"photo", imageReviewed:true },
+  { word:"star", meaning:"별", example:"I see a star.", emoji:"⭐", imageUrl:"https://loremflickr.com/640/420/stars,night,sky?lock=20", imageType:"photo", imageReviewed:true },
+  { word:"run", meaning:"달리다", example:"I can run fast.", emoji:"🏃", imageType:"illustration", imageReviewed:false },
+  { word:"music", meaning:"음악", example:"I like music.", emoji:"🎵", imageType:"illustration", imageReviewed:false },
 ];
+const kidsPhotoAsset = (query, lock, category = "object") => ({
+  imageUrl: `https://loremflickr.com/640/420/${query}?lock=${lock}`,
+  imageType: "photo",
+  imageReviewed: true,
+  category,
+});
+const KIDS_CORE_PHOTO_IMAGES = {
+  // MVP photo mapping rule: one clear object/animal/food/vehicle, simple background, child-recognizable.
+  apple: kidsPhotoAsset("red,apple,fruit", 101, "fruit"),
+  school: kidsPhotoAsset("school,building", 102, "place"),
+  rabbit: kidsPhotoAsset("rabbit,animal", 103, "animal"),
+  family: kidsPhotoAsset("family,people", 104, "people"),
+  book: kidsPhotoAsset("book,reading", 105, "school"),
+  friend: kidsPhotoAsset("friends,children", 106, "people"),
+  water: kidsPhotoAsset("glass,water", 107, "food"),
+  star: kidsPhotoAsset("stars,night,sky", 108),
+  dog: kidsPhotoAsset("dog,animal", 109, "animal"),
+  cat: kidsPhotoAsset("cat,animal", 110, "animal"),
+  bird: kidsPhotoAsset("bird,animal", 111, "animal"),
+  fish: kidsPhotoAsset("fish,animal", 112, "animal"),
+  horse: kidsPhotoAsset("horse,animal", 113, "animal"),
+  cow: kidsPhotoAsset("cow,animal", 114, "animal"),
+  lion: kidsPhotoAsset("lion,animal", 115, "animal"),
+  tiger: kidsPhotoAsset("tiger,animal", 116, "animal"),
+  bear: kidsPhotoAsset("bear,animal", 117, "animal"),
+  elephant: kidsPhotoAsset("elephant,animal", 118, "animal"),
+  monkey: kidsPhotoAsset("monkey,animal", 119, "animal"),
+  duck: kidsPhotoAsset("duck,bird", 120, "animal"),
+  chicken: kidsPhotoAsset("chicken,bird", 121, "animal"),
+  tree: kidsPhotoAsset("tree,nature", 122, "nature"),
+  flower: kidsPhotoAsset("flower,plant", 123, "nature"),
+  sun: kidsPhotoAsset("sun,sky", 124, "nature"),
+  moon: kidsPhotoAsset("moon,night,sky", 125, "nature"),
+  car: kidsPhotoAsset("car,vehicle", 126, "vehicle"),
+  bus: kidsPhotoAsset("bus,vehicle", 127, "vehicle"),
+  train: kidsPhotoAsset("train,vehicle", 128, "vehicle"),
+  bicycle: kidsPhotoAsset("bicycle,vehicle", 129, "vehicle"),
+  ball: kidsPhotoAsset("ball,toy", 130, "toy"),
+  chair: kidsPhotoAsset("chair,furniture", 131, "furniture"),
+  table: kidsPhotoAsset("table,furniture", 132, "furniture"),
+  bed: kidsPhotoAsset("bed,furniture", 133, "furniture"),
+  bag: kidsPhotoAsset("bag,school", 134, "school"),
+  pencil: kidsPhotoAsset("pencil,stationery", 135, "school"),
+  pen: kidsPhotoAsset("pen,stationery", 136, "school"),
+  ruler: kidsPhotoAsset("ruler,stationery", 137, "school"),
+  eraser: kidsPhotoAsset("eraser,stationery", 138, "school"),
+  cup: kidsPhotoAsset("cup,object", 139, "object"),
+  plate: kidsPhotoAsset("plate,dish", 140, "food"),
+  spoon: kidsPhotoAsset("spoon,cutlery", 141, "food"),
+  fork: kidsPhotoAsset("fork,cutlery", 142, "food"),
+  banana: kidsPhotoAsset("banana,fruit", 143, "fruit"),
+  orange: kidsPhotoAsset("orange,fruit", 144, "fruit"),
+  bread: kidsPhotoAsset("bread,food", 145, "food"),
+  milk: kidsPhotoAsset("milk,glass", 146, "food"),
+  egg: kidsPhotoAsset("egg,food", 147, "food"),
+  rice: kidsPhotoAsset("rice,food", 148, "food"),
+  house: kidsPhotoAsset("house,home", 149, "place"),
+  door: kidsPhotoAsset("door,house", 150, "object"),
+  window: kidsPhotoAsset("window,house", 151, "object"),
+  shoe: kidsPhotoAsset("shoe,object", 152, "clothing"),
+  hat: kidsPhotoAsset("hat,clothing", 153, "clothing"),
+  shirt: kidsPhotoAsset("shirt,clothing", 154, "clothing"),
+  pants: kidsPhotoAsset("pants,clothing", 155, "clothing"),
+  computer: kidsPhotoAsset("computer,object", 156, "object"),
+  phone: kidsPhotoAsset("phone,object", 157, "object"),
+  clock: kidsPhotoAsset("clock,object", 158, "object"),
+};
+const KIDS_IMAGE_CATEGORY_FALLBACKS = {
+  animal: kidsPhotoAsset("animal,object", 501, "animal"),
+  food: kidsPhotoAsset("food,object", 502, "food"),
+  fruit: kidsPhotoAsset("fruit,object", 503, "fruit"),
+  vehicle: kidsPhotoAsset("vehicle,object", 504, "vehicle"),
+  school: kidsPhotoAsset("school,supplies", 505, "school"),
+  furniture: kidsPhotoAsset("furniture,object", 506, "furniture"),
+  object: kidsPhotoAsset("single,object,white,background", 507, "object"),
+};
+const KIDS_WORD_PAGE_SIZE = 5;
+const KIDS_WORDS = buildKidsWordBank();
+const KIDS_SENTENCE_PAGE_SIZE = 1;
 const KIDS_SENTENCES = [
   { en:"I like apples.", ko:"나는 사과를 좋아해요.", variation:"I like bananas." },
   { en:"This is my book.", ko:"이것은 내 책이에요.", variation:"This is my bag." },
@@ -1950,12 +2354,102 @@ const KIDS_SENTENCES = [
   { en:"The sky is blue.", ko:"하늘은 파란색이에요.", variation:"The sun is yellow." },
   { en:"I love my family.", ko:"나는 가족을 사랑해요.", variation:"I love my friends." },
 ];
-function getKidsWords(dateKey = localDateKey()) {
-  const start = (Math.abs(dateSeed(dateKey)) % (KIDS_WORDS.length / 3)) * 3;
-  return KIDS_WORDS.slice(start, start + 3);
+const KIDS_SENTENCE_BANK = buildKidsSentenceBank();
+
+function buildKidsWordBank() {
+  const seen = new Set();
+  const addWord = item => {
+    const word = String(item.word || "").trim().toLowerCase();
+    if (!word || seen.has(word) || !/^[a-z][a-z-]*$/.test(word)) return null;
+    seen.add(word);
+    const photoAsset = KIDS_CORE_PHOTO_IMAGES[word] || {};
+    return {
+      word,
+      meaning: item.meaning || "뜻 확인",
+      example: item.example || `I can use ${word}.`,
+      emoji: item.emoji || "📗",
+      category: item.category || photoAsset.category || "object",
+      imageUrl: item.imageUrl || photoAsset.imageUrl || "",
+      imageType: item.imageType || photoAsset.imageType || "illustration",
+      imageReviewed: Boolean(item.imageReviewed || photoAsset.imageReviewed),
+    };
+  };
+  const base = KIDS_BASE_WORDS.map(addWord).filter(Boolean);
+  const extra = vocabularyWords
+    .filter(item => String(item.word || "").length <= 12)
+    .map(item => addWord({
+      ...item,
+      example: item.example && !item.example.includes('"') ? item.example : `Let's learn ${item.word}.`,
+      emoji: "📘",
+    }))
+    .filter(Boolean);
+  return base.concat(extra).slice(0, 500);
 }
-function getKidsSentence(dateKey = localDateKey()) {
-  return KIDS_SENTENCES[Math.abs(dateSeed(dateKey)) % KIDS_SENTENCES.length];
+
+function getKidsWordPageCount() {
+  return Math.max(1, Math.ceil(KIDS_WORDS.length / KIDS_WORD_PAGE_SIZE));
+}
+
+function getKidsWords(pageIndex = kidsWordDayOffset) {
+  const page = Math.min(Math.max(Number(pageIndex) || 0, 0), getKidsWordPageCount() - 1);
+  const start = page * KIDS_WORD_PAGE_SIZE;
+  return KIDS_WORDS.slice(start, start + KIDS_WORD_PAGE_SIZE);
+}
+
+function buildKidsSentenceBank() {
+  const seen = new Set();
+  const addSentence = (item, index, source = "bank") => {
+    const en = String(item.en || "").trim();
+    if (!en || seen.has(en.toLowerCase())) return null;
+    seen.add(en.toLowerCase());
+    return {
+      id: item.id || `${source}-${index + 1}`,
+      en,
+      ko: item.ko || "",
+      variation: item.variation || item.applications?.[0]?.[0] || item.en || "",
+      variationKo: item.variationKo || item.applications?.[0]?.[1] || "",
+      pattern: item.pattern || "기초 문장",
+      meaning: item.meaning || item.note || "소리 내어 읽고 뜻을 확인해 보세요.",
+    };
+  };
+  const base = KIDS_SENTENCES.map((item, index) => addSentence(item, index, "kids-base")).filter(Boolean);
+  const simpleSentenceForWord = (item, index) => {
+    const word = String(item.word || "").trim().toLowerCase();
+    const meaning = item.meaning || word;
+    const article = /^[aeiou]/.test(word) ? "an" : "a";
+    const example = String(item.example || "").trim();
+    const en = example && example.toLowerCase().includes(word) && example.length <= 90
+      ? example
+      : index % 4 === 0
+        ? `I can see ${article} ${word}.`
+        : index % 4 === 1
+          ? `This is my ${word}.`
+          : index % 4 === 2
+            ? `I like ${word}.`
+            : `The ${word} is here.`;
+    return {
+      en,
+      ko: `${meaning} 단어가 들어간 문장이에요.`,
+      variation: index % 2 === 0 ? `Can you see ${article} ${word}?` : `I can say ${word}.`,
+      variationKo: `${word}를 넣어 한 번 더 말해보세요.`,
+      pattern: en.replace(new RegExp(`\\b${word}\\b`, "i"), "+ 단어"),
+      meaning: `${word} = ${meaning}`,
+    };
+  };
+  const extra = KIDS_WORDS
+    .map(simpleSentenceForWord)
+    .map((item, index) => addSentence(item, index, "kids-word-sentence"))
+    .filter(Boolean);
+  return base.concat(extra).slice(0, 500);
+}
+
+function getKidsSentencePageCount() {
+  return Math.max(1, Math.ceil(KIDS_SENTENCE_BANK.length / KIDS_SENTENCE_PAGE_SIZE));
+}
+
+function getKidsSentence(pageIndex = kidsSentencePageIndex) {
+  const page = Math.min(Math.max(Number(pageIndex) || 0, 0), getKidsSentencePageCount() - 1);
+  return KIDS_SENTENCE_BANK[page * KIDS_SENTENCE_PAGE_SIZE] || KIDS_SENTENCE_BANK[0];
 }
 
 function kidsParentMission(question, answer, id) {
@@ -1967,39 +2461,114 @@ function kidsReward(title, message) {
   return `<section class="kids-reward"><span>★ ★ ★</span><h2>${title}</h2><p>${message}</p><button type="button" data-page="home">오늘의 학습으로</button></section>`;
 }
 
+function kidsStatusActions(id, done, completeText = "오늘 학습 완료", reviewText = "복습 중") {
+  return `<div class="kids-status-actions ${done ? "done" : ""}"><span>${done ? icon("check",14) : icon("spark",14)} ${done ? "완료됨" : reviewText}</span>${done ? `<button class="secondary" type="button" data-kids-reset="${id}">처음부터 다시 하기</button>` : ""}<button class="primary" type="button" data-kids-complete="${id}" ${done ? "disabled" : ""}>${icon("check",14)} ${done ? "완료했어요" : completeText}</button><button class="secondary" type="button" data-kids-undo="${id}" ${done ? "" : "disabled"}>완료 취소</button></div>`;
+}
+
+function getVocabCardImage(card) {
+  const fallback = KIDS_IMAGE_CATEGORY_FALLBACKS[card.category] || KIDS_IMAGE_CATEGORY_FALLBACKS.object;
+  return {
+    src: card.imageUrl || fallback.imageUrl || "",
+    type: card.imageUrl ? card.imageType || "photo" : fallback.imageType || "photo",
+    reviewed: Boolean(card.imageUrl ? card.imageReviewed : fallback.imageReviewed),
+    alt: `${card.meaning || card.word} 사진`,
+  };
+}
+
+function kidsWordPhoto(word) {
+  const cardImage = getVocabCardImage(word);
+  const image = cardImage.src
+    ? `<img src="${cardImage.src}" alt="${cardImage.alt}" loading="lazy" onerror="this.closest('figure').classList.add('image-failed');this.remove();">`
+    : "";
+  return `<figure class="kids-word-photo ${cardImage.type === "photo" ? "photo" : "illustration"}" data-image-reviewed="${cardImage.reviewed ? "true" : "false"}">${image}<figcaption>${word.emoji || "📗"}</figcaption></figure>`;
+}
+
+function kidsWordCards(todayWords, wordProgress) {
+  return `<section class="kids-word-grid">${todayWords.map((word, index) => { const flipped = kidsFlippedWords.includes(word.word) || wordProgress.words.includes(word.word) || wordProgress.completed; const done = wordProgress.words.includes(word.word); const photo = kidsWordPhoto(word); return `<article class="kids-word-card ${flipped ? "flipped" : ""} ${done ? "done" : ""}"><div class="kids-card-front">${photo}<b>${index + 1}번 카드</b><p>사진 속 단어를 맞혀보세요.</p><button type="button" data-kids-flip="${word.word}">카드 열기</button></div><div class="kids-card-back">${photo}<h3>${word.word}</h3><strong>${word.meaning}</strong><button type="button" data-speak="${word.word}">${icon("volume",15)} 듣기</button><p>${word.example}</p><button class="primary" type="button" data-kids-word-done="${word.word}" ${done ? "disabled" : ""}>${icon("check",14)} ${done ? "찾았어요!" : "알겠어요"}</button></div></article>`; }).join("")}</section>`;
+}
+
 function kidsHomePage() {
-  const missions = [
-    { id: "words", page: "words", icon: "book", title: "단어 카드 3장", time: "3분" },
-    { id: "sentence", page: "sentence", icon: "message", title: "오늘의 문장 1개", time: "2분" },
-    { id: "reading", page: "news", icon: "news", title: "짧은 이야기 읽기", time: "3분" },
-    { id: "test", page: "test", icon: "check", title: "마지막 테스트 3문제", time: "2분" },
+  const requiredMissions = [
+    { id: "words", page: "words", icon: "book", title: "단어 카드 5장", desc: "그림 보고 단어 맞히기", time: "5분" },
+    { id: "sentence", page: "sentence", icon: "message", title: "오늘의 문장 1개", desc: "듣고 따라 말하기", time: "2분" },
+    { id: "test", page: "test", icon: "check", title: "확인 놀이 3문제", desc: "별 3개 모으기", time: "3분" },
   ];
-  const completed = missions.filter(item => kidsProgress.completed[item.id]).length;
-  if (completed === missions.length) return `${header("오늘의 학습")}<main class="kids-page">${kidsReward(`오늘 영어 다 했어! 정말 잘했어, ${childCallName()}야!`, "오늘의 별 스티커를 받았어요. 내일 또 만나요!")}${kidsParentMission("Did you finish English?", "Yes, I did!", "home")}</main>`;
-  const intro = showKidsIntro ? `<section class="kids-first-intro"><span>초등 모드에 온 걸 환영해요!</span><h2>${childCallName()}야, 오늘 할 영어만 재미있게 끝내자.</h2><p>하루 미션 4개를 하나씩 하면 끝이에요.</p><label>학생 이름<input type="text" data-kids-name-input value="${childName}" maxlength="12"></label><button type="button" data-kids-intro-complete>이름 저장하고 시작</button></section>` : "";
-  return `${header("오늘의 학습")}<main class="kids-page">${intro}<section class="kids-welcome"><span>오늘의 영어 탐험</span><h2>${childCallName()}야, 오늘 할 것만 해보자!</h2><p>오늘의 학습 ${completed} / ${missions.length}</p><div class="kids-stars">${missions.map((_, index) => `<i class="${index < completed ? "done" : ""}">★</i>`).join("")}</div></section><section class="kids-mission-list">${missions.map((item, index) => { const done = Boolean(kidsProgress.completed[item.id]); return `<button class="kids-mission-card ${done ? "done" : ""}" type="button" data-page="${item.page}"><span>${done ? icon("check",20) : icon(item.icon,20)}</span><div><small>미션 ${index + 1} · ${item.time}</small><b>${item.title}</b><em>${done ? "완료했어요!" : "시작하기"}</em></div>${icon("chevron",18)}</button>`; }).join("")}</section>${kidsParentMission("What will you learn?", "I will learn English.", "home")}</main>`;
+  const optionalMissions = [
+    { id: "reading", page: "news", icon: "news", title: "짧은 글 읽기", time: "3분" },
+    { id: "story", page: "ted", icon: "book", title: "영어동화", time: "4분" },
+    { id: "song", page: "drama", icon: "play", title: "영어 동요", time: "2분" },
+    { id: "calendar", page: "calendar", icon: "news", title: "학습 캘린더", time: "보기" },
+  ];
+  const completed = requiredMissions.filter(item => kidsProgress.completed[item.id]).length;
+  const intro = showKidsIntro ? `<section class="kids-first-intro"><span>초등 모드에 온 걸 환영해요!</span><h2>${childCallName()}야, 오늘 영어 3개만 해볼까요?</h2><p>짧게 끝내고 별을 모아봐요.</p><label>학생 이름<input type="text" data-kids-name-input value="${childName}" maxlength="12"></label><button type="button" data-kids-intro-complete>이름 저장하고 시작</button></section>` : "";
+  const completeMessage = completed === requiredMissions.length ? `<section class="kids-done-banner"><span>★ 오늘 영어 다 했어요</span><h3>${childName}님, 오늘 영어 다 했어요! 정말 잘했어요!</h3><p>더 하고 싶으면 아래 더 해보기에서 골라도 돼요.</p></section>` : "";
+  const missionCard = (item, index, optional = false) => {
+    const done = Boolean(kidsProgress.completed[item.id]);
+    return `<button class="kids-mission-card ${done ? "done" : ""} ${optional ? "optional" : ""}" type="button" data-page="${item.page}"><span>${done ? icon("check",20) : icon(item.icon,20)}</span><div><small>${optional ? "더 해보기" : `오늘 미션 ${index + 1}`} · ${item.time}</small><b>${item.title}</b>${item.desc ? `<p>${item.desc}</p>` : ""}<em>${done ? "복습하기" : "시작하기"}</em></div>${icon("chevron",18)}</button>`;
+  };
+  return `${header("오늘의 학습")}<main class="kids-page">${intro}<section class="kids-welcome"><span>오늘의 미션 허브</span><h2>${childName}님, 오늘 영어 3개만 해볼까요?</h2><p>오늘 ${completed}개 했어요! ${requiredMissions.length - completed}개 남았어요.</p><div class="kids-stars">${requiredMissions.map((_, index) => `<i class="${index < completed ? "done" : ""}">★</i>`).join("")}</div></section>${completeMessage}<section class="kids-mission-list kids-mission-primary">${requiredMissions.map((item, index) => missionCard(item, index)).join("")}</section><section class="kids-more-missions"><span>더 하고 싶을 때</span><div>${optionalMissions.map((item, index) => missionCard(item, index, true)).join("")}</div></section>${kidsParentMission("What did you learn today?", "I learned English.", "home")}</main>`;
 }
 
 function kidsVocabularyPage() {
-  const todayWords = getKidsWords();
-  const allDone = todayWords.every(word => kidsProgress.words.includes(word.word));
-  if (kidsProgress.completed.words) return `${header("단어장")}<main class="kids-page">${kidsReward(`${childCallName()}야, 오늘 단어 끝!`, "단어 3개와 미니퀴즈를 모두 끝냈어.")}${kidsParentMission("What word did you learn?", `I learned ${todayWords[0].word}.`, "words")}</main>`;
-  const quizWord = todayWords[kidsWordQuizStep % todayWords.length];
-  const wrongWord = KIDS_WORDS.find(word => !todayWords.some(item => item.word === word.word)) || KIDS_WORDS[3];
-  const choices = seededShuffle([quizWord, wrongWord], `${localDateKey()}-kids-${kidsWordQuizStep}`);
-  const quizPrompt = kidsWordQuizStep === 0 ? `${quizWord.emoji} 그림에 맞는 영어 단어는?` : `‘${quizWord.word}’의 뜻은?`;
-  const choiceLabel = choice => kidsWordQuizStep === 0 ? choice.word : choice.meaning;
-  return `${header("단어장")}<main class="kids-page"><section class="kids-page-head"><span>오늘의 단어 카드</span><h2>${allDone ? "단어 3개 완료!" : "그림 속 단어 3개를 찾아보자!"}</h2><p>${allDone ? "퀴즈 해볼까? 딱 2문제만 풀어요." : "카드를 하나 골라 뒤집어보세요."}</p><div class="kids-mini-progress">${todayWords.map(word => `<i class="${kidsProgress.words.includes(word.word) ? "done" : ""}">★</i>`).join("")}</div></section>${allDone ? `<section class="kids-mini-quiz"><span>문제 ${kidsWordQuizStep + 1} / 2</span><h3>${quizPrompt}</h3><div>${choices.map(choice => `<button type="button" data-kids-word-answer="${choice.word === quizWord.word}">${choiceLabel(choice)}</button>`).join("")}</div><p data-kids-feedback>천천히 골라도 괜찮아요!</p></section>` : `<section class="kids-word-grid">${todayWords.map((word, index) => { const flipped = kidsFlippedWords.includes(word.word) || kidsProgress.words.includes(word.word); const done = kidsProgress.words.includes(word.word); return `<article class="kids-word-card ${flipped ? "flipped" : ""} ${done ? "done" : ""}"><div class="kids-card-front"><span>${word.emoji}</span><b>${index + 1}번 카드</b><p>무슨 단어일까요? 눌러보세요.</p><button type="button" data-kids-flip="${word.word}">카드 열기</button></div><div class="kids-card-back"><span>${word.emoji}</span><h3>${word.word}</h3><strong>${word.meaning}</strong><button type="button" data-speak="${word.word}">${icon("volume",15)} 듣기</button><p>${word.example}</p><button class="primary" type="button" data-kids-word-done="${word.word}" ${done ? "disabled" : ""}>${icon("check",14)} ${done ? "찾았어요!" : "알겠어요"}</button></div></article>`; }).join("")}</section>`}${kidsParentMission("What do you like?", `I like ${todayWords[0].word}.`, "words")}</main>`;
+  const pageCount = getKidsWordPageCount();
+  kidsWordDayOffset = Math.min(Math.max(kidsWordDayOffset, 0), pageCount - 1);
+  const wordDateKey = getKidsWordDateKey();
+  const wordProgress = getKidsWordProgress(wordDateKey);
+  const todayWords = getKidsWords(kidsWordDayOffset);
+  const allDone = todayWords.every(word => wordProgress.words.includes(word.word));
+  const sessionComplete = Boolean(wordProgress.completed);
+  const dayLabel = `${kidsWordDayOffset + 1}페이지`;
+  const pageGroupSize = 10;
+  const pageGroupStart = Math.floor(kidsWordDayOffset / pageGroupSize) * pageGroupSize;
+  const visiblePages = Array.from(
+    { length: Math.min(pageGroupSize, pageCount - pageGroupStart) },
+    (_, index) => pageGroupStart + index
+  );
+
+  const quizStep = wordProgress.quizStep || 0;
+  const quizWord = todayWords[quizStep % todayWords.length];
+  const wrongWords = KIDS_WORDS.filter(word => !todayWords.some(item => item.word === word.word)).slice(0, 2);
+  const choices = seededShuffle([quizWord, ...wrongWords], `${wordDateKey}-kids-${quizStep}`).slice(0, 3);
+  const quizPrompt = quizStep === 0 ? `${quizWord.emoji} 그림에 맞는 영어 단어는?` : `‘${quizWord.word}’의 뜻은?`;
+  const choiceLabel = choice => quizStep === 0 ? choice.word : choice.meaning;
+  const learnedSummary = `<section class="kids-word-summary"><span>오늘 배운 단어</span><div>${todayWords.map(word => `<b>${word.word}<small>${word.meaning}</small></b>`).join("")}</div></section>`;
+  const reviewPanel = sessionComplete ? `<section class="kids-done-banner"><span>★ ${dayLabel} 단어 완료</span><h3>단어 5개 성공! 오늘 머리에 쏙 들어왔어.</h3><p>아래 카드에서 발음을 다시 듣고 예문을 다시 읽어보세요.</p></section>` : "";
+  const wordBody = sessionComplete
+    ? `${learnedSummary}${kidsWordCards(todayWords, wordProgress)}<section class="kids-next-words"><span>아이가 더 하고 싶다면</span><h3>다음 페이지 단어 5개로 넘어갈까요?</h3><p>현재 페이지 기록은 남겨두고, 다음 단어 세트로 이어서 볼 수 있어요.</p><button type="button" data-kids-next-words ${kidsWordDayOffset >= pageCount - 1 ? "disabled" : ""}>다음 5개로 가기 ${icon("arrow",14)}</button></section>`
+    : allDone
+      ? `<section class="kids-mini-quiz"><span>문제 ${quizStep + 1} / 2</span><h3>${quizPrompt}</h3><div>${choices.map(choice => `<button type="button" data-kids-word-answer="${choice.word === quizWord.word}">${choiceLabel(choice)}</button>`).join("")}</div><p data-kids-feedback>천천히 골라도 괜찮아요!</p></section>`
+      : kidsWordCards(todayWords, wordProgress);
+  const pageNavigation = `<nav class="kids-word-page-navigation" aria-label="초등 단어장 페이지 이동"><button type="button" data-kids-word-target="0" ${kidsWordDayOffset === 0 ? "disabled" : ""} aria-label="첫 페이지로 이동">&laquo;</button><button type="button" data-kids-word-target="${Math.max(0, kidsWordDayOffset - 1)}" ${kidsWordDayOffset === 0 ? "disabled" : ""} aria-label="이전 페이지로 이동">&lsaquo;</button><span>${visiblePages.map(pageIndex => `<button class="${pageIndex === kidsWordDayOffset ? "active" : ""}" type="button" data-kids-word-target="${pageIndex}" ${pageIndex === kidsWordDayOffset ? 'aria-current="page"' : ""}>${pageIndex + 1}</button>`).join("")}</span><button type="button" data-kids-word-target="${Math.min(pageCount - 1, kidsWordDayOffset + 1)}" ${kidsWordDayOffset === pageCount - 1 ? "disabled" : ""} aria-label="다음 페이지로 이동">&rsaquo;</button><button type="button" data-kids-word-target="${pageCount - 1}" ${kidsWordDayOffset === pageCount - 1 ? "disabled" : ""} aria-label="마지막 페이지로 이동">&raquo;</button><small>${kidsWordDayOffset + 1} / ${pageCount} 페이지 · 총 ${KIDS_WORDS.length}단어</small></nav>`;
+
+  return `${header("단어장")}<main class="kids-page">${reviewPanel}<section class="kids-page-head"><span>${dayLabel} · ${KIDS_WORDS.length}개 단어장</span><h2>${sessionComplete ? "단어 복습하기" : allDone ? "단어 5개 확인 완료!" : "그림 속 단어 5개를 찾아보자!"}</h2><p>${sessionComplete ? "처음부터 다시 하거나 완료를 취소할 수 있어요." : allDone ? "퀴즈 해볼까? 딱 2문제만 풀어요." : "카드를 열고 듣기 버튼으로 발음을 확인해요."}</p><div class="kids-mini-progress">${todayWords.map(word => `<i class="${wordProgress.words.includes(word.word) ? "done" : ""}">★</i>`).join("")}</div>${kidsStatusActions("words", sessionComplete, "단어 학습 완료", "단어 학습 중")}</section>${wordBody}${pageNavigation}${kidsParentMission("What word did you learn?", `I learned ${todayWords[0].word}.`, "words")}</main>`;
 }
 
 function kidsSentencePage() {
-  const sentence = getKidsSentence();
-  const done = Boolean(kidsProgress.completed.sentence);
-  if (done) return `${header("매일 1문장")}<main class="kids-page">${kidsReward(`${childCallName()}야, 오늘 문장 완료!`, "멋지게 듣고 따라 말했어요.")}${kidsParentMission("What do you like?", "I like apples.", "sentence")}</main>`;
-  return `${header("매일 1문장")}<main class="kids-page"><section class="kids-sentence-card"><span>오늘은 이 문장 하나만!</span><h2>${sentence.en}</h2><p>${sentence.ko}</p><button type="button" data-speak="${sentence.en.replaceAll('"','&quot;')}">${icon("volume",18)} 듣고 따라 말하기</button><div><small>이렇게도 말해보세요</small><b>${sentence.variation}</b></div><button class="primary" type="button" data-kids-complete="sentence">${icon("check",16)} 말했어요!</button></section>${kidsParentMission("What do you like?", "I like apples.", "sentence")}</main>`;
+  const pageCount = getKidsSentencePageCount();
+  kidsSentencePageIndex = Math.min(Math.max(kidsSentencePageIndex, 0), pageCount - 1);
+  const sentenceKey = getKidsSentencePageKey();
+  const progress = getKidsSentenceProgress(sentenceKey);
+  const sentence = getKidsSentence(kidsSentencePageIndex);
+  const done = Boolean(progress.completed);
+  kidsProgress.completed.sentence = done;
+  const words = sentence.en.match(/[A-Za-z]+/g) || [];
+  const coreWord = words.find(word => word.length > 3) || words[0] || "";
+  const highlightedSentence = coreWord ? sentence.en.replace(new RegExp(`\\b${coreWord}\\b`, "i"), `<mark>${coreWord}</mark>`) : sentence.en;
+  const readyToComplete = done || (progress.listened && progress.meaningShown && progress.repeated);
+  const pageGroupSize = 10;
+  const pageGroupStart = Math.floor(kidsSentencePageIndex / pageGroupSize) * pageGroupSize;
+  const visiblePages = Array.from(
+    { length: Math.min(pageGroupSize, pageCount - pageGroupStart) },
+    (_, index) => pageGroupStart + index
+  );
+  const pageNavigation = `<nav class="kids-sentence-page-navigation" aria-label="초등 매일 1문장 페이지 이동"><button type="button" data-kids-sentence-target="0" ${kidsSentencePageIndex === 0 ? "disabled" : ""} aria-label="첫 문장으로 이동">&laquo;</button><button type="button" data-kids-sentence-target="${Math.max(0, kidsSentencePageIndex - 1)}" ${kidsSentencePageIndex === 0 ? "disabled" : ""} aria-label="이전 문장으로 이동">&lsaquo;</button><span>${visiblePages.map(pageIndex => `<button class="${pageIndex === kidsSentencePageIndex ? "active" : ""}" type="button" data-kids-sentence-target="${pageIndex}" ${pageIndex === kidsSentencePageIndex ? 'aria-current="page"' : ""}>${pageIndex + 1}</button>`).join("")}</span><button type="button" data-kids-sentence-target="${Math.min(pageCount - 1, kidsSentencePageIndex + 1)}" ${kidsSentencePageIndex === pageCount - 1 ? "disabled" : ""} aria-label="다음 문장으로 이동">&rsaquo;</button><button type="button" data-kids-sentence-target="${pageCount - 1}" ${kidsSentencePageIndex === pageCount - 1 ? "disabled" : ""} aria-label="마지막 문장으로 이동">&raquo;</button><small>${kidsSentencePageIndex + 1} / ${pageCount} 문장 · 총 ${KIDS_SENTENCE_BANK.length}개</small></nav>`;
+  const sentenceActions = `<div class="kids-step-actions"><button type="button" data-kids-sentence-listen>${icon("volume",16)} ${progress.listened ? "다시 듣기" : "듣기"}</button><button type="button" data-kids-sentence-meaning>${progress.meaningShown ? "뜻 숨기기" : "뜻 보기"}</button><button type="button" data-kids-sentence-repeat>${progress.repeated ? "따라 읽었어요" : "따라 읽기 완료"}</button></div>`;
+  const sentenceStatus = `<div class="kids-status-actions ${done ? "done" : ""}"><span>${done ? icon("check",14) : icon("spark",14)} ${done ? "문장 완료" : "듣고, 뜻 보고, 따라 읽으면 완료"}</span>${done ? `<button class="secondary" type="button" data-kids-reset="sentence">처음부터 다시 하기</button>` : ""}<button class="primary" type="button" data-kids-complete="sentence" ${readyToComplete && !done ? "" : "disabled"}>${icon("check",14)} ${done ? "완료했어요" : "문장 완료"}</button><button class="secondary" type="button" data-kids-undo="sentence" ${done ? "" : "disabled"}>완료 취소</button></div>`;
+  return `${header("매일 1문장")}<main class="kids-page"><section class="kids-sentence-card"><span>${done ? "완료한 문장 복습" : "매일 1문장"} · ${kidsSentencePageIndex + 1}번</span><h2>${highlightedSentence}</h2><p class="${progress.meaningShown ? "" : "kids-hidden-meaning"}">${progress.meaningShown ? sentence.ko : "뜻 보기 버튼을 누르면 한글 뜻이 보여요."}</p>${sentenceActions}<div><small>핵심 단어</small><b>${coreWord || "sentence"}</b><p>${sentence.meaning}</p></div><div><small>이렇게도 말해보세요</small><b>${sentence.variation}</b>${sentence.variationKo ? `<p>${sentence.variationKo}</p>` : ""}</div>${sentenceStatus}</section>${pageNavigation}${kidsParentMission("What sentence did you practice?", sentence.en, "sentence")}</main>`;
 }
 
 function kidsReadingPage() {
+  const session = getKidsDailySession("reading", { selectedAnswer: null, correct: false });
   const lines = [
     { en:"Mina has a small garden.", ko:"미나는 작은 정원이 있어요." },
     { en:"She plants three yellow flowers.", ko:"미나는 노란 꽃 세 송이를 심어요." },
@@ -2007,26 +2576,29 @@ function kidsReadingPage() {
     { en:"Mina is happy to see the bird.", ko:"미나는 새를 보고 기뻐해요." },
   ];
   const done = Boolean(kidsProgress.completed.reading);
-  if (done) return `${header("초등용 읽기")}<main class="kids-page">${kidsReward("오늘의 읽기 성공!", `${childCallName()}야, 짧은 이야기를 끝까지 읽었어.`)}${kidsParentMission("Who visits the garden?", "A little bird.", "reading")}</main>`;
-  return `${header("초등용 읽기")}<main class="kids-page"><section class="kids-reading-card"><span>3분 읽기</span><h2>Mina's Small Garden</h2><div>${lines.map((line,index)=>`<p><i>${index+1}</i><b>${line.en}</b><small>${line.ko || ""}</small></p>`).join("")}</div><h3>누가 미나의 정원에 찾아왔나요?</h3><div class="kids-reading-choices"><button type="button" data-kids-reading-answer="true">작은 새</button><button type="button" data-kids-reading-answer="false">큰 강아지</button></div><p data-kids-feedback>글에서 답을 찾아보세요.</p></section>${kidsParentMission("Who visits the garden?", "A little bird.", "reading")}</main>`;
+  const readingStatus = `<div class="kids-status-actions ${done ? "done" : ""}"><span>${done ? icon("check",14) : icon("spark",14)} ${done ? "읽기 완료" : "정답을 맞히면 완료"}</span>${done ? `<button class="secondary" type="button" data-kids-reset="reading">처음부터 다시 하기</button>` : ""}<button class="primary" type="button" data-kids-complete="reading" ${session.correct && !done ? "" : "disabled"}>${icon("check",14)} 읽기 완료</button><button class="secondary" type="button" data-kids-undo="reading" ${done ? "" : "disabled"}>완료 취소</button></div>`;
+  return `${header("초등용 읽기")}<main class="kids-page"><section class="kids-reading-card"><span>${done ? "읽기 복습" : "4문장 읽기"}</span><h2>Mina's Small Garden</h2><p class="kids-reading-lead">한 줄씩 읽고, 마지막에 딱 1문제만 풀어요.</p><div>${lines.map((line,index)=>`<p><i>${index+1}</i><b>${line.en}</b><small>${line.ko || ""}</small><button type="button" data-speak="${line.en.replaceAll('"','&quot;')}">${icon("volume",12)} 듣기</button></p>`).join("")}</div><section class="kids-keywords"><span>핵심 단어 2개</span><b>garden<small>정원</small></b><b>bird<small>새</small></b></section><h3>누가 미나의 정원에 찾아왔나요?</h3><div class="kids-reading-choices"><button type="button" data-kids-reading-answer="true">작은 새</button><button type="button" data-kids-reading-answer="false">큰 강아지</button></div><p data-kids-feedback>${done ? "짧은 글도 끝까지 읽었어! 아주 좋아." : session.selectedAnswer === false ? "괜찮아! 글에서 다시 찾아보자." : "글에서 답을 찾아보세요."}</p>${readingStatus}</section>${kidsParentMission("Who visits the garden?", "A little bird.", "reading")}</main>`;
 }
 
 function kidsStoryPage() {
+  const session = getKidsDailySession("story", { reaction: null });
   const lines = [
     { en:"A little star lives in the sky.", ko:"작은 별이 하늘에 살아요." },
     { en:"The star shines for a lost rabbit.", ko:"별은 길을 잃은 토끼를 비춰줘요." },
     { en:"The rabbit finds the way home.", ko:"토끼는 집으로 가는 길을 찾아요." },
   ];
   const done = Boolean(kidsProgress.completed.story);
-  if (done) return `${header("영어동화")}<main class="kids-page">${kidsReward("동화 한 편을 끝까지 봤어!", `${childName}의 책 스티커가 생겼어요.`)}${kidsParentMission("Who finds the way home?", "The rabbit.", "story")}</main>`;
-  return `${header("영어동화")}<main class="kids-page"><section class="kids-story-card"><span>오늘의 추천 1편</span><h2>The Little Star and the Rabbit</h2><p>짧은 장면 3개를 읽고 이야기 한 편을 끝내요.</p><div>${lines.map((line,index)=>`<article><i>${index+1}</i><b>${line.en}</b><small>${line.ko || ""}</small><button type="button" data-speak="${line.en.replaceAll('"','&quot;')}">${icon("volume",13)} 듣기</button></article>`).join("")}</div><button class="primary" type="button" data-kids-complete="story">${icon("check",16)} 이야기 끝!</button></section>${kidsParentMission("Who finds the way home?", "The rabbit.", "story")}</main>`;
+  const storyStatus = `<div class="kids-status-actions ${done ? "done" : ""}"><span>${done ? icon("check",14) : icon("spark",14)} ${done ? "동화 완료" : "감상을 고르면 완료"}</span>${done ? `<button class="secondary" type="button" data-kids-reset="story">처음부터 다시 하기</button>` : ""}<button class="primary" type="button" data-kids-complete="story" ${session.reaction && !done ? "" : "disabled"}>${icon("check",14)} 이야기 끝!</button><button class="secondary" type="button" data-kids-undo="story" ${done ? "" : "disabled"}>완료 취소</button></div>`;
+  return `${header("영어동화")}<main class="kids-page"><section class="kids-story-card"><span>${done ? "동화 다시 읽기" : "오늘의 추천 1편"}</span><h2>The Little Star and the Rabbit</h2><p>읽기 전 질문: 길을 잃은 토끼는 누가 도와줄까요?</p><div>${lines.map((line,index)=>`<article><i>${index+1}</i><b>${line.en}</b><small>${line.ko || ""}</small><button type="button" data-speak="${line.en.replaceAll('"','&quot;')}">${icon("volume",13)} 듣기</button></article>`).join("")}</div><section class="kids-reaction"><span>읽고 나서 골라봐요</span><button type="button" data-kids-story-reaction="fun">재미있었어요</button><button type="button" data-kids-story-reaction="warm">따뜻했어요</button><button type="button" data-kids-story-reaction="again">또 읽고 싶어요</button></section><p class="kids-story-feedback">${done ? "오늘 동화 한 편 끝! 영어 이야기도 읽을 수 있어." : session.reaction ? "좋아요. 이제 이야기 완료를 눌러요." : "마음에 드는 느낌을 하나 골라요."}</p>${storyStatus}</section>${kidsParentMission("Which scene did you like?", "I liked the little star.", "story")}</main>`;
 }
 
 function kidsSongPage() {
+  const session = getKidsDailySession("song", { listened: false, repeated: false, replayCount: 0 });
   const done = Boolean(kidsProgress.completed.song);
   const line = "Twinkle, twinkle, little star.";
-  if (done) return `${header("영어 동요")}<main class="kids-page">${kidsReward("오늘의 노래를 신나게 불렀어!", `${childName}에게 음표 스티커를 선물해요.`)}${kidsParentMission("What did you sing?", "I sang Twinkle Twinkle.", "song")}</main>`;
-  return `${header("영어 동요")}<main class="kids-page"><section class="kids-song-card"><span>♪ 오늘의 영어 동요</span><h2>Twinkle, Twinkle, Little Star</h2><p>${line}</p><div><button type="button" data-speak="${line}">${icon("play",16)} 노래 구절 듣기</button><button type="button" data-speaking-repeat="${line}">한 번 더</button></div><button class="primary" type="button" data-kids-complete="song">${icon("check",16)} 따라 불렀어요</button></section>${kidsParentMission("What did you sing?", "I sang Twinkle Twinkle.", "song")}</main>`;
+  const readyToComplete = done || (session.listened && session.repeated);
+  const songStatus = `<div class="kids-status-actions ${done ? "done" : ""}"><span>${done ? icon("check",14) : icon("spark",14)} ${done ? "동요 완료" : "듣고 후렴을 따라 하면 완료"}</span>${done ? `<button class="secondary" type="button" data-kids-reset="song">처음부터 다시 하기</button>` : ""}<button class="primary" type="button" data-kids-complete="song" ${readyToComplete && !done ? "" : "disabled"}>${icon("check",14)} 따라 불렀어요</button><button class="secondary" type="button" data-kids-undo="song" ${done ? "" : "disabled"}>완료 취소</button></div>`;
+  return `${header("영어 동요")}<main class="kids-page"><section class="kids-song-card"><span>${done ? "동요 복습" : "♪ 오늘의 영어 동요"}</span><h2>Twinkle, Twinkle, Little Star</h2><p><mark>${line}</mark></p><small class="kids-song-hint">힌트: 반짝반짝 작은 별처럼 손을 반짝이며 따라 불러요.</small><div><button type="button" data-kids-song-listen="${line}">${icon("play",16)} 노래 구절 듣기</button><button type="button" data-kids-song-repeat>후렴 따라했어요</button><button type="button" data-speaking-repeat="${line}">한 번 더 듣기</button></div>${songStatus}</section>${kidsParentMission("What did you sing?", "I sang Twinkle Twinkle.", "song")}</main>`;
 }
 
 function kidsDailyTestPage() {
@@ -2037,10 +2609,41 @@ function kidsDailyTestPage() {
     { q:"미나의 정원에 찾아온 것은?", choices:["작은 새","우주선"], answer:0 },
   ];
   const correct = Object.values(kidsTestAnswers).filter(Boolean).length;
-  if (kidsProgress.completed.test) return `${header("Daily Test")}<main class="kids-page">${kidsReward("오늘 테스트 완료!", `${childCallName()}야, 마지막 3문제를 다 풀었어!`)}${kidsParentMission("Did you finish English?", "Yes, I did!", "test")}</main>`;
-  return `${header("Daily Test")}<main class="kids-page"><section class="kids-test-card"><span>딱 3문제만!</span><h2>오늘 배운 걸 확인해볼까?</h2><div class="kids-test-stars">${questions.map((_,index)=>`<i class="${kidsTestAnswers[index] ? "done" : ""}">★</i>`).join("")}</div>${questions.map((item,index)=>`<fieldset class="${kidsTestAnswers[index] ? "done" : ""}"><legend>문제 ${index+1}. ${item.q}</legend>${item.choices.map((choice,choiceIndex)=>`<button type="button" data-kids-test-answer="${index}:${choiceIndex===item.answer}" ${kidsTestAnswers[index] ? "disabled" : ""}>${choice}</button>`).join("")}</fieldset>`).join("")}<p>${correct} / 3 완료 · 틀려도 다시 고르면 돼요!</p></section>${kidsParentMission("Did you finish English?", "Yes, I did!", "test")}</main>`;
+  const done = Boolean(kidsProgress.completed.test);
+  return `${header("Daily Test")}<main class="kids-page"><section class="kids-test-card"><span>${done ? "확인 놀이 복습" : "딱 3문제 확인 놀이"}</span><h2>${done ? "오늘의 확인 놀이 완료!" : "별 3개를 모아볼까?"}</h2><div class="kids-test-stars">${questions.map((_,index)=>`<i class="${done || kidsTestAnswers[index] ? "done" : ""}">★</i>`).join("")}</div>${questions.map((item,index)=>`<fieldset class="${done || kidsTestAnswers[index] ? "done" : ""}"><legend>놀이 ${index+1}. ${item.q}</legend>${item.choices.map((choice,choiceIndex)=>`<button type="button" data-kids-test-answer="${index}:${choiceIndex===item.answer}">${choice}</button>`).join("")}</fieldset>`).join("")}<p>${done ? "오늘 테스트 성공! 별 3개 모았어." : `${correct} / 3 완료 · 틀려도 다시 고르면 돼요!`}</p>${kidsStatusActions("test", done, "확인 놀이 완료", "확인 놀이 중")}</section>${kidsParentMission("Did you finish English?", "Yes, I did!", "test")}</main>`;
 }
 
+const KIDS_CALENDAR_MISSIONS = [
+  { id: "words", label: "단어", icon: "book" },
+  { id: "sentence", label: "문장", icon: "spark" },
+  { id: "reading", label: "읽기", icon: "news" },
+  { id: "story", label: "동화", icon: "book" },
+  { id: "song", label: "동요", icon: "play" },
+  { id: "test", label: "테스트", icon: "check" },
+];
+
+function getKidsHistoryEntry(dateKey) {
+  if (dateKey === kidsProgress.date) return kidsEntryFromProgress(kidsProgress);
+  return kidsHistory[dateKey] || { completed: {}, words: [], parent: {} };
+}
+
+function kidsCalendarPage() {
+  const y = state.calendarYear;
+  const m = state.calendarMonth;
+  const first = new Date(y, m, 1).getDay();
+  const days = new Date(y, m + 1, 0).getDate();
+  const cells = Array(first).fill(null).concat(Array.from({ length: days }, (_, i) => i + 1));
+  const selectedEntry = getKidsHistoryEntry(state.selectedDate);
+  const selectedDone = KIDS_CALENDAR_MISSIONS.filter(item => selectedEntry.completed[item.id]);
+  const selectedStars = selectedDone.length;
+  const selectedParent = Object.keys(selectedEntry.parent || {}).filter(key => selectedEntry.parent[key]).length;
+  const monthDoneDays = Array.from({ length: days }, (_, index) => {
+    const key = `${y}-${String(m + 1).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`;
+    return KIDS_CALENDAR_MISSIONS.some(item => getKidsHistoryEntry(key).completed[item.id]);
+  }).filter(Boolean).length;
+
+  return `${header("학습 캘린더")}<main class="kids-page kids-calendar-page"><section class="kids-page-head"><span>나의 영어 별 스티커</span><h2>${childCallName()}가 해낸 날들이 쌓이고 있어요</h2><p>매일 한 미션이라도 끝내면 캘린더에 별이 남아요.</p></section><div class="kids-calendar-layout"><section class="kids-calendar-panel"><div class="calendar-head"><button type="button" data-month="-1" aria-label="이전 달">‹</button><h2>${y}년 ${m + 1}월</h2><button type="button" data-month="1" aria-label="다음 달">›</button></div><div class="weekdays">${["일","월","화","수","목","금","토"].map(day => `<span>${day}</span>`).join("")}</div><div class="kids-calendar-grid">${cells.map(day => { if (!day) return `<div class="kids-day empty"></div>`; const key = `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`; const entry = getKidsHistoryEntry(key); const doneCount = KIDS_CALENDAR_MISSIONS.filter(item => entry.completed[item.id]).length; return `<button class="kids-day ${key === state.selectedDate ? "selected" : ""} ${key === localDateKey() ? "today" : ""}" type="button" data-date="${key}"><b>${day}</b><span>${doneCount ? "★".repeat(doneCount) : ""}</span><small>${doneCount ? `${doneCount}/${KIDS_CALENDAR_MISSIONS.length}` : ""}</small></button>`; }).join("")}</div></section><aside class="kids-calendar-summary"><span>${state.selectedDate}</span><h3>${selectedStars ? `별 ${selectedStars}개를 모았어요!` : "아직 기록이 없어요"}</h3><p>${selectedStars ? "이날 완료한 미션을 다시 확인해보세요." : "학습을 완료하면 이 날짜에 별이 생겨요."}</p><div>${KIDS_CALENDAR_MISSIONS.map(item => `<article class="${selectedEntry.completed[item.id] ? "done" : ""}"><i>${selectedEntry.completed[item.id] ? icon("check",13) : icon(item.icon,13)}</i><b>${item.label}</b><em>${selectedEntry.completed[item.id] ? "완료" : "아직"}</em></article>`).join("")}</div><section class="kids-calendar-total"><strong>${monthDoneDays}</strong><p>이번 달 학습한 날</p><small>부모 미션 ${selectedParent}개 기록</small></section></aside></div></main>`;
+}
 function kidsPage(page) {
   return page === "home" ? kidsHomePage()
     : page === "words" ? kidsVocabularyPage()
@@ -2049,6 +2652,7 @@ function kidsPage(page) {
     : page === "ted" ? kidsStoryPage()
     : page === "drama" ? kidsSongPage()
     : page === "test" ? kidsDailyTestPage()
+    : page === "calendar" ? kidsCalendarPage()
     : kidsHomePage();
 }
 
@@ -2179,7 +2783,7 @@ function bindEvents(){
     const selectedMode = event.currentTarget.dataset.audienceMode;
     if (selectedMode === audienceMode) return;
     applyAudienceMode(selectedMode);
-    if (audienceMode === "kids" && !["home","words","sentence","news","ted","drama","test"].includes(state.page)) state.page = "home";
+    if (audienceMode === "kids" && !["home","words","sentence","news","ted","drama","test","calendar"].includes(state.page)) state.page = "home";
     render();
   }));
   document.querySelector("[data-kids-intro-complete]")?.addEventListener("click", () => {
@@ -2386,34 +2990,123 @@ function bindEvents(){
   }));
   document.querySelectorAll("[data-kids-word-done]").forEach(button => button.addEventListener("click", event => {
     const word = event.currentTarget.dataset.kidsWordDone;
-    if (!kidsProgress.words.includes(word)) kidsProgress.words.push(word);
-    saveKidsProgress();
+    const wordDateKey = getKidsWordDateKey();
+    const progress = getKidsWordProgress(wordDateKey);
+    if (!progress.words.includes(word)) progress.words.push(word);
+    saveKidsWordProgress(wordDateKey, progress);
     render();
   }));
   document.querySelectorAll("[data-kids-word-answer]").forEach(button => button.addEventListener("click", event => {
     const correct = event.currentTarget.dataset.kidsWordAnswer === "true";
     const feedback = document.querySelector("[data-kids-feedback]");
-    if (!correct) { if (feedback) feedback.textContent = "괜찮아! 한 번 더 골라보자."; return; }
-    kidsWordQuizStep += 1;
-    if (kidsWordQuizStep >= 2) setKidsComplete("words");
+    if (!correct) { if (feedback) feedback.textContent = "괜찮아. 한 번 더 골라보자."; return; }
+    const wordDateKey = getKidsWordDateKey();
+    const progress = getKidsWordProgress(wordDateKey);
+    progress.quizStep = (progress.quizStep || 0) + 1;
+    if (progress.quizStep >= 2) progress.completed = true;
+    saveKidsWordProgress(wordDateKey, progress);
+    render();
+  }));
+  document.querySelector("[data-kids-next-words]")?.addEventListener("click", () => {
+    kidsWordDayOffset = Math.min(getKidsWordPageCount() - 1, kidsWordDayOffset + 1);
+    kidsFlippedWords = [];
+    saveKidsWordDayOffset();
+    getKidsWordProgress(getKidsWordDateKey());
+    saveKidsProgress();
+    render();
+  });
+  document.querySelectorAll("[data-kids-word-target]").forEach(button => button.addEventListener("click", event => {
+    kidsWordDayOffset = Math.min(Math.max(Number(event.currentTarget.dataset.kidsWordTarget) || 0, 0), getKidsWordPageCount() - 1);
+    kidsFlippedWords = [];
+    saveKidsWordDayOffset();
+    getKidsWordProgress(getKidsWordDateKey());
+    saveKidsProgress();
+    render();
+  }));
+  document.querySelectorAll("[data-kids-sentence-target]").forEach(button => button.addEventListener("click", event => {
+    kidsSentencePageIndex = Math.min(Math.max(Number(event.currentTarget.dataset.kidsSentenceTarget) || 0, 0), getKidsSentencePageCount() - 1);
+    saveKidsSentencePageIndex();
+    const progress = getKidsSentenceProgress(getKidsSentencePageKey());
+    kidsProgress.completed.sentence = Boolean(progress.completed);
+    saveKidsProgress();
+    render();
+  }));
+  document.querySelector("[data-kids-sentence-listen]")?.addEventListener("click", () => {
+    const sentence = getKidsSentence(kidsSentencePageIndex);
+    speakText(sentence.en);
+    const progress = getKidsSentenceProgress(getKidsSentencePageKey());
+    progress.listened = true;
+    saveKidsSentenceProgress(getKidsSentencePageKey(), progress);
+    render();
+  });
+  document.querySelector("[data-kids-sentence-meaning]")?.addEventListener("click", () => {
+    const progress = getKidsSentenceProgress(getKidsSentencePageKey());
+    progress.meaningShown = !progress.meaningShown;
+    saveKidsSentenceProgress(getKidsSentencePageKey(), progress);
+    render();
+  });
+  document.querySelector("[data-kids-sentence-repeat]")?.addEventListener("click", () => {
+    const progress = getKidsSentenceProgress(getKidsSentencePageKey());
+    progress.repeated = true;
+    saveKidsSentenceProgress(getKidsSentencePageKey(), progress);
+    render();
+  });
+  document.querySelectorAll("[data-kids-reset]").forEach(button => button.addEventListener("click", event => {
+    resetKidsSession(event.currentTarget.dataset.kidsReset);
     render();
   }));
   document.querySelectorAll("[data-kids-complete]").forEach(button => button.addEventListener("click", event => {
     setKidsComplete(event.currentTarget.dataset.kidsComplete);
     render();
   }));
+  document.querySelectorAll("[data-kids-undo]").forEach(button => button.addEventListener("click", event => {
+    const id = event.currentTarget.dataset.kidsUndo;
+    if (!confirm("완료를 취소할까요? 오늘 진행률에서 별이 하나 빠져요.")) return;
+    setKidsComplete(id, false);
+    if (id === "test") kidsTestAnswers = {};
+    render();
+  }));
   document.querySelectorAll("[data-kids-reading-answer]").forEach(button => button.addEventListener("click", event => {
     const correct = event.currentTarget.dataset.kidsReadingAnswer === "true";
+    const session = getKidsDailySession("reading", { selectedAnswer: null, correct: false });
+    session.selectedAnswer = correct;
+    session.correct = correct;
     if (correct) { setKidsComplete("reading"); render(); return; }
+    saveKidsProgress();
     const feedback = document.querySelector("[data-kids-feedback]");
     if (feedback) feedback.textContent = "괜찮아! 글에서 다시 찾아보자.";
   }));
+  document.querySelectorAll("[data-kids-story-reaction]").forEach(button => button.addEventListener("click", event => {
+    const session = getKidsDailySession("story", { reaction: null });
+    session.reaction = event.currentTarget.dataset.kidsStoryReaction;
+    setKidsComplete("story");
+    render();
+  }));
+  document.querySelector("[data-kids-song-listen]")?.addEventListener("click", event => {
+    const line = event.currentTarget.dataset.kidsSongListen;
+    speakText(line);
+    const session = getKidsDailySession("song", { listened: false, repeated: false, replayCount: 0 });
+    session.listened = true;
+    session.replayCount = (session.replayCount || 0) + 1;
+    saveKidsProgress();
+    render();
+  });
+  document.querySelector("[data-kids-song-repeat]")?.addEventListener("click", () => {
+    const session = getKidsDailySession("song", { listened: false, repeated: false, replayCount: 0 });
+    session.repeated = true;
+    saveKidsProgress();
+    render();
+  });
   document.querySelectorAll("[data-kids-test-answer]").forEach(button => button.addEventListener("click", event => {
     const [indexText, correctText] = event.currentTarget.dataset.kidsTestAnswer.split(":");
     const index = Number(indexText);
     if (correctText !== "true") { event.currentTarget.classList.add("wrong"); return; }
     kidsTestAnswers[index] = true;
+    const session = getKidsDailySession("test", { answers: {}, correctCount: 0 });
+    session.answers = { ...(session.answers || {}), [index]: true };
+    session.correctCount = Object.values(session.answers).filter(Boolean).length;
     if ([0,1,2].every(questionIndex => kidsTestAnswers[questionIndex])) setKidsComplete("test");
+    else saveKidsProgress();
     render();
   }));
   document.querySelectorAll("[data-vocab-target]").forEach(el=>el.addEventListener("click", e => {
@@ -2423,6 +3116,13 @@ function bindEvents(){
     localStorage.setItem("value_time_vocab_page_date", localDateKey());
     render();
     window.scrollTo(0, scrollPosition);
+  }));
+  document.querySelectorAll("[data-vocab-meaning-toggle]").forEach(button => button.addEventListener("click", event => {
+    const target = event.currentTarget;
+    const revealed = target.classList.toggle("revealed");
+    target.setAttribute("aria-expanded", String(revealed));
+    const label = target.querySelector("span");
+    if (label) label.textContent = revealed ? "뜻 숨기기" : "뜻 보기";
   }));
   document.querySelector("[data-vocab-complete]")?.addEventListener("click", () => {
     homeStudyState.checked.words = true;
