@@ -1214,9 +1214,13 @@ function getMixedVocabularyWords() {
   return mixed;
 }
 
-const mixedVocabularyWords = getMixedVocabularyWords();
+// Daily-test state is initialized before this section and calls
+// getTodayVocabWords(). Use a lazily initialized binding so that call does not
+// hit the temporal dead zone while the module is still being evaluated.
+var mixedVocabularyWords = getMixedVocabularyWords();
 
 function getTodayVocabWords(dateKey = localDateKey()) {
+  mixedVocabularyWords ||= getMixedVocabularyWords();
   const pageSize = 5;
   const pageCount = Math.ceil(mixedVocabularyWords.length / pageSize);
   const pageIndex = getDailyVocabPageIndex(pageCount, dateKey);
