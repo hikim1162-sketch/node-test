@@ -1806,10 +1806,10 @@ function vocabKoreanModifier(value) {
 
 function typeLabel(value = "") {
   const part = String(value).toLowerCase();
-  if (part === "noun") return "noun";
-  if (part === "verb") return "verb";
-  if (part === "adjective") return "adjective";
-  if (part === "adverb") return "adverb";
+  if (part === "noun" || part === "명사") return "noun";
+  if (part === "verb" || part === "동사") return "verb";
+  if (part === "adjective" || part === "형용사") return "adjective";
+  if (part === "adverb" || part === "부사") return "adverb";
   return value || "품사 미분류";
 }
 
@@ -1933,7 +1933,7 @@ function vocabNaturalExample(word, seed = 0) {
 
   return {
     ready: Boolean(sentence.trim()),
-    partOfSpeech: curated?.partOfSpeech || storedPartOfSpeech || vocabPartHint(word),
+    partOfSpeech: typeLabel(curated?.partOfSpeech || storedPartOfSpeech || vocabPartHint(word)),
     meaning: curated?.meaning || word?.meaning || "",
     en: generated ? generated.en : mark(sentence || `This vocabulary item appears in a short reading passage.`),
     ko: translation || "예문 해석을 불러오지 못했습니다.",
@@ -3681,6 +3681,9 @@ function bindEvents(){
     const label = target.querySelector("span");
     if (label) label.textContent = revealed ? "뜻 숨기기" : "뜻 보기";
   }));
+  document.querySelectorAll(".vocab-card-actions > em").forEach(badge => {
+    badge.textContent = typeLabel(badge.textContent.trim());
+  });
   document.querySelectorAll(".vocab-today-item blockquote > span, .word-card .example > span").forEach(translation => {
     const translatedText = translation.textContent.trim();
     translation.classList.add("vocab-example-translation");
