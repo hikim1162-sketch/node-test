@@ -556,6 +556,58 @@ function getDailyTedExpressions(sentences) {
 const QUIZ_APP_STORAGE_KEY = "english_quiz_app_state_v4";
 const defaultQuizQuestions = [
   {
+    id: "grammar-report-by-friday",
+    type: "Grammar",
+    category: "Business",
+    difficulty: "Basic",
+    estimatedTime: "25 sec",
+    learningPoint: "Deadline expressions in workplace English",
+    question: "Choose the best preposition: The report must be submitted ___ Friday.",
+    choices: ["by", "on", "from", "during"],
+    answer: 0,
+    explanation: "'By Friday' means no later than Friday.",
+    detailedExplanation: "Use 'by + time/date' for a deadline. 'On Friday' means the action happens on Friday, but it does not clearly show the deadline.",
+    wrongChoiceExplanations: ["'On Friday' indicates the day, not the latest deadline.", "'From Friday' means the starting point.", "'During Friday' is unnatural for this deadline meaning."],
+    examples: ["Please send the revised file by Friday.", "The sample review should be completed by 3 p.m."],
+    relatedExpressions: ["by Friday", "no later than", "deadline"],
+    youtube: "",
+  },
+  {
+    id: "grammar-production-adjustment",
+    type: "Grammar",
+    category: "Production",
+    difficulty: "Intermediate",
+    estimatedTime: "35 sec",
+    learningPoint: "Part of speech in production reports",
+    question: "Choose the most natural sentence for a production update.",
+    choices: ["The line was adjusted to reduce defects.", "The line was adjustment to reduce defects.", "The line adjustedly reduced defects.", "The line was adjust to reduce defects."],
+    answer: 0,
+    explanation: "'Was adjusted' is the correct passive verb form.",
+    detailedExplanation: "Production reports often use passive voice when the action matters more than the person who performed it.",
+    wrongChoiceExplanations: ["'Adjustment' is a noun, so it cannot follow 'was' this way.", "'Adjustedly' is not a natural adverb here.", "'Was adjust' is not a correct verb form."],
+    examples: ["The oven temperature was adjusted after the inspection.", "The process was updated to improve yield."],
+    relatedExpressions: ["was adjusted", "reduce defects", "process update"],
+    youtube: "",
+  },
+  {
+    id: "reading-email-schedule",
+    type: "Reading",
+    category: "Email",
+    difficulty: "Intermediate",
+    estimatedTime: "60 sec",
+    learningPoint: "Short email reading and action identification",
+    passage: "Hi Mina,\nThe supplier confirmed that the new separator samples will arrive on Thursday morning. Please update the test schedule and share the revised plan with the quality team by Friday.\nThanks,\nDaniel",
+    question: "What should Mina do by Friday?",
+    choices: ["Share the revised test plan.", "Order new separator samples.", "Cancel the quality inspection.", "Visit the supplier on Thursday."],
+    answer: 0,
+    explanation: "The email asks Mina to update the test schedule and share the revised plan by Friday.",
+    detailedExplanation: "In short workplace emails, identify the requested action and the deadline. Here, the deadline is Friday and the action is sharing the revised plan.",
+    wrongChoiceExplanations: ["The samples are already confirmed by the supplier.", "The email does not mention canceling inspection.", "The supplier sends samples; Mina is not asked to visit."],
+    examples: ["Please share the revised plan by Friday.", "The supplier confirmed the delivery schedule."],
+    relatedExpressions: ["revised plan", "test schedule", "quality team"],
+    youtube: "",
+  },
+  {
     id: "battery-cathode-discharge",
     type: "Technical English",
     category: "Battery",
@@ -623,6 +675,24 @@ const defaultQuizQuestions = [
     relatedExpressions: ["updated schedule", "revised timeline", "thank you for your patience"],
     youtube: "",
   },
+  {
+    id: "reading-notice-safety",
+    type: "Reading",
+    category: "Safety",
+    difficulty: "Intermediate",
+    estimatedTime: "55 sec",
+    learningPoint: "Short notice reading with safety context",
+    passage: "Notice: Starting next Monday, all visitors must wear safety glasses inside the coating area. Visitors without proper protection should wait in the lobby until equipment is provided.",
+    question: "What is required inside the coating area?",
+    choices: ["Safety glasses", "A visitor badge only", "A production report", "A supplier invoice"],
+    answer: 0,
+    explanation: "The notice says all visitors must wear safety glasses inside the coating area.",
+    detailedExplanation: "This is a workplace notice. The key phrase is 'must wear safety glasses', which shows a required action.",
+    wrongChoiceExplanations: ["A badge may be useful, but it is not the requirement stated here.", "A production report is unrelated to visitor safety.", "An invoice is a business document, not safety equipment."],
+    examples: ["Visitors must wear safety glasses in the coating area.", "Please wait in the lobby until equipment is provided."],
+    relatedExpressions: ["safety glasses", "proper protection", "coating area"],
+    youtube: "",
+  },
 ];
 
 function normalizeQuizQuestion(question = {}) {
@@ -638,6 +708,7 @@ function normalizeQuizQuestion(question = {}) {
     difficulty: question.difficulty || "Intermediate",
     estimatedTime: question.estimatedTime || question.time || "45 sec",
     learningPoint: question.learningPoint || question.point || "핵심 개념과 표현을 함께 확인하세요.",
+    passage: question.passage || question.context || "",
     question: question.question || "",
     choices,
     answer,
@@ -650,28 +721,38 @@ function normalizeQuizQuestion(question = {}) {
   };
 }
 
+function mergeDefaultQuizQuestions(savedQuestions = []) {
+  const saved = savedQuestions.map(normalizeQuizQuestion);
+  const savedIds = new Set(saved.map(question => question.id));
+  const missingDefaults = defaultQuizQuestions
+    .map(normalizeQuizQuestion)
+    .filter(question => !savedIds.has(question.id));
+  return [...saved, ...missingDefaults];
+}
+
 function loadQuizState() {
-  const initial = { questions: defaultQuizQuestions.map(normalizeQuizQuestion), current: 0, solvedMap: {}, wrongSet: [], bookmarkSet: [], solvedDates: [], darkMode: false, examMode: false, search: "", filter: "all", answerVisible: false, selectedChoice: null };
+  const initial = { questions: mergeDefaultQuizQuestions([]), current: 0, solvedMap: {}, wrongSet: [], bookmarkSet: [], solvedDates: [], dailyPlan: null, recentQuestionHistory: [], darkMode: false, examMode: false, search: "", filter: "all", answerVisible: false, selectedChoice: null };
   try {
     const saved = JSON.parse(localStorage.getItem(QUIZ_APP_STORAGE_KEY) || "null");
     if (!saved) return initial;
     return {
       ...initial,
       ...saved,
-      questions: Array.isArray(saved.questions) && saved.questions.length ? saved.questions.map(normalizeQuizQuestion) : defaultQuizQuestions.map(normalizeQuizQuestion),
+      questions: Array.isArray(saved.questions) && saved.questions.length ? mergeDefaultQuizQuestions(saved.questions) : mergeDefaultQuizQuestions([]),
       bookmarkSet: Array.isArray(saved.bookmarkSet) ? saved.bookmarkSet : [],
       solvedDates: Array.isArray(saved.solvedDates) ? saved.solvedDates : Array.isArray(saved.todaySolvedDates) ? saved.todaySolvedDates : [],
+      dailyPlan: saved.dailyPlan || null,
+      recentQuestionHistory: Array.isArray(saved.recentQuestionHistory) ? saved.recentQuestionHistory : [],
       selectedChoice: null,
     };
   } catch { return initial; }
 }
 
 const quizState = loadQuizState();
-const quizQuickState = { graded: false, score: null, feedback: [] };
 
 function saveQuizState() {
   try {
-    localStorage.setItem(QUIZ_APP_STORAGE_KEY, JSON.stringify({ questions: quizState.questions, current: quizState.current, solvedMap: quizState.solvedMap, wrongSet: quizState.wrongSet, bookmarkSet: quizState.bookmarkSet, todaySolvedDates: quizState.solvedDates, darkMode: quizState.darkMode, examMode: quizState.examMode }));
+    localStorage.setItem(QUIZ_APP_STORAGE_KEY, JSON.stringify({ questions: quizState.questions, current: quizState.current, solvedMap: quizState.solvedMap, wrongSet: quizState.wrongSet, bookmarkSet: quizState.bookmarkSet, todaySolvedDates: quizState.solvedDates, dailyPlan: quizState.dailyPlan, recentQuestionHistory: quizState.recentQuestionHistory, darkMode: quizState.darkMode, examMode: quizState.examMode }));
   } catch {}
 }
 
@@ -679,15 +760,62 @@ function quizTodayKey() {
   return localDateKey(new Date());
 }
 
+function quizQuestionSignature(question = {}) {
+  return JSON.stringify({
+    id: String(question.id || "").trim().toLowerCase(),
+    question: String(question.question || "").trim().toLowerCase(),
+    passage: String(question.passage || "").trim().toLowerCase(),
+    choices: (question.choices || []).map(choice => String(choice).trim().toLowerCase()),
+    answer: Number(question.answer),
+  });
+}
+
+function quizDateAge(dateKey, todayKey = quizTodayKey()) {
+  return Math.round((new Date(`${todayKey}T00:00:00`) - new Date(`${dateKey}T00:00:00`)) / 86400000);
+}
+
+function ensureQuizDailyPlan(dateKey = quizTodayKey()) {
+  const validPlan = quizState.dailyPlan?.date === dateKey
+    && Array.isArray(quizState.dailyPlan.newIndexes)
+    && quizState.dailyPlan.newIndexes.every(index => quizState.questions[index]);
+  if (validPlan) return quizState.dailyPlan;
+
+  const reviewPool = [...new Set([...quizState.wrongSet, ...quizState.bookmarkSet])].filter(index => quizState.questions[index]);
+  const recentHistory = (quizState.recentQuestionHistory || []).filter(entry => {
+    const age = quizDateAge(entry.date, dateKey);
+    return age >= 1 && age <= 7;
+  });
+  const blockedSignatures = new Set(recentHistory.flatMap(entry => Array.isArray(entry.signatures) ? entry.signatures : []));
+  const allIndexes = quizState.questions.map((_, index) => index);
+  const nonReviewIndexes = allIndexes.filter(index => !reviewPool.includes(index));
+  const freshIndexes = nonReviewIndexes.filter(index => !blockedSignatures.has(quizQuestionSignature(quizState.questions[index])));
+  const newPool = freshIndexes.length >= 3 ? freshIndexes : nonReviewIndexes.length >= 3 ? nonReviewIndexes : allIndexes;
+  const newIndexes = seededShuffle(newPool, `${dateKey}-quiz-new`).slice(0, 3);
+  const reviewIndexes = seededShuffle(reviewPool.filter(index => !newIndexes.includes(index)), `${dateKey}-quiz-review`).slice(0, 3);
+  const signatures = newIndexes.map(index => quizQuestionSignature(quizState.questions[index]));
+
+  quizState.dailyPlan = { date: dateKey, newIndexes, reviewIndexes };
+  quizState.recentQuestionHistory = [
+    ...(quizState.recentQuestionHistory || []).filter(entry => entry.date !== dateKey && quizDateAge(entry.date, dateKey) <= 7),
+    { date: dateKey, signatures, indexes: newIndexes },
+  ].slice(-7);
+  saveQuizState();
+  return quizState.dailyPlan;
+}
+
 function getFilteredQuizIndexes() {
   const keyword = quizState.search.trim().toLowerCase();
-  return quizState.questions.map((question, index) => ({ question, index })).filter(({ question, index }) => {
+  const plan = ensureQuizDailyPlan();
+  const plannedOrder = [...plan.newIndexes, ...plan.reviewIndexes];
+  const remaining = quizState.questions.map((_, index) => index).filter(index => !plannedOrder.includes(index));
+  const orderedIndexes = quizState.filter === "all" ? [...plannedOrder, ...remaining] : quizState.questions.map((_, index) => index);
+  return orderedIndexes.map(index => ({ question: quizState.questions[index], index })).filter(({ question, index }) => {
     const solved = Boolean(quizState.solvedMap[index]);
     const wrong = quizState.wrongSet.includes(index);
     if (quizState.filter === "unsolved" && solved) return false;
     if (quizState.filter === "solved" && !solved) return false;
     if (quizState.filter === "wrong" && !wrong) return false;
-    return !keyword || [question.question, question.explanation, question.type, question.category, question.difficulty, question.learningPoint, ...question.choices, ...question.relatedExpressions].join(" ").toLowerCase().includes(keyword);
+    return !keyword || [question.question, question.passage, question.explanation, question.type, question.category, question.difficulty, question.learningPoint, ...question.choices, ...question.relatedExpressions].join(" ").toLowerCase().includes(keyword);
   }).map(item => item.index);
 }
 
@@ -1064,10 +1192,13 @@ function getDailyQuickTestQuestions(dateKey = localDateKey()) {
   const sentence = getDailySentenceLesson(dateKey);
   const patternMeaningPool = [...new Set(sentenceLessons.filter(item => item.pattern !== sentence.pattern).map(item => item.meaning))];
   const sentenceChoices = seededShuffle([sentence.meaning, ...seededShuffle(patternMeaningPool, `${dateKey}-sentence-pool`).slice(0, 2)], `${dateKey}-sentence-choices`);
+  const grammarAnswer = "동명사 또는 명사";
+  const grammarChoices = seededShuffle([grammarAnswer, "동사원형만", "과거분사만"], `${dateKey}-grammar-choices`);
 
   return [
     { category: "오늘의 단어", prompt: word.word, question: "뜻으로 가장 알맞은 것은?", choices: wordChoices, answer: wordChoices.indexOf(word.meaning), explanation: `${word.word}는 '${word.meaning}'라는 뜻입니다.` },
     { category: "매일 1문장", prompt: sentence.pattern, question: "표현의 의미로 가장 알맞은 것은?", choices: sentenceChoices, answer: sentenceChoices.indexOf(sentence.meaning), explanation: `${sentence.pattern}은 '${sentence.meaning}'라는 의미입니다.` },
+    { category: "문법 포인트", prompt: "get used to + ?", question: "뒤에 가장 자연스럽게 오는 형태는?", choices: grammarChoices, answer: grammarChoices.indexOf(grammarAnswer), explanation: "get used to 뒤에는 명사나 동명사를 씁니다. 예: get used to speaking English." },
   ];
 }
 
@@ -1076,12 +1207,12 @@ const HOME_STUDY_STORAGE_KEY = "today_learning_dashboard_v2";
 const LEGACY_HOME_STUDY_STORAGE_KEY = "today_learning_dashboard_v1";
 const HOME_APP_STORAGE_KEY = "today_learning_app_v3";
 const homeStudyItems = [
-  { id: "words", number: "01", title: "단어장", description: "오늘 학습할 단어를 빠르게 확인하고 뜻과 표현을 익혀보세요.", page: "words", link: "vocab.html", icon: "book", color: "sage", tag: "기초 워밍업" },
-  { id: "sentence", number: "02", title: "매일 1문장", description: "짧고 유용한 문장을 따라 읽으며 매일 한 문장씩 쌓아가세요.", page: "sentence", link: "sentence.html", icon: "message", color: "gold", tag: "짧은 루틴" },
-  { id: "news", number: "03", title: "영어 뉴스", description: "오늘의 뉴스 표현을 통해 실제 영어 표현 감각을 키워보세요.", page: "news", link: "news.html", icon: "news", color: "blue", tag: "실전 표현" },
-  { id: "ted", number: "04", title: "TED 학습", description: "오늘의 TED 문장 5개를 듣고 따라 말하며 핵심 표현을 익혀보세요.", page: "ted", link: "ted.html", icon: "mic", color: "rose", tag: "듣기·말하기" },
-  { id: "test", number: "05", title: "Daily Test", description: "짧은 테스트로 오늘 학습한 내용을 가볍게 점검해보세요.", page: "test", link: "dailytest.html", icon: "clipboard", color: "mint", tag: "점검" },
-  { id: "quiz", number: "06", title: "영어 문제 풀이", description: "문제를 풀고 오답을 확인하면서 실력을 정리해보세요.", page: "quiz", link: "quiz.html", icon: "pencil", color: "navy", tag: "마무리 정리" },
+  { id: "words", number: "01", title: "단어장", description: "오늘 학습할 단어를 빠르게 확인하고 뜻과 표현을 익혀보세요.", page: "words", link: "vocab.html", icon: "book", color: "sage", tag: "기초 어휘", cta: "단어 복습하기" },
+  { id: "sentence", number: "02", title: "매일 1문장", description: "짧고 유용한 문장을 따라 읽으며 매일 한 문장씩 쌓아가세요.", page: "sentence", link: "sentence.html", icon: "message", color: "gold", tag: "핵심 문장", cta: "문장 확인하기" },
+  { id: "news", number: "03", title: "영어 뉴스", description: "오늘의 뉴스 표현을 통해 실제 영어 표현 감각을 키워보세요.", page: "news", link: "news.html", icon: "news", color: "blue", tag: "실전 읽기", cta: "뉴스 읽기" },
+  { id: "ted", number: "04", title: "TED 학습", description: "오늘의 TED 문장 5개를 듣고 따라 말하며 핵심 표현을 익혀보세요.", page: "ted", link: "ted.html", icon: "mic", color: "rose", tag: "강연 표현", cta: "TED 보기" },
+  { id: "test", number: "05", title: "Daily Test", description: "짧은 테스트로 오늘 학습한 내용을 가볍게 점검해보세요.", page: "test", link: "dailytest.html", icon: "clipboard", color: "mint", tag: "빠른 점검", cta: "테스트 풀기" },
+  { id: "quiz", number: "06", title: "영어 문제 풀이", description: "문제를 풀고 오답을 확인하면서 실력을 정리해보세요.", page: "quiz", link: "quiz.html", icon: "pencil", color: "navy", tag: "오답 복습", cta: "문제 풀기" },
 ];
 const weeklyHomeRoutines = {
   0: { day: "일요일", title: "일요일 정리 루틴", description: "주간 학습을 가볍게 정리하고 다음 주를 준비하는 흐름이에요.", items: ["sentence", "quiz"] },
@@ -1533,19 +1664,29 @@ function sidebar() {
 }
 
 function header(title = "오늘의 학습") {
-  const toeicQuickLink = state.page === "home" && audienceMode === "general"
-    ? `<a class="header-toeic-link" href="https://www.hackers.co.kr/?c=s_toeic/toeic_study/drc" target="_blank" rel="noopener noreferrer" aria-label="해커스 매일 토익 RC 풀기 새 창에서 열기"><span>RC</span><b>매일 토익 RC 풀기</b>${icon("arrow",14)}</a><button class="header-ted-link" type="button" data-page="ted" aria-label="TED 학습 바로가기"><span>TED</span><b>TED 바로가기</b>${icon("arrow",14)}</button><a class="header-bbc-link" href="https://www.bbc.co.uk/learningenglish/english/course/towards-advanced" target="_blank" rel="noopener noreferrer" aria-label="BBC Learning English Towards Advanced 새 창에서 열기"><span>BBC</span><b>BBC Learning</b>${icon("arrow",14)}</a>`
-    : "";
+  return `<header><button class="mobile-menu" aria-label="메뉴">${icon("menu")}</button><div class="header-title-block"><p class="eyebrow">${audienceMode === "kids" ? `${childName}의 오늘 영어` : "MONDAY, JULY 13"}</p><div class="header-title-row"><h1>${title}</h1></div></div><div class="header-actions"><div class="audience-mode-switch" role="group" aria-label="화면 모드 선택"><button class="${audienceMode === "general" ? "active" : ""}" type="button" data-audience-mode="general" aria-pressed="${audienceMode === "general"}">일반</button><button class="${audienceMode === "kids" ? "active" : ""}" type="button" data-audience-mode="kids" aria-pressed="${audienceMode === "kids"}">초등</button></div><div class="learning-mode-switch" role="group" aria-label="학습 모드 선택"><button class="${learningMode === "default" ? "active" : ""}" type="button" data-learning-mode="default" aria-pressed="${learningMode === "default"}">Silent</button><button class="${learningMode === "speaking" ? "active" : ""}" type="button" data-learning-mode="speaking" aria-pressed="${learningMode === "speaking"}">${icon("mic",14)} Speaking</button></div><div class="mini-streak">${icon("flame",18)} <b>${audienceMode === "kids" ? "★" : "12"}</b> ${audienceMode === "kids" ? "오늘의 별" : "day streak"}</div><button class="theme-toggle" type="button" data-theme-toggle aria-label="${currentTheme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}" title="화면 모드 변경">${icon(currentTheme === "dark" ? "sun" : "moon",18)}</button><button class="avatar" aria-label="${audienceMode === "kids" ? childName : "Kai"} 사용자 프로필">${audienceMode === "kids" ? childCallName() : "Kai"}</button></div></header>`;
+}
 
-  return `<header><button class="mobile-menu" aria-label="메뉴">${icon("menu")}</button><div class="header-title-block"><p class="eyebrow">${audienceMode === "kids" ? `${childName}의 오늘 영어` : "MONDAY, JULY 13"}</p><div class="header-title-row"><h1>${title}</h1>${toeicQuickLink}</div></div><div class="header-actions"><div class="audience-mode-switch" role="group" aria-label="화면 모드 선택"><button class="${audienceMode === "general" ? "active" : ""}" type="button" data-audience-mode="general" aria-pressed="${audienceMode === "general"}">일반</button><button class="${audienceMode === "kids" ? "active" : ""}" type="button" data-audience-mode="kids" aria-pressed="${audienceMode === "kids"}">초등</button></div><div class="learning-mode-switch" role="group" aria-label="학습 모드 선택"><button class="${learningMode === "default" ? "active" : ""}" type="button" data-learning-mode="default" aria-pressed="${learningMode === "default"}">Silent</button><button class="${learningMode === "speaking" ? "active" : ""}" type="button" data-learning-mode="speaking" aria-pressed="${learningMode === "speaking"}">${icon("mic",14)} Speaking</button></div><div class="mini-streak">${icon("flame",18)} <b>${audienceMode === "kids" ? "★" : "12"}</b> ${audienceMode === "kids" ? "오늘의 별" : "day streak"}</div><button class="theme-toggle" type="button" data-theme-toggle aria-label="${currentTheme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}" title="화면 모드 변경">${icon(currentTheme === "dark" ? "sun" : "moon",18)}</button><button class="avatar" aria-label="${audienceMode === "kids" ? childName : "Kai"} 사용자 프로필">${audienceMode === "kids" ? childCallName() : "Kai"}</button></div></header>`;
+function homeQuickLinks() {
+  if (audienceMode !== "general") return "";
+  const links = [
+    { className: "quick-rc", label: "매일 토익 RC 풀기", badge: "RC", href: "https://www.hackers.co.kr/?c=s_toeic/toeic_study/drc", page: "quiz", aria: "해커스 매일 토익 RC 풀기 새 창에서 열기" },
+    { className: "quick-ted", label: "TED 바로가기", badge: "TED", page: "ted", aria: "TED 학습 바로가기" },
+    { className: "quick-bbc", label: "BBC Learning", badge: "BBC", href: "https://www.bbc.co.uk/learningenglish/english/course/towards-advanced", page: "news", aria: "BBC Learning English Towards Advanced 새 창에서 열기" },
+  ];
+  return `<section class="home-quick-links" aria-label="학습 보조 링크"><span>${icon("spark", 14)} 추천 학습 링크</span><div>${links.map(link => link.href ? `<a class="${link.className}" href="${link.href}" target="_blank" rel="noopener noreferrer" aria-label="${link.aria}" data-related-page="${link.page}"><em>${link.badge}</em><b>${link.label}</b>${icon("arrow", 13)}</a>` : `<button class="${link.className}" type="button" data-page="${link.page}" aria-label="${link.aria}" data-related-page="${link.page}"><em>${link.badge}</em><b>${link.label}</b>${icon("arrow", 13)}</button>`).join("")}</div></section>`;
 }
 
 function checklist(date = state.selectedDate) {
   const completed = state.history[date] || [];
   const label = date === "2026-07-13" ? "오늘" : `${Number(date.slice(5,7))}월 ${Number(date.slice(8))}일`;
-  return `<section class="panel checklist-panel"><div class="panel-head"><div><p class="eyebrow">MY DAILY PLAN</p><h2>${label}의 학습 체크</h2></div><span class="count-pill">${completed.length} / 4 완료</span></div>
-  <div class="check-items">${Object.entries(CATEGORIES).map(([key, c]) => `<button class="check-row ${completed.includes(key) ? "done" : ""}" data-check="${key}" data-date="${date}"><span class="custom-check">${completed.includes(key) ? icon("check",15) : ""}</span><span class="check-copy"><b>${c.label} 학습</b><small>${key === "word" ? "오늘의 단어 10개" : key === "sentence" ? "핵심 문장 1개" : key === "drama" ? "표현 클립 1개" : "영문 기사 1편"}</small></span><span class="go">${completed.includes(key) ? "완료" : "시작"} ${icon("chevron",15)}</span></button>`).join("")}</div>
-  <div class="progress-meta"><span>오늘의 진행률</span><b>${completed.length * 25}%</b></div><div class="progress"><i style="width:${completed.length * 25}%"></i></div></section>`;
+  const doneSummary = completed.length
+    ? completed.map(key => key === "word" ? "단어 10개" : key === "sentence" ? "문장 1개" : key === "drama" ? "표현 클립 1개" : "기사 1편").join(" · ")
+    : "아직 완료한 학습 단위가 없습니다.";
+  return `<section class="panel checklist-panel"><div class="panel-head"><div><p class="eyebrow">COMPLETION LOG</p><h2>${label}에 완료한 학습</h2></div><span class="count-pill">${completed.length}개 단위 완료</span></div>
+  <p class="calendar-completion-summary">${doneSummary}</p>
+  <div class="check-items">${Object.entries(CATEGORIES).map(([key, c]) => `<button class="check-row ${completed.includes(key) ? "done" : ""}" data-check="${key}" data-date="${date}"><span class="custom-check">${completed.includes(key) ? icon("check",15) : ""}</span><span class="check-copy"><b>${c.label}</b><small>${key === "word" ? "단어 10개 완료" : key === "sentence" ? "문장 1개 학습" : key === "drama" ? "표현 클립 1개" : "기사 1편 읽기"}</small></span><span class="go">${completed.includes(key) ? "완료" : "기록"} ${icon("chevron",15)}</span></button>`).join("")}</div>
+  <div class="progress-meta"><span>완료한 학습 단위</span><b>${completed.length} / 4</b></div><div class="progress"><i style="width:${completed.length * 25}%"></i></div></section>`;
 }
 
 function wordCard(wordIndex = null, navigable = false) {
@@ -1722,8 +1863,9 @@ function vocabNaturalExample(word, seed = 0) {
   const term = String(word?.word || "").trim().toLowerCase();
   const curated = VOCAB_CURATED_EXAMPLES[term];
   const storedSentence = word?.exampleSentence || (!isGenericVocabExample(word?.example) ? word.example : "");
-  const sentence = curated?.exampleSentence || storedSentence;
-  const translation = curated?.exampleTranslation || word?.exampleTranslation || word?.translation || "";
+  const generated = !curated?.exampleSentence && !storedSentence ? vocabNaturalExampleLegacy(word, seed) : null;
+  const sentence = curated?.exampleSentence || storedSentence || generated?.en || "";
+  const translation = curated?.exampleTranslation || word?.exampleTranslation || (!isGenericVocabExample(word?.example) ? word?.translation : "") || generated?.ko || "";
   const safeTerm = term || String(word?.word || "").trim();
   const mark = value => {
     const raw = String(value || "").trim();
@@ -1732,20 +1874,12 @@ function vocabNaturalExample(word, seed = 0) {
     return raw.replace(new RegExp(`\\b${escaped}\\b`, "i"), match => `<mark>${match}</mark>`);
   };
 
-  if (!sentence) {
-    return {
-      ready: false,
-      en: "예문 준비 중입니다.",
-      ko: "뜻과 품사에 맞는 자연스러운 예문을 검수하고 있어요.",
-    };
-  }
-
   return {
-    ready: true,
+    ready: Boolean(sentence),
     partOfSpeech: curated?.partOfSpeech || word?.partOfSpeech || word?.type || vocabPartHint(word),
     meaning: curated?.meaning || word?.meaning || "",
-    en: mark(sentence),
-    ko: translation || "예문 속 문맥으로 단어의 뜻을 확인해 보세요.",
+    en: generated ? generated.en : mark(sentence || `${safeTerm || "This word"} appears in a short reading passage.`),
+    ko: translation || `예문에서 '${safeTerm}'는 '${word?.meaning || "핵심 뜻"}'의 의미로 쓰였습니다.`,
   };
 }
 
@@ -1823,6 +1957,97 @@ function homeTedCard() {
   </section>`;
 }
 
+function quizSummaryStats() {
+  const solvedCount = Object.keys(quizState.solvedMap || {}).length;
+  const correctCount = Object.values(quizState.solvedMap || {}).filter(result => result.correct).length;
+  const accuracy = solvedCount ? Math.round((correctCount / solvedCount) * 100) : null;
+  return {
+    solvedCount,
+    correctCount,
+    accuracy,
+    reviewNeeded: (quizState.wrongSet?.length || 0) + (quizState.bookmarkSet?.length || 0),
+    weakType: quizState.wrongSet?.length ? (quizState.questions[quizState.wrongSet[0]]?.type || "오답 유형") : "문맥 추론",
+  };
+}
+
+function dailyTestSummaryStats() {
+  const scores = dailyTestState.scores || emptyTestScores();
+  const solved = scores.rcTotal + scores.vocabTotal + scores.sentenceTotal;
+  const correct = scores.rcCorrect + scores.vocabCorrect + scores.sentenceCorrect;
+  return { solved, correct, accuracy: solved ? Math.round((correct / solved) * 100) : null };
+}
+
+function silentHomeCardDetails(item, isDone, itemMeta) {
+  const quiz = quizSummaryStats();
+  const test = dailyTestSummaryStats();
+  const wrongNotes = getWrongNotes();
+  const dailyReviewCount = Object.values(wrongNotes).reduce((sum, list) => sum + (Array.isArray(list) ? list.length : 0), 0);
+  const status = isDone
+    ? "오늘 완료됨"
+    : itemMeta.lastStudiedAt
+      ? `최근 학습 ${itemMeta.lastStudiedAt}`
+      : "아직 시작하지 않았어요";
+  const emptyScore = item.id === "quiz" || item.id === "test" ? "최근 풀이 기록 없음" : "완료 기록 대기";
+  const score = itemMeta.score !== null && itemMeta.score !== undefined ? `최근 결과 ${itemMeta.score}` : emptyScore;
+  const map = {
+    words: {
+      unit: `오늘 단어 ${getTodayVocabWords().length}개`,
+      review: state.savedWords.length ? `저장 단어 ${state.savedWords.length}개 복습 가능` : "저장 단어를 만들어보세요",
+      reason: "매일 1페이지가 새로 갱신돼요",
+    },
+    sentence: {
+      unit: "오늘의 핵심 문장 1개",
+      review: state.savedSentences.length ? `저장 문장 ${state.savedSentences.length}개` : "복습 문장 저장 가능",
+      reason: "한 문장만 Clear해도 완료",
+    },
+    news: {
+      unit: "오늘 확인할 기사 1개",
+      review: "핵심 표현 3개 확인",
+      reason: "실제 문장 감각 유지",
+    },
+    ted: {
+      unit: "강연 핵심 문장 5개",
+      review: "표현 카드 3개",
+      reason: "긴 문장 구조 익히기",
+    },
+    test: {
+      unit: "오늘 학습 기반 3문항",
+      review: test.accuracy === null ? "단어 / 문장 / 문법 복습 포함" : `오늘 정답률 ${test.accuracy}%`,
+      reason: dailyReviewCount ? `복습할 오답 ${dailyReviewCount}개 있음` : "빠르게 오늘 내용 확인",
+    },
+    quiz: {
+      unit: "오늘 추천 문제 3개",
+      review: "문법 + 짧은 독해 포함",
+      reason: quiz.reviewNeeded ? `오답/북마크 ${quiz.reviewNeeded}개 복습 필요` : `최근 약한 유형: ${quiz.weakType}`,
+    },
+  };
+  return { ...(map[item.id] || {}), status, score };
+}
+
+function silentHomeCoach(homeAppState, completed) {
+  const pending = homeStudyItems.filter(item => !homeStudyState.checked[item.id]).slice(0, 2);
+  const quiz = quizSummaryStats();
+  const test = dailyTestSummaryStats();
+  const reviewText = quiz.reviewNeeded
+    ? `영어 문제 풀이 오답/북마크 ${quiz.reviewNeeded}개`
+    : state.savedWords.length
+      ? `저장 단어 ${state.savedWords.length}개`
+      : "오늘 단어 10개";
+  const weakText = quiz.reviewNeeded
+    ? `최근 약한 유형: ${quiz.weakType}`
+    : test.accuracy !== null
+      ? `Daily Test 정답률 ${test.accuracy}%`
+      : "아직 약점 데이터가 부족해요";
+  const doneText = completed >= 3 ? "오늘 흐름이 좋습니다. 남은 항목은 복습 중심으로 가볍게 마무리하세요." : "짧게 하나만 더 끝내면 오늘 학습 흐름이 이어집니다.";
+  return {
+    pending,
+    reviewText,
+    weakText,
+    doneText,
+    totalSaved: state.savedWords.length + state.savedSentences.length,
+  };
+}
+
 function homePage() {
   // 자정이 지난 뒤 열린 탭에서도 오늘 날짜의 체크리스트가 보이도록 갱신합니다.
   if (homeStudyState.date !== localDateKey()) {
@@ -1833,6 +2058,8 @@ function homePage() {
   const todayRoutine = weeklyHomeRoutines[new Date().getDay()];
   const completed = homeStudyItems.filter(item => homeStudyState.checked[item.id]).length;
   const progress = Math.round((completed / homeStudyItems.length) * 100);
+  const isSilentMode = learningMode !== "speaking";
+  const silentCoach = silentHomeCoach(homeAppState, completed);
   const todayLabel = new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date());
   const encouragement = completed === homeStudyItems.length
     ? "오늘의 학습을 모두 마쳤어요. 정말 멋진 하루예요!"
@@ -1846,26 +2073,30 @@ function homePage() {
   return `${header()}<main class="home-dashboard-page">
   ${speakingMission}
   <section class="home-routine-guide" aria-label="오늘의 추천 학습 순서"><div class="home-routine-copy"><span class="home-routine-label">${icon("spark", 16)} 오늘의 추천 루틴</span><strong>${todayRoutine.title}</strong></div><div class="home-routine-flow">${todayRoutine.items.map((id,index) => { const item=homeStudyItems.find(entry=>entry.id===id); return `${index ? `<i>${icon("chevron",13)}</i>` : ""}<b>${Number(item.number)}. ${item.title}</b>`; }).join("")}</div></section>
+  ${homeQuickLinks()}
   <div class="home-dashboard-layout">
     <section class="home-study-section" aria-labelledby="home-study-title"><div class="home-study-heading"><div><p class="eyebrow">DAILY ROUTINE</p><h3 id="home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${homeStudyItems.length} 완료</span></div>
       <div class="home-study-grid">${homeStudyItems.map(item => {
         const isDone = Boolean(homeStudyState.checked[item.id]);
         const itemMeta = homeAppState.items[homeAppItemId(item.id)] || {};
+        const details = silentHomeCardDetails(item, isDone, itemMeta);
         const timeText = itemMeta.lastStudiedAt ? `최근 학습 · ${itemMeta.lastStudiedAt}` : "최근 학습 기록 없음";
         const scoreText = itemMeta.score !== null && itemMeta.score !== undefined ? `점수 · ${itemMeta.score}` : "점수 기록 없음";
         return `<article class="home-study-card ${isDone ? "completed" : ""}" data-home-study-page="${item.page}" data-home-study-link="${item.link}" tabindex="0" role="link" aria-label="${item.title} 학습 화면으로 이동">
           <div class="home-study-card-top"><div><span class="home-study-number">${item.number}</span><span class="home-study-icon ${item.color}">${icon(item.icon, 22)}</span></div><button class="home-study-toggle" type="button" data-home-study-toggle="${item.id}" aria-pressed="${isDone}" aria-label="${item.title} ${isDone ? "완료 취소" : "완료 표시"}">${icon("check", 15)}</button></div>
           <span class="home-study-done-chip">${icon("check", 11)} 완료된 학습</span><h4>${item.title}</h4>
-          <div class="home-study-card-bottom"><span>${isDone ? "한 번 더 복습하기" : "학습하러 가기"} ${icon("arrow", 15)}</span><em>${item.tag}</em></div>
-          <div class="home-study-meta"><span>${icon("calendar",11)} ${timeText}</span><span>${icon("check",11)} ${scoreText}</span></div>
+          ${isSilentMode ? `<div class="home-card-microplan"><span>${details.unit}</span><span>${details.review}</span><span>${details.reason}</span></div>` : ""}
+          <div class="home-study-card-bottom"><span>${isDone ? "복습 이어하기" : item.cta || "학습하러 가기"} ${icon("arrow", 15)}</span><em>${item.tag}</em></div>
+          <div class="home-study-meta"><span>${icon("calendar",11)} ${isSilentMode ? details.status : timeText}</span><span>${icon("check",11)} ${isSilentMode ? details.score : scoreText}</span></div>
         </article>`;
       }).join("")}</div>
     </section>
     <aside class="home-dashboard-side"><section class="home-progress-card" aria-labelledby="home-progress-title">
-      <p class="eyebrow">TODAY'S PROGRESS</p><div class="home-progress-title"><h3 id="home-progress-title">오늘의 학습 체크</h3><strong>${completed}<small> / ${homeStudyItems.length}</small></strong></div><p class="home-progress-desc">완료 여부와 오늘의 전체 달성률을 한눈에 확인해보세요.</p>
+      <p class="eyebrow">${isSilentMode ? "TODAY'S COACH" : "TODAY'S PROGRESS"}</p><div class="home-progress-title"><h3 id="home-progress-title">${isSilentMode ? "오늘의 학습 코치" : "오늘의 학습 체크"}</h3><strong>${completed}<small> / ${homeStudyItems.length}</small></strong></div><p class="home-progress-desc">${isSilentMode ? "완료한 항목과 바로 이어갈 복습을 기준으로 다음 행동을 제안합니다." : "완료 여부와 오늘의 전체 달성률을 한눈에 확인해보세요."}</p>
       <div class="home-progress-track" role="progressbar" aria-label="오늘의 학습 진도" aria-valuemin="0" aria-valuemax="${homeStudyItems.length}" aria-valuenow="${completed}"><i style="width:${progress}%"></i></div><span class="home-progress-percent">${progress}% 완료</span>
+      ${isSilentMode ? `<div class="home-coach-box"><b>다음 추천</b>${silentCoach.pending.length ? silentCoach.pending.map(item => `<button type="button" data-page="${item.page}">${item.title} · ${item.cta || "시작"} ${icon("arrow", 12)}</button>`).join("") : `<span>오늘 주요 학습을 모두 끝냈어요.</span>`}<b>복습 필요</b><p>${silentCoach.reviewText}</p><b>약점 신호</b><p>${silentCoach.weakText}</p></div>` : ""}
       <ul>${homeStudyItems.map(item => `<li class="${homeStudyState.checked[item.id] ? "done" : ""}"><i>${homeStudyState.checked[item.id] ? icon("check", 12) : ""}</i><span>${item.number}. ${item.title}</span><em>${homeStudyState.checked[item.id] ? "완료" : "진행 전"}</em></li>`).join("")}</ul>
-      <p class="home-progress-message">${encouragement}</p><button class="home-progress-reset" type="button" data-home-study-reset>오늘의 체크 초기화</button>
+      <p class="home-progress-message">${isSilentMode ? silentCoach.doneText : encouragement}</p><button class="home-progress-reset" type="button" data-home-study-reset>오늘의 체크 초기화</button>
     </section><section class="home-tip-card weekly"><span>${icon("spark", 17)}</span><div><h3>요일별 루틴 운영 팁</h3><p>매일 6개를 모두 하기보다 요일마다 2~3개 루틴을 고정하면 지속하기 쉬워요.</p><ul><li>월·수·금: 짧고 가벼운 루틴</li><li>화·목: 입력과 이해 중심</li><li>주말: 테스트와 문제풀이로 정리</li></ul></div></section></aside>
   </div>${homeTedCard()}</main>`;
 }
@@ -1992,7 +2223,10 @@ function calendarPage() {
   const y = state.calendarYear, m = state.calendarMonth;
   const first = new Date(y,m,1).getDay(), days = new Date(y,m+1,0).getDate();
   const cells = Array(first).fill("").concat(Array.from({length:days},(_,i)=>i+1));
-  return `${header("학습 캘린더")}<main class="calendar-page"><div class="calendar-compact-legend"><span>학습 구분</span><div class="legend">${Object.entries(CATEGORIES).map(([k,c])=>`<span><i class="${k}">${c.short}</i>${c.label}</span>`).join("")}</div></div><div class="calendar-layout"><section class="calendar-panel panel"><div class="calendar-head"><button data-month="-1">‹</button><h2>${y}년 ${m+1}월</h2><button data-month="1">›</button></div><div class="weekdays">${["일","월","화","수","목","금","토"].map(x=>`<span>${x}</span>`).join("")}</div><div class="calendar-grid">${cells.map(d=>{if(!d)return `<div class="day empty"></div>`; const key=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`, done=state.history[key]||[]; return `<button class="day ${key===state.selectedDate?"selected":""} ${key==="2026-07-13"?"today":""}" data-date="${key}"><b>${d}</b><div class="day-checks">${Object.entries(CATEGORIES).map(([k,c])=>`<i class="${k} ${done.includes(k)?"done":""}">${done.includes(k)?icon("check",10):c.short}</i>`).join("")}</div></button>`}).join("")}</div></section>${checklist(state.selectedDate)}</div></main>`;
+  const monthKeys = Array.from({ length: days }, (_, index) => `${y}-${String(m + 1).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`);
+  const monthDoneDays = monthKeys.filter(key => (state.history[key] || []).length).length;
+  const monthDoneUnits = monthKeys.reduce((sum, key) => sum + (state.history[key] || []).length, 0);
+  return `${header("학습 캘린더")}<main class="calendar-page"><div class="calendar-compact-legend"><span>완료 단위 기록</span><div class="legend">${Object.entries(CATEGORIES).map(([k,c])=>`<span><i class="${k}">${c.short}</i>${c.label}</span>`).join("")}</div></div><section class="calendar-month-summary"><article><b>${monthDoneDays}</b><span>이번 달 학습한 날</span></article><article><b>${monthDoneUnits}</b><span>누적 완료 단위</span></article><article><b>${state.savedWords.length + state.savedSentences.length}</b><span>복습 저장 항목</span></article></section><div class="calendar-layout"><section class="calendar-panel panel"><div class="calendar-head"><button data-month="-1">‹</button><h2>${y}년 ${m+1}월</h2><button data-month="1">›</button></div><div class="weekdays">${["일","월","화","수","목","금","토"].map(x=>`<span>${x}</span>`).join("")}</div><div class="calendar-grid">${cells.map(d=>{if(!d)return `<div class="day empty"></div>`; const key=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`, done=state.history[key]||[]; return `<button class="day ${key===state.selectedDate?"selected":""} ${key===localDateKey()?"today":""}" data-date="${key}"><b>${d}</b><small>${done.length ? `${done.length}개 완료` : ""}</small><div class="day-checks">${Object.entries(CATEGORIES).map(([k,c])=>`<i class="${k} ${done.includes(k)?"done":""}">${done.includes(k)?icon("check",10):c.short}</i>`).join("")}</div></button>`}).join("")}</div></section>${checklist(state.selectedDate)}</div></main>`;
 }
 
 function newsPage() {
@@ -2144,10 +2378,13 @@ function dailyTestPage() {
     Object.assign(dailyQuickTestState, { date: todayKey, graded: false, score: null });
   }
   const quickQuestions = getDailyQuickTestQuestions(todayKey);
+  const quickTotal = quickQuestions.length;
   const type = dailyTestState.active;
   const scores = dailyTestState.scores;
   const isDashboardDone = Boolean(homeStudyState.checked.test);
   const testMeta = syncHomeAppState().items.dailytest || {};
+  const wrongNotes = getWrongNotes();
+  const reviewCount = Object.values(wrongNotes).reduce((sum, list) => sum + (Array.isArray(list) ? list.length : 0), 0);
   const tabs = [
     ["rc", "RC 문제"],
     ["vocab", "단어장 테스트"],
@@ -2203,7 +2440,7 @@ function dailyTestPage() {
   }
 
   return `${header("Daily Test")}<main class="daily-test-page">
-    <section class="daily-quick-test" aria-labelledby="quick-test-title"><div class="daily-quick-head"><div><p class="eyebrow">2-MINUTE QUICK CHECK · ${todayKey}</p><h2 id="quick-test-title">오늘의 빠른 점검</h2><span>오늘의 단어와 매일 1문장에서 자동 출제된 새로운 문제예요.</span></div><b>2 QUESTIONS</b></div><div class="daily-quick-status"><b class="${isDashboardDone ? "done" : "todo"}">${isDashboardDone ? icon("check",12) : ""}${isDashboardDone ? "완료됨" : "진행 전"}</b><span>${testMeta.lastStudiedAt ? `최근 학습 · ${testMeta.lastStudiedAt}` : "최근 학습 기록 없음"}</span><span data-daily-score-meta>${testMeta.score !== null && testMeta.score !== undefined ? `최근 점수 · ${testMeta.score}` : "점수 기록 없음"}</span><button type="button" data-daily-undo ${!isDashboardDone ? "disabled" : ""}>완료 해제</button></div><div class="daily-quick-grid">${quickQuestions.map((question, questionIndex) => `<fieldset><legend><small>${question.category}</small>${questionIndex + 1}. <strong>${question.prompt}</strong> ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<label><input type="radio" name="quick-q${questionIndex + 1}" value="${choiceIndex}"><span>${choice}</span></label>`).join("")}</fieldset>`).join("")}</div><div class="daily-quick-actions"><button type="button" data-quick-grade>빠른 점검 채점하기</button><p class="${dailyQuickTestState.score === 2 ? "perfect" : ""}" data-quick-result role="status" aria-live="polite">${dailyQuickTestState.graded ? `점수: ${dailyQuickTestState.score} / 2` : ""}</p><button class="complete ${isDashboardDone ? "done" : ""}" type="button" data-daily-complete ${!dailyQuickTestState.graded && !isDashboardDone ? "hidden" : ""} ${isDashboardDone ? "disabled" : ""}>${icon("check",16)} ${isDashboardDone ? "Daily Test 완료됨" : "학습 완료 처리"}</button></div></section>
+    <section class="daily-quick-test" aria-labelledby="quick-test-title"><div class="daily-quick-head"><div><p class="eyebrow">TODAY REVIEW CHECK · ${todayKey}</p><h2 id="quick-test-title">오늘 학습 확인용 퀵 테스트</h2><span>오늘 학습한 단어, 문장 표현, 문법 포인트를 가볍게 확인합니다.</span></div><b>${quickTotal} QUESTIONS</b></div><div class="daily-quick-scope"><span>오늘 학습 기반 ${quickTotal}문항</span><span>단어 / 문장 / 문법 복습 포함</span><span>${reviewCount ? `복습 대기 ${reviewCount}개 있음` : "복습 대기 없음"}</span></div><div class="daily-quick-status"><b class="${isDashboardDone ? "done" : "todo"}">${isDashboardDone ? icon("check",12) : ""}${isDashboardDone ? "완료됨" : "진행 전"}</b><span>${testMeta.lastStudiedAt ? `최근 학습 · ${testMeta.lastStudiedAt}` : "아직 테스트를 시작하지 않았어요"}</span><span data-daily-score-meta>${testMeta.score !== null && testMeta.score !== undefined ? `최근 점수 · ${testMeta.score}` : "최근 풀이 기록이 없어요"}</span><button type="button" data-daily-undo ${!isDashboardDone ? "disabled" : ""}>완료 해제</button></div><div class="daily-quick-grid">${quickQuestions.map((question, questionIndex) => `<fieldset><legend><small>${question.category}</small>${questionIndex + 1}. <strong>${question.prompt}</strong> ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<label><input type="radio" name="quick-q${questionIndex + 1}" value="${choiceIndex}"><span>${choice}</span></label>`).join("")}</fieldset>`).join("")}</div><div class="daily-quick-actions"><button type="button" data-quick-grade>오늘 테스트 채점하기</button><p class="${dailyQuickTestState.score === quickTotal ? "perfect" : ""}" data-quick-result role="status" aria-live="polite">${dailyQuickTestState.graded ? `점수: ${dailyQuickTestState.score} / ${quickTotal}` : ""}</p><button class="complete ${isDashboardDone ? "done" : ""}" type="button" data-daily-complete ${!dailyQuickTestState.graded && !isDashboardDone ? "hidden" : ""} ${isDashboardDone ? "disabled" : ""}>${icon("check",16)} ${isDashboardDone ? "Daily Test 완료됨" : "학습 완료 처리"}</button></div></section>
 
     <nav class="test-tabs" aria-label="Daily Test 유형">${tabs.map(([key, label]) => `<button class="${type === key ? "active" : ""}" type="button" data-test-tab="${key}">${label}</button>`).join("")}</nav>
     ${pageContent}
@@ -2211,7 +2448,10 @@ function dailyTestPage() {
 }
 
 function dailyTestScoreCard(scores) {
-  return `<section class="panel test-score-card"><div class="test-card-head"><div><p class="eyebrow">MY SCORE</p><h2>오늘의 점수</h2></div></div><div class="test-score-list"><div><span>RC 정답 수</span><b id="test-score-rc">${scores.rcCorrect} / ${scores.rcTotal}</b></div><div><span>단어 정답 수</span><b id="test-score-vocab">${scores.vocabCorrect} / ${scores.vocabTotal}</b></div><div><span>문장 정답 수</span><b id="test-score-sentence">${scores.sentenceCorrect} / ${scores.sentenceTotal}</b></div></div><button class="test-reset" type="button" data-test-reset>오늘 점수 초기화</button><p id="test-score-status" class="test-score-status" role="status" aria-live="polite"></p></section>`;
+  const solved = scores.rcTotal + scores.vocabTotal + scores.sentenceTotal;
+  const correct = scores.rcCorrect + scores.vocabCorrect + scores.sentenceCorrect;
+  const accuracy = solved ? Math.round((correct / solved) * 100) : null;
+  return `<section class="panel test-score-card"><div class="test-card-head"><div><p class="eyebrow">TODAY REVIEW</p><h2>오늘 확인 현황</h2></div><span>${accuracy === null ? "기록 대기" : `${accuracy}%`}</span></div><div class="test-score-list"><div><span>RC 확인</span><b id="test-score-rc">${scores.rcCorrect} / ${scores.rcTotal}</b></div><div><span>단어 복습</span><b id="test-score-vocab">${scores.vocabCorrect} / ${scores.vocabTotal}</b></div><div><span>문장 표현</span><b id="test-score-sentence">${scores.sentenceCorrect} / ${scores.sentenceTotal}</b></div></div><button class="test-reset" type="button" data-test-reset>오늘 기록 초기화</button><p id="test-score-status" class="test-score-status" role="status" aria-live="polite">${solved ? "오늘 푼 항목을 기준으로 복습 필요 여부를 확인합니다." : "아직 오늘 풀이 기록이 없습니다."}</p></section>`;
 }
 
 function saveDailyTestResult(type, current, selectedIndex, isCorrect) {
@@ -2309,6 +2549,7 @@ function quizRelatedLearningPanel(question) {
 }
 
 function quizPage() {
+  const plan = ensureQuizDailyPlan();
   const filtered = getFilteredQuizIndexes();
   quizState.current = Math.min(Math.max(0, quizState.current), Math.max(0, filtered.length - 1));
   const realIndex = filtered[quizState.current] ?? -1;
@@ -2329,6 +2570,7 @@ function quizPage() {
   const level = quizLevelFromAccuracy(accuracy);
   const bookmarked = realIndex >= 0 && quizState.bookmarkSet.includes(realIndex);
   const weeklySolved = quizState.solvedDates.slice(-7).length;
+  const quizMeta = syncHomeAppState().items.quiz || {};
 
   const choiceMarkup = question ? question.choices.map((choice, choiceIndex) => {
     const className = [
@@ -2357,13 +2599,14 @@ function quizPage() {
   return `${header("영어 문제 풀이")}<main class="quiz-page ${quizState.darkMode ? "dark" : ""}">
     <section class="quiz-topbar compact"><div class="quiz-actions"><label>CSV 업로드<input type="file" data-quiz-csv accept=".csv"></label><button type="button" data-quiz-mode>${quizState.examMode ? "시험 모드" : "학습 모드"}</button><button type="button" data-quiz-retry>오답 다시풀기</button><button type="button" data-quiz-dark>${quizState.darkMode ? "라이트모드" : "다크모드"}</button><button class="warn" type="button" data-quiz-reset>기록 초기화</button></div></section>
     <section class="quiz-hero-dashboard">
-      <div><p class="eyebrow">ADAPTIVE ENGLISH LAB</p><h2>실무형 영어 문제 풀이</h2><span>문제 풀이, 해설, 관련 표현, 오답 복습이 한 흐름으로 이어집니다.</span></div>
+      <div><p class="eyebrow">PRACTICAL RC TRAINING</p><h2>실전형 객관식 트레이닝</h2><span>토익 RC 형식은 참고하되, 문제와 지문은 업무·기술 맥락에 맞춘 자체 제작 4지선다 문제입니다.</span><div class="quiz-mix-line"><b>오늘의 새 문제 · 문법 2문항 + 독해 1문항</b><span>최근 풀이와 겹치지 않는 문제로 구성하고, 복습 필요 문제는 별도로 제공합니다.</span></div></div>
       <div class="quiz-kpi-grid"><article><span>Today Goal</span><b>${todayCount}/10</b><small>오늘 푼 문제</small></article><article><span>Accuracy</span><b>${accuracy}%</b><small>${correctCount}/${solvedCount || 0} correct</small></article><article><span>Level</span><b>${level}</b><small>현재 실력 추정</small></article><article><span>Review Needed</span><b>${reviewNeeded}</b><small>오답+북마크</small></article><article><span>Streak</span><b>${weeklySolved}</b><small>최근 7일 풀이</small></article></div>
     </section>
-    <section class="quiz-written-check" aria-labelledby="quiz-written-title"><div class="quiz-written-head"><div><p class="eyebrow">WRITTEN CHECK</p><h3 id="quiz-written-title">오늘의 주관식 마무리</h3><span>문장 패턴과 핵심 단어를 직접 입력하며 회상 학습을 합니다.</span></div><b>2 QUESTIONS</b></div><div class="quiz-written-grid"><label><span><em>Grammar</em> 빈칸에 알맞은 표현</span><strong>I’m getting used to ______ English every day.</strong><small>힌트: get used to 뒤에는 동명사가 옵니다.</small><input type="text" data-written-answer="1" placeholder="정답 입력" autocomplete="off"></label><label><span><em>Vocabulary</em> 핵심 단어 뜻</span><strong>maintain = ?</strong><small>허용 답안: 유지하다, 유지</small><input type="text" data-written-answer="2" placeholder="정답 입력" autocomplete="off"></label></div><div class="quiz-written-actions"><button type="button" data-written-grade>주관식 정답 확인</button><div data-written-result role="status" aria-live="polite">${quizQuickState.graded ? `<b>점수: ${quizQuickState.score} / 2</b>${quizQuickState.feedback.map(item => `<span>${item}</span>`).join("")}` : ""}</div><button class="complete ${isDashboardDone ? "done" : ""}" type="button" data-quiz-dashboard-complete ${!quizQuickState.graded && !isDashboardDone ? "hidden" : ""}>${icon("check",16)} ${isDashboardDone ? "영어 문제 풀이 완료됨" : "학습 완료 처리"}</button></div></section>
+    <section class="quiz-objective-strip" aria-label="오늘의 객관식 문제 구성"><article><b>오늘의 새 문제</b><span>${plan.newIndexes.length}문항 · 최근 7일 중복 제외</span></article><article><b>구성</b><span>문법 2문항 + 짧은 독해 1문항</span></article><article><b>복습 문제</b><span>${plan.reviewIndexes.length ? `${plan.reviewIndexes.length}문항 별도 제공` : "복습 대기 없음"}</span></article></section>
+    <section class="quiz-learning-status" aria-label="영어 문제 풀이 학습 상태"><div><b class="${isDashboardDone ? "done" : "todo"}">${isDashboardDone ? icon("check", 12) : ""}${isDashboardDone ? "완료됨" : "진행 전"}</b><span>${quizMeta.lastStudiedAt ? `최근 학습 · ${quizMeta.lastStudiedAt}` : "아직 오늘 문제를 풀지 않았어요"}</span><span data-quiz-score-meta>${quizMeta.score !== null && quizMeta.score !== undefined ? `최근 점수 · ${quizMeta.score}` : "최근 풀이 기록이 없어요"}</span></div><button type="button" data-quiz-dashboard-complete ${!solvedCount && !isDashboardDone ? "disabled" : ""}>${isDashboardDone ? "완료됨" : "학습 완료 처리"}</button><button type="button" data-quiz-dashboard-undo ${!isDashboardDone ? "disabled" : ""}>완료 해제</button></section>
     <section class="quiz-toolbar"><input type="search" data-quiz-search value="${escapeMarkup(quizState.search)}" placeholder="문제, 해설, 카테고리, 표현 검색"><select data-quiz-filter><option value="all">전체 보기</option><option value="unsolved" ${quizState.filter === "unsolved" ? "selected" : ""}>안 푼 문제</option><option value="solved" ${quizState.filter === "solved" ? "selected" : ""}>푼 문제</option><option value="wrong" ${quizState.filter === "wrong" ? "selected" : ""}>오답 문제</option></select></section>
     <div class="quiz-layout">
-      <section class="quiz-main-stack">${question ? `<article class="quiz-question-card advanced"><div class="quiz-meta"><span class="${quizTypeTone(question.type)}">${escapeMarkup(question.type)}</span><span>${escapeMarkup(question.difficulty)}</span><span>${escapeMarkup(question.category)}</span><span>${escapeMarkup(question.estimatedTime)}</span>${solved ? `<span class="done">풀이 완료</span>` : ""}</div><div class="quiz-question-head"><div><p>${escapeMarkup(question.learningPoint)}</p><h3>${escapeMarkup(question.question)}</h3></div><button class="quiz-bookmark ${bookmarked ? "active" : ""}" type="button" data-quiz-bookmark="${realIndex}" aria-pressed="${bookmarked}" aria-label="헷갈린 문제 북마크">${icon("bookmark", 18)}</button></div><div class="quiz-choices">${choiceMarkup}</div><div class="quiz-navigation"><button type="button" data-quiz-prev>이전</button><button type="button" data-quiz-next>다음</button><button class="secondary" type="button" data-quiz-retry-one="${realIndex}">다시 풀기</button><button class="primary" type="button" data-quiz-answer ${solved ? "disabled" : ""}>정답 확인</button></div><div class="quiz-review-actions"><button type="button" data-quiz-bookmark="${realIndex}">${bookmarked ? "북마크 해제" : "헷갈린 문제 저장"}</button><button type="button" data-quiz-retry>약점 유형 복습</button><button type="button" data-quiz-next>다음 문제</button></div></article>${explanationMarkup}` : `<section class="quiz-no-question"><b>조건에 맞는 문제가 없습니다.</b><span>검색어 또는 필터를 변경해 주세요.</span></section>`}</section>
+      <section class="quiz-main-stack">${question ? `<article class="quiz-question-card advanced"><div class="quiz-meta"><span class="${quizTypeTone(question.type)}">${escapeMarkup(question.type)}</span><span>${escapeMarkup(question.difficulty)}</span><span>${escapeMarkup(question.category)}</span><span>${escapeMarkup(question.estimatedTime)}</span>${solved ? `<span class="done">풀이 완료</span>` : ""}</div><div class="quiz-question-head"><div><p>${escapeMarkup(question.learningPoint)}</p><h3>${escapeMarkup(question.question)}</h3></div><button class="quiz-bookmark ${bookmarked ? "active" : ""}" type="button" data-quiz-bookmark="${realIndex}" aria-pressed="${bookmarked}" aria-label="헷갈린 문제 북마크">${icon("bookmark", 18)}</button></div>${question.passage ? `<div class="quiz-passage"><b>Short passage</b><p>${escapeMarkup(question.passage)}</p></div>` : ""}<div class="quiz-choices">${choiceMarkup}</div><div class="quiz-navigation"><button type="button" data-quiz-prev>이전</button><button type="button" data-quiz-next>다음</button><button class="secondary" type="button" data-quiz-retry-one="${realIndex}">다시 풀기</button><button class="primary" type="button" data-quiz-answer ${solved ? "disabled" : ""}>정답 확인</button></div><div class="quiz-review-actions"><button type="button" data-quiz-bookmark="${realIndex}">${bookmarked ? "북마크 해제" : "헷갈린 문제 저장"}</button><button type="button" data-quiz-retry>약점 유형 복습</button><button type="button" data-quiz-next>다음 문제</button></div></article>${explanationMarkup}` : `<section class="quiz-no-question"><b>조건에 맞는 문제가 없습니다.</b><span>검색어 또는 필터를 변경해 주세요.</span></section>`}</section>
       ${quizRelatedLearningPanel(question)}
     </div>
     <section class="quiz-performance-summary"><div><p class="eyebrow">PERFORMANCE SUMMARY</p><h3>학습 분석</h3><span>진행률 ${progress}% · 전체 ${solvedCount}/${total}문제 풀이</span></div><ul>${quizPerformanceRows()}</ul></section>
@@ -2961,7 +3204,7 @@ function parseQuizCSV(text) {
     const row = Object.fromEntries(headers.map((header, index) => [header, (columns[index] || "").trim()]));
     const choices = row.choices ? row.choices.split("|").map(value => value.trim()).filter(Boolean) : [1, 2, 3, 4, 5, 6].map(index => row[`choice${index}`]).filter(Boolean);
     return normalizeQuizQuestion({ ...row, choices, youtube: row.youtube || row.youtube_url || row.video || row.videoId || row.youtubeId });
-  }).filter(question => question.question && question.choices.length >= 2);
+  }).filter(question => question.question && question.choices.length === 4);
 }
 
 function jumpToQuizQuestion(realIndex, retry = false) {
@@ -3442,24 +3685,24 @@ function bindEvents(){
     window.setTimeout(() => { if (dramaSaveStatus) dramaSaveStatus.textContent = ""; }, 3000);
   });
   document.querySelector("[data-quick-grade]")?.addEventListener("click", () => {
-    const first = document.querySelector('input[name="quick-q1"]:checked');
-    const second = document.querySelector('input[name="quick-q2"]:checked');
     const result = document.querySelector("[data-quick-result]");
-    if (!first || !second) {
+    const questions = getDailyQuickTestQuestions();
+    const selectedAnswers = questions.map((_, index) => document.querySelector(`input[name="quick-q${index + 1}"]:checked`));
+    if (selectedAnswers.some(input => !input)) {
       result.className = "error";
-      result.textContent = "두 문항에 모두 답해주세요.";
+      result.textContent = "모든 문항에 답해주세요.";
       return;
     }
-    const questions = getDailyQuickTestQuestions();
-    const selectedAnswers = [Number(first.value), Number(second.value)];
-    dailyQuickTestState.score = selectedAnswers.reduce((score, selected, index) => score + Number(selected === questions[index].answer), 0);
+    const answerIndexes = selectedAnswers.map(input => Number(input.value));
+    const total = questions.length;
+    dailyQuickTestState.score = answerIndexes.reduce((score, selected, index) => score + Number(selected === questions[index].answer), 0);
     dailyQuickTestState.graded = true;
-    syncHomeAppState("test", `${dailyQuickTestState.score} / 2`);
-    result.className = dailyQuickTestState.score === 2 ? "perfect" : "";
-    const wrongExplanations = questions.filter((question, index) => selectedAnswers[index] !== question.answer).map(question => question.explanation);
-    result.textContent = `점수: ${dailyQuickTestState.score} / 2${wrongExplanations.length ? `\n${wrongExplanations.join("\n")}` : "\n오늘의 내용을 정확히 기억했어요!"}`;
+    syncHomeAppState("test", `${dailyQuickTestState.score} / ${total}`);
+    result.className = dailyQuickTestState.score === total ? "perfect" : "";
+    const wrongExplanations = questions.filter((question, index) => answerIndexes[index] !== question.answer).map(question => question.explanation);
+    result.textContent = `점수: ${dailyQuickTestState.score} / ${total}${wrongExplanations.length ? `\n${wrongExplanations.join("\n")}` : "\n오늘 배운 내용을 정확히 기억했어요!"}`;
     const scoreMeta = document.querySelector("[data-daily-score-meta]");
-    if (scoreMeta) scoreMeta.textContent = `최근 점수 · ${dailyQuickTestState.score} / 2`;
+    if (scoreMeta) scoreMeta.textContent = `최근 점수 · ${dailyQuickTestState.score} / ${total}`;
     document.querySelectorAll(".daily-quick-grid fieldset").forEach((fieldset, questionIndex) => {
       fieldset.querySelectorAll("label").forEach(label => {
         const input = label.querySelector("input");
@@ -3474,7 +3717,7 @@ function bindEvents(){
   document.querySelector("[data-daily-complete]")?.addEventListener("click", () => {
     if (!dailyQuickTestState.graded && !homeStudyState.checked.test) return;
     homeStudyState.checked.test = true;
-    saveHomeStudyState("test", dailyQuickTestState.graded ? `${dailyQuickTestState.score} / 2` : undefined);
+    saveHomeStudyState("test", dailyQuickTestState.graded ? `${dailyQuickTestState.score} / ${getDailyQuickTestQuestions().length}` : undefined);
     render();
   });
   document.querySelector("[data-daily-undo]")?.addEventListener("click", () => {
@@ -3542,45 +3785,12 @@ function bindEvents(){
     Object.assign(dailyTestState.scores, emptyTestScores());
     render();
   });
-  const quizWrittenCheck = document.querySelector(".quiz-written-check");
-  if (quizWrittenCheck) {
-    const quizMeta = syncHomeAppState().items.quiz || {};
-    const quizDone = Boolean(homeStudyState.checked.quiz);
-    quizWrittenCheck.insertAdjacentHTML("beforebegin", `<section class="quiz-learning-status" aria-label="영어 문제 풀이 학습 상태"><div><b class="${quizDone ? "done" : "todo"}">${quizDone ? icon("check", 12) : ""}${quizDone ? "완료됨" : "진행 전"}</b><span>${quizMeta.lastStudiedAt ? `최근 학습 · ${quizMeta.lastStudiedAt}` : "최근 학습 기록 없음"}</span><span data-quiz-score-meta>${quizMeta.score !== null && quizMeta.score !== undefined ? `최근 점수 · ${quizMeta.score}` : "점수 기록 없음"}</span></div><button type="button" data-quiz-dashboard-undo ${!quizDone ? "disabled" : ""}>완료 해제</button></section>`);
-  }
-  document.querySelector("[data-written-grade]")?.addEventListener("click", () => {
-    const first = document.querySelector('[data-written-answer="1"]');
-    const second = document.querySelector('[data-written-answer="2"]');
-    const result = document.querySelector("[data-written-result]");
-    const answer1 = first.value.trim().toLowerCase();
-    const answer2 = second.value.trim().replaceAll(" ", "");
-    if (!answer1 || !answer2) {
-      result.className = "error";
-      result.textContent = "두 문항에 모두 답을 입력해주세요.";
-      return;
-    }
-    const firstCorrect = answer1 === "studying";
-    const secondCorrect = answer2 === "유지하다" || answer2 === "유지";
-    quizQuickState.score = Number(firstCorrect) + Number(secondCorrect);
-    quizQuickState.graded = true;
-    quizQuickState.feedback = [firstCorrect ? "1번 정답" : "1번 오답 · 정답: studying", secondCorrect ? "2번 정답" : "2번 오답 · 정답: 유지하다"];
-    first.classList.toggle("correct", firstCorrect);
-    first.classList.toggle("wrong", !firstCorrect);
-    second.classList.toggle("correct", secondCorrect);
-    second.classList.toggle("wrong", !secondCorrect);
-    first.disabled = true;
-    second.disabled = true;
-    result.className = quizQuickState.score === 2 ? "perfect" : "";
-    result.innerHTML = `<b>점수: ${quizQuickState.score} / 2</b>${quizQuickState.feedback.map(item => `<span>${item}</span>`).join("")}`;
-    syncHomeAppState("quiz", `${quizQuickState.score} / 2`);
-    const scoreMeta = document.querySelector("[data-quiz-score-meta]");
-    if (scoreMeta) scoreMeta.textContent = `최근 점수 · ${quizQuickState.score} / 2`;
-    document.querySelector("[data-quiz-dashboard-complete]")?.removeAttribute("hidden");
-  });
   document.querySelector("[data-quiz-dashboard-complete]")?.addEventListener("click", () => {
-    if (!quizQuickState.graded && !homeStudyState.checked.quiz) return;
+    const quizSolvedCount = Object.keys(quizState.solvedMap).length;
+    if (!quizSolvedCount && !homeStudyState.checked.quiz) return;
+    const quizCorrectCount = Object.values(quizState.solvedMap).filter(result => result.correct).length;
     homeStudyState.checked.quiz = true;
-    saveHomeStudyState("quiz", quizQuickState.graded ? `${quizQuickState.score} / 2` : undefined);
+    saveHomeStudyState("quiz", quizSolvedCount ? `${quizCorrectCount} / ${quizSolvedCount}` : undefined);
     render();
   });
   document.querySelector("[data-quiz-dashboard-undo]")?.addEventListener("click", () => {
@@ -3622,7 +3832,7 @@ function bindEvents(){
   document.querySelector("[data-quiz-mode]")?.addEventListener("click", () => { quizState.examMode = !quizState.examMode; saveQuizState(); render(); });
   document.querySelector("[data-quiz-dark]")?.addEventListener("click", () => { quizState.darkMode = !quizState.darkMode; saveQuizState(); render(); });
   document.querySelectorAll("[data-quiz-retry]").forEach(button => button.addEventListener("click", () => { if (!quizState.wrongSet.length) { window.alert("오답 문제가 없습니다."); return; } quizState.search = ""; quizState.filter = "wrong"; quizState.current = 0; quizState.selectedChoice = null; render(); }));
-  document.querySelector("[data-quiz-reset]")?.addEventListener("click", () => { if (!window.confirm("학습 기록을 초기화할까요?")) return; quizState.solvedMap = {}; quizState.wrongSet = []; quizState.bookmarkSet = []; quizState.solvedDates = []; quizState.current = 0; quizState.answerVisible = false; quizState.selectedChoice = null; saveQuizState(); render(); });
+  document.querySelector("[data-quiz-reset]")?.addEventListener("click", () => { if (!window.confirm("학습 기록을 초기화할까요?")) return; quizState.solvedMap = {}; quizState.wrongSet = []; quizState.bookmarkSet = []; quizState.solvedDates = []; quizState.dailyPlan = null; quizState.recentQuestionHistory = []; quizState.current = 0; quizState.answerVisible = false; quizState.selectedChoice = null; saveQuizState(); render(); });
   document.querySelector("[data-quiz-filter]")?.addEventListener("change", event => { quizState.filter = event.currentTarget.value; quizState.current = 0; quizState.answerVisible = false; quizState.selectedChoice = null; render(); });
   document.querySelector("[data-quiz-search]")?.addEventListener("input", event => {
     quizState.search = event.currentTarget.value;
@@ -3656,6 +3866,8 @@ function bindEvents(){
       quizState.wrongSet = [];
       quizState.bookmarkSet = [];
       quizState.solvedDates = [];
+      quizState.dailyPlan = null;
+      quizState.recentQuestionHistory = [];
       quizState.current = 0;
       quizState.search = "";
       quizState.filter = "all";

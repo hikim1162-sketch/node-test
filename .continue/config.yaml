@@ -1,0 +1,16 @@
+name: Main Config
+version: 1.0.0
+schema: v1
+
+models:
+  - name: P-GPT-5.4
+    provider: openai
+    model: gpt-5.4-mini
+    apiBase: http://aigpt.posco.net/gpgpta01-gpt/v1
+    apiKey: 8f1584d1-7ea2-4415-81bf-a43212efacaa
+    roles:
+      - chat
+      - edit
+      - apply
+    capabilities:
+      - tool_use
