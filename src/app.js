@@ -731,7 +731,7 @@ function mergeDefaultQuizQuestions(savedQuestions = []) {
 }
 
 function loadQuizState() {
-  const initial = { questions: mergeDefaultQuizQuestions([]), current: 0, solvedMap: {}, wrongSet: [], bookmarkSet: [], solvedDates: [], dailyPlan: null, recentQuestionHistory: [], darkMode: false, examMode: false, search: "", filter: "all", answerVisible: false, selectedChoice: null };
+  const initial = { questions: mergeDefaultQuizQuestions([]), current: 0, solvedMap: {}, wrongSet: [], bookmarkSet: [], solvedDates: [], dailyPlan: null, recentQuestionHistory: [], activeGroup: "", darkMode: false, examMode: false, search: "", filter: "all", answerVisible: false, selectedChoice: null };
   try {
     const saved = JSON.parse(localStorage.getItem(QUIZ_APP_STORAGE_KEY) || "null");
     if (!saved) return initial;
@@ -752,7 +752,7 @@ const quizState = loadQuizState();
 
 function saveQuizState() {
   try {
-    localStorage.setItem(QUIZ_APP_STORAGE_KEY, JSON.stringify({ questions: quizState.questions, current: quizState.current, solvedMap: quizState.solvedMap, wrongSet: quizState.wrongSet, bookmarkSet: quizState.bookmarkSet, todaySolvedDates: quizState.solvedDates, dailyPlan: quizState.dailyPlan, recentQuestionHistory: quizState.recentQuestionHistory, darkMode: quizState.darkMode, examMode: quizState.examMode }));
+    localStorage.setItem(QUIZ_APP_STORAGE_KEY, JSON.stringify({ questions: quizState.questions, current: quizState.current, solvedMap: quizState.solvedMap, wrongSet: quizState.wrongSet, bookmarkSet: quizState.bookmarkSet, todaySolvedDates: quizState.solvedDates, dailyPlan: quizState.dailyPlan, recentQuestionHistory: quizState.recentQuestionHistory, activeGroup: quizState.activeGroup, darkMode: quizState.darkMode, examMode: quizState.examMode }));
   } catch {}
 }
 
@@ -775,7 +775,8 @@ function quizDateAge(dateKey, todayKey = quizTodayKey()) {
 }
 
 function ensureQuizDailyPlan(dateKey = quizTodayKey()) {
-  const validPlan = quizState.dailyPlan?.date === dateKey
+  const validPlan = quizState.dailyPlan?.version === 2
+    && quizState.dailyPlan?.date === dateKey
     && Array.isArray(quizState.dailyPlan.newIndexes)
     && quizState.dailyPlan.newIndexes.every(index => quizState.questions[index]);
   if (validPlan) return quizState.dailyPlan;
@@ -790,11 +791,17 @@ function ensureQuizDailyPlan(dateKey = quizTodayKey()) {
   const nonReviewIndexes = allIndexes.filter(index => !reviewPool.includes(index));
   const freshIndexes = nonReviewIndexes.filter(index => !blockedSignatures.has(quizQuestionSignature(quizState.questions[index])));
   const newPool = freshIndexes.length >= 3 ? freshIndexes : nonReviewIndexes.length >= 3 ? nonReviewIndexes : allIndexes;
-  const newIndexes = seededShuffle(newPool, `${dateKey}-quiz-new`).slice(0, 3);
+  const part56Pool = newPool.filter(index => !isQuizPart7Question(quizState.questions[index]));
+  const part7Pool = newPool.filter(index => isQuizPart7Question(quizState.questions[index]));
+  const selectedPart56 = seededShuffle(part56Pool, `${dateKey}-quiz-part56`).slice(0, 2);
+  const selectedPart7 = seededShuffle(part7Pool, `${dateKey}-quiz-part7`).slice(0, 1);
+  const selectedSet = new Set([...selectedPart56, ...selectedPart7]);
+  const fillIndexes = seededShuffle(newPool.filter(index => !selectedSet.has(index)), `${dateKey}-quiz-fill`).slice(0, Math.max(0, 3 - selectedSet.size));
+  const newIndexes = [...selectedPart56, ...selectedPart7, ...fillIndexes];
   const reviewIndexes = seededShuffle(reviewPool.filter(index => !newIndexes.includes(index)), `${dateKey}-quiz-review`).slice(0, 3);
   const signatures = newIndexes.map(index => quizQuestionSignature(quizState.questions[index]));
 
-  quizState.dailyPlan = { date: dateKey, newIndexes, reviewIndexes };
+  quizState.dailyPlan = { version: 2, date: dateKey, newIndexes, reviewIndexes };
   quizState.recentQuestionHistory = [
     ...(quizState.recentQuestionHistory || []).filter(entry => entry.date !== dateKey && quizDateAge(entry.date, dateKey) <= 7),
     { date: dateKey, signatures, indexes: newIndexes },
@@ -810,6 +817,10 @@ function getFilteredQuizIndexes() {
   const remaining = quizState.questions.map((_, index) => index).filter(index => !plannedOrder.includes(index));
   const orderedIndexes = quizState.filter === "all" ? [...plannedOrder, ...remaining] : quizState.questions.map((_, index) => index);
   return orderedIndexes.map(index => ({ question: quizState.questions[index], index })).filter(({ question, index }) => {
+    const isPart7 = Boolean(String(question.passage || "").trim()) || /reading/i.test(String(question.type || ""));
+    if (quizState.activeGroup === "part56" && isPart7) return false;
+    if (quizState.activeGroup === "part7" && !isPart7) return false;
+    if (quizState.activeGroup === "review" && !quizState.wrongSet.includes(index) && !quizState.bookmarkSet.includes(index)) return false;
     const solved = Boolean(quizState.solvedMap[index]);
     const wrong = quizState.wrongSet.includes(index);
     if (quizState.filter === "unsolved" && solved) return false;
@@ -1763,45 +1774,87 @@ function vocabPhonetic(word) {
 function vocabPartHint(word) {
   const term = String(word.word || "").toLowerCase();
   const meaning = String(word.meaning || "");
-  if (meaning.includes("하다") || meaning.includes("시키다") || meaning.includes("되다")) return "verb";
-  if (/(able|ible|ive|al|ous|ful|less|ent|ant|ic|ary|ory)$/.test(term)) return "adjective";
+  const primaryMeaning = meaning.split(/[;,/]/)[0].trim();
+  const explicitPart = String(word.partOfSpeech || word.pos || "").toLowerCase();
+  if (/adverb|부사/.test(explicitPart) || /ly$/.test(term)) return "adverb";
+  if (/adjective|형용사/.test(explicitPart) || /(able|ible|ive|al|ous|ful|less|ent|ant|ic|ary|ory|ior)$/.test(term) || /(한|적인|있는|없는|로운|스러운|같은)$/.test(primaryMeaning)) return "adjective";
+  if (/verb|동사/.test(explicitPart) || meaning.includes("하다") || meaning.includes("시키다") || meaning.includes("되다")) return "verb";
+  if (/noun|명사/.test(explicitPart)) return "noun";
   if (/(tion|sion|ment|ity|ness|ance|ence|cy|ship|ism|er|or)$/.test(term)) return "noun";
   return "noun";
 }
 
+function vocabStableIndex(value, length) {
+  if (!length) return 0;
+  const hash = [...String(value || "")].reduce((result, char) => ((result * 31) + char.charCodeAt(0)) >>> 0, 2166136261);
+  return hash % length;
+}
+
+function firstNonEmptyVocabValue(...values) {
+  return values.find(value => typeof value === "string" && value.trim())?.trim() || "";
+}
+
+function vocabKoreanModifier(value) {
+  const meaning = String(value || "").trim();
+  if (/스럽다$/.test(meaning)) return meaning.replace(/스럽다$/, "스러운");
+  if (/롭다$/.test(meaning)) return meaning.replace(/롭다$/, "로운");
+  if (/하다$/.test(meaning)) return meaning.replace(/하다$/, "한");
+  if (/있다$/.test(meaning)) return meaning.replace(/있다$/, "있는");
+  if (/없다$/.test(meaning)) return meaning.replace(/없다$/, "없는");
+  return meaning;
+}
+
+function typeLabel(value = "") {
+  const part = String(value).toLowerCase();
+  if (part === "noun") return "noun";
+  if (part === "verb") return "verb";
+  if (part === "adjective") return "adjective";
+  if (part === "adverb") return "adverb";
+  return value || "품사 미분류";
+}
+
 function vocabNaturalExampleLegacy(word, seed = 0) {
   const term = String(word?.word || "").trim().toLowerCase();
-  const meaning = String(word?.meaning || "핵심 뜻");
+  const meaning = String(word?.meaning || "핵심 뜻").split(/[;,/]/)[0].trim();
   const part = vocabPartHint(word);
   const safeTerm = term || "word";
-  const mark = sentence => String(sentence || "Example unavailable.").replace(new RegExp(`\\b${safeTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"), match => `<mark>${match}</mark>`);
+  const verbMeaning = meaning.endsWith("다") ? `${meaning.slice(0, -1)}기` : meaning;
+  const verbDirective = meaning.endsWith("다") ? `${meaning.slice(0, -1)}도록` : `${meaning}하도록`;
+  const adjectiveMeaning = vocabKoreanModifier(meaning);
+  const mark = sentence => String(sentence || "This vocabulary item is commonly used in English.").replace(new RegExp(`\\b${safeTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"), match => `<mark>${match}</mark>`);
   const generic = !word.example || /^The meaning of "/.test(word.example);
   if (!generic) {
-    return { en: mark(word.example), ko: word.translation || `예문에서 '${term}'는 '${meaning}'의 의미로 쓰였습니다.` };
+    return { en: mark(word.example), ko: word.translation || `이 문장은 ${meaning}에 관한 내용을 설명합니다.` };
   }
   const verbTemplates = [
-    `Researchers try to ${term} the results before they publish the report.`,
-    `Students learn to ${term} key ideas when they read a difficult passage.`,
-    `The manager asked the team to ${term} the plan before Friday.`,
-    `Writers often ${term} complex ideas with clear examples.`,
+    { en: `Researchers try to ${term} the results before they publish the report.`, ko: `연구자들은 보고서를 발표하기 전에 결과를 ${verbMeaning} 위해 노력한다.` },
+    { en: `Students learn to ${term} key ideas when they read a difficult passage.`, ko: `학생들은 어려운 지문을 읽을 때 핵심 아이디어를 ${verbMeaning} 위한 방법을 배운다.` },
+    { en: `The manager asked the team to ${term} the plan before Friday.`, ko: `관리자는 팀에 금요일 전까지 계획을 ${verbDirective} 요청했다.` },
+    { en: `Writers often ${term} complex ideas with clear examples.`, ko: `작가들은 명확한 예시를 통해 복잡한 생각을 ${verbMeaning}도 한다.` },
   ];
   const adjectiveTemplates = [
-    `The teacher gave a ${term} explanation that everyone could understand.`,
-    `A ${term} decision can change the direction of the whole project.`,
-    `Her ${term} answer helped the group solve the problem.`,
-    `The article describes a ${term} change in modern society.`,
+    { en: `The teacher gave a ${term} explanation that everyone could understand.`, ko: `선생님은 모두가 이해할 수 있는 ${adjectiveMeaning} 설명을 해 주었다.` },
+    { en: `A ${term} decision can change the direction of the whole project.`, ko: `${adjectiveMeaning} 결정은 전체 프로젝트의 방향을 바꿀 수 있다.` },
+    { en: `Her ${term} answer helped the group solve the problem.`, ko: `그녀의 ${adjectiveMeaning} 답변은 그 모임이 문제를 해결하는 데 도움이 되었다.` },
+    { en: `The article describes a ${term} change in modern society.`, ko: `그 기사는 현대 사회의 ${adjectiveMeaning} 변화를 설명한다.` },
+  ];
+  const adverbTemplates = [
+    { en: `The team responded ${term} when the situation changed.`, ko: `상황이 바뀌자 팀은 ${meaning} 방식으로 대응했다.` },
+    { en: `She explained the main idea ${term} during the presentation.`, ko: `그녀는 발표 중에 핵심 아이디어를 ${meaning} 방식으로 설명했다.` },
+    { en: `The process moved ${term} after the new system was introduced.`, ko: `새 시스템이 도입된 후 과정은 ${meaning} 방식으로 진행되었다.` },
+    { en: `Students used the expression ${term} in their discussion.`, ko: `학생들은 토론에서 그 표현을 ${meaning} 방식으로 사용했다.` },
   ];
   const nounTemplates = [
-    `The ${term} became the main topic of the class discussion.`,
-    `The article explains why the ${term} is important in daily life.`,
-    `A clear understanding of the ${term} helped students answer the question.`,
-    `Many people noticed the ${term} after reading the report.`,
+    { en: `The ${term} became the main topic of the class discussion.`, ko: `그 ${meaning}은 수업 토론의 주요 주제가 되었다.` },
+    { en: `The article explains why the ${term} is important in daily life.`, ko: `그 기사는 왜 ${meaning}이 일상생활에서 중요한지 설명한다.` },
+    { en: `A clear understanding of the ${term} helped students answer the question.`, ko: `${meaning}에 대한 명확한 이해는 학생들이 질문에 답하는 데 도움이 되었다.` },
+    { en: `Many people noticed the ${term} after reading the report.`, ko: `많은 사람들이 보고서를 읽은 후 그 ${meaning}을 알아차렸다.` },
   ];
-  const pool = part === "verb" ? verbTemplates : part === "adjective" ? adjectiveTemplates : nounTemplates;
-  const sentence = pool[Math.abs(dateSeed(`${safeTerm}-${seed}`)) % pool.length] || "Example unavailable.";
+  const pool = part === "verb" ? verbTemplates : part === "adjective" ? adjectiveTemplates : part === "adverb" ? adverbTemplates : nounTemplates;
+  const selected = pool[vocabStableIndex(`${safeTerm}-${seed}`, pool.length)] || { en: `The word ${safeTerm} is useful in this context.`, ko: `이 문맥에서는 ${meaning}이라는 표현이 유용하다.` };
   return {
-    en: mark(sentence),
-    ko: `예문에서 '${safeTerm}'는 '${meaning}'의 의미로 쓰였습니다.`,
+    en: mark(selected.en),
+    ko: selected.ko,
   };
 }
 
@@ -1856,17 +1909,21 @@ function isGenericVocabExample(example = "") {
     || /^The meaning of "/i.test(value)
     || /\bis useful in this sentence\b/i.test(value)
     || /\bis a word\b/i.test(value)
-    || /^I like\s+\w+\.?$/i.test(value);
+    || /^I like\s+\w+\.?$/i.test(value)
+    || /^Example unavailable\.?$/i.test(value);
 }
 
 function vocabNaturalExample(word, seed = 0) {
   const term = String(word?.word || "").trim().toLowerCase();
   const curated = VOCAB_CURATED_EXAMPLES[term];
-  const storedSentence = word?.exampleSentence || (!isGenericVocabExample(word?.example) ? word.example : "");
+  const storedCandidates = [word?.exampleSentence, word?.usageExample, word?.sentence, word?.sampleSentence, word?.example];
+  const storedSentence = firstNonEmptyVocabValue(...storedCandidates.filter(value => !isGenericVocabExample(value)));
   const generated = !curated?.exampleSentence && !storedSentence ? vocabNaturalExampleLegacy(word, seed) : null;
-  const sentence = curated?.exampleSentence || storedSentence || generated?.en || "";
-  const translation = curated?.exampleTranslation || word?.exampleTranslation || (!isGenericVocabExample(word?.example) ? word?.translation : "") || generated?.ko || "";
+  const sentence = firstNonEmptyVocabValue(curated?.exampleSentence, storedSentence, generated?.en);
+  const storedTranslation = firstNonEmptyVocabValue(word?.exampleTranslation, word?.sentenceTranslation, word?.usageTranslation);
+  const translation = firstNonEmptyVocabValue(curated?.exampleTranslation, storedTranslation, storedSentence ? word?.translation : "", generated?.ko);
   const safeTerm = term || String(word?.word || "").trim();
+  const storedPartOfSpeech = firstNonEmptyVocabValue(word?.partOfSpeech, word?.pos, /^(noun|verb|adjective|adverb|명사|동사|형용사|부사)$/i.test(String(word?.type || "").trim()) ? word.type : "");
   const mark = value => {
     const raw = String(value || "").trim();
     if (!raw || !safeTerm) return raw;
@@ -1875,11 +1932,11 @@ function vocabNaturalExample(word, seed = 0) {
   };
 
   return {
-    ready: Boolean(sentence),
-    partOfSpeech: curated?.partOfSpeech || word?.partOfSpeech || word?.type || vocabPartHint(word),
+    ready: Boolean(sentence.trim()),
+    partOfSpeech: curated?.partOfSpeech || storedPartOfSpeech || vocabPartHint(word),
     meaning: curated?.meaning || word?.meaning || "",
-    en: generated ? generated.en : mark(sentence || `${safeTerm || "This word"} appears in a short reading passage.`),
-    ko: translation || `예문에서 '${safeTerm}'는 '${word?.meaning || "핵심 뜻"}'의 의미로 쓰였습니다.`,
+    en: generated ? generated.en : mark(sentence || `This vocabulary item appears in a short reading passage.`),
+    ko: translation || "예문 해석을 불러오지 못했습니다.",
   };
 }
 
@@ -1920,6 +1977,7 @@ function vocabularyPage() {
           const sentenceClear = state.clearedWordSentences.includes(word.word);
           const allClear = known && sentenceClear;
           const example = vocabNaturalExample(word, state.vocabPage);
+          word.type = example.partOfSpeech;
           return `<article class="vocab-today-item ${known ? "known" : ""} ${sentenceClear ? "sentence-cleared" : ""} ${allClear ? "all-clear" : ""}"><div class="vocab-today-top"><div><h4>${word.word}</h4><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",17)}</button><span class="vocab-phonetic">${vocabPhonetic(word)}</span></div><div class="vocab-card-actions"><em>${typeLabel(word.type)}</em><button class="vocab-known-toggle ${known ? "active" : ""}" type="button" data-known-word="${word.word}" aria-pressed="${known}" aria-label="${word.word} Word Clear ${known ? "해제" : "완료"}">${icon("check",14)} <span>Word Clear</span></button><button class="save ${saved ? "saved" : ""}" type="button" data-save="${word.word}" aria-pressed="${saved}" aria-label="${word.word} 단어 ${saved ? "저장 취소" : "저장"}">${icon("bookmark",18)}</button></div></div><span class="vocab-known-chip">${icon("check",12)} <span data-vocab-clear-label>${allClear ? "ALL CLEAR" : known ? "WORD CLEAR" : "SENTENCE CLEAR"}</span></span><button class="vocab-meaning-cover" type="button" data-vocab-meaning-toggle aria-expanded="false"><span>뜻 보기</span><strong>${word.meaning}</strong></button><p>${word.definition}</p><blockquote class="${example.ready ? "" : "vocab-example-empty"}"><b>${example.en}</b><span>${example.ko}</span><button class="vocab-sentence-clear ${sentenceClear ? "active" : ""}" type="button" data-clear-word-sentence="${word.word}" aria-pressed="${sentenceClear}" aria-label="${word.word} 예문 Sentence Clear ${sentenceClear ? "해제" : "완료"}">${icon("check",13)} Sentence Clear</button></blockquote><a href="${word.sourceUrl}" target="_blank" rel="noopener noreferrer">사전 출처 · ${word.source} ${icon("arrow",12)}</a></article>`;
         }).join("")}</div>
         <nav class="vocab-page-navigation" aria-label="단어 목록 페이지 이동">
@@ -2548,8 +2606,39 @@ function quizRelatedLearningPanel(question) {
   </aside>`;
 }
 
+function isQuizPart7Question(question = {}) {
+  return Boolean(String(question.passage || "").trim()) || /reading/i.test(String(question.type || ""));
+}
+
+function quizLandingPage(plan) {
+  const newPart56 = plan.newIndexes.filter(index => !isQuizPart7Question(quizState.questions[index]));
+  const newPart7 = plan.newIndexes.filter(index => isQuizPart7Question(quizState.questions[index]));
+  const part56Indexes = quizState.questions.map((question, index) => !isQuizPart7Question(question) ? index : -1).filter(index => index >= 0);
+  const part7Indexes = quizState.questions.map((question, index) => isQuizPart7Question(question) ? index : -1).filter(index => index >= 0);
+  const part56Solved = part56Indexes.filter(index => quizState.solvedMap[index]).length;
+  const part7Solved = part7Indexes.filter(index => quizState.solvedMap[index]).length;
+  const reviewIndexes = [...new Set([...quizState.wrongSet, ...quizState.bookmarkSet])];
+  const typeCard = ({ group, eyebrow, title, description, count, total, solved, points, tone }) => `<article class="quiz-entry-card ${tone}">
+    <div class="quiz-entry-card-head"><div><p class="eyebrow">${eyebrow}</p><h2>${title}</h2></div><span>${icon(tone === "reading" ? "news" : "pencil", 22)}</span></div>
+    <p class="quiz-entry-description">${description}</p>
+    <ul>${points.map(point => `<li>${icon("check", 13)}<span>${point}</span></li>`).join("")}</ul>
+    <div class="quiz-entry-count"><span>오늘의 새 ${tone === "reading" ? "독해" : "문제"}</span><b>${count}</b><small>${tone === "reading" ? "지문·문항" : "문항"}</small></div>
+    <div class="quiz-entry-progress"><span>전체 풀이 ${solved}/${total}</span><i><em style="width:${total ? Math.round((solved / total) * 100) : 0}%"></em></i></div>
+    <button type="button" data-quiz-group="${group}">${solved ? "이어풀기" : "시작하기"}${icon("arrow", 15)}</button>
+  </article>`;
+  return `${header("영어 문제풀이")}<main class="quiz-page quiz-entry-page ${quizState.darkMode ? "dark" : ""}">
+    <section class="quiz-entry-hero"><div><p class="eyebrow">TOEIC RC PRACTICE</p><h1>영어 문제풀이</h1><p>Part 5·6과 Part 7 중 오늘 풀 유형을 선택하세요.</p></div><button type="button" data-quiz-dark>${quizState.darkMode ? "라이트모드" : "다크모드"}</button></section>
+    <section class="quiz-entry-grid" aria-label="토익 문제 유형 선택">
+      ${typeCard({ group: "part56", eyebrow: "QUICK PRACTICE", title: "Part 5·6", description: "문법·어휘·문장 흐름을 빠르게 점검하는 객관식 문제", count: newPart56.length, total: part56Indexes.length, solved: part56Solved, tone: "grammar", points: ["문법·어휘·문장 완성", "Part 5와 Part 6 통합 학습", "최근 7일 풀이와 겹치지 않음"] })}
+      ${typeCard({ group: "part7", eyebrow: "READING PRACTICE", title: "Part 7", description: "이메일·공지문·안내문·기사형 지문을 읽는 독해 문제", count: newPart7.length, total: part7Indexes.length, solved: part7Solved, tone: "reading", points: ["지문 기반 4지선다", "핵심 정보와 목적 파악", "최근 풀이 지문 제외"] })}
+    </section>
+    <section class="quiz-review-entry"><div><p class="eyebrow">REVIEW NOTE</p><h2>오답·북마크 복습</h2><p>신규 문제와 섞지 않고, 다시 확인할 문제만 모아서 풀어보세요.</p></div><strong>${reviewIndexes.length}<small>문항</small></strong><button type="button" data-quiz-group="review" ${reviewIndexes.length ? "" : "disabled"}>복습 시작${icon("arrow", 14)}</button></section>
+  </main>`;
+}
+
 function quizPage() {
   const plan = ensureQuizDailyPlan();
+  if (!quizState.activeGroup) return quizLandingPage(plan);
   const filtered = getFilteredQuizIndexes();
   quizState.current = Math.min(Math.max(0, quizState.current), Math.max(0, filtered.length - 1));
   const realIndex = filtered[quizState.current] ?? -1;
@@ -2597,6 +2686,7 @@ function quizPage() {
   </section>` : "";
 
   return `${header("영어 문제 풀이")}<main class="quiz-page ${quizState.darkMode ? "dark" : ""}">
+    <button class="quiz-practice-back" type="button" data-quiz-home>${icon("arrow", 14)} 유형 선택으로 돌아가기</button>
     <section class="quiz-topbar compact"><div class="quiz-actions"><label>CSV 업로드<input type="file" data-quiz-csv accept=".csv"></label><button type="button" data-quiz-mode>${quizState.examMode ? "시험 모드" : "학습 모드"}</button><button type="button" data-quiz-retry>오답 다시풀기</button><button type="button" data-quiz-dark>${quizState.darkMode ? "라이트모드" : "다크모드"}</button><button class="warn" type="button" data-quiz-reset>기록 초기화</button></div></section>
     <section class="quiz-hero-dashboard">
       <div><p class="eyebrow">PRACTICAL RC TRAINING</p><h2>실전형 객관식 트레이닝</h2><span>토익 RC 형식은 참고하되, 문제와 지문은 업무·기술 맥락에 맞춘 자체 제작 4지선다 문제입니다.</span><div class="quiz-mix-line"><b>오늘의 새 문제 · 문법 2문항 + 독해 1문항</b><span>최근 풀이와 겹치지 않는 문제로 구성하고, 복습 필요 문제는 별도로 제공합니다.</span></div></div>
@@ -3591,6 +3681,27 @@ function bindEvents(){
     const label = target.querySelector("span");
     if (label) label.textContent = revealed ? "뜻 숨기기" : "뜻 보기";
   }));
+  document.querySelectorAll(".vocab-today-item blockquote > span, .word-card .example > span").forEach(translation => {
+    const translatedText = translation.textContent.trim();
+    translation.classList.add("vocab-example-translation");
+    translation.setAttribute("role", "button");
+    translation.setAttribute("tabindex", "0");
+    translation.setAttribute("aria-expanded", "false");
+    translation.setAttribute("aria-label", "예문 해석 보기");
+    translation.textContent = "해석 보기";
+    const toggleTranslation = () => {
+      const revealed = translation.classList.toggle("revealed");
+      translation.textContent = revealed ? translatedText : "해석 보기";
+      translation.setAttribute("aria-expanded", String(revealed));
+      translation.setAttribute("aria-label", revealed ? "예문 해석 숨기기" : "예문 해석 보기");
+    };
+    translation.addEventListener("click", toggleTranslation);
+    translation.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      toggleTranslation();
+    });
+  });
   document.querySelector("[data-vocab-complete]")?.addEventListener("click", () => {
     homeStudyState.checked.words = true;
     saveHomeStudyState("words");
@@ -3798,6 +3909,27 @@ function bindEvents(){
     saveHomeStudyState("quiz");
     render();
   });
+  document.querySelectorAll("[data-quiz-group]").forEach(button => button.addEventListener("click", () => {
+    if (button.disabled) return;
+    quizState.activeGroup = button.dataset.quizGroup;
+    quizState.search = "";
+    quizState.filter = quizState.activeGroup === "review" ? "all" : "unsolved";
+    quizState.current = 0;
+    quizState.answerVisible = false;
+    quizState.selectedChoice = null;
+    saveQuizState();
+    render();
+  }));
+  document.querySelector("[data-quiz-home]")?.addEventListener("click", () => {
+    quizState.activeGroup = "";
+    quizState.search = "";
+    quizState.filter = "all";
+    quizState.current = 0;
+    quizState.answerVisible = false;
+    quizState.selectedChoice = null;
+    saveQuizState();
+    render();
+  });
   document.querySelectorAll("[data-quiz-choice]").forEach(button => button.addEventListener("click", () => {
     const filtered = getFilteredQuizIndexes();
     const realIndex = filtered[quizState.current];
@@ -3831,7 +3963,7 @@ function bindEvents(){
   });
   document.querySelector("[data-quiz-mode]")?.addEventListener("click", () => { quizState.examMode = !quizState.examMode; saveQuizState(); render(); });
   document.querySelector("[data-quiz-dark]")?.addEventListener("click", () => { quizState.darkMode = !quizState.darkMode; saveQuizState(); render(); });
-  document.querySelectorAll("[data-quiz-retry]").forEach(button => button.addEventListener("click", () => { if (!quizState.wrongSet.length) { window.alert("오답 문제가 없습니다."); return; } quizState.search = ""; quizState.filter = "wrong"; quizState.current = 0; quizState.selectedChoice = null; render(); }));
+  document.querySelectorAll("[data-quiz-retry]").forEach(button => button.addEventListener("click", () => { if (!quizState.wrongSet.length) { window.alert("오답 문제가 없습니다."); return; } quizState.activeGroup = "review"; quizState.search = ""; quizState.filter = "wrong"; quizState.current = 0; quizState.selectedChoice = null; saveQuizState(); render(); }));
   document.querySelector("[data-quiz-reset]")?.addEventListener("click", () => { if (!window.confirm("학습 기록을 초기화할까요?")) return; quizState.solvedMap = {}; quizState.wrongSet = []; quizState.bookmarkSet = []; quizState.solvedDates = []; quizState.dailyPlan = null; quizState.recentQuestionHistory = []; quizState.current = 0; quizState.answerVisible = false; quizState.selectedChoice = null; saveQuizState(); render(); });
   document.querySelector("[data-quiz-filter]")?.addEventListener("change", event => { quizState.filter = event.currentTarget.value; quizState.current = 0; quizState.answerVisible = false; quizState.selectedChoice = null; render(); });
   document.querySelector("[data-quiz-search]")?.addEventListener("input", event => {
