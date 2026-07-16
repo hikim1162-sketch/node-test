@@ -1,6 +1,11 @@
 import { vocabularyWords } from "../data/vocabulary.js";
+import { vocabularyPartOfSpeech } from "../data/vocabulary-pos.js";
+import { vocabularyExamples } from "../data/vocabulary-examples.js";
 import { tedLessons, tedSettings } from "../data/ted-lessons.js";
 import { toeicSentences } from "../data/toeic-sentences.js";
+import { favoriteBlogArticles } from "../data/favorite-blogs.js";
+import { normalizeSavedLearningItems, generateCustomTestFromSavedItems } from "./custom-learning.js";
+import { REVIEW_STORAGE_KEY, createReviewProgress, selectDueReviewItems, createReviewQuestion, applyReviewAnswer, detectUsedWords, evaluateEmailReply, toNotebookItem } from "./connected-learning.js";
 
 const CATEGORIES = {
   word: { label: "단어", short: "단", icon: "book-open" },
@@ -297,10 +302,117 @@ const articleLibraryBase = [
   }
 ];
 
-const articleLibrary = [
-  { ...articleData, id: "science-001", dateOrder: "2026-07-13" },
-  ...articleLibraryBase.slice(1),
+// Verified Korea Herald articles. The titles, dates and links point to the
+// original detail pages; summaries and study sentences are our paraphrases.
+let articleLibrary = [
+  {
+    id: "business-10438888",
+    source: "The Korea Herald",
+    category: "Business",
+    date: "March 11, 2025",
+    dateOrder: "2025-03-11",
+    title: "Kbank posts record 2024 profit, driven by customer growth",
+    dek: "Kbank reported record annual earnings as its customer base and core banking business expanded.",
+    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80",
+    caption: "Representative learning image (not the original article photo)",
+    originalUrl: "https://www.koreaherald.com/article/10438888",
+    summary: [
+      "Kbank reported a record net profit for 2024.",
+      "Strong customer growth helped deposits and loans increase.",
+      "The bank also improved noninterest income and financial stability."
+    ],
+    sentences: [
+      {
+        en: "Kbank reported a record net profit in 2024 as its customer base expanded.",
+        ko: "케이뱅크는 고객 기반이 확대되면서 2024년에 사상 최대 순이익을 기록했습니다.",
+        note: "as는 여기서 두 변화가 함께 일어난 배경을 설명합니다.",
+        expressions: [{ term: "record net profit", meaning: "사상 최대 순이익" }, { term: "customer base", meaning: "고객 기반" }]
+      },
+      {
+        en: "Growth in deposits and loans strengthened the bank's core business.",
+        ko: "예금과 대출의 성장은 은행의 핵심 사업을 강화했습니다.",
+        note: "growth in + 명사는 특정 영역의 성장을 나타냅니다.",
+        expressions: [{ term: "deposits and loans", meaning: "예금과 대출" }, { term: "core business", meaning: "핵심 사업" }]
+      }
+    ]
+  },
+  {
+    id: "travel-10432202",
+    source: "The Korea Herald",
+    category: "Travel",
+    date: "March 3, 2025",
+    dateOrder: "2025-03-03",
+    title: "Tourism grows strongly in January",
+    dek: "South Korea welcomed more international visitors in January as tourism demand continued to recover.",
+    image: "https://images.unsplash.com/photo-1538485399081-7c8972cc6c0f?auto=format&fit=crop&w=1200&q=80",
+    caption: "Representative learning image (not the original article photo)",
+    originalUrl: "https://www.koreaherald.com/article/10432202",
+    summary: [
+      "International arrivals rose strongly from a year earlier in January.",
+      "China represented the largest share of inbound visitors.",
+      "Tourism officials planned promotions focused on food, beauty and premium travel."
+    ],
+    sentences: [
+      {
+        en: "International arrivals increased sharply in January compared with a year earlier.",
+        ko: "1월 외국인 입국자 수는 전년 동기와 비교해 크게 증가했습니다.",
+        note: "compared with는 수치나 시점을 비교할 때 자주 쓰입니다.",
+        expressions: [{ term: "international arrivals", meaning: "외국인 입국자" }, { term: "compared with", meaning: "~와 비교해" }]
+      },
+      {
+        en: "Tourism campaigns will highlight Korean food, beauty and premium travel experiences.",
+        ko: "관광 캠페인은 한국 음식과 뷰티, 고급 여행 경험을 중점적으로 알릴 예정입니다.",
+        note: "highlight는 중요한 부분을 강조하거나 부각한다는 뜻입니다.",
+        expressions: [{ term: "tourism campaign", meaning: "관광 캠페인" }, { term: "highlight", meaning: "부각하다" }]
+      }
+    ]
+  },
+  {
+    id: "retail-10434176",
+    source: "The Korea Herald",
+    category: "Business",
+    date: "March 5, 2025",
+    dateOrder: "2025-03-05",
+    title: "Shinsegae banks on Emart, Starbucks as growth drivers",
+    dek: "Shinsegae outlined a strategy centered on strengthening its leading retail brands and stabilizing weaker businesses.",
+    image: "https://images.unsplash.com/photo-1601598851547-4302969d0614?auto=format&fit=crop&w=1200&q=80",
+    caption: "Representative learning image (not the original article photo)",
+    originalUrl: "https://www.koreaherald.com/article/10434176",
+    summary: [
+      "Shinsegae identified Emart and Starbucks as major growth engines.",
+      "Its strategy combines market leadership with business normalization.",
+      "The group also aims to stabilize its e-commerce and construction operations."
+    ],
+    sentences: [
+      {
+        en: "Shinsegae is counting on Emart and Starbucks to drive future growth.",
+        ko: "신세계는 향후 성장을 이끌 동력으로 이마트와 스타벅스에 기대를 걸고 있습니다.",
+        note: "count on은 사람이나 대상에 의지하거나 기대한다는 표현입니다.",
+        expressions: [{ term: "count on", meaning: "~에 기대를 걸다" }, { term: "drive growth", meaning: "성장을 이끌다" }]
+      },
+      {
+        en: "The group plans to reinforce its core brands while stabilizing underperforming businesses.",
+        ko: "그룹은 핵심 브랜드를 강화하는 동시에 실적이 부진한 사업을 안정화할 계획입니다.",
+        note: "while은 두 활동이 동시에 진행됨을 보여줍니다.",
+        expressions: [{ term: "reinforce", meaning: "강화하다" }, { term: "underperforming", meaning: "실적이 부진한" }]
+      }
+    ]
+  }
 ];
+
+async function refreshDailyNewsLibrary() {
+  try {
+    const response = await fetch(`/api/daily-news?date=${localDateKey()}`, { cache: "no-store" });
+    if (!response.ok) return;
+    const payload = await response.json();
+    if (!Array.isArray(payload.articles) || !payload.articles.length) return;
+    articleLibrary = payload.articles;
+    state.newsIndex = 0;
+    if (document.body.dataset.page === "news" || location.pathname.endsWith("/news.html")) render();
+  } catch (error) {
+    console.warn("Daily news update skipped; using the last verified article set.", error);
+  }
+}
 
 // 등록된 기사 중 하나를 날짜 순서대로 선택합니다.
 // 같은 날에는 같은 기사가 유지되고, 다음 날에는 다음 기사가 소개됩니다.
@@ -1632,11 +1744,22 @@ let state = {
   knownWords: JSON.parse(localStorage.getItem("value_time_known_words_v1") || "[]"),
   clearedWordSentences: JSON.parse(localStorage.getItem("value_time_cleared_word_sentences_v1") || "[]"),
   savedSentences: JSON.parse(localStorage.getItem("value_time_saved_sentences_v1") || "[]"),
+  savedBlogItems: JSON.parse(localStorage.getItem("value_time_saved_blog_items_v1") || "[]"),
   understoodSentences: JSON.parse(localStorage.getItem("value_time_understood_sentences_v1") || "[]"),
   clearedSentences: JSON.parse(localStorage.getItem("value_time_cleared_sentences_v1") || "[]"),
   wordIndex: 0, vocabPage: Number(localStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(localStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, translatedSentence: null,
   newsSearch: "", newsCategory: "all", newsSort: "latest", tedLessonId: null, tedSentenceIndex: 0,
 };
+
+let activeBlogPostId = null;
+let blogSaveToast = "";
+let journalTestState = { view: "closed", scope: "all", count: 5, difficulty: "normal", test: null, answers: {}, submitted: false, wrongOnly: false, wrongQuestionIds: [] };
+let reviewProgressMap = JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) || "{}");
+let reviewChatState = { open: false, selected: null, answered: null, completed: false, wrongNotes: [] };
+let selectionAssistantState = { open: false, text: "", range: null, busy: false, saved: false };
+let selectionAssistantDocumentBound = false;
+let emailRoleplayState = { active: false, replyText: "", submitted: false, evaluation: null, sending: false, error: "" };
+let newsSaveToast = "";
 
 function icon(name, size = 20) {
   const paths = {
@@ -1705,7 +1828,9 @@ function wordCard(wordIndex = null, navigable = false) {
   const word = words[index];
   const saved = state.savedWords.includes(word.word);
   const example = vocabNaturalExample(word, index);
-  return `<section class="word-card ${navigable ? "vocabulary-card" : ""}"><div class="word-top"><span class="soft-badge">${navigable ? `WORD ${index + 1} OF ${words.length}` : "WORD OF THE DAY"}</span><button class="save ${saved ? "saved" : ""}" data-save="${word.word}" aria-pressed="${saved}" aria-label="${word.word} 단어 ${saved ? "저장 취소" : "저장"}">${icon("bookmark")}</button></div><div class="word-title"><h2>${word.word}</h2><button class="sound" data-speak="${word.word}">${icon("volume",19)}</button></div><p class="phonetic">${vocabPhonetic(word)} <span>${word.type}</span></p><button class="vocab-meaning-cover word-meaning-cover" type="button" data-vocab-meaning-toggle aria-expanded="false"><span>뜻 보기</span><strong>${word.meaning}</strong></button><p class="definition">${word.definition}</p><div class="example"><b>“${example.en}”</b><span>${example.ko}</span></div><a class="word-source" href="${word.sourceUrl}" target="_blank" rel="noopener noreferrer" aria-label="${word.word} 단어 출처 사전 새 창에서 열기"><span>사전 출처</span><b>${word.source}</b>${icon("arrow",14)}</a>${navigable ? `<div class="word-navigation"><button data-word-nav="-1" aria-label="이전 단어">${icon("arrow",19)} <span>이전 단어</span></button><div>${words.map((_,i)=>`<i class="${i===index?"active":""}"></i>`).join("")}</div><button data-word-nav="1" aria-label="다음 단어"><span>다음 단어</span> ${icon("arrow",19)}</button></div>` : `<button class="text-link" data-page="words">단어 더 학습하기 ${icon("arrow",16)}</button>`}</section>`;
+  const exampleSourceUrl = example.exampleSourceUrl || word.sourceUrl;
+  const exampleSourceLabel = example.exampleSource || word.source;
+  return `<section class="word-card ${navigable ? "vocabulary-card" : ""}"><div class="word-top"><span class="soft-badge">${navigable ? `WORD ${index + 1} OF ${words.length}` : "WORD OF THE DAY"}</span><button class="save ${saved ? "saved" : ""}" data-save="${word.word}" aria-pressed="${saved}" aria-label="${word.word} 단어 ${saved ? "저장 취소" : "저장"}">${icon("bookmark")}</button></div><div class="word-title"><h2>${word.word}</h2><button class="sound" data-speak="${word.word}">${icon("volume",19)}</button></div><p class="phonetic">${vocabPhonetic(word)} <span>${word.type}</span></p><button class="vocab-meaning-cover word-meaning-cover" type="button" data-vocab-meaning-toggle aria-expanded="false"><span>뜻 보기</span><strong>${example.meaningHtml}</strong></button><p class="definition">${word.definition}</p><div class="example"><b>“${example.en}”</b><span>${example.ko}</span></div><a class="word-source" href="${exampleSourceUrl}" target="_blank" rel="noopener noreferrer" aria-label="${word.word} 예문 출처 새 창에서 열기"><span>예문 출처</span><b>${exampleSourceLabel}</b>${icon("arrow",14)}</a>${navigable ? `<div class="word-navigation"><button data-word-nav="-1" aria-label="이전 단어">${icon("arrow",19)} <span>이전 단어</span></button><div>${words.map((_,i)=>`<i class="${i===index?"active":""}"></i>`).join("")}</div><button data-word-nav="1" aria-label="다음 단어"><span>다음 단어</span> ${icon("arrow",19)}</button></div>` : `<button class="text-link" data-page="words">단어 더 학습하기 ${icon("arrow",16)}</button>`}</section>`;
 }
 
 // 한 페이지 안에서 같은 첫 글자가 몰리지 않도록 알파벳별 묶음을 균형 있게 섞습니다.
@@ -1775,11 +1900,14 @@ function vocabPartHint(word) {
   const term = String(word.word || "").toLowerCase();
   const meaning = String(word.meaning || "");
   const primaryMeaning = meaning.split(/[;,/]/)[0].trim();
+  const dictionaryParts = vocabularyPartOfSpeech[term] || [];
+  if (dictionaryParts.length === 1 && ["noun", "verb", "adjective", "adverb"].includes(dictionaryParts[0])) return dictionaryParts[0];
   const explicitPart = String(word.partOfSpeech || word.pos || "").toLowerCase();
   if (/adverb|부사/.test(explicitPart) || /ly$/.test(term)) return "adverb";
   if (/adjective|형용사/.test(explicitPart) || /(able|ible|ive|al|ous|ful|less|ent|ant|ic|ary|ory|ior)$/.test(term) || /(한|적인|있는|없는|로운|스러운|같은)$/.test(primaryMeaning)) return "adjective";
-  if (/verb|동사/.test(explicitPart) || meaning.includes("하다") || meaning.includes("시키다") || meaning.includes("되다")) return "verb";
+  if (/verb|동사/.test(explicitPart) || meaning.includes("하다") || meaning.includes("시키다") || meaning.includes("되다") || (dictionaryParts.includes("verb") && /다$/.test(primaryMeaning))) return "verb";
   if (/noun|명사/.test(explicitPart)) return "noun";
+  if (dictionaryParts.includes("noun")) return "noun";
   if (/(tion|sion|ment|ity|ness|ance|ence|cy|ship|ism|er|or)$/.test(term)) return "noun";
   return "noun";
 }
@@ -1805,11 +1933,15 @@ function vocabKoreanModifier(value) {
 }
 
 function typeLabel(value = "") {
-  const part = String(value).toLowerCase();
+  if (Array.isArray(value)) return value.map(typeLabel).filter(Boolean).join(" / ");
+  const raw = String(value).trim();
+  if (raw.includes("/")) return raw.split("/").map(typeLabel).filter(Boolean).join(" / ");
+  const part = raw.toLowerCase();
   if (part === "noun" || part === "명사") return "noun";
   if (part === "verb" || part === "동사") return "verb";
   if (part === "adjective" || part === "형용사") return "adjective";
   if (part === "adverb" || part === "부사") return "adverb";
+  if (part === "conjunction" || part === "접속사") return "conjunction";
   return value || "품사 미분류";
 }
 
@@ -1913,15 +2045,47 @@ function isGenericVocabExample(example = "") {
     || /^Example unavailable\.?$/i.test(value);
 }
 
+function vocabMeaningGroups(word, fallbackMeaning = "") {
+  const term = String(word?.word || "").trim().toLowerCase();
+  const storedGroups = vocabularyExamples[term]?.meanings || {};
+  const dictionaryParts = vocabularyPartOfSpeech[term] || [];
+  const labels = { noun: "명사", verb: "동사", adjective: "형용사", adverb: "부사", conjunction: "접속사" };
+  const preferredOrder = ["noun", "verb", "adjective", "adverb", "conjunction"];
+  const fallbackMeanings = [...new Set(String(word?.meaning || fallbackMeaning || "").split(/[;,/]/).map(value => value.trim()).filter(Boolean))].slice(0, 3);
+  const availableParts = new Set([...dictionaryParts, ...Object.keys(storedGroups)]);
+  const groups = preferredOrder.filter(partOfSpeech => availableParts.has(partOfSpeech)).map(partOfSpeech => {
+    const storedMeanings = [...new Set((storedGroups[partOfSpeech] || []).map(value => String(value || "").trim()).filter(Boolean))].slice(0, 3);
+    return {
+      partOfSpeech,
+      label: labels[partOfSpeech],
+      meanings: storedMeanings.length ? storedMeanings : fallbackMeanings.length ? fallbackMeanings : [fallbackMeaning].filter(Boolean),
+      supplemented: !storedMeanings.length,
+    };
+  }).filter(group => group.meanings.length);
+  if (groups.length) return groups;
+  return [{ partOfSpeech: vocabPartHint(word), label: labels[vocabPartHint(word)] || "뜻", meanings: [fallbackMeaning || word?.meaning || "뜻 정보 없음"] }];
+}
+
+function renderVocabMeaningGroups(groups = []) {
+  return `<dl class="vocab-meaning-groups" aria-label="품사별 단어 뜻">${groups.filter(group => group.meanings.length).map(group => `<div class="vocab-meaning-row"><dt>${group.label}</dt><dd>${group.meanings.join(" · ")}</dd></div>`).join("")}</dl>`;
+}
+
 function vocabNaturalExample(word, seed = 0) {
   const term = String(word?.word || "").trim().toLowerCase();
+  const dictionaryPartOfSpeech = vocabularyPartOfSpeech[term] || [];
+  const naverEntry = vocabularyExamples[term];
+  const naverExamples = Array.isArray(naverEntry?.examples) ? naverEntry.examples : [];
+  const preferredPartOfSpeech = vocabPartHint(word);
+  const matchingNaverExamples = naverExamples.filter(example => example?.partOfSpeech === preferredPartOfSpeech);
+  const selectableNaverExamples = matchingNaverExamples.length ? matchingNaverExamples : naverExamples;
+  const naverExample = selectableNaverExamples[vocabStableIndex(`${term}-${seed}`, selectableNaverExamples.length)];
   const curated = VOCAB_CURATED_EXAMPLES[term];
   const storedCandidates = [word?.exampleSentence, word?.usageExample, word?.sentence, word?.sampleSentence, word?.example];
   const storedSentence = firstNonEmptyVocabValue(...storedCandidates.filter(value => !isGenericVocabExample(value)));
-  const generated = !curated?.exampleSentence && !storedSentence ? vocabNaturalExampleLegacy(word, seed) : null;
-  const sentence = firstNonEmptyVocabValue(curated?.exampleSentence, storedSentence, generated?.en);
+  const generated = !naverExample?.exampleSentence && !curated?.exampleSentence && !storedSentence ? vocabNaturalExampleLegacy(word, seed) : null;
+  const sentence = firstNonEmptyVocabValue(naverExample?.exampleSentence, curated?.exampleSentence, storedSentence, generated?.en);
   const storedTranslation = firstNonEmptyVocabValue(word?.exampleTranslation, word?.sentenceTranslation, word?.usageTranslation);
-  const translation = firstNonEmptyVocabValue(curated?.exampleTranslation, storedTranslation, storedSentence ? word?.translation : "", generated?.ko);
+  const translation = firstNonEmptyVocabValue(naverExample?.exampleTranslation, curated?.exampleTranslation, storedTranslation, storedSentence ? word?.translation : "", generated?.ko);
   const safeTerm = term || String(word?.word || "").trim();
   const storedPartOfSpeech = firstNonEmptyVocabValue(word?.partOfSpeech, word?.pos, /^(noun|verb|adjective|adverb|명사|동사|형용사|부사)$/i.test(String(word?.type || "").trim()) ? word.type : "");
   const mark = value => {
@@ -1930,13 +2094,19 @@ function vocabNaturalExample(word, seed = 0) {
     const escaped = safeTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return raw.replace(new RegExp(`\\b${escaped}\\b`, "i"), match => `<mark>${match}</mark>`);
   };
+  const resolvedMeaning = naverExample?.meaning || curated?.meaning || word?.meaning || "";
+  const meaningGroups = vocabMeaningGroups(word, resolvedMeaning);
 
   return {
     ready: Boolean(sentence.trim()),
-    partOfSpeech: typeLabel(curated?.partOfSpeech || storedPartOfSpeech || vocabPartHint(word)),
-    meaning: curated?.meaning || word?.meaning || "",
+    partOfSpeech: typeLabel(dictionaryPartOfSpeech.length ? dictionaryPartOfSpeech : naverExample?.partOfSpeech || curated?.partOfSpeech || storedPartOfSpeech || vocabPartHint(word)),
+    meaning: resolvedMeaning,
+    meaningGroups,
+    meaningHtml: renderVocabMeaningGroups(meaningGroups),
     en: generated ? generated.en : mark(sentence || `This vocabulary item appears in a short reading passage.`),
     ko: translation || "예문 해석을 불러오지 못했습니다.",
+    exampleSource: naverExample ? naverEntry.source : curated?.exampleSource || "local fallback",
+    exampleSourceUrl: naverExample ? naverEntry.sourceUrl : word?.sourceUrl || "",
   };
 }
 
@@ -1977,8 +2147,10 @@ function vocabularyPage() {
           const sentenceClear = state.clearedWordSentences.includes(word.word);
           const allClear = known && sentenceClear;
           const example = vocabNaturalExample(word, state.vocabPage);
+          const exampleSourceUrl = example.exampleSourceUrl || word.sourceUrl;
+          const exampleSourceLabel = example.exampleSource || word.source;
           word.type = example.partOfSpeech;
-          return `<article class="vocab-today-item ${known ? "known" : ""} ${sentenceClear ? "sentence-cleared" : ""} ${allClear ? "all-clear" : ""}"><div class="vocab-today-top"><div><h4>${word.word}</h4><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",17)}</button><span class="vocab-phonetic">${vocabPhonetic(word)}</span></div><div class="vocab-card-actions"><em>${typeLabel(word.type)}</em><button class="vocab-known-toggle ${known ? "active" : ""}" type="button" data-known-word="${word.word}" aria-pressed="${known}" aria-label="${word.word} Word Clear ${known ? "해제" : "완료"}">${icon("check",14)} <span>Word Clear</span></button><button class="save ${saved ? "saved" : ""}" type="button" data-save="${word.word}" aria-pressed="${saved}" aria-label="${word.word} 단어 ${saved ? "저장 취소" : "저장"}">${icon("bookmark",18)}</button></div></div><span class="vocab-known-chip">${icon("check",12)} <span data-vocab-clear-label>${allClear ? "ALL CLEAR" : known ? "WORD CLEAR" : "SENTENCE CLEAR"}</span></span><button class="vocab-meaning-cover" type="button" data-vocab-meaning-toggle aria-expanded="false"><span>뜻 보기</span><strong>${word.meaning}</strong></button><p>${word.definition}</p><blockquote class="${example.ready ? "" : "vocab-example-empty"}"><b>${example.en}</b><span>${example.ko}</span><button class="vocab-sentence-clear ${sentenceClear ? "active" : ""}" type="button" data-clear-word-sentence="${word.word}" aria-pressed="${sentenceClear}" aria-label="${word.word} 예문 Sentence Clear ${sentenceClear ? "해제" : "완료"}">${icon("check",13)} Sentence Clear</button></blockquote><a href="${word.sourceUrl}" target="_blank" rel="noopener noreferrer">사전 출처 · ${word.source} ${icon("arrow",12)}</a></article>`;
+          return `<article class="vocab-today-item ${known ? "known" : ""} ${sentenceClear ? "sentence-cleared" : ""} ${allClear ? "all-clear" : ""}"><div class="vocab-today-top"><div><h4>${word.word}</h4><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",17)}</button><span class="vocab-phonetic">${vocabPhonetic(word)}</span></div><div class="vocab-card-actions"><em>${typeLabel(word.type)}</em><button class="vocab-known-toggle ${known ? "active" : ""}" type="button" data-known-word="${word.word}" aria-pressed="${known}" aria-label="${word.word} Word Clear ${known ? "해제" : "완료"}">${icon("check",14)} <span>Word Clear</span></button><button class="save ${saved ? "saved" : ""}" type="button" data-save="${word.word}" aria-pressed="${saved}" aria-label="${word.word} 단어 ${saved ? "저장 취소" : "저장"}">${icon("bookmark",18)}</button></div></div><span class="vocab-known-chip">${icon("check",12)} <span data-vocab-clear-label>${allClear ? "ALL CLEAR" : known ? "WORD CLEAR" : "SENTENCE CLEAR"}</span></span><button class="vocab-meaning-cover" type="button" data-vocab-meaning-toggle aria-expanded="false"><span>뜻 보기</span><strong>${example.meaningHtml}</strong></button><p>${word.definition}</p><blockquote class="${example.ready ? "" : "vocab-example-empty"}"><b>${example.en}</b><span>${example.ko}</span><button class="vocab-sentence-clear ${sentenceClear ? "active" : ""}" type="button" data-clear-word-sentence="${word.word}" aria-pressed="${sentenceClear}" aria-label="${word.word} 예문 Sentence Clear ${sentenceClear ? "해제" : "완료"}">${icon("check",13)} Sentence Clear</button></blockquote><a href="${exampleSourceUrl}" target="_blank" rel="noopener noreferrer">예문 출처 · ${exampleSourceLabel} ${icon("arrow",12)}</a></article>`;
         }).join("")}</div>
         <nav class="vocab-page-navigation" aria-label="단어 목록 페이지 이동">
           <button class="vocab-page-edge" type="button" data-vocab-target="0" ${state.vocabPage === 0 ? "disabled" : ""} aria-label="첫 페이지로 이동">&laquo;</button>
@@ -2292,7 +2464,7 @@ function newsPage() {
   const isDone = Boolean(homeStudyState.checked.news);
   const newsMeta = syncHomeAppState().items.news || {};
   const todayKey = localDateKey();
-  const dailyArticle = getDailyNewsArticle(todayKey) || articleData;
+  const dailyArticle = getDailyNewsArticle(todayKey) || articleLibrary[0];
   const dailyArticleIndex = articleLibrary.findIndex(article => article.id === dailyArticle.id);
   const dailySentence = dailyArticle.sentences[0];
   const dailyStudyDate = formatNewsStudyDate(todayKey);
@@ -2324,7 +2496,7 @@ function newsPage() {
       </div>
       ${articles.length ? `<div class="news-library-grid">${articles.map(article => { const originalIndex = articleLibrary.findIndex(item => item.id === article.id); return `<article class="news-library-card" data-open-news="${originalIndex}"><img src="${article.image}" alt="${article.title}" loading="lazy"><div><p><span>${article.source}</span><b>${article.category}</b><time>${article.date}</time></p><h3>${article.title}</h3><em>${article.dek}</em><footer><span>학습 문장 ${article.sentences.length}개</span><button type="button">기사 열기 ${icon("arrow",15)}</button></footer></div></article>`; }).join("")}</div><div class="news-library-empty" data-news-live-empty hidden><b>조건에 맞는 기사가 없습니다.</b><span>검색어 또는 카테고리를 다시 조정해 주세요.</span></div>` : `<div class="news-library-empty"><b>조건에 맞는 기사가 없습니다.</b><span>검색어 또는 카테고리를 다시 조정해 주세요.</span></div>`}
     </section>
-    <p class="source-note">※ 기사 전문을 복제하지 않고 개인 영어 학습용으로 재구성한 콘텐츠입니다.</p>
+    <p class="source-note">※ 실제 원문의 제목·날짜·상세 링크를 확인했으며, 요약과 학습 문장은 기사 내용을 바탕으로 재구성했습니다.</p>
   </main>`;
 }
 
@@ -2333,9 +2505,11 @@ function articleView() {
 }
 
 function featuredArticleView() {
-  const article = articleLibrary[state.newsIndex] || articleData;
+  const article = articleLibrary[state.newsIndex] || articleLibrary[0];
   const selectedIndex = state.translatedSentence;
   const selected = selectedIndex === null ? null : article.sentences[selectedIndex];
+  const curatorExpressions = article.sentences.flatMap(sentence => sentence.expressions.map((expression,index) => ({ id: `${article.sentences.indexOf(sentence)}-${index}`, text: expression.term, meaning: expression.meaning, example: sentence.en, type: expression.term.includes(" ") ? "sentence" : "word" }))).slice(0,3);
+  const curatorPanel = `<section class="ai-curator"><div><span>${icon("spark",16)}</span><h2>AI Curator Briefing</h2><small>MOCK BRIEFING</small></div><section><strong>3-LINE SUMMARY</strong>${article.summary.slice(0,3).map(line=>`<p>${line}</p>`).join("")}</section><div class="curator-expression-list">${curatorExpressions.length?curatorExpressions.map(expression=>{const id=`news:${article.id}:${expression.id}`;const saved=state.savedBlogItems.some(item=>item.id===id);return `<article class="${saved?"saved":""}"><b>${expression.text}</b><span>${expression.meaning}</span><p>${expression.example}</p><button type="button" data-save-news-expression="${expression.id}" ${saved?"disabled":""}>${icon(saved?"check":"bookmark",12)} ${saved?"저장됨":"학습장에 저장"}</button></article>`}).join(""):`<div class="curator-empty">추출된 핵심 표현이 없습니다.</div>`}</div>${newsSaveToast?`<div class="curator-toast">${icon("check",12)} ${newsSaveToast}</div>`:""}</section>`;
 
   return `${header("영어 뉴스")}<main class="article-study-page">
     <div class="article-study-toolbar">
@@ -2351,11 +2525,12 @@ function featuredArticleView() {
           <div class="article-study-guide">아래 문장을 클릭하면 오른쪽 패널에 <b>자연스러운 한국어 번역</b>, <b>핵심 표현</b>, <b>학습 포인트</b>가 표시됩니다.</div>
           <section aria-labelledby="article-sentences-title"><h2 id="article-sentences-title">ARTICLE SENTENCES</h2><div class="article-study-sentences">${article.sentences.map((item, index) => `<button class="${selectedIndex === index ? "active" : ""}" type="button" data-article-sentence="${index}"><i>${index + 1}</i><span><b>${item.en}</b><small>클릭하여 번역 · 표현 · 학습 포인트 보기</small></span></button>`).join("")}</div></section>
           <div class="article-study-actions"><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">원문 사이트 열기</a><button type="button" data-copy-selected-sentence>선택 문장 복사</button><span id="article-copy-status" role="status" aria-live="polite"></span></div>
-          <p class="article-study-disclaimer">학습용으로 재구성한 영문 콘텐츠입니다. 매체명은 학습 출처 참고를 위한 표기이며 기사 전문을 복제하지 않습니다.</p>
+          <p class="article-study-disclaimer">실제 기사에 연결된 학습 콘텐츠입니다. 제목·발행일·원문 링크는 실제 기사 정보이며, 요약과 예문은 학습용으로 재구성했습니다.</p>
         </div>
       </article>
 
       <aside class="article-study-side">
+        ${curatorPanel}
         <div class="article-study-side-head"><h2>문장 학습 패널</h2><p>본문 문장을 선택하면 번역과 주요 표현, 해설을 확인할 수 있습니다.</p></div>
         <div class="article-study-side-body">${selected ? `<div class="article-translation-card"><section><strong>SELECTED SENTENCE</strong><p>${selected.en}</p></section><section><strong>KOREAN TRANSLATION</strong><p>${selected.ko}</p></section><section><strong>LEARNING NOTE</strong><p>${selected.note}</p></section><section><strong>KEY EXPRESSIONS</strong><div>${selected.expressions.map(expression => `<article><b>${expression.term}</b><span>${expression.meaning}</span></article>`).join("")}</div></section></div>` : `<div class="article-study-empty">${icon("message",32)}<b>문장을 선택해 주세요</b><span>선택한 문장의 번역과 표현 설명이<br>이곳에 표시됩니다.</span></div>`}</div>
       </aside>
@@ -2364,10 +2539,10 @@ function featuredArticleView() {
 }
 
 function blogPage() {
-  const featured = favoriteBlogPosts[new Date().getDate() % favoriteBlogPosts.length];
-  return `${header("최애 블로그")}<main class="blog-page"><section class="blog-hero"><div><p class="eyebrow">MY FAVORITE BLOG</p><span class="blog-kicker">LET'S LE ENGLISH</span><h2>렛츠링글리쉬에서<br>오늘의 표현을 만나요.</h2><p>영어가 필요한 일상에 도움을 주는 표현을<br>하루에 하나씩 가볍게 꺼내 읽어보세요.</p><a href="${BLOG_URL}" target="_blank" rel="noopener noreferrer">네이버 블로그 바로가기 ${icon("arrow",16)}</a></div><div class="hero-note"><span>TODAY'S PICK</span><b>${featured.phrase}</b><em>${featured.meaning}</em><p>${featured.note}</p></div></section>
-  <section class="blog-section"><div class="blog-section-head"><div><p class="eyebrow">DAILY ARCHIVE</p><h2>매일 꺼내 보는 영어 표현</h2></div><p>카드를 누르면 렛츠링글리쉬 블로그 원문으로 이동해요.</p></div><div class="blog-grid">${favoriteBlogPosts.map((post,i)=>`<a class="blog-card ${post.color}" href="${BLOG_URL}" target="_blank" rel="noopener noreferrer"><div class="blog-card-top"><span>${post.category}</span>${icon("arrow",17)}</div><div class="blog-number">0${i+1}</div><h3>${post.phrase}</h3><strong>${post.meaning}</strong><p>${post.note}</p><time>${post.date}</time></a>`).join("")}</div></section>
-  <section class="blog-source"><span class="blog-source-mark">L</span><div><b>렛츠링글리쉬어학원</b><p>제주 영어 회화 · 오픽 · 토익스피킹</p></div><a href="${BLOG_URL}" target="_blank" rel="noopener noreferrer">@letsleenglish ${icon("chevron",15)}</a></section></main>`;
+  const featured = favoriteBlogArticles[new Date().getDate() % favoriteBlogArticles.length];
+  const activePost = favoriteBlogArticles.find(post => post.id === activeBlogPostId);
+  const modal = activePost ? `<div class="learning-modal-backdrop" data-close-blog-reader><article class="blog-reader-modal" role="dialog" aria-modal="true" aria-labelledby="blog-reader-title" data-modal-stop><button class="modal-close" type="button" data-close-blog-reader aria-label="닫기">${icon("x",18)}</button><header><span>${activePost.category} · ${activePost.date}</span><h2 id="blog-reader-title">${activePost.title}</h2><p>${activePost.sourceTitle}</p></header><section class="blog-reader-summary"><strong>3줄 핵심 요약</strong>${activePost.summary.map(line=>`<p>${line}</p>`).join("")}</section><section class="blog-reader-expressions"><div><strong>저장해서 다시 볼 표현</strong><span>저장한 항목은 나만의 학습장에서 테스트로 만들 수 있어요.</span></div>${activePost.expressions.map(item=>{const itemId=`blog:${activePost.id}:${item.id}`;const saved=state.savedBlogItems.some(savedItem=>savedItem.id===itemId);return `<article><div><em>${item.type==="word"?"WORD":"EXPRESSION"}</em><h3>${item.text}</h3><b>${item.meaning}</b><p>${item.example}</p></div><button class="${saved?"saved":""}" type="button" data-save-blog-item="${activePost.id}:${item.id}" ${saved?"disabled":""}>${icon(saved?"check":"bookmark",15)} ${saved?"저장됨":"학습장에 담기"}</button></article>`}).join("")}</section><footer><a href="${activePost.sourceUrl}" target="_blank" rel="noopener noreferrer">원문 보기 ${icon("arrow",14)}</a><button type="button" data-page="journal">나만의 학습장 보기</button></footer>${blogSaveToast?`<div class="blog-save-toast" role="status">${icon("check",14)} ${blogSaveToast}</div>`:""}</article></div>` : "";
+  return `${header("최애 블로그")}<main class="blog-page"><section class="blog-hero"><div><p class="eyebrow">MY FAVORITE BLOG</p><span class="blog-kicker">READ · SAVE · TEST</span><h2>읽다가 마음에 든 표현을<br>나의 학습으로 이어보세요.</h2><p>핵심 요약을 서비스 안에서 읽고<br>필요한 표현만 학습장에 담을 수 있습니다.</p><button type="button" data-open-blog-reader="${featured.id}">오늘의 글 인앱으로 읽기 ${icon("arrow",16)}</button></div><div class="hero-note"><span>TODAY'S PICK</span><b>${featured.phrase}</b><em>${featured.meaning}</em><p>${featured.summary[0]}</p></div></section><section class="blog-section"><div class="blog-section-head"><div><p class="eyebrow">DAILY ARCHIVE</p><h2>매일 꺼내 보는 영어 표현</h2></div><p>카드를 누르면 요약과 저장 표현이 인앱으로 열려요.</p></div><div class="blog-grid">${favoriteBlogArticles.map((post,i)=>`<button class="blog-card ${post.color}" type="button" data-open-blog-reader="${post.id}"><div class="blog-card-top"><span>${post.category}</span>${icon("arrow",17)}</div><div class="blog-number">0${i+1}</div><h3>${post.phrase}</h3><strong>${post.meaning}</strong><p>${post.summary[0]}</p><time>${post.date}</time></button>`).join("")}</div></section><section class="blog-source"><span class="blog-source-mark">L</span><div><b>렛츠링글리쉬어학원</b><p>인앱 요약으로 먼저 읽고 필요한 경우에만 원문을 확인하세요.</p></div><button type="button" data-open-blog-reader="${featured.id}">오늘의 요약 보기 ${icon("chevron",15)}</button></section></main>${modal}`;
 }
 
 function dramaPage() {
@@ -2779,16 +2954,144 @@ function getSavedSentenceEntries() {
     .filter(Boolean);
 }
 
+function getUnifiedSavedLearningItems() {
+  return normalizeSavedLearningItems({
+    words: getSavedWordEntries().map(word => ({ ...word, example: vocabNaturalExample(word, 0).en })),
+    sentences: getSavedSentenceEntries(),
+    blogItems: state.savedBlogItems,
+  });
+}
+
+function reviewChatbotUi() {
+  if (audienceMode === "kids") return "";
+  const items = getUnifiedSavedLearningItems();
+  items.forEach(item => { reviewProgressMap[item.id] ||= createReviewProgress(item); });
+  const dueEntries = selectDueReviewItems(items, reviewProgressMap);
+  const retainedItem = items.find(item => item.id === reviewChatState.selected);
+  const selected = reviewChatState.answered !== null && retainedItem
+    ? { item: retainedItem, progress: reviewProgressMap[retainedItem.id], overdueDays: 0 }
+    : dueEntries.find(entry => entry.item.id === reviewChatState.selected) || dueEntries[0];
+  const question = selected ? createReviewQuestion(selected, items) : null;
+  const result = reviewChatState.answered !== null && question ? reviewChatState.answered === question.answer : null;
+  const panel = reviewChatState.open ? `<aside class="review-chat-panel"><header><div><span>AI REVIEW</span><h2>Review Chatbot</h2></div><button type="button" data-review-close>${icon("x",18)}</button></header><div class="review-chat-progress"><span>오늘 복습</span><b>${Math.max(0,dueEntries.length)}개 남음</b></div><div class="review-chat-body">${question?`<div class="chat-bubble">${selected.overdueDays?`${selected.overdueDays}일 밀린 복습이에요. `:""}10초만 집중해볼까요?</div><article class="review-quiz-card"><em>${selected.item.sourceType?.toUpperCase() || "SAVED ITEM"}</em><h3>${question.prompt}</h3><div>${question.choices.map((choice,index)=>`<button class="${reviewChatState.answered===index?"selected":""} ${result!==null&&index===question.answer?"correct":""} ${result===false&&reviewChatState.answered===index?"wrong":""}" type="button" data-review-answer="${index}" ${reviewChatState.answered!==null?"disabled":""}>${choice}</button>`).join("")}</div>${result!==null?`<section class="review-result ${result?"success":"error"}"><b>${result?"Excellent! 기억 수명이 연장됐어요.":"괜찮아요. 오답 노트에 담아둘게요."}</b><p>${selected.item.example || selected.item.meaning}</p></section>`:""}</article>${result!==null?`<div class="review-chat-actions"><button type="button" data-review-more>하나 더</button><button type="button" data-review-done>오늘은 완료</button><button type="button" data-review-wrong>오답 노트 ${reviewChatState.wrongNotes.length}</button></div>`:""}`:`<div class="review-empty">${icon("check",28)}<h3>지금 복습할 항목이 없어요.</h3><p>새 표현을 저장하면 적절한 시점에 다시 알려드릴게요.</p></div>`}</div></aside>`:"";
+  return `<div class="review-chatbot"><div class="review-tooltip ${dueEntries.length?"":"hidden"}">Pop quiz! 저장한 표현을 복습할 시간이에요.<small>10초면 충분해요.</small></div><button class="review-fab" type="button" data-review-open aria-label="복습 챗봇 열기">${icon("message",23)}${dueEntries.length?`<b>${dueEntries.length}</b>`:""}</button>${panel}</div>`;
+}
+
+function selectionAssistantUi() {
+  const selected = escapeMarkup(selectionAssistantState.text || "");
+  const panel = selectionAssistantState.open ? `<aside class="selection-ai-panel" aria-label="선택 문장 AI 분석">
+    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>선택한 문맥을 바로 이어서 분석해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
+    <div class="selection-ai-context"><small>현재 분석 문장</small><p>${selected}</p></div>
+    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>드래그 분석 요청</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i></div></div>
+  </aside>` : "";
+  return `<button class="selection-ai-trigger" type="button" data-selection-ai-trigger aria-label="선택한 영어 분석">${icon("spark",14)} <span>문장 분석</span></button>${panel}<div class="selection-ai-toast" data-selection-ai-toast role="status">${icon("check",14)} 학습장에 문장과 분석 결과가 저장되었습니다.</div>`;
+}
+
+function selectionAnalysis(text) {
+  const target = /has invested/i.test(text) && /in an effort to/i.test(text);
+  const singleWord = /^[-A-Za-z']+$/.test(text.trim());
+  if (target) return [
+    ["한 줄 해석", "회사는 글로벌 시장 점유율을 안정시키기 위한 노력의 일환으로 최신 기술에 투자해 왔습니다."],
+    ["문장 구조", "주어: The company · 동사: has invested · 전치사구: in the latest technology · 목적 표현: in an effort to stabilize its global market share"],
+    ["핵심 문법", "has invested는 과거의 투자가 현재와 연결되는 현재완료입니다. in an effort to + 동사원형은 ‘~하려는 노력으로’라는 목적을 나타냅니다."]
+  ];
+  if (singleWord) return [
+    ["단어 확인", `‘${text}’의 문맥상 의미와 품사를 확인하는 분석입니다.`],
+    ["문맥 포인트", "문장 안에서 앞뒤 단어와의 결합을 기준으로 의미와 용법을 파악합니다."],
+    ["학습 팁", "단어만 외우기보다 현재 예문과 함께 학습장에 저장하면 기억하기 쉽습니다."]
+  ];
+  return [
+    ["한 줄 해석", "선택한 문장의 의미를 앞뒤 학습 문맥에 맞춰 자연스럽게 해석합니다."],
+    ["문장 구조", "주어·동사·목적어와 수식 표현을 구분해 문장의 중심 구조를 확인합니다."],
+    ["핵심 문법", "시제와 전치사, 자주 함께 쓰이는 표현을 중심으로 복습할 포인트를 정리합니다."]
+  ];
+}
+
+function positionSelectionTrigger(rect) {
+  const trigger = document.querySelector("[data-selection-ai-trigger]");
+  if (!trigger) return;
+  const width = 112, height = 38, gap = 9;
+  const left = Math.min(Math.max(rect.right - width, 12), window.innerWidth - width - 12);
+  let top = rect.top - height - gap;
+  if (top < 12) top = Math.min(rect.bottom + gap, window.innerHeight - height - 12);
+  trigger.style.left = `${left}px`;
+  trigger.style.top = `${top}px`;
+  trigger.classList.add("visible");
+}
+
+function hideSelectionTrigger() {
+  document.querySelector("[data-selection-ai-trigger]")?.classList.remove("visible");
+}
+
+function captureLearningSelection() {
+  const selection = window.getSelection();
+  const text = selection?.toString().replace(/\s+/g, " ").trim() || "";
+  if (!selection || !selection.rangeCount || text.length <= 3 || !/[A-Za-z]/.test(text)) return hideSelectionTrigger();
+  const range = selection.getRangeAt(0);
+  const node = range.commonAncestorContainer.nodeType === Node.TEXT_NODE ? range.commonAncestorContainer.parentElement : range.commonAncestorContainer;
+  const content = document.querySelector(".content");
+  if (!content?.contains(node) || node.closest("input,textarea,select,a,.selection-ai-panel,.nav-item")) return hideSelectionTrigger();
+  selectionAssistantState.text = text;
+  selectionAssistantState.range = range.cloneRange();
+  selectionAssistantState.saved = state.savedBlogItems.some(item => item.id === `selection:${text.toLowerCase()}`);
+  positionSelectionTrigger(range.getBoundingClientRect());
+}
+
+function appendSelectionAnalysis() {
+  const chat = document.querySelector("[data-selection-ai-chat]");
+  if (!chat) return;
+  const cards = selectionAnalysis(selectionAssistantState.text);
+  document.querySelector("[data-selection-ai-loading]")?.remove();
+  cards.forEach((item, index) => setTimeout(() => {
+    const currentChat = document.querySelector("[data-selection-ai-chat]");
+    if (!currentChat || !selectionAssistantState.open) return;
+    currentChat.insertAdjacentHTML("beforeend", `<section class="selection-ai-card"><small>${escapeMarkup(item[0])}</small><p>${escapeMarkup(item[1])}</p></section>`);
+    currentChat.scrollTo({ top: currentChat.scrollHeight, behavior: "smooth" });
+    if (index === cards.length - 1) setTimeout(() => {
+      const activeChat = document.querySelector("[data-selection-ai-chat]");
+      if (!activeChat || !selectionAssistantState.open) return;
+      activeChat.insertAdjacentHTML("beforeend", `<button class="selection-ai-save ${selectionAssistantState.saved ? "saved" : ""}" type="button" data-selection-ai-save ${selectionAssistantState.saved ? "disabled" : ""}>${icon(selectionAssistantState.saved ? "check" : "bookmark",14)} ${selectionAssistantState.saved ? "학습장에 저장됨" : "학습장 저장"}</button>`);
+    }, 320);
+  }, index * 420));
+}
+
+function emailRoleplayPanel() {
+  if (!emailRoleplayState.active) return "";
+  const savedItems = getUnifiedSavedLearningItems();
+  const recommendations = (savedItems.length ? savedItems : getCustomTestFallbackItems()).slice(0,3);
+  const used = detectUsedWords(emailRoleplayState.replyText, recommendations);
+  const evaluation = emailRoleplayState.evaluation;
+  return `<section class="email-roleplay"><div class="roleplay-head"><div><p class="eyebrow">EMAIL PING-PONG ROLEPLAY</p><h2>해외 고객 메일에 답장해보세요</h2></div><button type="button" data-close-email-roleplay>${icon("x",17)}</button></div><div class="roleplay-grid"><aside class="persona-card"><span>SCENARIO</span><h3>Emma Collins</h3><b>Procurement Manager · Delivery Schedule</b><p>납기 일정 변경 가능 여부를 확인하고 대안을 요청하는 상황입니다.</p></aside><article class="incoming-mail"><small>FROM · Emma Collins &lt;emma@northstar.example&gt;</small><h3>Request for updated delivery schedule</h3><p>Hello Kai,<br><br>Could you confirm whether the revised materials can be delivered by next Friday? If the current schedule is difficult, please suggest a practical alternative.<br><br>Best regards,<br>Emma</p></article></div><section class="recommended-words"><div><b>추천 저장 표현</b><span>${recommendations.length-used.length}개 아직 사용하지 않음</span></div>${recommendations.length?recommendations.map(item=>`<i class="${used.some(entry=>entry.id===item.id)?"completed":emailRoleplayState.replyText?"active":""}">${used.some(entry=>entry.id===item.id)?icon("check",12):""}${item.text}${used.some(entry=>entry.id===item.id)?" · Used":""}</i>`).join(""):"<p>추천할 저장 표현이 없습니다.</p>"}</section><label class="reply-editor"><span>YOUR REPLY</span><textarea data-email-reply placeholder="Dear Emma,\n\nThank you for your email...">${emailRoleplayState.replyText}</textarea><small>${emailRoleplayState.replyText.length}자 · 최소 50자</small></label><button class="send-roleplay" type="button" data-submit-email-roleplay ${emailRoleplayState.replyText.trim().length<50||emailRoleplayState.sending?"disabled":""}>${emailRoleplayState.sending?"평가 중...":"답장 보내고 평가받기"}</button>${emailRoleplayState.error?`<p class="roleplay-error">${emailRoleplayState.error}</p>`:""}${evaluation?`<section class="roleplay-evaluation"><div>${[["Tone",evaluation.toneScore],["Clarity",evaluation.clarityScore],["Vocabulary",evaluation.vocabScore],["Overall",evaluation.overallScore]].map(([label,score])=>`<article><span>${label}</span><b>${score}</b></article>`).join("")}</div><section><h3>코치 피드백</h3>${evaluation.feedback.map(text=>`<p>${text}</p>`).join("")}</section><article class="next-mail-preview"><span>NEXT EMAIL PREVIEW</span><h3>Emma가 대체 일정을 검토하고 있습니다.</h3><p>다음 메일에서는 가격 조건과 확정 일정을 조율하게 됩니다.</p><button type="button" data-next-email>다음 메일 보기</button></article></section>`:""}</section>`;
+}
+
+function getCustomTestFallbackItems() {
+  const wordFallbacks = words.slice(0, 10).map(word => ({ id: `sample-word:${word.word}`, type: "word", text: word.word, meaning: word.meaning, sourceType: "sample", sourceTitle: "보충 문제" }));
+  const sentenceFallbacks = sentenceLessons.slice(0, 10).map(sentence => ({ id: `sample-sentence:${sentence.id}`, type: "sentence", text: sentence.en, meaning: sentence.ko, sourceType: "sample", sourceTitle: "보충 문제" }));
+  return [...wordFallbacks, ...sentenceFallbacks];
+}
+
+function journalTestPanel() {
+  if (journalTestState.view === "closed") return "";
+  if (journalTestState.view === "setup") return `<div class="learning-modal-backdrop" data-close-journal-test><section class="custom-test-modal" role="dialog" aria-modal="true" aria-labelledby="custom-test-title" data-modal-stop><button class="modal-close" type="button" data-close-journal-test aria-label="닫기">${icon("x",18)}</button><p class="eyebrow">PERSONAL TEST MAKER</p><h2 id="custom-test-title">보관한 표현으로 시험지 만들기</h2><p>저장한 항목을 바탕으로 바로 풀 수 있는 4지선다 문제를 만듭니다.</p><div class="custom-test-options"><fieldset><legend>출제 범위</legend>${[["word","저장한 단어만"],["sentence","저장한 문장만"],["all","단어 + 문장"]].map(([value,label])=>`<label><input type="radio" name="custom-scope" value="${value}" ${journalTestState.scope===value?"checked":""}><span>${label}</span></label>`).join("")}</fieldset><fieldset><legend>문제 수</legend>${[5,10].map(value=>`<label><input type="radio" name="custom-count" value="${value}" ${journalTestState.count===value?"checked":""}><span>${value}문제</span></label>`).join("")}</fieldset><fieldset><legend>난이도</legend>${[["easy","쉬움"],["normal","보통"],["challenge","도전"]].map(([value,label])=>`<label><input type="radio" name="custom-difficulty" value="${value}" ${journalTestState.difficulty===value?"checked":""}><span>${label}</span></label>`).join("")}</fieldset></div><div class="custom-test-note">1차 버전은 모든 문제를 객관식 4지선다로 생성합니다. 저장 항목이 부족하면 보충 문제가 포함됩니다.</div><button class="custom-test-primary" type="button" data-generate-journal-test>${icon("spark",16)} 테스트 생성하기</button></section></div>`;
+  const test = journalTestState.test;
+  const questions = (test?.generatedQuestions || []).filter(question => !journalTestState.wrongOnly || journalTestState.wrongQuestionIds.includes(question.id));
+  const correctCount = (test?.generatedQuestions || []).filter(question => journalTestState.answers[question.id] === question.answer).length;
+  const result = journalTestState.submitted ? `<section class="custom-test-result"><div><strong>${Math.round(correctCount / Math.max(1,test.generatedQuestions.length) * 100)}%</strong><span>${test.generatedQuestions.length}문제 중 ${correctCount}문제 정답</span></div><button type="button" data-retry-journal-test>다시 풀기</button><button type="button" data-wrong-journal-test>오답만 다시 보기</button><button type="button" data-close-journal-test>학습장으로 돌아가기</button></section>` : "";
+  return `<section class="custom-test-drawer" aria-label="개인 맞춤 테스트"><div class="custom-test-drawer-head"><div><p class="eyebrow">AI-READY CUSTOM TEST</p><h2>나의 저장 항목 테스트</h2><span>${test.generatedQuestions.length}문제 · ${journalTestState.difficulty === "challenge" ? "도전" : journalTestState.difficulty === "easy" ? "쉬움" : "보통"}</span></div><button type="button" data-close-journal-test>${icon("x",18)}</button></div>${result}<div class="custom-question-list">${questions.map((question,index)=>{const selected=journalTestState.answers[question.id];return `<article class="custom-question-card"><div><span>Q${index+1}</span><em>${question.type}</em>${question.isFallback?"<small>보충 문제</small>":""}</div><h3>${question.prompt.replace("\n","<br>")}</h3><div>${question.choices.map((choice,choiceIndex)=>`<button class="${selected===choiceIndex?"selected":""} ${journalTestState.submitted&&choiceIndex===question.answer?"correct":""} ${journalTestState.submitted&&selected===choiceIndex&&selected!==question.answer?"wrong":""}" type="button" data-custom-answer="${question.id}:${choiceIndex}" ${journalTestState.submitted?"disabled":""}><i>${String.fromCharCode(65+choiceIndex)}</i><b>${choice}</b></button>`).join("")}</div>${journalTestState.submitted?`<section><strong>${selected===question.answer?"정답입니다.":"정답을 확인해보세요."}</strong><p>${question.explanation}</p><small>출처: 나만의 학습장 &gt; ${question.sourceTitle} &gt; ${question.sourceText}</small></section>`:""}</article>`}).join("")}</div>${!journalTestState.submitted?`<button class="custom-test-submit" type="button" data-submit-journal-test>답안 제출하기</button>`:""}</section>`;
+}
+
 function journalPage() {
   const savedWordEntries = getSavedWordEntries();
   const savedSentenceEntries = getSavedSentenceEntries();
   const renderSavedWord = word => {
     const example = vocabNaturalExample(word, 0);
-    return `<article class="journal-review-card word-review"><div><h3>${word.word}</h3><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",15)}</button><button class="save saved" type="button" data-save="${word.word}" aria-pressed="true" title="저장 해제" aria-label="${word.word} 저장 해제">${icon("bookmark",16)}</button></div><span>${vocabPhonetic(word)}</span><strong>${word.meaning}</strong><p>${word.definition || "저장한 단어를 다시 확인하세요."}</p><blockquote><b>${example.en}</b><small>${example.ko}</small></blockquote></article>`;
+    return `<article class="journal-review-card word-review"><div><h3>${word.word}</h3><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",15)}</button><button class="save saved" type="button" data-save="${word.word}" aria-pressed="true" title="저장 해제" aria-label="${word.word} 저장 해제">${icon("bookmark",16)}</button></div><span>${vocabPhonetic(word)}</span><strong>${example.meaning}</strong><p>${word.definition || "저장한 단어를 다시 확인하세요."}</p><blockquote><b>${example.en}</b><small>${example.ko}</small></blockquote></article>`;
   };
   const renderSavedSentence = lesson => `<article class="journal-review-card sentence-review"><div><h3>문장 ${lesson.index + 1}</h3><button type="button" data-speak="${lesson.en.replaceAll('"', '&quot;')}" aria-label="저장 문장 듣기">${icon("volume",15)}</button><button class="sentence-save-toggle active" type="button" data-save-sentence="${lesson.id}" aria-pressed="true" title="문장 저장 해제" aria-label="문장 저장 취소">${icon("bookmark",16)}</button></div><b>${lesson.en}</b><p>${lesson.ko}</p><small>${lesson.pattern || lesson.meaning || "저장한 문장을 다시 소리 내어 읽어보세요."}</small></article>`;
 
-  return `${header("나만의 학습장")}<main class="journal-page"><section class="journal-hero"><div><p class="eyebrow">MY REVIEW SPACE</p><h2>저장한 단어와 문장을 다시 꺼내보세요.</h2><p>왼쪽은 단어 복습, 오른쪽은 매일 1문장에서 저장한 문장 복습입니다.</p></div><div><b>${savedWordEntries.length}</b><span>저장 단어</span><b>${savedSentenceEntries.length}</b><span>저장 문장</span></div></section><section class="journal-review-layout"><section class="journal-review-panel"><div class="journal-panel-head"><div><p class="eyebrow">SAVED WORDS</p><h2>저장한 단어</h2></div><button type="button" data-page="words">단어장으로</button></div>${savedWordEntries.length ? `<div class="journal-review-list">${savedWordEntries.map(renderSavedWord).join("")}</div>` : `<div class="journal-empty"><h3>아직 저장한 단어가 없어요.</h3><p>단어장 우측 상단 북마크를 눌러 복습할 단어를 모아보세요.</p><button type="button" data-page="words">단어 저장하러 가기</button></div>`}</section><section class="journal-review-panel"><div class="journal-panel-head"><div><p class="eyebrow">SAVED SENTENCES</p><h2>저장한 문장</h2></div><button type="button" data-page="sentence">문장으로</button></div>${savedSentenceEntries.length ? `<div class="journal-review-list">${savedSentenceEntries.map(renderSavedSentence).join("")}</div>` : `<div class="journal-empty"><h3>아직 저장한 문장이 없어요.</h3><p>매일 1문장에서 북마크를 눌러 다시 읽을 문장을 모아보세요.</p><button type="button" data-page="sentence">문장 저장하러 가기</button></div>`}</section></section></main>`;
+  const blogItems = state.savedBlogItems;
+  const wrongItems = getUnifiedSavedLearningItems().filter(item => reviewProgressMap[item.id]?.status === "wrong");
+  return `${header("나만의 학습장")}<main class="journal-page"><section class="journal-hero"><div><p class="eyebrow">MY REVIEW SPACE</p><h2>저장하고, 복습하고, 실제로 사용해보세요.</h2><p>단어·문장·스크랩 표현을 테스트와 비즈니스 이메일 쓰기로 연결합니다.</p><div class="journal-hero-actions"><button class="journal-test-launch" type="button" data-open-journal-test>${icon("spark",16)} 시험지 만들기</button><button type="button" data-open-email-roleplay>${icon("message",16)} 이메일 핑퐁</button></div></div><div><b>${savedWordEntries.length}</b><span>저장 단어</span><b>${savedSentenceEntries.length + blogItems.length}</b><span>저장 표현</span></div></section>${emailRoleplayPanel()}${wrongItems.length?`<section class="journal-blog-strip"><div><p class="eyebrow">WRONG NOTES</p><h2>복습 챗봇 오답 노트</h2></div><div>${wrongItems.map(item=>`<article><em>REVIEW AGAIN</em><b>${item.text}</b><span>${item.meaning}</span><small>${item.example||"다음 복습에서 다시 출제됩니다."}</small></article>`).join("")}</div></section>`:""}${blogItems.length?`<section class="journal-blog-strip"><div><p class="eyebrow">FROM CURATOR & BLOG</p><h2>콘텐츠에서 담은 표현</h2></div><div>${blogItems.map(item=>`<article><em>${item.sourceType?.toUpperCase()||"EXPRESSION"}</em><b>${item.text}</b><span>${item.meaning}</span><small>${item.sourceTitle}</small></article>`).join("")}</div></section>`:""}<section class="journal-review-layout"><section class="journal-review-panel"><div class="journal-panel-head"><div><p class="eyebrow">SAVED WORDS</p><h2>저장한 단어</h2></div><button type="button" data-page="words">단어장으로</button></div>${savedWordEntries.length ? `<div class="journal-review-list">${savedWordEntries.map(renderSavedWord).join("")}</div>` : `<div class="journal-empty"><h3>아직 저장한 단어가 없어요.</h3><p>단어장 우측 상단 북마크를 눌러 복습할 단어를 모아보세요.</p><button type="button" data-page="words">단어 저장하러 가기</button></div>`}</section><section class="journal-review-panel"><div class="journal-panel-head"><div><p class="eyebrow">SAVED SENTENCES</p><h2>저장한 문장</h2></div><button type="button" data-page="sentence">문장으로</button></div>${savedSentenceEntries.length ? `<div class="journal-review-list">${savedSentenceEntries.map(renderSavedSentence).join("")}</div>` : `<div class="journal-empty"><h3>아직 저장한 문장이 없어요.</h3><p>매일 1문장에서 북마크를 눌러 다시 읽을 문장을 모아보세요.</p><button type="button" data-page="sentence">문장 저장하러 가기</button></div>`}</section></section></main>${journalTestPanel()}`;
 }
 
 function placeholderPage() {
@@ -3214,7 +3517,7 @@ function kidsPage(page) {
 
 function render() {
   const content=audienceMode==="kids"?kidsPage(state.page):state.page==="home"?homePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?dramaPage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
-  document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div></div>`;
+  document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}</div>`;
   bindEvents();
 }
 
@@ -3325,6 +3628,50 @@ function updateVocabClearCard(card) {
 }
 
 function bindEvents(){
+  document.querySelector(".content")?.addEventListener("mouseup", () => setTimeout(captureLearningSelection, 0));
+  document.querySelector(".content")?.addEventListener("click", event => {
+    const selected = window.getSelection()?.toString().trim() || "";
+    if (selected.length > 3 && /[A-Za-z]/.test(selected)) { event.preventDefault(); event.stopPropagation(); }
+  }, true);
+  document.querySelector(".content")?.addEventListener("keyup", event => { if (event.shiftKey) captureLearningSelection(); });
+  document.querySelector("[data-selection-ai-trigger]")?.addEventListener("mousedown", event => event.preventDefault());
+  document.querySelector("[data-selection-ai-trigger]")?.addEventListener("click", () => {
+    if (!selectionAssistantState.text) return;
+    selectionAssistantState.open = true;
+    selectionAssistantState.busy = true;
+    reviewChatState.open = false;
+    hideSelectionTrigger();
+    window.getSelection()?.removeAllRanges();
+    render();
+    setTimeout(() => { selectionAssistantState.busy = false; appendSelectionAnalysis(); }, 900);
+  });
+  document.querySelector("[data-selection-ai-close]")?.addEventListener("click", () => { selectionAssistantState.open = false; render(); });
+  document.querySelector("[data-selection-ai-chat]")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-selection-ai-save]");
+    if (!button || selectionAssistantState.saved) return;
+    button.disabled = true;
+    button.textContent = "저장하는 중…";
+    setTimeout(() => {
+      const text = selectionAssistantState.text;
+      const item = { id: `selection:${text.toLowerCase()}`, type: text.trim().includes(" ") ? "sentence" : "word", text, meaning: selectionAnalysis(text)[0][1], example: text, savedAt: new Date().toISOString(), sourceType: "selection", sourceTitle: "AI 드래그 분석", sourceUrl: location.href, sourceSnippet: selectionAnalysis(text)[2][1] };
+      if (!state.savedBlogItems.some(saved => saved.id === item.id)) state.savedBlogItems.push(item);
+      localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
+      selectionAssistantState.saved = true;
+      button.classList.add("saved");
+      button.innerHTML = `${icon("check",14)} 학습장에 저장됨`;
+      const toast = document.querySelector("[data-selection-ai-toast]");
+      toast?.classList.add("visible");
+      setTimeout(() => toast?.classList.remove("visible"), 2800);
+    }, 600);
+  });
+  if (!selectionAssistantDocumentBound) {
+    selectionAssistantDocumentBound = true;
+    document.addEventListener("mousedown", event => {
+      if (!event.target.closest("[data-selection-ai-trigger],.content")) hideSelectionTrigger();
+    });
+    window.addEventListener("scroll", hideSelectionTrigger, true);
+    window.addEventListener("resize", hideSelectionTrigger);
+  }
   const video = document.querySelector("#youtubePlayer");
   if (video) {
     const item = { youtube: videoId };
@@ -3364,6 +3711,125 @@ function bindEvents(){
     }
   });
   document.querySelectorAll("[data-page]").forEach(el=>el.addEventListener("click",()=>navigateTo(el.dataset.page)));
+  document.querySelector("[data-review-open]")?.addEventListener("click", () => { reviewChatState.open = true; render(); });
+  document.querySelector("[data-review-close]")?.addEventListener("click", () => { reviewChatState.open = false; render(); });
+  document.querySelectorAll("[data-review-answer]").forEach(button => button.addEventListener("click", event => {
+    const items = getUnifiedSavedLearningItems();
+    const dueEntries = selectDueReviewItems(items, reviewProgressMap);
+    const selected = dueEntries.find(entry => entry.item.id === reviewChatState.selected) || dueEntries[0];
+    if (!selected) return;
+    const question = createReviewQuestion(selected, items);
+    const answer = Number(event.currentTarget.dataset.reviewAnswer);
+    const correct = answer === question.answer;
+    reviewChatState.selected = selected.item.id;
+    reviewChatState.answered = answer;
+    reviewProgressMap[selected.item.id] = applyReviewAnswer(selected.progress, correct);
+    if (!correct && !reviewChatState.wrongNotes.includes(selected.item.id)) reviewChatState.wrongNotes.push(selected.item.id);
+    localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviewProgressMap));
+    render();
+  }));
+  document.querySelector("[data-review-more]")?.addEventListener("click", () => { reviewChatState.selected = null; reviewChatState.answered = null; render(); });
+  document.querySelector("[data-review-done]")?.addEventListener("click", () => { reviewChatState.open = false; reviewChatState.completed = true; reviewChatState.answered = null; render(); });
+  document.querySelector("[data-review-wrong]")?.addEventListener("click", () => { navigateTo("journal"); });
+  document.querySelector("[data-open-email-roleplay]")?.addEventListener("click", () => { emailRoleplayState.active = true; render(); });
+  document.querySelector("[data-close-email-roleplay]")?.addEventListener("click", () => { emailRoleplayState.active = false; render(); });
+  document.querySelector("[data-email-reply]")?.addEventListener("input", event => {
+    emailRoleplayState.replyText = event.currentTarget.value;
+    const recommendations = (getUnifiedSavedLearningItems().length ? getUnifiedSavedLearningItems() : getCustomTestFallbackItems()).slice(0,3);
+    const used = detectUsedWords(emailRoleplayState.replyText, recommendations);
+    document.querySelectorAll(".recommended-words i").forEach((chip,index) => chip.classList.toggle("completed", used.some(item => item.id === recommendations[index]?.id)));
+    const remaining = document.querySelector(".recommended-words>div span");
+    if (remaining) remaining.textContent = `${recommendations.length-used.length}개 아직 사용하지 않음`;
+    const submit = document.querySelector("[data-submit-email-roleplay]");
+    if (submit) submit.disabled = emailRoleplayState.replyText.trim().length < 50;
+  });
+  document.querySelector("[data-submit-email-roleplay]")?.addEventListener("click", () => {
+    const recommendations = (getUnifiedSavedLearningItems().length ? getUnifiedSavedLearningItems() : getCustomTestFallbackItems()).slice(0,3);
+    try { emailRoleplayState.evaluation = evaluateEmailReply(emailRoleplayState.replyText, recommendations); emailRoleplayState.submitted = true; emailRoleplayState.error = ""; }
+    catch { emailRoleplayState.error = "평가하지 못했습니다. 잠시 후 다시 시도해주세요."; }
+    render();
+  });
+  document.querySelector("[data-next-email]")?.addEventListener("click", () => { emailRoleplayState.replyText = ""; emailRoleplayState.evaluation = null; emailRoleplayState.submitted = false; render(); });
+  document.querySelectorAll("[data-save-news-expression]").forEach(button => button.addEventListener("click", event => {
+    const article = articleLibrary[state.newsIndex] || articleLibrary[0];
+    const expressions = article.sentences.flatMap(sentence => sentence.expressions.map((expression,index) => ({ id: `${article.sentences.indexOf(sentence)}-${index}`, text: expression.term, meaning: expression.meaning, example: sentence.en, type: expression.term.includes(" ") ? "sentence" : "word" }))).slice(0,3);
+    const expression = expressions.find(item => item.id === event.currentTarget.dataset.saveNewsExpression);
+    if (!expression) return;
+    const item = toNotebookItem(expression, article);
+    if (!state.savedBlogItems.some(saved => saved.id === item.id)) state.savedBlogItems.push(item);
+    localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
+    newsSaveToast = "Saved to your notebook";
+    render();
+  }));
+  document.querySelector("[data-open-journal-test]")?.addEventListener("click", () => {
+    journalTestState = { ...journalTestState, view: "setup", test: null, answers: {}, submitted: false, wrongOnly: false, wrongQuestionIds: [] };
+    render();
+  });
+  document.querySelectorAll("[data-close-journal-test]").forEach(button => button.addEventListener("click", event => {
+    if (event.currentTarget !== event.target && event.currentTarget.classList.contains("learning-modal-backdrop")) return;
+    journalTestState.view = "closed";
+    render();
+  }));
+  document.querySelectorAll("[data-modal-stop]").forEach(modal => modal.addEventListener("click", event => event.stopPropagation()));
+  document.querySelector("[data-generate-journal-test]")?.addEventListener("click", () => {
+    journalTestState.scope = document.querySelector('input[name="custom-scope"]:checked')?.value || "all";
+    journalTestState.count = Number(document.querySelector('input[name="custom-count"]:checked')?.value || 5);
+    journalTestState.difficulty = document.querySelector('input[name="custom-difficulty"]:checked')?.value || "normal";
+    journalTestState.test = generateCustomTestFromSavedItems(getUnifiedSavedLearningItems(), journalTestState, getCustomTestFallbackItems());
+    journalTestState.view = "test";
+    journalTestState.answers = {};
+    journalTestState.submitted = false;
+    journalTestState.wrongOnly = false;
+    render();
+  });
+  document.querySelectorAll("[data-custom-answer]").forEach(button => button.addEventListener("click", event => {
+    const value = event.currentTarget.dataset.customAnswer;
+    const splitAt = value.lastIndexOf(":");
+    journalTestState.answers[value.slice(0, splitAt)] = Number(value.slice(splitAt + 1));
+    render();
+  }));
+  document.querySelector("[data-submit-journal-test]")?.addEventListener("click", () => {
+    journalTestState.submitted = true;
+    render();
+  });
+  document.querySelector("[data-retry-journal-test]")?.addEventListener("click", () => {
+    journalTestState.answers = {};
+    journalTestState.submitted = false;
+    journalTestState.wrongOnly = false;
+    journalTestState.wrongQuestionIds = [];
+    render();
+  });
+  document.querySelector("[data-wrong-journal-test]")?.addEventListener("click", () => {
+    journalTestState.wrongQuestionIds = journalTestState.test.generatedQuestions.filter(question => journalTestState.answers[question.id] !== question.answer).map(question => question.id);
+    journalTestState.answers = {};
+    journalTestState.submitted = false;
+    journalTestState.wrongOnly = true;
+    render();
+  });
+  document.querySelectorAll("[data-open-blog-reader]").forEach(button => button.addEventListener("click", event => {
+    activeBlogPostId = event.currentTarget.dataset.openBlogReader;
+    blogSaveToast = "";
+    render();
+  }));
+  document.querySelectorAll("[data-close-blog-reader]").forEach(button => button.addEventListener("click", event => {
+    if (event.currentTarget !== event.target && event.currentTarget.classList.contains("learning-modal-backdrop")) return;
+    activeBlogPostId = null;
+    blogSaveToast = "";
+    render();
+  }));
+  document.querySelectorAll("[data-save-blog-item]").forEach(button => button.addEventListener("click", event => {
+    const [postId, itemId] = event.currentTarget.dataset.saveBlogItem.split(":");
+    const post = favoriteBlogArticles.find(item => item.id === postId);
+    const expression = post?.expressions.find(item => item.id === itemId);
+    if (!post || !expression) return;
+    const id = `blog:${post.id}:${expression.id}`;
+    if (!state.savedBlogItems.some(item => item.id === id)) {
+      state.savedBlogItems.push({ id, type: expression.type, text: expression.text, meaning: expression.meaning, example: expression.example, savedAt: new Date().toISOString(), sourceType: "blog", sourceTitle: post.sourceTitle, sourceUrl: post.sourceUrl, sourceSnippet: post.summary[0] });
+      localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
+    }
+    blogSaveToast = "나만의 학습장에 저장했어요";
+    render();
+  }));
   document.querySelector("[data-open-ted]")?.addEventListener("click", event => {
     navigateTo("ted", { tedLessonId: event.currentTarget.dataset.openTed });
   });
@@ -3469,11 +3935,11 @@ function bindEvents(){
   document.querySelectorAll("[data-sentence]").forEach(el=>el.addEventListener("click",()=>{state.translatedSentence=Number(el.dataset.sentence);render();}));
   document.querySelectorAll("[data-article-sentence]").forEach(el=>el.addEventListener("click",()=>{state.translatedSentence=Number(el.dataset.articleSentence);render();}));
   document.querySelector("[data-copy-article-title]")?.addEventListener("click",()=>{
-    const article = articleLibrary[state.newsIndex] || articleData;
+    const article = articleLibrary[state.newsIndex] || articleLibrary[0];
     copyArticleText(article.title,"제목이 복사되었습니다.");
   });
   document.querySelector("[data-copy-selected-sentence]")?.addEventListener("click",()=>{
-    const article = articleLibrary[state.newsIndex] || articleData;
+    const article = articleLibrary[state.newsIndex] || articleLibrary[0];
     const selected = article.sentences[state.translatedSentence];
     if (selected) copyArticleText(selected.en,"선택 문장이 복사되었습니다.");
     else {
@@ -3683,6 +4149,26 @@ function bindEvents(){
   }));
   document.querySelectorAll(".vocab-card-actions > em").forEach(badge => {
     badge.textContent = typeLabel(badge.textContent.trim());
+  });
+  document.querySelectorAll(".vocab-today-top h4, .word-card .word-title h2").forEach(wordTitle => {
+    const word = wordTitle.textContent.trim();
+    if (!word) return;
+    wordTitle.classList.add("vocab-dictionary-link");
+    wordTitle.setAttribute("role", "link");
+    wordTitle.setAttribute("tabindex", "0");
+    wordTitle.setAttribute("title", `네이버 영어사전에서 ${word} 검색`);
+    wordTitle.setAttribute("aria-label", `네이버 영어사전에서 ${word} 검색`);
+    const openDictionary = () => {
+      const dictionaryUrl = `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`;
+      const dictionaryWindow = window.open(dictionaryUrl, "_blank", "noopener,noreferrer");
+      if (dictionaryWindow) dictionaryWindow.opener = null;
+    };
+    wordTitle.addEventListener("click", openDictionary);
+    wordTitle.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openDictionary();
+    });
   });
   document.querySelectorAll(".vocab-today-item blockquote > span, .word-card .example > span").forEach(translation => {
     const translatedText = translation.textContent.trim();
@@ -4055,3 +4541,4 @@ if (initialNavigation?.worthyLife) {
 }
 
 render();
+refreshDailyNewsLibrary();
