@@ -1,5 +1,12 @@
+#app .sidebar .brand {
+  align-items: flex-start;
+  gap: 4px;
+}
+
 #app .sidebar .brand > .brand-mark {
   display: grid;
+  flex: 0 0 31px;
+  align-self: flex-start;
   width: 31px;
   height: 31px;
   border-radius: 9px;
@@ -9,7 +16,10 @@
 }
 
 #app .sidebar .brand > .brand-copy {
-  display: block;
+  display: flex;
+  align-self: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
   width: auto;
   height: auto;
   border-radius: 0;
@@ -18,8 +28,19 @@
   font: inherit;
 }
 
+#app .sidebar .brand > .brand-copy b {
+  margin: 0;
+  line-height: 1.05;
+}
+
 #app .sidebar .brand > .brand-copy small {
   display: block;
+  margin-top: 4px;
+  line-height: 1.15;
+}
+
+#app .home-quick-links > span {
+  font-size: calc(10px + 1pt);
 }
 
 #app .content > header > .header-title-block {
@@ -30,50 +51,17 @@
   margin-left: auto;
 }
 
-#app .sidebar .csat-vocab-nav-link {
-  color: #506b67;
-  text-decoration: none;
+#app .suneung-wordmaster-page {
+  max-width: none;
+  padding: 0;
 }
 
-#app .sidebar .csat-vocab-nav-link::before {
-  content: "WM";
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  background: #e4f0ec;
-  color: #216b5d;
-  font-size: 8px;
-  font-weight: 800;
-}
-
-#app .suneung-quick-menu > a[data-csat-vocab-quick] {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 48px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #f5faf8;
-  color: var(--green);
-  text-decoration: none;
-}
-
-#app .suneung-quick-menu > a[data-csat-vocab-quick] span,
-#app .suneung-quick-menu > a[data-csat-vocab-quick] small {
+#app csat-wordmaster-mode {
   display: block;
 }
 
-#app .suneung-quick-menu > a[data-csat-vocab-quick] span {
-  font-size: 11px;
-  font-weight: 800;
-}
-
-#app .suneung-quick-menu > a[data-csat-vocab-quick] small {
-  color: #7d8d89;
-  font-size: 8px;
+#app csat-wordmaster-mode .csat-vocab-app {
+  min-height: calc(100vh - 98px);
 }
 
 @media (max-width: 900px) {

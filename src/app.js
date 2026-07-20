@@ -1344,16 +1344,6 @@ const homeStudyItems = [
   { id: "test", number: "05", title: "Daily Test", description: "짧은 테스트로 오늘 학습한 내용을 가볍게 점검해보세요.", page: "test", link: "dailytest.html", icon: "clipboard", color: "mint", tag: "빠른 점검", cta: "테스트 풀기" },
   { id: "quiz", number: "06", title: "매일 토익 풀기", description: "문제를 풀고 오답을 확인하면서 실력을 정리해보세요.", page: "quiz", link: "quiz.html", icon: "pencil", color: "navy", tag: "오답 복습", cta: "문제 풀기" },
 ];
-const weeklyHomeRoutines = {
-  0: { day: "일요일", title: "일요일 정리 루틴", description: "주간 학습을 가볍게 정리하고 다음 주를 준비하는 흐름이에요.", items: ["sentence", "quiz"] },
-  1: { day: "월요일", title: "월요일 가벼운 시작 루틴", description: "주 초반에는 부담 없는 루틴으로 학습 리듬을 만들어보세요.", items: ["words", "sentence", "test"] },
-  2: { day: "화요일", title: "화요일 입력 강화 루틴", description: "읽기와 표현 입력 중심으로 영어 감각을 충분히 채워보세요.", items: ["words", "news", "sentence"] },
-  3: { day: "수요일", title: "수요일 유지 루틴", description: "짧지만 흐름이 끊기지 않도록 핵심 학습만 이어가세요.", items: ["sentence", "test"] },
-  4: { day: "목요일", title: "목요일 이해 확장 루틴", description: "실전 표현과 문맥 이해에 조금 더 집중해보세요.", items: ["news", "quiz"] },
-  5: { day: "금요일", title: "금요일 점검 루틴", description: "한 주 동안 익힌 내용을 가볍게 점검하기 좋은 날이에요.", items: ["words", "test", "quiz"] },
-  6: { day: "토요일", title: "토요일 몰입 루틴", description: "여유가 있다면 복습과 문제풀이까지 연결해보세요.", items: ["words", "quiz"] },
-};
-
 function homeAppItemId(id) {
   return id === "words" ? "vocab" : id === "test" ? "dailytest" : id;
 }
@@ -1800,6 +1790,16 @@ const suneungPassage = {
 let suneungState = (() => { try { const stored = JSON.parse(localStorage.getItem(SUNEUNG_STORAGE_KEY) || "null"); return stored?.date === localDateKey() ? stored : { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false }; } catch { return { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false }; } })();
 suneungState.officialOnly ??= true;
 suneungState.sourceTab ||= "official";
+suneungState.dailyChecks ||= {};
+
+const suneungHomeStudyItems = [
+  { id: "wordmaster", number: "01", title: "수능 단어장", page: "suneung-wordmaster", icon: "book", color: "sage", tag: "Word Master", unit: "오늘의 단어 학습", cta: "단어 학습하기" },
+  { id: "passage", number: "02", title: "오늘의 수능 지문", page: "suneung-passage", icon: "book-open", color: "blue", tag: "실전 독해", unit: "수능형 지문 1개", cta: "지문 풀기" },
+  { id: "types", number: "03", title: "유형별 훈련", page: "suneung-types", icon: "clipboard", color: "gold", tag: "유형 전략", unit: "취약 유형 집중 훈련", cta: "유형 훈련하기" },
+  { id: "review", number: "04", title: "약점 복습", page: "suneung-review", icon: "check", color: "rose", tag: "오답 반복", unit: "최근 오답 다시 확인", cta: "오답 복습하기" },
+  { id: "vocab", number: "05", title: "어휘 / 구문", page: "suneung-vocab", icon: "book", color: "mint", tag: "구문 분석", unit: "핵심 어휘와 문장 구조", cta: "어휘·구문 보기" },
+  { id: "parent", number: "06", title: "부모 점검", page: "suneung-parent", icon: "calendar", color: "navy", tag: "학습 기록", unit: "오늘의 진도와 약점 확인", cta: "학습 현황 보기" },
+];
 
 function icon(name, size = 20) {
   const paths = {
@@ -1830,7 +1830,7 @@ function sidebar() {
   const todayDone = (state.history["2026-07-13"] || []).length;
   const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}<p class="nav-label space">MY SPACE</p>${navItem("calendar", "학습 캘린더", "calendar")}`;
   const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("drama", "오늘의 미드 숏폼", "play")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
-  const suneungNavigation = `${navItem("suneung-home", "수능 영어 홈", "home")}${navItem("suneung-passage", "오늘의 수능 지문", "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-review", "약점 복습", "check")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
+  const suneungNavigation = `${navItem("suneung-wordmaster", "수능 단어장", "book")}${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-passage", "오늘의 수능 지문", "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-review", "약점 복습", "check")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
   return `<aside class="sidebar">
     <button class="brand" type="button" data-page="home" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
     <nav><p class="nav-label">${audienceMode === "suneung" ? "CSAT ENGLISH" : "LEARN"}</p>${audienceMode === "kids" ? kidsNavigation : audienceMode === "suneung" ? suneungNavigation : generalNavigation}</nav>
@@ -2326,7 +2326,6 @@ function homePage() {
     saveHomeStudyState();
   }
   const homeAppState = syncHomeAppState();
-  const todayRoutine = weeklyHomeRoutines[new Date().getDay()];
   const completed = homeStudyItems.filter(item => homeStudyState.checked[item.id]).length;
   const progress = Math.round((completed / homeStudyItems.length) * 100);
   const isSilentMode = learningMode !== "speaking";
@@ -2343,7 +2342,6 @@ function homePage() {
 
   return `${header()}<main class="home-dashboard-page">
   ${speakingMission}
-  <section class="home-routine-guide" aria-label="오늘의 추천 학습 순서"><div class="home-routine-copy"><span class="home-routine-label">${icon("spark", 16)} 오늘의 추천 루틴</span><strong>${todayRoutine.title}</strong></div><div class="home-routine-flow">${todayRoutine.items.map((id,index) => { const item=homeStudyItems.find(entry=>entry.id===id); return `${index ? `<i>${icon("chevron",13)}</i>` : ""}<b>${Number(item.number)}. ${item.title}</b>`; }).join("")}</div></section>
   ${homeQuickLinks()}
   <div class="home-dashboard-layout">
     <section class="home-study-section" aria-labelledby="home-study-title"><div class="home-study-heading"><div><p class="eyebrow">DAILY ROUTINE</p><h3 id="home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${homeStudyItems.length} 완료</span></div>
@@ -2368,7 +2366,7 @@ function homePage() {
       ${isSilentMode ? `<div class="home-coach-box"><b>다음 추천</b>${silentCoach.pending.length ? silentCoach.pending.map(item => `<button type="button" data-page="${item.page}">${item.title} · ${item.cta || "시작"} ${icon("arrow", 12)}</button>`).join("") : `<span>오늘 주요 학습을 모두 끝냈어요.</span>`}<b>복습 필요</b><p>${silentCoach.reviewText}</p><b>약점 신호</b><p>${silentCoach.weakText}</p></div>` : ""}
       <ul>${homeStudyItems.map(item => `<li class="${homeStudyState.checked[item.id] ? "done" : ""}"><i>${homeStudyState.checked[item.id] ? icon("check", 12) : ""}</i><span>${item.number}. ${item.title}</span><em>${homeStudyState.checked[item.id] ? "완료" : "진행 전"}</em></li>`).join("")}</ul>
       <p class="home-progress-message">${isSilentMode ? silentCoach.doneText : encouragement}</p><button class="home-progress-reset" type="button" data-home-study-reset>오늘의 체크 초기화</button>
-    </section><section class="home-tip-card weekly"><span>${icon("spark", 17)}</span><div><h3>요일별 루틴 운영 팁</h3><p>매일 6개를 모두 하기보다 요일마다 2~3개 루틴을 고정하면 지속하기 쉬워요.</p><ul><li>월·수·금: 짧고 가벼운 루틴</li><li>화·목: 입력과 이해 중심</li><li>주말: 테스트와 문제풀이로 정리</li></ul></div></section></aside>
+    </section></aside>
   </div>${homeTedCard()}</main>`;
 }
 
@@ -3039,17 +3037,69 @@ function getSavedSentenceEntries() {
 }
 
 function getUnifiedSavedLearningItems() {
-  return normalizeSavedLearningItems({
+  const generalItems = normalizeSavedLearningItems({
     words: getSavedWordEntries().map(word => ({ ...word, example: vocabNaturalExample(word, 0).en })),
     sentences: getSavedSentenceEntries(),
     blogItems: state.savedBlogItems,
   });
+  const csatProgress = readStoredJSON("valuetime_csat_vocab_v1", { wrong: {} });
+  const csatItems = Object.entries(csatProgress.wrong || {})
+    .filter(([, history]) => !history.resolvedAt && history.word && history.meaning)
+    .map(([id, history]) => ({
+      id: `csat-vocab:${id}`,
+      type: "word",
+      text: history.word,
+      meaning: history.meaning,
+      example: `Word Master ${history.series || "수능"} · Day ${history.day || "-"}`,
+      savedAt: history.lastWrongAt || new Date().toISOString(),
+      sourceType: "csat-vocab",
+      sourceId: id,
+      sourceTitle: "수능 단어 오답",
+      wrongCount: history.count || 1,
+    }));
+  return [...generalItems, ...csatItems];
+}
+
+function syncCsatReviewAnswer(item, correct) {
+  if (item?.sourceType !== "csat-vocab" || !item.sourceId) return;
+  const csatProgress = readStoredJSON("valuetime_csat_vocab_v1", { statuses: {}, wrong: {}, tests: [] });
+  const previous = csatProgress.wrong?.[item.sourceId];
+  if (!previous) return;
+  const now = new Date().toISOString();
+  csatProgress.wrong = {
+    ...csatProgress.wrong,
+    [item.sourceId]: correct
+      ? { ...previous, resolvedAt: now, lastChatbotCorrectAt: now, chatbotCorrectCount: (previous.chatbotCorrectCount || 0) + 1 }
+      : { ...previous, resolvedAt: null, lastWrongAt: now, count: (previous.count || 0) + 1 },
+  };
+  localStorage.setItem("valuetime_csat_vocab_v1", JSON.stringify(csatProgress));
+  window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: csatProgress }));
+}
+
+function getReviewChatbotItems() {
+  const items = getUnifiedSavedLearningItems();
+  return audienceMode === "suneung"
+    ? items.filter(item => item.sourceType === "csat-vocab" || item.sourceType === "suneung")
+    : items.filter(item => item.sourceType !== "csat-vocab" && item.sourceType !== "suneung");
 }
 
 function reviewChatbotUi() {
-  if (audienceMode !== "general") return "";
-  const items = getUnifiedSavedLearningItems();
-  items.forEach(item => { reviewProgressMap[item.id] ||= createReviewProgress(item); });
+  const items = getReviewChatbotItems();
+  items.forEach(item => {
+    reviewProgressMap[item.id] ||= createReviewProgress(item);
+    if (item.sourceType === "csat-vocab") {
+      const savedAt = new Date(item.savedAt).getTime();
+      const reviewedAt = new Date(reviewProgressMap[item.id].lastReviewedAt || 0).getTime();
+      if (savedAt > reviewedAt) {
+        reviewProgressMap[item.id] = {
+          ...reviewProgressMap[item.id],
+          nextReviewAt: item.savedAt,
+          wrongCount: Math.max(reviewProgressMap[item.id].wrongCount || 0, item.wrongCount || 1),
+          status: "wrong",
+        };
+      }
+    }
+  });
   const dueEntries = selectDueReviewItems(items, reviewProgressMap);
   const retainedItem = items.find(item => item.id === reviewChatState.selected);
   const selected = reviewChatState.answered !== null && retainedItem
@@ -3057,7 +3107,8 @@ function reviewChatbotUi() {
     : dueEntries.find(entry => entry.item.id === reviewChatState.selected) || dueEntries[0];
   const question = selected ? createReviewQuestion(selected, items) : null;
   const result = reviewChatState.answered !== null && question ? reviewChatState.answered === question.answer : null;
-  const panel = reviewChatState.open ? `<aside class="review-chat-panel"><header><div><span>AI REVIEW</span><h2>Review Chatbot</h2></div><button type="button" data-review-close>${icon("x",18)}</button></header><div class="review-chat-progress"><span>오늘 복습</span><b>${Math.max(0,dueEntries.length)}개 남음</b></div><div class="review-chat-body">${question?`<div class="chat-bubble">${selected.overdueDays?`${selected.overdueDays}일 밀린 복습이에요. `:""}10초만 집중해볼까요?</div><article class="review-quiz-card"><em>${selected.item.sourceType?.toUpperCase() || "SAVED ITEM"}</em><h3>${question.prompt}</h3><div>${question.choices.map((choice,index)=>`<button class="${reviewChatState.answered===index?"selected":""} ${result!==null&&index===question.answer?"correct":""} ${result===false&&reviewChatState.answered===index?"wrong":""}" type="button" data-review-answer="${index}" ${reviewChatState.answered!==null?"disabled":""}>${choice}</button>`).join("")}</div>${result!==null?`<section class="review-result ${result?"success":"error"}"><b>${result?"Excellent! 기억 수명이 연장됐어요.":"괜찮아요. 오답 노트에 담아둘게요."}</b><p>${selected.item.example || selected.item.meaning}</p></section>`:""}</article>${result!==null?`<div class="review-chat-actions"><button type="button" data-review-more>하나 더</button><button type="button" data-review-done>오늘은 완료</button><button type="button" data-review-wrong>오답 노트 ${reviewChatState.wrongNotes.length}</button></div>`:""}`:`<div class="review-empty">${icon("check",28)}<h3>지금 복습할 항목이 없어요.</h3><p>새 표현을 저장하면 적절한 시점에 다시 알려드릴게요.</p></div>`}</div></aside>`:"";
+  const scopeLabel = audienceMode === "suneung" ? "수능 학습 복습" : audienceMode === "kids" ? "초등 학습 복습" : "일반 학습 복습";
+  const panel = reviewChatState.open ? `<aside class="review-chat-panel"><header><div><span>AI REVIEW · ${scopeLabel}</span><h2>Review Chatbot</h2></div><button type="button" data-review-close>${icon("x",18)}</button></header><div class="review-chat-progress"><span>${scopeLabel}</span><b>${Math.max(0,dueEntries.length)}개 남음</b></div><div class="review-chat-body">${question?`<div class="chat-bubble">${selected.overdueDays?`${selected.overdueDays}일 밀린 복습이에요. `:""}${scopeLabel}에서 10초만 집중해볼까요?</div><article class="review-quiz-card"><em>${selected.item.sourceType === "csat-vocab" ? "WORD MASTER" : selected.item.sourceType?.toUpperCase() || "SAVED ITEM"}</em><h3>${question.prompt}</h3><div>${question.choices.map((choice,index)=>`<button class="${reviewChatState.answered===index?"selected":""} ${result!==null&&index===question.answer?"correct":""} ${result===false&&reviewChatState.answered===index?"wrong":""}" type="button" data-review-answer="${index}" ${reviewChatState.answered!==null?"disabled":""}>${choice}</button>`).join("")}</div>${result!==null?`<section class="review-result ${result?"success":"error"}"><b>${result?"Excellent! 기억 수명이 연장됐어요.":"괜찮아요. 오답 노트에 담아둘게요."}</b><p>${selected.item.example || selected.item.meaning}</p></section>`:""}</article>${result!==null?`<div class="review-chat-actions"><button type="button" data-review-more>하나 더</button><button type="button" data-review-done>오늘은 완료</button><button type="button" data-review-wrong>오답 노트 ${reviewChatState.wrongNotes.length}</button></div>`:""}`:`<div class="review-empty">${icon("check",28)}<h3>지금 복습할 항목이 없어요.</h3><p>${scopeLabel} 항목이 쌓이면 적절한 시점에 다시 알려드릴게요.</p></div>`}</div></aside>`:"";
   return `<div class="review-chatbot"><div class="review-tooltip ${dueEntries.length?"":"hidden"}">Pop quiz! 저장한 표현을 복습할 시간이에요.<small>10초면 충분해요.</small></div><button class="review-fab" type="button" data-review-open aria-label="복습 챗봇 열기">${icon("message",23)}${dueEntries.length?`<b>${dueEntries.length}</b>`:""}</button>${panel}</div>`;
 }
 
@@ -3742,11 +3793,11 @@ function saveSuneungState() { try { localStorage.setItem(SUNEUNG_STORAGE_KEY, JS
 
 function legacySuneungHomePage() {
   const status = suneungState.completed ? "완료" : suneungState.submitted ? "진행 중" : "오늘 학습 전";
-  const quick = [["suneung-passage","오늘의 지문","book-open"],["suneung-types","유형별 훈련","clipboard"],["suneung-review","약점 복습","check"],["suneung-vocab","어휘 / 구문","book"],["suneung-parent","부모 점검","calendar"]];
+  const quick = [["suneung-passage","오늘의 지문","book-open"],["suneung-wordmaster","수능 단어장","book"],["suneung-types","유형별 훈련","clipboard"],["suneung-review","약점 복습","check"],["suneung-vocab","어휘 / 구문","book"],["suneung-parent","부모 점검","calendar"]];
   return `${header("수능 영어")}<main class="suneung-page"><section class="suneung-home-hero"><div><span>TOP-TIER CSAT ENGLISH</span><h2>오늘도 1지문,<br>꾸준히 고득점 루틴</h2><p>실전 독해부터 정답 근거, 오답 원인까지 한 흐름으로 정리합니다.</p></div><div><article><b>${status}</b><span>오늘 상태</span></article><article><b>5일</b><span>연속 학습</span></article><article><b>5 / 7</b><span>주간 목표</span></article></div></section><section class="suneung-daily-card"><div><span>${suneungPassage.number} · TODAY'S PASSAGE</span><em>${suneungState.completed ? "완료" : "학습 대기"}</em></div><h2>${suneungPassage.topic}</h2><p>생산적인 어려움이 학습 효과를 높이는 이유</p><ul><li>${suneungPassage.type}</li><li>난이도 ${suneungPassage.difficulty}</li><li>약 ${suneungPassage.minutes}분</li><li>권장 ${suneungPassage.limit}</li></ul><button type="button" data-page="suneung-passage">${suneungState.completed ? "복습하기" : suneungState.selected !== null ? "이어서 학습" : "오늘 지문 시작하기"} ${icon("arrow",14)}</button></section><div class="suneung-home-grid"><section><header><div><span>WEAK POINTS</span><h3>최근 취약 유형 TOP 3</h3></div><button data-page="suneung-types">전체 유형</button></header>${[["빈칸 추론","58%","취약"],["문장 삽입","64%","복습 필요"],["순서 배열","71%","점검"]].map((item,index)=>`<article><i>${index+1}</i><b>${item[0]}</b><span>${item[1]}</span><em>${item[2]}</em></article>`).join("")}</section><section><header><div><span>TODAY'S VOCAB</span><h3>오늘의 핵심 단어</h3></div><button data-page="suneung-vocab">학습하기</button></header><div class="suneung-word-preview">${suneungPassage.vocab.slice(0,6).map(item=>`<b>${item.word}<small>${item.meaning}</small></b>`).join("")}</div></section></div><section class="suneung-performance"><article><span>최근 7일 학습</span><b>5일</b></article><article><span>평균 정답률</span><b>74%</b></article><article><span>복습 필요</span><b>6문제</b></article><article><span>가장 약한 유형</span><b>빈칸</b></article></section><nav class="suneung-quick-menu">${quick.map(item=>`<button data-page="${item[0]}">${icon(item[2],17)}<span>${item[1]}</span>${icon("chevron",13)}</button>`).join("")}</nav></main>`;
 }
 
-function suneungHomePage() {
+function suneungSourceHomePage() {
   const tabs = [["official","공식 기출"],["office","교육청 실전"],["ebs","EBS 연계"],["review","약점 복습"]];
   const sources = {
     official: [
@@ -3761,6 +3812,41 @@ function suneungHomePage() {
   const items = sources[suneungState.sourceTab] || sources.official;
   const cards = items.length ? items.map(item=>`<article class="suneung-source-card"><div><span class="suneung-official-badge">${icon("check",12)} ${item.grade}</span><em>${item.original}</em></div><h3>${item.exam}</h3><dl><div><dt>출처 기관</dt><dd>${item.agency}</dd></div><div><dt>시행연도/시기</dt><dd>${item.period}</dd></div><div><dt>문항 번호</dt><dd>${item.number}</dd></div><div><dt>유형</dt><dd>${item.type}</dd></div></dl><a href="${item.url}" target="_blank" rel="noopener noreferrer">원출처에서 확인 ${icon("arrow",13)}</a></article>`).join("") : `<section class="suneung-source-empty"><span>${icon("check",20)}</span><h3>저장된 공식 문항의 약점 복습이 아직 없습니다.</h3><p>공식 문항을 푼 뒤 틀린 문제만 이곳에 모입니다.</p></section>`;
   return `${header("수능 영어")}<main class="suneung-page"><section class="suneung-trust-hero"><div><span>VERIFIED CSAT ENGLISH</span><h2>출처가 분명한 문제만 학습하세요</h2><p>평가원·시도교육청·EBS 공식 공개 자료를 기준으로 제공합니다.</p></div><label class="suneung-official-toggle"><input type="checkbox" data-suneung-official ${suneungState.officialOnly?"checked":""}><i></i><span><b>공식 기출만 보기</b><small>기본값 ON</small></span></label></section><nav class="suneung-source-tabs">${tabs.map(tab=>`<button class="${suneungState.sourceTab===tab[0]?"active":""}" data-suneung-source-tab="${tab[0]}">${tab[1]}</button>`).join("")}</nav>${suneungState.officialOnly?`<section class="suneung-source-notice">${icon("check",16)}<div><b>검증된 공식 출처만 표시 중</b><p>출처 불명 자료와 AI 생성 문항은 기본 학습 목록에서 제외됩니다.</p></div><button data-page="suneung-policy">출처 정책</button></section>`:`<section class="suneung-unofficial-warning">공식 필터가 꺼져 있습니다. 자체 제작 예시는 공식 기출이 아니며 UI 체험용으로만 제공됩니다. <button data-page="suneung-passage">비공식 예시 보기</button></section>`}<section class="suneung-source-grid">${cards}</section></main>`;
+}
+
+function suneungHomePage() {
+  if (suneungState.completed) suneungState.dailyChecks.passage = true;
+  const completed = suneungHomeStudyItems.filter(item => suneungState.dailyChecks[item.id]).length;
+  const progress = Math.round((completed / suneungHomeStudyItems.length) * 100);
+  const pending = suneungHomeStudyItems.filter(item => !suneungState.dailyChecks[item.id]).slice(0, 2);
+  return `${header("오늘의 학습")}<main class="home-dashboard-page suneung-today-home">
+    <div class="home-dashboard-layout">
+      <section class="home-study-section" aria-labelledby="suneung-home-study-title">
+        <div class="home-study-heading"><div><p class="eyebrow">DAILY CSAT ROUTINE</p><h3 id="suneung-home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${suneungHomeStudyItems.length} 완료</span></div>
+        <div class="home-study-grid">${suneungHomeStudyItems.map(item => {
+          const isDone = Boolean(suneungState.dailyChecks[item.id]);
+          return `<article class="home-study-card ${isDone ? "completed" : ""}" data-suneung-home-page="${item.page}" tabindex="0" role="link" aria-label="${item.title} 학습 화면으로 이동">
+            <div class="home-study-card-top"><div><span class="home-study-number">${item.number}</span><span class="home-study-icon ${item.color}">${icon(item.icon, 22)}</span></div><button class="home-study-toggle" type="button" data-suneung-home-toggle="${item.id}" aria-pressed="${isDone}" aria-label="${item.title} ${isDone ? "완료 취소" : "완료 표시"}">${icon("check", 15)}</button></div>
+            <span class="home-study-done-chip">${icon("check", 11)} 완료된 학습</span><h4>${item.title}</h4>
+            <div class="home-card-microplan"><span>${item.unit}</span><span>${isDone ? "오늘 학습 완료" : "진행 전"}</span><span>${item.tag}</span></div>
+            <div class="home-study-card-bottom"><span>${isDone ? "복습 이어하기" : item.cta} ${icon("arrow", 15)}</span><em>${item.tag}</em></div>
+          </article>`;
+        }).join("")}</div>
+      </section>
+      <aside class="home-dashboard-side"><section class="home-progress-card" aria-labelledby="suneung-home-progress-title">
+        <p class="eyebrow">TODAY'S PROGRESS</p><div class="home-progress-title"><h3 id="suneung-home-progress-title">오늘의 수능 학습</h3><strong>${completed}<small> / ${suneungHomeStudyItems.length}</small></strong></div>
+        <p class="home-progress-desc">완료한 학습과 남은 항목을 한눈에 확인하세요.</p>
+        <div class="home-progress-track" role="progressbar" aria-label="오늘의 수능 학습 진도" aria-valuemin="0" aria-valuemax="${suneungHomeStudyItems.length}" aria-valuenow="${completed}"><i style="width:${progress}%"></i></div><span class="home-progress-percent">${progress}% 완료</span>
+        <div class="home-coach-box"><b>다음 학습</b>${pending.length ? pending.map(item => `<button type="button" data-page="${item.page}">${item.title} ${icon("arrow", 12)}</button>`).join("") : `<span>오늘의 수능 학습을 모두 완료했습니다.</span>`}<b>학습 기준</b><p>단어 학습, 지문 풀이, 오답 복습을 순서대로 점검합니다.</p></div>
+        <ul>${suneungHomeStudyItems.map(item => `<li class="${suneungState.dailyChecks[item.id] ? "done" : ""}"><i>${suneungState.dailyChecks[item.id] ? icon("check", 12) : ""}</i><span>${item.number}. ${item.title}</span><em>${suneungState.dailyChecks[item.id] ? "완료" : "진행 전"}</em></li>`).join("")}</ul>
+        <button class="home-progress-reset" type="button" data-suneung-home-reset>오늘의 체크 초기화</button>
+      </section></aside>
+    </div>
+  </main>`;
+}
+
+function suneungWordmasterPage() {
+  return `${header("수능 단어장")}<main class="suneung-page suneung-wordmaster-page"><csat-wordmaster-mode></csat-wordmaster-mode></main>`;
 }
 
 function suneungPassagePage() {
@@ -3782,7 +3868,7 @@ function suneungPolicyPage() {
   return `${header("출처 정책")}<main class="suneung-page"><section class="suneung-policy-hero"><span>SOURCE POLICY</span><h2>공식 공개문항 중심 운영 원칙</h2><p>학생과 부모가 모든 문항의 출처와 변형 여부를 즉시 확인할 수 있도록 관리합니다.</p></section><section class="suneung-policy-grid"><article><span>01</span><h3>허용하는 기본 출처</h3><p>한국교육과정평가원 수능·6월·9월 모의평가, 시도교육청 전국연합학력평가, EBS 공식 연계 자료만 기본 학습 목록에 포함합니다.</p></article><article><span>02</span><h3>기본 모드 제외 기준</h3><p>출처가 불명확한 사설 문항, 출처를 검증하지 못한 전재 자료, AI 생성 문항은 공식 기출 기본 모드에서 제외합니다.</p></article><article><span>03</span><h3>문항별 신뢰 정보</h3><p>출처 기관, 시험명, 시행 시기, 문항 번호, 공식성 등급, 원문 여부와 원출처 기준을 함께 표시합니다.</p></article><article><span>04</span><h3>해설과 변형 표기</h3><p>공식 정답과 학습용 자체 해설을 구분하고, 원문 그대로인지 일부 재구성인지 눈에 띄게 표시합니다.</p></article></section><section class="suneung-policy-sources"><h3>공식 확인 경로</h3><a href="https://www.suneung.re.kr/" target="_blank" rel="noopener noreferrer"><b>한국교육과정평가원 수능 홈페이지</b><span>수능 및 모의평가 공식 공개자료 확인</span>${icon("arrow",14)}</a><a href="https://www.ebsi.co.kr/ebs/xip/xipc/previousPaperList.ebs?mainYn=Y" target="_blank" rel="noopener noreferrer"><b>EBSi 기출문제</b><span>수능·모평·학평 기출 및 EBS 자료 확인</span>${icon("arrow",14)}</a></section><p class="suneung-policy-note">운영 원칙: 원출처 확인이 끝나지 않은 문항은 내용 대신 ‘원문 미등록’ 상태로 표시합니다.</p></main>`;
 }
 
-function suneungPage(page) { return page === "suneung-passage" ? suneungPassagePage() : page === "suneung-policy" ? suneungPolicyPage() : ["suneung-types","suneung-review","suneung-vocab","suneung-parent"].includes(page) ? suneungSupportPage(page) : suneungHomePage(); }
+function suneungPage(page) { return page === "suneung-wordmaster" ? suneungWordmasterPage() : page === "suneung-passage" ? suneungPassagePage() : page === "suneung-policy" ? suneungPolicyPage() : ["suneung-types","suneung-review","suneung-vocab","suneung-parent"].includes(page) ? suneungSupportPage(page) : suneungHomePage(); }
 
 function enhanceNewsGuidedReader() {
   const reader = document.querySelector(".news-reader");
@@ -3810,7 +3896,7 @@ function render() {
     robotsMeta.content = "noindex, nofollow, noarchive";
   }
   const content=audienceMode==="kids"?kidsPage(state.page):audienceMode==="suneung"?suneungPage(state.page):state.page==="home"?homePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?familyShortsPage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
-  document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${state.page === "news" && state.newsIndex !== null ? "" : reviewChatbotUi()}${selectionAssistantUi()}</div>`;
+  document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}</div>`;
   enhanceNewsGuidedReader();
   bindEvents();
 }
@@ -3982,6 +4068,9 @@ function bindEvents(){
   document.querySelectorAll("[data-audience-mode]").forEach(button => button.addEventListener("click", event => {
     const selectedMode = event.currentTarget.dataset.audienceMode;
     if (selectedMode === audienceMode) return;
+    reviewChatState.open = false;
+    reviewChatState.selected = null;
+    reviewChatState.answered = null;
     applyAudienceMode(selectedMode);
     if (audienceMode === "suneung") state.page = "suneung-home";
     else if (state.page.startsWith("suneung-") || (audienceMode === "kids" && !["home","words","sentence","news","ted","drama","test","calendar"].includes(state.page))) state.page = "home";
@@ -4015,11 +4104,34 @@ function bindEvents(){
       toggle.setAttribute("aria-label", currentTheme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환");
     }
   });
+  document.querySelectorAll("[data-suneung-home-page]").forEach(card => {
+    const openStudyPage = () => navigateTo(card.dataset.suneungHomePage);
+    card.addEventListener("click", openStudyPage);
+    card.addEventListener("keydown", event => {
+      if (event.target === card && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        openStudyPage();
+      }
+    });
+  });
+  document.querySelectorAll("[data-suneung-home-toggle]").forEach(button => button.addEventListener("click", event => {
+    event.stopPropagation();
+    const id = event.currentTarget.dataset.suneungHomeToggle;
+    suneungState.dailyChecks[id] = !suneungState.dailyChecks[id];
+    saveSuneungState();
+    render();
+  }));
+  document.querySelector("[data-suneung-home-reset]")?.addEventListener("click", () => {
+    if (!window.confirm("오늘의 수능 학습 체크를 모두 초기화할까요?")) return;
+    suneungState.dailyChecks = {};
+    saveSuneungState();
+    render();
+  });
   document.querySelectorAll("[data-page]").forEach(el=>el.addEventListener("click",()=>navigateTo(el.dataset.page)));
   document.querySelector("[data-review-open]")?.addEventListener("click", () => { reviewChatState.open = true; render(); });
   document.querySelector("[data-review-close]")?.addEventListener("click", () => { reviewChatState.open = false; render(); });
   document.querySelectorAll("[data-review-answer]").forEach(button => button.addEventListener("click", event => {
-    const items = getUnifiedSavedLearningItems();
+    const items = getReviewChatbotItems();
     const dueEntries = selectDueReviewItems(items, reviewProgressMap);
     const selected = dueEntries.find(entry => entry.item.id === reviewChatState.selected) || dueEntries[0];
     if (!selected) return;
@@ -4029,6 +4141,7 @@ function bindEvents(){
     reviewChatState.selected = selected.item.id;
     reviewChatState.answered = answer;
     reviewProgressMap[selected.item.id] = applyReviewAnswer(selected.progress, correct);
+    syncCsatReviewAnswer(selected.item, correct);
     if (!correct && !reviewChatState.wrongNotes.includes(selected.item.id)) reviewChatState.wrongNotes.push(selected.item.id);
     localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviewProgressMap));
     render();

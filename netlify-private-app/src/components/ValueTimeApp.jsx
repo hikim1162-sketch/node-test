@@ -17,45 +17,14 @@ export default function ValueTimeApp({ page }) {
       "",
     );
 
-    function addCsatVocabularyNavigation() {
-      if (document.documentElement.dataset.audience !== "suneung") return;
-
-      const sidebarNavigation = document.querySelector("#app .sidebar nav");
-      if (sidebarNavigation && !sidebarNavigation.querySelector("[data-csat-vocab-link]")) {
-        const wordbookLink = document.createElement("a");
-        wordbookLink.className = "nav-item csat-vocab-nav-link";
-        wordbookLink.href = "/csat-vocab?tab=study";
-        wordbookLink.dataset.csatVocabLink = "wordbook";
-        wordbookLink.textContent = "수능 단어장";
-
-        const testLink = document.createElement("a");
-        testLink.className = "nav-item csat-vocab-nav-link";
-        testLink.href = "/csat-vocab?tab=test";
-        testLink.dataset.csatVocabLink = "test";
-        testLink.textContent = "수능 단어시험";
-
-        sidebarNavigation.append(wordbookLink, testLink);
-      }
-
-      const quickMenu = document.querySelector("#app .suneung-quick-menu");
-      if (quickMenu && !quickMenu.querySelector("[data-csat-vocab-quick]")) {
-        const wordbookLink = document.createElement("a");
-        wordbookLink.href = "/csat-vocab?tab=study";
-        wordbookLink.dataset.csatVocabQuick = "wordbook";
-        wordbookLink.innerHTML = "<span>수능 단어장</span><small>Word Master 학습</small>";
-
-        const testLink = document.createElement("a");
-        testLink.href = "/csat-vocab?tab=test";
-        testLink.dataset.csatVocabQuick = "test";
-        testLink.innerHTML = "<span>수능 단어시험</span><small>학습 후 바로 확인</small>";
-
-        quickMenu.append(wordbookLink, testLink);
-      }
+    function registerCsatWordmaster() {
+      if (!document.querySelector("#app csat-wordmaster-mode")) return;
+      import("../features/csat-vocab/registerCsatWordmasterElement.jsx").catch(() => setLoadError(true));
     }
 
-    const observer = new MutationObserver(addCsatVocabularyNavigation);
+    const observer = new MutationObserver(registerCsatWordmaster);
     observer.observe(document.querySelector("#app"), { childList: true, subtree: true });
-    import("../../../src/app.js").then(addCsatVocabularyNavigation).catch(() => setLoadError(true));
+    import("../../../src/app.js").then(registerCsatWordmaster).catch(() => setLoadError(true));
 
     return () => {
       observer.disconnect();

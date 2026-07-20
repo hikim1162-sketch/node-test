@@ -21,6 +21,7 @@ export function loadProgress() {
 
 export function saveProgress(progress) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  queueMicrotask(() => window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: progress })));
 }
 
 export function todayKey() {

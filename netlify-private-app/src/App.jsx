@@ -1,11 +1,8 @@
-import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import News from "./pages/News.jsx";
-
-const CsatVocab = lazy(() => import("./pages/CsatVocab.jsx"));
 
 export default function App() {
   return (
@@ -24,16 +21,6 @@ export default function App() {
         element={
           <ProtectedRoute>
             <News />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/csat-vocab"
-        element={
-          <ProtectedRoute>
-            <Suspense fallback={<main className="loading"><span /></main>}>
-              <CsatVocab />
-            </Suspense>
           </ProtectedRoute>
         }
       />

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
 import { loadProgress, saveProgress, todayKey } from "./storage.js";
@@ -11,7 +11,7 @@ const TABS = [
   ["progress", "진도 / 기록"],
 ];
 
-export default function CsatVocabPage() {
+export default function CsatVocabPage({ embedded = false }) {
   const requestedTab = new URLSearchParams(window.location.search).get("tab");
   const [seriesKey, setSeriesKey] = useState("csat2000");
   const [day, setDay] = useState(getDays("csat2000")[0] || 1);
@@ -20,6 +20,22 @@ export default function CsatVocabPage() {
 
   const days = useMemo(() => getDays(seriesKey), [seriesKey]);
   const dayWords = useMemo(() => getDayWords(seriesKey, day), [seriesKey, day]);
+  const pendingWrongCount = Object.values(progress.wrong).filter((history) => !history.resolvedAt).length;
+
+  useEffect(() => {
+    updateProgress((current) => {
+      let changed = false;
+      const wrong = { ...current.wrong };
+      Object.entries(wrong).forEach(([id, history]) => {
+        if (history.word && history.meaning) return;
+        const word = getWordById(id);
+        if (!word) return;
+        wrong[id] = { ...history, word: word.word_display, meaning: word.meaning_display, series: word.series, day: word.day };
+        changed = true;
+      });
+      return changed ? { ...current, wrong } : current;
+    });
+  }, []);
 
   function updateProgress(updater) {
     setProgress((current) => {
@@ -39,7 +55,7 @@ export default function CsatVocabPage() {
     <main className="csat-vocab-app">
       <header className="csat-vocab-header">
         <div>
-          <Link to="/" className="csat-back">← 수능모드</Link>
+          {embedded ? <span className="csat-back">수능 영어 · 단어장</span> : <Link to="/" className="csat-back">← 수능모드</Link>}
           <span className="csat-mode-label">수능모드</span>
           <h1>Word Master 훈련</h1>
           <p>빠르게 확인하고, 바로 테스트하고, 틀린 단어만 반복하세요.</p>
@@ -74,7 +90,7 @@ export default function CsatVocabPage() {
         {TABS.map(([key, label]) => (
           <button type="button" className={tab === key ? "active" : ""} onClick={() => setTab(key)} aria-current={tab === key ? "page" : undefined} key={key}>
             {label}
-            {key === "review" && Object.keys(progress.wrong).length > 0 ? <em>{Object.keys(progress.wrong).length}</em> : null}
+            {key === "review" && pendingWrongCount > 0 ? <em>{pendingWrongCount}</em> : null}
           </button>
         ))}
       </nav>
@@ -92,6 +108,11 @@ function QuickStudy({ words, progress, updateProgress, startTest }) {
   const [meaningVisible, setMeaningVisible] = useState(false);
   const word = words[index];
   const completed = words.filter((item) => progress.statuses[item.id]).length;
+
+  useEffect(() => {
+    setIndex(0);
+    setMeaningVisible(false);
+  }, [words[0]?.id]);
 
   if (!word) return <EmptyState title="이 Day에는 표시할 단어가 없습니다." />;
 
@@ -138,7 +159,7 @@ function QuickStudy({ words, progress, updateProgress, startTest }) {
 }
 
 function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgress, openReview }) {
-  const reviewWords = Object.keys(progress.wrong).map(getWordById).filter(Boolean);
+  const reviewWords = Object.entries(progress.wrong).filter(([, history]) => !history.resolvedAt).map(([id]) => getWordById(id)).filter(Boolean);
   const studiedToday = sourceWords.filter((word) => progress.statuses[word.id]?.date === todayKey()).slice(0, 10);
   const randomWords = useMemo(() => [...sourceWords].sort((a, b) => ((a.index * 37) % 101) - ((b.index * 37) % 101)).slice(0, 10), [sourceWords]);
   const [mode, setMode] = useState("day");
@@ -147,7 +168,9 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [selected, setSelected] = useState(null);
-  const finished = questions.length > 0 && answers.length === questions.length;
+  const [revealed, setRevealed] = useState(null);
+  const [finished, setFinished] = useState(false);
+  const [hadWrongAttempt, setHadWrongAttempt] = useState(false);
   const score = answers.filter((answer) => answer.correct).length;
   const question = questions[index];
 
@@ -156,26 +179,71 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
     setIndex(0);
     setAnswers([]);
     setSelected(null);
+    setRevealed(null);
+    setFinished(false);
+    setHadWrongAttempt(false);
   }
 
   function confirmAnswer() {
-    if (selected === null || !question) return;
+    if (!question) return;
+    if (revealed) {
+      if (!revealed.correct) {
+        setSelected(null);
+        setRevealed(null);
+        setHadWrongAttempt(true);
+        return;
+      }
+      if (answers.length === questions.length) {
+        setFinished(true);
+      } else {
+        setIndex(index + 1);
+        setSelected(null);
+        setRevealed(null);
+        setHadWrongAttempt(false);
+      }
+      return;
+    }
+    if (selected === null) return;
     const correct = selected === question.answerIndex;
-    const nextAnswers = [...answers, { id: question.word.id, correct }];
+    if (!correct) {
+      setRevealed({ correct: false, selected });
+      updateProgress((current) => ({
+        ...current,
+        wrong: {
+          ...current.wrong,
+          [question.word.id]: {
+            count: (current.wrong[question.word.id]?.count || 0) + 1,
+            lastWrongAt: new Date().toISOString(),
+            resolvedAt: null,
+            word: question.word.word_display,
+            meaning: question.word.meaning_display,
+            series: question.word.series,
+            day: question.word.day,
+          },
+        },
+      }));
+      return;
+    }
+
+    const scoredCorrect = !hadWrongAttempt;
+    const nextAnswers = [...answers, { id: question.word.id, correct: scoredCorrect }];
     setAnswers(nextAnswers);
+    setRevealed({ correct: true, selected });
     updateProgress((current) => {
       const wrong = { ...current.wrong };
-      if (correct && mode === "wrong") delete wrong[question.word.id];
-      if (!correct) wrong[question.word.id] = { count: (wrong[question.word.id]?.count || 0) + 1, lastWrongAt: new Date().toISOString() };
+      if (scoredCorrect && mode === "wrong" && wrong[question.word.id]) {
+        wrong[question.word.id] = {
+          ...wrong[question.word.id],
+          lastCorrectAt: new Date().toISOString(),
+          correctAfterWrong: (wrong[question.word.id].correctAfterWrong || 0) + 1,
+          resolvedAt: new Date().toISOString(),
+        };
+      }
       const tests = nextAnswers.length === questions.length
         ? [...current.tests, { date: todayKey(), series: seriesKey, day, score: nextAnswers.filter((answer) => answer.correct).length, total: questions.length, mode }].slice(-100)
         : current.tests;
       return { ...current, wrong, tests };
     });
-    if (nextAnswers.length < questions.length) {
-      setIndex(index + 1);
-      setSelected(null);
-    }
   }
 
   if (!questions.length) return <section className="csat-workspace"><TestModeSwitch mode={mode} reset={reset} hasWrong={reviewWords.length > 0} /><EmptyState title={mode === "wrong" ? "복습할 오답이 없습니다." : "테스트할 단어가 없습니다."} /></section>;
@@ -197,8 +265,14 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
       <div className="csat-question-meta"><span>{question.label}</span><b>{index + 1} / {questions.length}</b></div>
       <article className="csat-question">
         <h2>{question.prompt}</h2>
-        <div>{question.choices.map((choice, choiceIndex) => <button type="button" className={selected === choiceIndex ? "selected" : ""} onClick={() => setSelected(choiceIndex)} key={`${choice}-${choiceIndex}`}><i>{choiceIndex + 1}</i>{choice}</button>)}</div>
-        <button type="button" className="csat-submit" onClick={confirmAnswer} disabled={selected === null}>정답 확인</button>
+        <div>{question.choices.map((choice, choiceIndex) => {
+          const isCorrectChoice = revealed?.correct && choiceIndex === question.answerIndex;
+          const isWrongChoice = revealed && choiceIndex === revealed.selected && !revealed.correct;
+          const className = [selected === choiceIndex ? "selected" : "", isCorrectChoice ? "correct" : "", isWrongChoice ? "wrong" : ""].filter(Boolean).join(" ");
+          return <button type="button" className={className} onClick={() => setSelected(choiceIndex)} disabled={Boolean(revealed)} key={`${choice}-${choiceIndex}`}><i>{choiceIndex + 1}</i>{choice}</button>;
+        })}</div>
+        {revealed ? <div className={`csat-answer-feedback ${revealed.correct ? "correct" : "wrong"}`} role="status"><b>{revealed.correct ? "정답입니다." : "오답입니다."}</b><span>{revealed.correct ? `정답: ${question.answerIndex + 1}번 · ${question.choices[question.answerIndex]}` : "다시 풀어보세요."}</span></div> : null}
+        <button type="button" className="csat-submit" onClick={confirmAnswer} disabled={!revealed && selected === null}>{revealed ? (!revealed.correct ? "다시 풀기" : answers.length === questions.length ? "결과 보기" : "다음 문제") : "정답 확인"}</button>
       </article>
     </section>
   );
@@ -219,7 +293,7 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress }) 
     <section className="csat-workspace">
       <div className="csat-section-head"><div><span>WEAK WORDS</span><h2>오답과 헷갈린 단어</h2></div><b>{combined.length}개</b></div>
       <div className="csat-review-list">{combined.map((word) => (
-        <article key={word.id}><div><span>{SERIES[word.series].label} · Day {word.day}</span><h3>{word.word_display}</h3><p>{word.meaning_display}</p></div><em>{progress.wrong[word.id] ? `오답 ${progress.wrong[word.id].count}회` : progress.statuses[word.id]?.status === "unknown" ? "모름" : "헷갈림"}</em><button type="button" onClick={() => updateProgress((current) => { const wrong = { ...current.wrong }; const statuses = { ...current.statuses }; delete wrong[word.id]; delete statuses[word.id]; return { ...current, wrong, statuses }; })}>복습 완료</button></article>
+        <article className={`${progress.wrong[word.id]?.reviewedAt ? "reviewed" : ""} ${progress.wrong[word.id]?.resolvedAt ? "resolved" : ""}`} key={word.id}><div><span>{SERIES[word.series].label} · Day {word.day}</span><h3>{word.word_display}</h3><p>{word.meaning_display}</p></div><em>{progress.wrong[word.id]?.resolvedAt ? `해결됨 · 오답 ${progress.wrong[word.id].count}회` : progress.wrong[word.id] ? `오답 ${progress.wrong[word.id].count}회` : progress.statuses[word.id]?.status === "unknown" ? "모름" : "헷갈림"}</em><button type="button" aria-pressed={Boolean(progress.wrong[word.id]?.reviewedAt)} onClick={() => updateProgress((current) => { const wrong = { ...current.wrong }; const previous = wrong[word.id] || { count: 0, word: word.word_display, meaning: word.meaning_display, series: word.series, day: word.day }; wrong[word.id] = previous.reviewedAt ? { ...previous, reviewedAt: null } : { ...previous, reviewedAt: new Date().toISOString(), reviewCount: (previous.reviewCount || 0) + 1 }; return { ...current, wrong }; })}>{progress.wrong[word.id]?.reviewedAt ? "복습 확인됨" : "복습 완료"}</button></article>
       ))}</div>
     </section>
   );
@@ -234,12 +308,89 @@ function ProgressPanel({ progress }) {
   return (
     <section className="csat-workspace">
       <div className="csat-section-head"><div><span>MY PROGRESS</span><h2>오늘의 훈련 기록</h2></div></div>
-      <div className="csat-stats"><article><span>오늘 학습</span><b>{learnedToday}</b><small>단어</small></article><article><span>최근 점수</span><b>{latest ? `${latest.score}/${latest.total}` : "-"}</b><small>오늘 테스트</small></article><article><span>오답</span><b>{Object.keys(progress.wrong).length}</b><small>복습 대기</small></article></div>
+      <div className="csat-stats"><article><span>오늘 학습</span><b>{learnedToday}</b><small>단어</small></article><article><span>최근 점수</span><b>{latest ? `${latest.score}/${latest.total}` : "-"}</b><small>오늘 테스트</small></article><article><span>오답</span><b>{Object.values(progress.wrong).filter((history) => !history.resolvedAt).length}</b><small>복습 대기</small></article></div>
       <h3 className="csat-progress-title">시리즈별 진행률</h3>
       <div className="csat-series-progress">{Object.values(SERIES).map((series) => { const learned = series.words.filter((word) => progress.statuses[word.id]).length; const percent = Math.round((learned / series.words.length) * 100); return <article key={series.key}><div><b>{series.label}</b><span>{learned} / {series.words.length}</span></div><i><b style={{ width: `${percent}%` }} /></i><small>{percent}%</small></article>; })}</div>
       <h3 className="csat-progress-title">최근 테스트</h3>
       {progress.tests.length ? <ul className="csat-history">{[...progress.tests].reverse().slice(0, 8).map((test, index) => <li key={`${test.date}-${index}`}><span>{test.date}</span><b>{SERIES[test.series]?.label || test.series} · Day {test.day}</b><em>{test.score} / {test.total}</em></li>)}</ul> : <EmptyState title="아직 테스트 기록이 없습니다." />}
     </section>
+  );
+}
+
+function CsatReviewCoach({ progress, updateProgress }) {
+  const wrongEntries = Object.entries(progress.wrong)
+    .map(([id, history]) => ({ word: getWordById(id), history }))
+    .filter((item) => item.word)
+    .sort((a, b) => new Date(b.history.lastWrongAt || 0) - new Date(a.history.lastWrongAt || 0));
+  const [open, setOpen] = useState(false);
+  const [queueIndex, setQueueIndex] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [feedback, setFeedback] = useState("");
+  const current = wrongEntries[queueIndex % Math.max(1, wrongEntries.length)];
+  const question = useMemo(() => current ? buildQuestions([current.word], SERIES[current.word.series].words)[0] : null, [current?.word.id]);
+
+  useEffect(() => {
+    if (!wrongEntries.length) return undefined;
+    const timer = window.setInterval(() => setOpen(true), 60000);
+    return () => window.clearInterval(timer);
+  }, [wrongEntries.length]);
+
+  function answer() {
+    if (selected === null || !question) return;
+    const correct = selected === question.answerIndex;
+    if (!correct) {
+      setFeedback("아직 아니에요. 다시 풀어보세요.");
+      updateProgress((currentProgress) => ({
+        ...currentProgress,
+        wrong: {
+          ...currentProgress.wrong,
+          [question.word.id]: {
+            ...currentProgress.wrong[question.word.id],
+            count: (currentProgress.wrong[question.word.id]?.count || 0) + 1,
+            lastWrongAt: new Date().toISOString(),
+          },
+        },
+      }));
+      setSelected(null);
+      return;
+    }
+
+    setFeedback("정답이에요. 오답 이력은 다음 반복 학습을 위해 보관할게요.");
+    updateProgress((currentProgress) => ({
+      ...currentProgress,
+      wrong: {
+        ...currentProgress.wrong,
+        [question.word.id]: {
+          ...currentProgress.wrong[question.word.id],
+          lastCoachCorrectAt: new Date().toISOString(),
+          coachCorrectCount: (currentProgress.wrong[question.word.id]?.coachCorrectCount || 0) + 1,
+        },
+      },
+    }));
+  }
+
+  function nextQuestion() {
+    setQueueIndex((index) => (index + 1) % wrongEntries.length);
+    setSelected(null);
+    setFeedback("");
+  }
+
+  if (!wrongEntries.length || !question) return null;
+
+  return (
+    <aside className={`csat-review-coach ${open ? "open" : ""}`} aria-label="수능 오답 복습 코치">
+      <button type="button" className="csat-coach-toggle" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
+        <span>오답 코치</span><em>{wrongEntries.length}</em>
+      </button>
+      {open ? <section>
+        <header><div><small>REVIEW COACH</small><b>잠깐, 오답 한 문제 풀어볼까요?</b></div><button type="button" onClick={() => setOpen(false)} aria-label="오답 코치 닫기">×</button></header>
+        <p>{question.label}</p>
+        <h3>{question.prompt}</h3>
+        <div className="csat-coach-choices">{question.choices.map((choice, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => { setSelected(index); setFeedback(""); }} key={`${choice}-${index}`}>{index + 1}. {choice}</button>)}</div>
+        {feedback ? <p className={selected === question.answerIndex ? "success" : "retry"} role="status">{feedback}</p> : null}
+        <footer><button type="button" onClick={answer} disabled={selected === null}>확인</button>{feedback.startsWith("정답") ? <button type="button" onClick={nextQuestion}>다음 오답</button> : null}</footer>
+      </section> : null}
+    </aside>
   );
 }
 

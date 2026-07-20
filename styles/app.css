@@ -334,9 +334,9 @@ html[data-theme="dark"] .ted-transcript-line.clear small{color:#a9cce0}
 @media(max-width:700px){.ted-transcript-line b{font-size:calc(14px + 2pt)}.ted-transcript-line small{font-size:calc(11px + 2pt)}}
 
 /* Home quick links: learning resources live in content, not global controls. */
-.home-quick-links{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:-1px 0 9px;padding:9px 12px;border:1px solid #e1e9e6;border-radius:12px;background:rgba(255,255,255,.72)}
+.home-quick-links{display:flex;align-items:center;justify-content:flex-start;gap:28px;margin:-1px 0 9px;padding:9px 12px;border:1px solid #e1e9e6;border-radius:12px;background:rgba(255,255,255,.72)}
 .home-quick-links>span{display:flex;align-items:center;gap:6px;color:#6f817d;font-size:10px;font-weight:900;white-space:nowrap}
-.home-quick-links>div{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:7px}
+.home-quick-links>div{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-start;gap:7px}
 .home-quick-links a,.home-quick-links button{display:flex;align-items:center;gap:7px;min-height:31px;padding:4px 10px 4px 5px;border:1px solid #dbe5e1;border-radius:9px;background:#f8fbfa;color:#536b66;text-decoration:none;font:inherit;font-size:10px;font-weight:800;white-space:nowrap;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease}
 .home-quick-links em{display:grid;place-items:center;min-width:28px;height:21px;padding:0 6px;border-radius:6px;background:#dfece8;color:#27675a;font:800 8px Arial,sans-serif;letter-spacing:.2px}
 .home-quick-links svg{width:12px;transition:transform .18s ease}
