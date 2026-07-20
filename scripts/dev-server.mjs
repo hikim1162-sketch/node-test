@@ -1,12 +1,41 @@
 import { createServer } from "node:http";
 import { get as httpsGet } from "node:https";
 import { readFile } from "node:fs/promises";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const host = "127.0.0.1";
 const port = Number(process.env.PORT || 4173);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const authEnvPath = path.join(root, "netlify-private-app", ".env");
+const authEnv = await readFile(authEnvPath, "utf8").catch(() => "");
+for (const line of authEnv.split(/\r?\n/)) {
+  const match = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+  if (match && !process.env[match[1]]) process.env[match[1]] = match[2].trim();
+}
+const sitePassword = process.env.SITE_PASSWORD || "family";
+const authSecret = process.env.AUTH_SECRET || "local-development-secret-change-before-deploy-2026";
+const authCookie = "valuetime_auth";
+const protectedPages = new Set(["/", "/index.html", "/news.html", "/vocab.html", "/sentence.html", "/drama.html", "/quiz.html", "/dailytest.html", "/suneung.html", "/ted.html"]);
+
+function sign(value) {
+  return createHmac("sha256", authSecret).update(value).digest("base64url");
+}
+
+function makeToken() {
+  const payload = Buffer.from(JSON.stringify({ exp: Date.now() + 1000 * 60 * 60 * 24 * 30 })).toString("base64url");
+  return `${payload}.${sign(payload)}`;
+}
+
+function isAuthenticated(request) {
+  const cookies = Object.fromEntries(String(request.headers.cookie || "").split(";").map(part => part.trim().split(/=(.*)/s).slice(0, 2)).filter(pair => pair[0]));
+  const [payload, signature] = String(cookies[authCookie] || "").split(".");
+  if (!payload || !signature) return false;
+  const expected = sign(payload);
+  if (signature.length !== expected.length || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return false;
+  try { return JSON.parse(Buffer.from(payload, "base64url").toString("utf8")).exp > Date.now(); } catch { return false; }
+}
 const types = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -215,6 +244,50 @@ async function getDailyNews() {
 
 createServer(async (request, response) => {
   const requested = decodeURIComponent(new URL(request.url || "/", `http://${host}:${port}`).pathname);
+  if (requested === "/api/login" && request.method === "POST") {
+    try {
+      const { password = "" } = await readJsonBody(request);
+      if (password !== sitePassword) {
+        response.writeHead(401, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+        response.end(JSON.stringify({ message: "비밀번호가 올바르지 않습니다." }));
+        return;
+      }
+      response.writeHead(200, {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "Set-Cookie": `${authCookie}=${makeToken()}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000`,
+      });
+      response.end(JSON.stringify({ authenticated: true }));
+    } catch {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ message: "로그인 요청을 확인해주세요." }));
+    }
+    return;
+  }
+  if (requested === "/api/check-auth") {
+    const authenticated = isAuthenticated(request);
+    response.writeHead(authenticated ? 200 : 401, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+    response.end(JSON.stringify({ authenticated }));
+    return;
+  }
+  if (requested === "/api/logout" && request.method === "POST") {
+    response.writeHead(200, {
+      "Content-Type": "application/json; charset=utf-8",
+      "Set-Cookie": `${authCookie}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0`,
+    });
+    response.end(JSON.stringify({ authenticated: false }));
+    return;
+  }
+  if (protectedPages.has(requested) && !isAuthenticated(request)) {
+    response.writeHead(302, { Location: `/login.html?next=${encodeURIComponent(requested === "/" ? "/index.html" : requested)}`, "Cache-Control": "no-store" });
+    response.end();
+    return;
+  }
+  if (requested === "/login.html" && isAuthenticated(request)) {
+    response.writeHead(302, { Location: "/index.html", "Cache-Control": "no-store" });
+    response.end();
+    return;
+  }
   if (requested === "/api/daily-news") {
     try {
       const news = await getDailyNews();

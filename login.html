@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>Value Time | Family Login</title>
+    <style>
+      :root { font-family: Inter, "Noto Sans KR", system-ui, sans-serif; color: #17324a; background: #f5f7f6; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      main { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: radial-gradient(circle at 12% 8%, #dcefeb, transparent 32%), #f5f7f6; }
+      section { width: min(430px, 100%); padding: 38px 34px; border: 1px solid #d8e2e6; border-radius: 24px; background: white; box-shadow: 0 20px 60px rgba(28,57,75,.12); text-align: center; }
+      .mark { display: grid; place-items: center; width: 42px; height: 42px; margin: auto; border-radius: 13px; background: #214e68; color: white; font: 700 25px Georgia; }
+      .eyebrow { margin: 18px 0 7px; color: #39738c; font-size: 11px; font-weight: 800; letter-spacing: .14em; }
+      h1 { margin: 0; font-size: 25px; }
+      h2 { margin: 14px 0 8px; color: #193b53; font: 700 30px/1.25 Georgia, serif; }
+      .intro { margin: 0; color: #75858e; font-size: 13px; }
+      form { display: grid; gap: 10px; margin-top: 25px; text-align: left; }
+      label { display: grid; gap: 7px; font-size: 12px; font-weight: 800; }
+      input { width: 100%; padding: 14px; border: 1px solid #cbd9df; border-radius: 10px; font: inherit; outline: none; }
+      input:focus { border-color: #39738c; box-shadow: 0 0 0 3px #e2f0f3; }
+      button { padding: 14px; border: 0; border-radius: 10px; background: #255873; color: white; font: 800 14px inherit; cursor: pointer; }
+      button:disabled { opacity: .65; }
+      #error { min-height: 18px; margin: 0; color: #ad4747; font-size: 12px; }
+      small { display: block; margin-top: 17px; color: #929da3; line-height: 1.5; }
+    </style>
+    <script type="module" src="src/login.js"></script>
+  </head>
+  <body>
+    <main><section>
+      <div class="mark">V</div>
+      <p class="eyebrow">PRIVATE FAMILY SPACE</p>
+      <h1>Value Time</h1>
+      <h2>Small Steps<br />Change the Future</h2>
+      <p class="intro">가족만 사용하는 영어 학습 공간입니다.</p>
+      <form id="login-form">
+        <label>가족 비밀번호<input id="password" type="password" autocomplete="current-password" required autofocus /></label>
+        <p id="error" role="alert"></p>
+        <button id="submit" type="submit">Start Today</button>
+      </form>
+      <small>비밀번호는 브라우저 코드에 저장되지 않습니다.</small>
+    </section></main>
+  </body>
+</html>
