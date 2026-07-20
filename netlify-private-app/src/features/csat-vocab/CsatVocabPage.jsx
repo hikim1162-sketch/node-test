@@ -12,9 +12,10 @@ const TABS = [
 ];
 
 export default function CsatVocabPage() {
+  const requestedTab = new URLSearchParams(window.location.search).get("tab");
   const [seriesKey, setSeriesKey] = useState("csat2000");
   const [day, setDay] = useState(getDays("csat2000")[0] || 1);
-  const [tab, setTab] = useState("study");
+  const [tab, setTab] = useState(TABS.some(([key]) => key === requestedTab) ? requestedTab : "study");
   const [progress, setProgress] = useState(loadProgress);
 
   const days = useMemo(() => getDays(seriesKey), [seriesKey]);
@@ -38,7 +39,7 @@ export default function CsatVocabPage() {
     <main className="csat-vocab-app">
       <header className="csat-vocab-header">
         <div>
-          <Link to="/" className="csat-back">← 일반모드</Link>
+          <Link to="/" className="csat-back">← 수능모드</Link>
           <span className="csat-mode-label">수능모드</span>
           <h1>Word Master 훈련</h1>
           <p>빠르게 확인하고, 바로 테스트하고, 틀린 단어만 반복하세요.</p>
@@ -88,6 +89,7 @@ export default function CsatVocabPage() {
 
 function QuickStudy({ words, progress, updateProgress, startTest }) {
   const [index, setIndex] = useState(0);
+  const [meaningVisible, setMeaningVisible] = useState(false);
   const word = words[index];
   const completed = words.filter((item) => progress.statuses[item.id]).length;
 
@@ -98,7 +100,10 @@ function QuickStudy({ words, progress, updateProgress, startTest }) {
       ...current,
       statuses: { ...current.statuses, [word.id]: { status, date: todayKey(), updatedAt: new Date().toISOString() } },
     }));
-    if (index < words.length - 1) setIndex(index + 1);
+    if (index < words.length - 1) {
+      setIndex(index + 1);
+      setMeaningVisible(false);
+    }
   }
 
   return (
@@ -112,7 +117,11 @@ function QuickStudy({ words, progress, updateProgress, startTest }) {
         <small>{index + 1} / {words.length}</small>
         <h3>{word.word_display}</h3>
         {word.is_corrected ? <p className="csat-correction">원본 표기: {word.word_raw} · 교정 표시</p> : null}
-        <p>{word.meaning_display}</p>
+        <button type="button" className="csat-meaning-toggle" onClick={() => setMeaningVisible((visible) => !visible)} aria-expanded={meaningVisible}>
+          {meaningVisible ? "뜻 숨기기" : "뜻 보기"}
+        </button>
+        {meaningVisible ? <p>{word.meaning_display}</p> : <p className="csat-meaning-covered">먼저 단어의 뜻을 떠올려 보세요.</p>}
+        {word.example ? <details className="csat-example"><summary>예문 보기</summary><p>{word.example}</p>{word.exampleMeaning ? <small>{word.exampleMeaning}</small> : null}</details> : null}
         <div className="csat-rating-actions">
           <button type="button" onClick={() => rate("known")}>암기함</button>
           <button type="button" onClick={() => rate("confused")}>헷갈림</button>
@@ -120,9 +129,9 @@ function QuickStudy({ words, progress, updateProgress, startTest }) {
         </div>
       </article>
       <div className="csat-card-navigation">
-        <button type="button" onClick={() => setIndex(Math.max(0, index - 1))} disabled={index === 0}>이전</button>
-        <div>{words.map((item, itemIndex) => <button type="button" className={`${itemIndex === index ? "active" : ""} ${progress.statuses[item.id] ? "rated" : ""}`} onClick={() => setIndex(itemIndex)} aria-label={`${itemIndex + 1}번 단어`} key={item.id} />)}</div>
-        {completed === words.length ? <button type="button" className="primary" onClick={startTest}>바로 테스트</button> : <button type="button" onClick={() => setIndex(Math.min(words.length - 1, index + 1))} disabled={index === words.length - 1}>다음</button>}
+        <button type="button" onClick={() => { setIndex(Math.max(0, index - 1)); setMeaningVisible(false); }} disabled={index === 0}>이전</button>
+        <div>{words.map((item, itemIndex) => <button type="button" className={`${itemIndex === index ? "active" : ""} ${progress.statuses[item.id] ? "rated" : ""}`} onClick={() => { setIndex(itemIndex); setMeaningVisible(false); }} aria-label={`${itemIndex + 1}번 단어`} key={item.id} />)}</div>
+        {completed === words.length ? <button type="button" className="primary" onClick={startTest}>이 범위 시험 보기</button> : <button type="button" onClick={() => { setIndex(Math.min(words.length - 1, index + 1)); setMeaningVisible(false); }} disabled={index === words.length - 1}>다음</button>}
       </div>
     </section>
   );
@@ -130,8 +139,10 @@ function QuickStudy({ words, progress, updateProgress, startTest }) {
 
 function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgress, openReview }) {
   const reviewWords = Object.keys(progress.wrong).map(getWordById).filter(Boolean);
-  const [mode, setMode] = useState("today");
-  const targets = mode === "wrong" ? reviewWords.slice(0, 10) : words;
+  const studiedToday = sourceWords.filter((word) => progress.statuses[word.id]?.date === todayKey()).slice(0, 10);
+  const randomWords = useMemo(() => [...sourceWords].sort((a, b) => ((a.index * 37) % 101) - ((b.index * 37) % 101)).slice(0, 10), [sourceWords]);
+  const [mode, setMode] = useState("day");
+  const targets = mode === "wrong" ? reviewWords.slice(0, 10) : mode === "learned" ? studiedToday : mode === "random" ? randomWords : words;
   const questions = useMemo(() => buildQuestions(targets, sourceWords), [targets.map((word) => word.id).join("|"), sourceWords]);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -169,12 +180,16 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
 
   if (!questions.length) return <section className="csat-workspace"><TestModeSwitch mode={mode} reset={reset} hasWrong={reviewWords.length > 0} /><EmptyState title={mode === "wrong" ? "복습할 오답이 없습니다." : "테스트할 단어가 없습니다."} /></section>;
 
-  if (finished) return (
-    <section className="csat-workspace csat-result">
-      <span>TEST COMPLETE</span><h2>{score} / {questions.length}</h2><p>정답률 {Math.round((score / questions.length) * 100)}%</p>
-      <div><button type="button" onClick={() => reset()}>다시 풀기</button><button type="button" className="primary" onClick={openReview}>오답 복습</button></div>
-    </section>
-  );
+  if (finished) {
+    const wrongAnswers = answers.filter((answer) => !answer.correct).map((answer) => getWordById(answer.id)).filter(Boolean);
+    return (
+      <section className="csat-workspace csat-result">
+        <span>TEST COMPLETE</span><h2>{score} / {questions.length}</h2><p>총 {questions.length}문제 · 정답 {score}개 · 오답 {questions.length - score}개</p>
+        {wrongAnswers.length ? <section className="csat-result-wrong"><h3>틀린 단어</h3>{wrongAnswers.map((word) => <article key={word.id}><b>{word.word_display}</b><span>{word.meaning_display}</span></article>)}</section> : <p className="csat-perfect">모든 문제를 맞혔습니다.</p>}
+        <div><button type="button" onClick={() => reset()}>다시 풀기</button><button type="button" className="primary" onClick={openReview}>오답 다시 보기</button></div>
+      </section>
+    );
+  }
 
   return (
     <section className="csat-workspace">
@@ -190,7 +205,7 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
 }
 
 function TestModeSwitch({ mode, reset, hasWrong }) {
-  return <div className="csat-test-switch"><button type="button" className={mode === "today" ? "active" : ""} onClick={() => reset("today")}>오늘 테스트</button><button type="button" className={mode === "wrong" ? "active" : ""} onClick={() => reset("wrong")} disabled={!hasWrong}>오답 테스트</button></div>;
+  return <div className="csat-test-switch"><button type="button" className={mode === "day" ? "active" : ""} onClick={() => reset("day")}>현재 Day</button><button type="button" className={mode === "learned" ? "active" : ""} onClick={() => reset("learned")}>오늘 학습</button><button type="button" className={mode === "wrong" ? "active" : ""} onClick={() => reset("wrong")} disabled={!hasWrong}>오답</button><button type="button" className={mode === "random" ? "active" : ""} onClick={() => reset("random")}>랜덤</button></div>;
 }
 
 function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress }) {
