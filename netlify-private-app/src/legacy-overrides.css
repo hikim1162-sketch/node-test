@@ -29,3 +29,136 @@
 #app .content > header > .header-actions {
   margin-left: auto;
 }
+
+@media (max-width: 900px) {
+  #app .content > header {
+    padding-left: 16px;
+  }
+
+  #app .content > header > .mobile-menu {
+    display: grid;
+    place-items: center;
+    flex: 0 0 46px;
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--soft);
+    color: var(--green);
+    cursor: pointer;
+  }
+
+  #app .content > header > .mobile-menu svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 2;
+  }
+
+  #app:has(.sidebar.open) .content > header > .mobile-menu {
+    border-color: var(--green);
+    background: var(--green);
+    color: #fff;
+  }
+
+  #app .content > header > .mobile-menu:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--green) 28%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 700px) {
+  #app .vocab-dashboard-page,
+  #app .vocab-dashboard-layout,
+  #app .vocab-today-panel,
+  #app .vocab-today-list,
+  #app .vocab-today-item,
+  #app .vocab-dashboard-side {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #app .vocab-dashboard-page {
+    overflow-x: clip;
+  }
+
+  #app .vocab-today-panel {
+    padding: 14px;
+  }
+
+  #app .vocab-panel-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  #app .vocab-panel-head > div,
+  #app .vocab-panel-head > b {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  #app .vocab-today-item {
+    padding: 14px;
+  }
+
+  #app .vocab-today-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  #app .vocab-today-top > div:first-child {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #app .vocab-today-top h4,
+  #app .vocab-today-item blockquote b,
+  #app .vocab-today-item blockquote span,
+  #app .vocab-meaning-cover strong,
+  #app .vocab-today-item > p,
+  #app .vocab-today-item > a {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  #app .vocab-card-actions {
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  #app .vocab-today-item blockquote {
+    max-width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  #app .vocab-meaning-cover,
+  #app .vocab-meaning-cover.revealed,
+  #app .vocab-today-item > a {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #app .vocab-page-navigation {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #app .vocab-page-numbers {
+    min-width: 0;
+    max-width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+}
