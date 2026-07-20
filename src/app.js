@@ -1756,7 +1756,7 @@ let blogSaveToast = "";
 let journalTestState = { view: "closed", scope: "all", count: 5, difficulty: "normal", test: null, answers: {}, submitted: false, wrongOnly: false, wrongQuestionIds: [] };
 let reviewProgressMap = JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) || "{}");
 let reviewChatState = { open: false, selected: null, answered: null, completed: false, wrongNotes: [] };
-let selectionAssistantState = { open: false, text: "", range: null, busy: false, saved: false };
+let selectionAssistantState = { open: false, text: "", range: null, busy: false, saved: false, origin: "selection", web: null };
 let selectionAssistantDocumentBound = false;
 let emailRoleplayState = { active: false, replyText: "", submitted: false, evaluation: null, sending: false, error: "" };
 let newsSaveToast = "";
@@ -2980,30 +2980,66 @@ function reviewChatbotUi() {
 function selectionAssistantUi() {
   const selected = escapeMarkup(selectionAssistantState.text || "");
   const panel = selectionAssistantState.open ? `<aside class="selection-ai-panel" aria-label="선택 문장 AI 분석">
-    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>선택한 문맥을 바로 이어서 분석해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
+    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>웹 검색과 문법 분석을 한 번에 제공해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
     <div class="selection-ai-context"><small>현재 분석 문장</small><p>${selected}</p></div>
-    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>드래그 분석 요청</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i></div></div>
+    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>${selectionAssistantState.origin === "icon" ? "문장 옆 AI 비서 요청" : "드래그 분석 요청"}</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i><span>웹에서 문맥과 문법 자료를 찾고 있어요</span></div></div>
   </aside>` : "";
   return `<button class="selection-ai-trigger" type="button" data-selection-ai-trigger aria-label="선택한 영어 분석">${icon("spark",14)} <span>문장 분석</span></button>${panel}<div class="selection-ai-toast" data-selection-ai-toast role="status">${icon("check",14)} 학습장에 문장과 분석 결과가 저장되었습니다.</div>`;
 }
 
-function selectionAnalysis(text) {
-  const target = /has invested/i.test(text) && /in an effort to/i.test(text);
-  const singleWord = /^[-A-Za-z']+$/.test(text.trim());
-  if (target) return [
-    ["한 줄 해석", "회사는 글로벌 시장 점유율을 안정시키기 위한 노력의 일환으로 최신 기술에 투자해 왔습니다."],
-    ["문장 구조", "주어: The company · 동사: has invested · 전치사구: in the latest technology · 목적 표현: in an effort to stabilize its global market share"],
-    ["핵심 문법", "has invested는 과거의 투자가 현재와 연결되는 현재완료입니다. in an effort to + 동사원형은 ‘~하려는 노력으로’라는 목적을 나타냅니다."]
-  ];
+function findSentenceVerb(text) {
+  const auxiliary = text.match(/\b(has|have|had|will|would|can|could|may|might|must|should|is|are|am|was|were|do|does|did)\s+(?:not\s+)?(?:been\s+|being\s+)?[A-Za-z]+(?:ed|en|ing)?\b/i);
+  if (auxiliary) return { phrase: auxiliary[0], index: auxiliary.index };
+  const common = text.match(/\b(?:believe|believes|believed|invest|invests|invested|help|helps|helped|make|makes|made|take|takes|took|need|needs|needed|use|uses|used|show|shows|showed|provide|provides|provided|respond|responds|responded|stabilize|stabilizes|stabilized|become|becomes|became|remain|remains|remained|continue|continues|continued)\b/i);
+  return common ? { phrase: common[0], index: common.index } : { phrase: "핵심 동사를 문맥에서 확인", index: -1 };
+}
+
+function sentenceTenseAnalysis(text) {
+  if (/\b(has|have)\s+(?:been\s+)?\w+(?:ed|en)\b/i.test(text)) return "현재완료: 과거에 시작된 행위나 결과가 현재까지 이어지는 관점입니다. have/has + 과거분사 형태를 사용합니다.";
+  if (/\bhad\s+(?:been\s+)?\w+(?:ed|en)\b/i.test(text)) return "과거완료: 과거의 특정 시점보다 더 먼저 일어난 사건을 나타냅니다. had + 과거분사 구조입니다.";
+  if (/\b(am|is|are)\s+\w+ing\b/i.test(text)) return "현재진행: 말하는 시점에 진행 중이거나 일시적으로 계속되는 상황을 나타냅니다.";
+  if (/\b(was|were)\s+\w+ing\b/i.test(text)) return "과거진행: 과거의 특정 시점에 진행 중이던 상황을 배경처럼 제시합니다.";
+  if (/\b(am|is|are|was|were|been)\s+\w+(?:ed|en)\b/i.test(text)) return "수동태: be동사 + 과거분사로, 행위자보다 행위의 대상이나 결과에 초점을 둡니다.";
+  if (/\bwill\s+(?:be\s+)?\w+/i.test(text)) return "미래 표현: will + 동사원형으로 예측·의지·향후 결과를 나타냅니다.";
+  if (/\b(can|could|may|might|must|should|would)\s+\w+/i.test(text)) return "조동사 구조: 조동사 + 동사원형으로 가능성·의무·추측·조언 등의 태도를 더합니다.";
+  if (/\b\w+ed\b/i.test(text)) return "단순과거 가능성이 높습니다. 과거의 완료된 사건이나 상태를 시간축 위에 배치합니다.";
+  return "단순현재 중심 문장입니다. 일반적 사실, 반복되는 행동 또는 현재의 상태를 전달합니다.";
+}
+
+function sentencePatternAnalysis(text) {
+  const patterns = [];
+  if (/\bin an effort to\b/i.test(text)) patterns.push("in an effort to + 동사원형: ‘~하려는 노력으로’라는 목적 표현");
+  if (/\bin order to\b/i.test(text)) patterns.push("in order to + 동사원형: 목적을 분명하게 나타내는 부사적 표현");
+  if (/\bso that\b/i.test(text)) patterns.push("so that + 주어 + 동사: 목적 또는 결과를 나타내는 절");
+  if (/\b(?:because|since|as)\b/i.test(text)) patterns.push("because/since/as 절: 이유나 원인을 제시하는 부사절");
+  if (/\b(?:although|though|even though)\b/i.test(text)) patterns.push("although/though 절: 주절과 반대되는 양보 정보를 제시");
+  if (/\b(?:which|who|that)\b/i.test(text)) patterns.push("관계사절 가능성: 앞의 명사를 뒤에서 구체적으로 수식");
+  if (/\bto\s+[a-z]+\b/i.test(text)) patterns.push("to부정사: 문맥에 따라 목적·결과 또는 명사 수식 역할");
+  if (/\b(?:in|on|at|for|with|by|from|of)\s+(?:the\s+|a\s+|an\s+)?[a-z]/i.test(text)) patterns.push("전치사구: 장소·대상·수단·범위 등의 부가 정보를 제공");
+  return patterns.length ? patterns.join("<br>• ") : "핵심 어순은 주어 + 동사(구)를 중심으로 하고, 뒤의 수식어가 의미를 확장합니다.";
+}
+
+function detailedSelectionAnalysis(text) {
+  const cleaned = text.replace(/\s+/g, " ").trim();
+  const target = /has invested/i.test(cleaned) && /in an effort to/i.test(cleaned);
+  const singleWord = /^[-A-Za-z']+$/.test(cleaned);
   if (singleWord) return [
-    ["단어 확인", `‘${text}’의 문맥상 의미와 품사를 확인하는 분석입니다.`],
-    ["문맥 포인트", "문장 안에서 앞뒤 단어와의 결합을 기준으로 의미와 용법을 파악합니다."],
-    ["학습 팁", "단어만 외우기보다 현재 예문과 함께 학습장에 저장하면 기억하기 쉽습니다."]
+    { title: "단어 형태", body: `‘${cleaned}’의 품사와 문맥상 의미, 어형 변화를 확인합니다.` },
+    { title: "문맥 결합", body: "앞뒤 단어와 함께 쓰이는 연어(collocation)와 전치사 결합을 웹 검색 결과에서 확인해 보세요." },
+    { title: "학습 포인트", body: "단어 하나보다 현재 문장 전체를 함께 저장하면 실제 쓰임을 더 오래 기억할 수 있습니다." },
   ];
+  const verb = findSentenceVerb(cleaned);
+  const subject = verb.index > 0 ? cleaned.slice(0, verb.index).replace(/[,;:]$/, "").trim() : "문맥상 주어 확인 필요";
+  const predicate = verb.index >= 0 ? cleaned.slice(verb.index).trim() : cleaned;
+  const prepPhrases = [...cleaned.matchAll(/\b(in|on|at|for|with|by|from|of|about|through|during|into|across|between)\b\s+[^,.;]+/gi)].map(match => match[0]).slice(0, 4);
+  const clauseWords = [...cleaned.matchAll(/\b(because|although|though|if|when|while|that|which|who|where|so that)\b/gi)].map(match => match[0]);
   return [
-    ["한 줄 해석", "선택한 문장의 의미를 앞뒤 학습 문맥에 맞춰 자연스럽게 해석합니다."],
-    ["문장 구조", "주어·동사·목적어와 수식 표현을 구분해 문장의 중심 구조를 확인합니다."],
-    ["핵심 문법", "시제와 전치사, 자주 함께 쓰이는 표현을 중심으로 복습할 포인트를 정리합니다."]
+    { title: "핵심 의미", body: target ? "회사는 글로벌 시장 점유율을 안정시키기 위한 노력의 일환으로 최신 기술에 투자해 왔습니다." : "문장의 중심 동작과 수식 관계를 기준으로 읽으면, 누가 무엇을 하고 그 행동에 어떤 배경·목적이 붙는지 파악할 수 있습니다." },
+    { title: "문장 골격", body: `<b>주어(S)</b> ${subject}<br><b>동사구(V)</b> ${verb.phrase}<br><b>서술부</b> ${predicate}` },
+    { title: "구·절 단위 분해", body: `${prepPhrases.length ? `<b>전치사구</b> ${prepPhrases.join(" / ")}<br>` : ""}${clauseWords.length ? `<b>절 연결어</b> ${[...new Set(clauseWords)].join(", ")}<br>` : ""}<b>문장형식</b> 주어와 동사구를 먼저 잡고 목적어·보어·부사어를 순서대로 연결합니다.` },
+    { title: "시제·태·동사 형태", body: sentenceTenseAnalysis(cleaned) },
+    { title: "핵심 문법과 수식 관계", body: `• ${sentencePatternAnalysis(cleaned)}` },
+    { title: "읽기 포인트", body: "전치사구와 to부정사구를 잠시 괄호로 묶은 뒤 주어와 동사만 먼저 읽고, 부가 정보를 다시 결합하면 긴 문장도 안정적으로 해석할 수 있습니다." },
   ];
 }
 
@@ -3037,22 +3073,125 @@ function captureLearningSelection() {
   positionSelectionTrigger(range.getBoundingClientRect());
 }
 
-function appendSelectionAnalysis() {
+async function appendSelectionAnalysis() {
   const chat = document.querySelector("[data-selection-ai-chat]");
   if (!chat) return;
-  const cards = selectionAnalysis(selectionAssistantState.text);
+  let web = { results: [], searchUrl: `https://www.bing.com/search?q=${encodeURIComponent(`"${selectionAssistantState.text}" English grammar`)}` };
+  try {
+    const response = await fetch(`/api/sentence-web-search?sentence=${encodeURIComponent(selectionAssistantState.text)}`, { cache: "no-store" });
+    if (response.ok) web = await response.json();
+  } catch {}
+  selectionAssistantState.web = web;
+  let cards = detailedSelectionAnalysis(selectionAssistantState.text);
+  try {
+    const aiResponse = await fetch("/api/ai-sentence-analysis", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sentence: selectionAssistantState.text, web }),
+    });
+    const aiResult = await aiResponse.json();
+    if (aiResult.ai && Array.isArray(aiResult.sections)) {
+      cards = aiResult.sections.map(section => ({ title: section.title, body: escapeMarkup(section.body).replace(/\n/g, "<br>") }));
+    }
+  } catch {}
   document.querySelector("[data-selection-ai-loading]")?.remove();
   cards.forEach((item, index) => setTimeout(() => {
     const currentChat = document.querySelector("[data-selection-ai-chat]");
     if (!currentChat || !selectionAssistantState.open) return;
-    currentChat.insertAdjacentHTML("beforeend", `<section class="selection-ai-card"><small>${escapeMarkup(item[0])}</small><p>${escapeMarkup(item[1])}</p></section>`);
+    currentChat.insertAdjacentHTML("beforeend", `<section class="selection-ai-card"><small>${escapeMarkup(item.title)}</small><p>${item.body}</p></section>`);
     currentChat.scrollTo({ top: currentChat.scrollHeight, behavior: "smooth" });
     if (index === cards.length - 1) setTimeout(() => {
       const activeChat = document.querySelector("[data-selection-ai-chat]");
       if (!activeChat || !selectionAssistantState.open) return;
-      activeChat.insertAdjacentHTML("beforeend", `<button class="selection-ai-save ${selectionAssistantState.saved ? "saved" : ""}" type="button" data-selection-ai-save ${selectionAssistantState.saved ? "disabled" : ""}>${icon(selectionAssistantState.saved ? "check" : "bookmark",14)} ${selectionAssistantState.saved ? "학습장에 저장됨" : "학습장 저장"}</button>`);
+      const sources = (web.results || []).map(result => `<a href="${escapeMarkup(result.url)}" target="_blank" rel="noopener noreferrer"><b>${escapeMarkup(result.title)}</b><span>${escapeMarkup(result.snippet || new URL(result.url).hostname)}</span>${icon("arrow",12)}</a>`).join("");
+      activeChat.insertAdjacentHTML("beforeend", `<section class="selection-ai-card selection-ai-web"><small>WEB SEARCH</small><p>해당 문장을 따옴표 검색하고 문법 자료를 함께 탐색했습니다.</p>${sources || "<p class=\"selection-ai-web-empty\">일치하는 공개 문서를 찾지 못했지만 문법 분석은 정상적으로 생성했습니다.</p>"}<a class="selection-ai-search-all" href="${escapeMarkup(web.searchUrl)}" target="_blank" rel="noopener noreferrer">웹에서 검색 결과 전체 보기 ${icon("arrow",12)}</a></section><button class="selection-ai-save ${selectionAssistantState.saved ? "saved" : ""}" type="button" data-selection-ai-save ${selectionAssistantState.saved ? "disabled" : ""}>${icon(selectionAssistantState.saved ? "check" : "bookmark",14)} ${selectionAssistantState.saved ? "학습장에 저장됨" : "학습장 저장"}</button>`);
+      activeChat.scrollTo({ top: activeChat.scrollHeight, behavior: "smooth" });
     }, 320);
   }, index * 420));
+}
+
+function openSentenceAssistant(text, origin = "icon") {
+  const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+  if (cleaned.length <= 3 || !/[A-Za-z]/.test(cleaned)) return;
+  selectionAssistantState.text = cleaned;
+  selectionAssistantState.origin = origin;
+  selectionAssistantState.open = true;
+  selectionAssistantState.busy = true;
+  selectionAssistantState.web = null;
+  selectionAssistantState.saved = state.savedBlogItems.some(item => item.id === `selection:${cleaned.toLowerCase()}`);
+  reviewChatState.open = false;
+  hideSelectionTrigger();
+  window.getSelection()?.removeAllRanges();
+  render();
+  setTimeout(() => { selectionAssistantState.busy = false; appendSelectionAnalysis(); }, 650);
+}
+
+function isAnalyzableEnglishSentence(text) {
+  const cleaned = text.replace(/\s+/g, " ").trim();
+  const words = cleaned.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g) || [];
+  return cleaned.length >= 18 && words.length >= 4 && /[.!?]$/.test(cleaned) && !/^https?:/i.test(cleaned);
+}
+
+function decorateEnglishSentences() {
+  const root = document.querySelector(".content main");
+  if (!root) return;
+  const addSentenceIcon = (element, sentence) => {
+    if (!element || element.querySelector(":scope > .sentence-ai-icon")) return;
+    element.dataset.noAiSentence = "";
+    element.classList.add("sentence-ai-container");
+    const nestedInteractive = Boolean(element.closest("button,a"));
+    const button = document.createElement(nestedInteractive ? "span" : "button");
+    if (!nestedInteractive) button.type = "button";
+    else { button.setAttribute("role", "button"); button.tabIndex = 0; }
+    button.className = "sentence-ai-icon";
+    button.dataset.aiSentence = sentence;
+    button.title = "AI 비서로 문장 분석";
+    button.setAttribute("aria-label", `AI 문장 분석: ${sentence.slice(0, 60)}`);
+    button.innerHTML = `${icon("spark",12)}<span>AI 분석</span>`;
+    button.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); openSentenceAssistant(sentence, "icon"); });
+    button.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.stopPropagation(); openSentenceAssistant(sentence, "icon"); } });
+    element.append(button);
+  };
+  root.querySelectorAll(".vocab-today-item blockquote>b,.word-card .example>b,.sentence-main-title h3,.sentence-example-list b,.sentence-line,.ted-transcript-line b,.article-study-sentence>b,.reader-sentence>b").forEach(element => {
+    const sentence = element.textContent.replace(/\s+/g, " ").trim();
+    if (isAnalyzableEnglishSentence(sentence)) addSentenceIcon(element, sentence);
+  });
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const parent = node.parentElement;
+      if (!parent || parent.closest("button,a,input,textarea,select,option,script,style,code,.selection-ai-panel,.sentence-ai-inline,[data-no-ai-sentence]")) return NodeFilter.FILTER_REJECT;
+      return /[A-Za-z]/.test(node.nodeValue || "") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  textNodes.forEach(node => {
+    const parts = (node.nodeValue || "").match(/[^.!?]+[.!?]+|[^.!?]+$/g);
+    if (!parts?.some(isAnalyzableEnglishSentence)) return;
+    const fragment = document.createDocumentFragment();
+    parts.forEach(part => {
+      if (!isAnalyzableEnglishSentence(part)) { fragment.append(document.createTextNode(part)); return; }
+      const sentence = part.replace(/\s+/g, " ").trim();
+      const leading = part.match(/^\s*/)?.[0] || "";
+      const trailing = part.match(/\s*$/)?.[0] || "";
+      if (leading) fragment.append(document.createTextNode(leading));
+      const wrapper = document.createElement("span");
+      wrapper.className = "sentence-ai-inline";
+      wrapper.append(document.createTextNode(sentence));
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "sentence-ai-icon";
+      button.dataset.aiSentence = sentence;
+      button.title = "AI 비서로 문장 분석";
+      button.setAttribute("aria-label", `AI 문장 분석: ${sentence.slice(0, 60)}`);
+      button.innerHTML = `${icon("spark",12)}<span>AI 분석</span>`;
+      button.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); openSentenceAssistant(sentence, "icon"); });
+      wrapper.append(button);
+      fragment.append(wrapper);
+      if (trailing) fragment.append(document.createTextNode(trailing));
+    });
+    node.replaceWith(fragment);
+  });
 }
 
 function emailRoleplayPanel() {
@@ -3628,6 +3767,7 @@ function updateVocabClearCard(card) {
 }
 
 function bindEvents(){
+  decorateEnglishSentences();
   document.querySelector(".content")?.addEventListener("mouseup", () => setTimeout(captureLearningSelection, 0));
   document.querySelector(".content")?.addEventListener("click", event => {
     const selected = window.getSelection()?.toString().trim() || "";
@@ -3637,13 +3777,7 @@ function bindEvents(){
   document.querySelector("[data-selection-ai-trigger]")?.addEventListener("mousedown", event => event.preventDefault());
   document.querySelector("[data-selection-ai-trigger]")?.addEventListener("click", () => {
     if (!selectionAssistantState.text) return;
-    selectionAssistantState.open = true;
-    selectionAssistantState.busy = true;
-    reviewChatState.open = false;
-    hideSelectionTrigger();
-    window.getSelection()?.removeAllRanges();
-    render();
-    setTimeout(() => { selectionAssistantState.busy = false; appendSelectionAnalysis(); }, 900);
+    openSentenceAssistant(selectionAssistantState.text, "selection");
   });
   document.querySelector("[data-selection-ai-close]")?.addEventListener("click", () => { selectionAssistantState.open = false; render(); });
   document.querySelector("[data-selection-ai-chat]")?.addEventListener("click", event => {
@@ -3653,7 +3787,8 @@ function bindEvents(){
     button.textContent = "저장하는 중…";
     setTimeout(() => {
       const text = selectionAssistantState.text;
-      const item = { id: `selection:${text.toLowerCase()}`, type: text.trim().includes(" ") ? "sentence" : "word", text, meaning: selectionAnalysis(text)[0][1], example: text, savedAt: new Date().toISOString(), sourceType: "selection", sourceTitle: "AI 드래그 분석", sourceUrl: location.href, sourceSnippet: selectionAnalysis(text)[2][1] };
+      const analysis = detailedSelectionAnalysis(text);
+      const item = { id: `selection:${text.toLowerCase()}`, type: text.trim().includes(" ") ? "sentence" : "word", text, meaning: analysis[0]?.body || "AI 문장 분석", example: text, savedAt: new Date().toISOString(), sourceType: "selection", sourceTitle: "AI 문장 분석", sourceUrl: location.href, sourceSnippet: analysis[2]?.body || "" };
       if (!state.savedBlogItems.some(saved => saved.id === item.id)) state.savedBlogItems.push(item);
       localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
       selectionAssistantState.saved = true;

@@ -25,6 +25,7 @@ const newsSections = [
   { theme: "IT", category: "Technology", url: "https://www.koreaherald.com/Business/Technology", skipLeading: 1 },
 ];
 let dailyNewsCache = { date: "", articles: [] };
+const sentenceSearchCache = new Map();
 
 function decodeHtml(value = "") {
   return value
@@ -68,6 +69,107 @@ async function fetchText(url) {
     request.setTimeout(15000, () => request.destroy(new Error(`Timeout ${url}`)));
     request.on("error", reject);
   });
+}
+
+async function fetchWebText(url, allowedHosts) {
+  const target = new URL(url);
+  if (!allowedHosts.includes(target.hostname)) throw new Error("Unsupported search host");
+  return new Promise((resolve, reject) => {
+    const request = httpsGet(target, {
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36",
+        "accept-language": "ko-KR,ko;q=0.9,en;q=0.8",
+      },
+      rejectUnauthorized: false,
+    }, response => {
+      if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+        response.resume();
+        fetchWebText(new URL(response.headers.location, target).href, allowedHosts).then(resolve, reject);
+        return;
+      }
+      if (response.statusCode !== 200) {
+        response.resume();
+        reject(new Error(`Search returned ${response.statusCode}`));
+        return;
+      }
+      const chunks = [];
+      response.on("data", chunk => chunks.push(chunk));
+      response.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    });
+    request.setTimeout(12000, () => request.destroy(new Error("Search timeout")));
+    request.on("error", reject);
+  });
+}
+
+function decodeBingUrl(value = "") {
+  const decoded = decodeHtml(value);
+  try {
+    const url = new URL(decoded);
+    const encoded = url.searchParams.get("u") || "";
+    if (encoded.startsWith("a1")) return Buffer.from(encoded.slice(2), "base64").toString("utf8");
+    return decoded;
+  } catch { return decoded; }
+}
+
+async function searchSentenceOnWeb(sentence) {
+  const normalized = String(sentence || "").replace(/\s+/g, " ").trim().slice(0, 500);
+  if (normalized.length < 4) throw new Error("Sentence is too short");
+  if (sentenceSearchCache.has(normalized)) return sentenceSearchCache.get(normalized);
+  const query = `"${normalized}" English grammar sentence structure`;
+  const searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
+  const parseResults = html => [...html.matchAll(/<li class="b_algo"[^>]*>([\s\S]*?)<\/li>/gi)].map(match => {
+    const block = match[1];
+    const link = block.match(/<h2[^>]*>\s*<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
+    const snippet = block.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    return link ? { title: decodeHtml(link[2]), url: decodeBingUrl(link[1]), snippet: decodeHtml(snippet?.[1] || "") } : null;
+  }).filter(item => item && /^https?:\/\//.test(item.url)).slice(0, 3);
+  const html = await fetchWebText(searchUrl, ["www.bing.com"]);
+  let results = parseResults(html);
+  if (!results.length) {
+    const grammarTerms = [
+      /\b(has|have)\s+\w+(ed|en)\b/i.test(normalized) && "present perfect English grammar",
+      /\bin an effort to\b/i.test(normalized) && '"in an effort to" grammar',
+      /\b(am|is|are|was|were)\s+\w+ing\b/i.test(normalized) && "progressive tense English grammar",
+      /\b(which|who|that)\b/i.test(normalized) && "relative clause English grammar",
+    ].filter(Boolean);
+    const fallbackQuery = grammarTerms.join(" ") || `${normalized.split(/\s+/).slice(0, 10).join(" ")} English sentence structure grammar`;
+    const fallbackUrl = `https://www.bing.com/search?q=${encodeURIComponent(fallbackQuery)}`;
+    results = parseResults(await fetchWebText(fallbackUrl, ["www.bing.com"]));
+  }
+  const payload = { query, searchUrl, searchedAt: new Date().toISOString(), results };
+  sentenceSearchCache.set(normalized, payload);
+  return payload;
+}
+
+async function readJsonBody(request) {
+  const chunks = [];
+  let size = 0;
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > 100000) throw new Error("Request body is too large");
+    chunks.push(chunk);
+  }
+  return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+}
+
+async function requestAiSentenceAnalysis(sentence, web = {}) {
+  const auth = process.env.POSCO_PGPT_AUTH_BASE64;
+  if (!auth) throw new Error("P-GPT authentication is not configured");
+  const sourceContext = (web.results || []).slice(0, 3).map((item, index) => `${index + 1}. ${item.title}\n${item.snippet}\n${item.url}`).join("\n\n");
+  const prompt = `You are a Korean English grammar tutor. Analyze the English sentence below in detail.\n\nSentence: ${sentence}\n\nWeb search context:\n${sourceContext || "No matching snippet was available. Analyze the sentence itself accurately."}\n\nReturn ONLY valid JSON with a sections array. Each section must have Korean title and Korean body. Use exactly these six sections: 자연스러운 해석, 문장 골격, 구와 절 분해, 시제·태·동사 형태, 핵심 문법, 어휘와 연어. Explain S/V/O/C/M roles, clause boundaries, modifiers, tense/aspect/voice, and important patterns. Do not use markdown.`;
+  const upstream = process.env.POSCO_PGPT_ENDPOINT || "http://aigpt.posco.net/gpgpta01-gpt/gptApi/personalApi";
+  const response = await fetch(upstream, {
+    method: "POST",
+    headers: { authorization: `Bearer ${auth}`, "content-type": "application/json;charset=UTF-8", accept: "application/json" },
+    body: JSON.stringify({ model: "gpt-4o", messages: [{ role: "user", content: prompt }], temperature: 0.15 }),
+  });
+  if (!response.ok) throw new Error(`P-GPT returned ${response.status}`);
+  const payload = await response.json();
+  const content = payload?.choices?.[0]?.message?.content || payload?.content || payload?.message;
+  if (!content) throw new Error("P-GPT returned an empty response");
+  const parsed = JSON.parse(String(content).replace(/^```json\s*|\s*```$/g, ""));
+  if (!Array.isArray(parsed.sections) || !parsed.sections.length) throw new Error("P-GPT response format is invalid");
+  return parsed.sections.slice(0, 8).map(section => ({ title: String(section.title || "AI 분석"), body: String(section.body || "") }));
 }
 
 async function collectLatestArticle(section) {
@@ -121,6 +223,32 @@ createServer(async (request, response) => {
     } catch (error) {
       response.writeHead(503, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
       response.end(JSON.stringify({ error: "Daily news update failed", detail: error.message }));
+    }
+    return;
+  }
+  if (requested === "/api/sentence-web-search") {
+    const sentence = new URL(request.url || "/", `http://${host}:${port}`).searchParams.get("sentence") || "";
+    try {
+      const result = await searchSentenceOnWeb(sentence);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+      response.end(JSON.stringify(result));
+    } catch (error) {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+      response.end(JSON.stringify({ query: sentence, searchUrl: `https://www.bing.com/search?q=${encodeURIComponent(`"${sentence}" English grammar`)}`, results: [], warning: error.message }));
+    }
+    return;
+  }
+  if (requested === "/api/ai-sentence-analysis" && request.method === "POST") {
+    try {
+      const body = await readJsonBody(request);
+      const sentence = String(body.sentence || "").replace(/\s+/g, " ").trim().slice(0, 1000);
+      if (sentence.length < 4) throw new Error("Sentence is too short");
+      const sections = await requestAiSentenceAnalysis(sentence, body.web || {});
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+      response.end(JSON.stringify({ ai: true, sections }));
+    } catch (error) {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+      response.end(JSON.stringify({ ai: false, error: error.message }));
     }
     return;
   }
