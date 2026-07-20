@@ -13,3 +13,6 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+# The SPA fallback is defined in public/_redirects so Vite source-module
+# requests are not rewritten while running `netlify dev`.
