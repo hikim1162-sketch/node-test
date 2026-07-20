@@ -1,0 +1,639 @@
+<?xml version="1.0"?>
+<site-list version="2">
+ <site url="1.209.29.100/ui">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="1.209.29.69">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="121.151.161.1/ui">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="192.168.100.119:8071/mepn">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="192.168.200.86:8080">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="203.231.148.20:8584/pepro">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="367.co.kr">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="adt.poscochemtech.com">
+  <compat-mode>IE9</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="an.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="api.toc.posco.net">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="apid.toc.posco.net">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="bi.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="bi.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="bi.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="biz.pmctech.co.kr">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="bsrm.skinnovation.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="dev.toc.posco.net">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="eacc.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="eacc.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="en.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="epro.poscochemical.com:9000">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="epro.poscofuturem.com:9000">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="epro.poscomtech.com">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="epro.poscomtech.com:7878">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="epro1.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="etran.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="fed.poscochemical.com:19099">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="fed.poscofuturem.com:19099">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="fms.poscoflow.com:7140/fms">
+  <compat-mode>IE7Enterprise</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="fms.poscoterminal.com:7140/fms">
+  <compat-mode>IE7Enterprise</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="gn.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="hbi.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="hr.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="hr.poscochemtech.com/chem_adj">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="hr.poscochemtech.com/chem_appr">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="hr.poscochemtech.com/chem_megahr/payworkmngmastercrt.hrm">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="iwms.lgensol.com">
+  <compat-mode>IE7Enterprise</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="l2.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="l2.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="l2.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="legal.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="legal.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="ne.poscochemical.com">
+  <compat-mode>IE11</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="ne.poscofuturem.com">
+  <compat-mode>IE11</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="pcal.posco.co.kr:6443">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="pcop.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="pcop.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="plm.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="plm.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="pn.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="pn.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="posbw.poscochemtech.com:8000">
+  <compat-mode>IE9</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="posbw.poscofuturem.com:8000">
+  <compat-mode>IE9</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="posep.poscochemtech.com">
+  <compat-mode>IE9</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="posep.poscofuturem.com">
+  <compat-mode>IE9</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="poserpdev.poscochemtech.com:52000">
+  <compat-mode>IE9</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="prnd.poscochemical.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="prnd.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="prnd.poscofuturem.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="psafety.posco.net:7777/b21/b21010">
+  <compat-mode>IE9</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="psafety.posco.net:7777/b21/b21e10/index.mvc">
+  <compat-mode>Default</compat-mode>
+  <open-in>NEUTRAL</open-in>
+ </site>
+ <site url="qm.poscochemtech.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="report.entob.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="securityprinter.poscochemtech.com:8080">
+  <compat-mode>IE11</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="skbasrm.skbattery.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="skbhscm.skbattery.com">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="smart.posco.net/pkmslogout">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="standardchartered.co.kr">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="steel-n.com/draw">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="steel-n.com/p10">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="steel-n.com/p22">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="steel-n.com/posest">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="steel-n.com/s10">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="steel-n.com/t40">
+  <compat-mode>IE9</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swp.posco.net/pkmslogout">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpecm.posco.net:7091">
+  <compat-mode>IE11</compat-mode>
+  <open-in>NEUTRAL</open-in>
+ </site>
+ <site url="swpsso.posco.net/idms/tim/jna">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpsso.posco.net/idms/u61/jsp/cross_feder.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpsso.posco.net/idms/u61/jsp/jna">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpsso.posco.net/idms/u61/jsp/redirect_edge.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpsso.posco.net/idms/u61/jsp/redirect_ie.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpsso.posco.net/idms/u61/jsp/redirectsmsp_ie.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpsso.posco.net/idms/u61/jsp/s001c01f003_ie.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="swpsso.posco.net/pkmslogout">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="testepro.poscofuturem.com:9000">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="toc.posco.net">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="upartner.lsnikko.com">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="usmart.posco.net/pkmslogout">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswp.posco.net/pkmslogout">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/idms/tim/jna">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/idms/u61/jsp/cross_feder.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/idms/u61/jsp/jna">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/idms/u61/jsp/redirect_edge.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/idms/u61/jsp/redirect_ie.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/idms/u61/jsp/redirectsmsp_ie.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/idms/u61/jsp/s001c01f003_ie.jsp">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="uswpsso.posco.net/pkmslogout">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="visit.posco.net:7443/s62/s62a10/s620202320pop.mvc">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="webfax.poscochemtech.com:8080">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <site url="www.poscoway.net">
+  <compat-mode>IE11</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="www.poscoway.net/s1a/s1a010">
+  <compat-mode>IE7</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="www.poscoway.net:8101">
+  <compat-mode>Default</compat-mode>
+  <open-in>MSEdge</open-in>
+ </site>
+ <site url="www.steel-n.com/p22">
+  <compat-mode>Default</compat-mode>
+  <open-in>IE11</open-in>
+ </site>
+ <site url="www.steel-n.com:8080">
+  <compat-mode>Default</compat-mode>
+  <open-in allow-redirect="true">IE11</open-in>
+ </site>
+ <shared-cookie domain=".posco.co.kr" name="SMSESSION">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="employeenumber">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="inOutFlag">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="inoutside">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="invoke">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="location">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="mail">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="name">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="ou">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="sm_serversessionid">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="sm_serversessionspec">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="tel">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="title">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.co.kr" name="uid">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="COMCODE">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="EP_CERTIFY_CA">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="EP_CERTIFY_FA">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="PD-ID">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="SSOAssistType">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="SWP-H-SESSION-ID">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="VDILoginChkFlag">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="autologinchk">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="c_lang">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="c_timezone">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="i_agenttype">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="i_inoutside">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="i_lastlogindate">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="i_lastloginip">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="i_loginpage">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="jnacsflag">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="jnauseflag">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="loginproctimeflag">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="redirurl">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="replace_name">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_CAfedertime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_Noticetime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_bridgetime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_castatus">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_epssocalltime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_federtime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_finishtime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_logintime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_manysessiontime">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".posco.net" name="swpsso_user_agent">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="CONNECTION_TYPE">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="SMSESSION">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="SYSTEM_TYPE">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="company">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="employeenumber">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="inOutFlag">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="inoutside">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="name">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="p_employeenumber">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="spUserLanguage">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+ <shared-cookie domain=".poscoway.net" name="uid">
+  <type>session</type>
+  <integrity>auto</integrity>
+ </shared-cookie>
+</site-list>
