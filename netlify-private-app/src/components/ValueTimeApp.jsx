@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import valueTimeStylesUrl from "../../../styles/app.css?url";
 import "../legacy-overrides.css";
+import "../features/csat-vocab/entry.css";
 
 export default function ValueTimeApp({ page }) {
   const [loadError, setLoadError] = useState(false);
@@ -24,6 +25,10 @@ export default function ValueTimeApp({ page }) {
     };
   }, [page]);
 
-  if (loadError) return <div id="app" />;
-  return <div id="app" />;
+  return (
+    <>
+      <div id="app" />
+      {page === "home" ? <a className="general-to-csat-entry" href="/csat-vocab">수능 단어 훈련</a> : null}
+    </>
+  );
 }
