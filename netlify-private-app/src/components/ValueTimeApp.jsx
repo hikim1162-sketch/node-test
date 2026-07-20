@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import valueTimeStylesUrl from "../../../styles/app.css?url";
+import "../legacy-overrides.css";
 
 export default function ValueTimeApp({ page }) {
   const [loadError, setLoadError] = useState(false);

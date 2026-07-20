@@ -1,0 +1,31 @@
+#app .sidebar .brand > .brand-mark {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  background: var(--green);
+  color: #fff;
+  font: 700 23px Georgia;
+}
+
+#app .sidebar .brand > .brand-copy {
+  display: block;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+#app .sidebar .brand > .brand-copy small {
+  display: block;
+}
+
+#app .content > header > .header-title-block {
+  display: none;
+}
+
+#app .content > header > .header-actions {
+  margin-left: auto;
+}
