@@ -6,6 +6,7 @@ import { toeicSentences } from "../data/toeic-sentences.js";
 import { favoriteBlogArticles } from "../data/favorite-blogs.js";
 import { normalizeSavedLearningItems, generateCustomTestFromSavedItems } from "./custom-learning.js";
 import { REVIEW_STORAGE_KEY, createReviewProgress, selectDueReviewItems, createReviewQuestion, applyReviewAnswer, detectUsedWords, evaluateEmailReply, toNotebookItem } from "./connected-learning.js";
+import csatEnglishArchive from "../netlify-private-app/data/imported/csat-english-2021-2026.json";
 
 const CATEGORIES = {
   word: { label: "단어", short: "단", icon: "book-open" },
@@ -1808,6 +1809,84 @@ let suneungPassage = {
     { id: "vocabulary", type: "어휘 추론", question: "문맥상 ‘frustration takes over’의 의미로 가장 적절한 것은?", choices: ["좌절감이 학습을 지배하기 시작한다", "좌절감이 완전히 사라진다", "학습자가 사전 지식을 전달한다", "피드백이 불필요해진다"], answer: 0, explanation: "take over는 어떤 상태가 주도권을 잡거나 지배하기 시작한다는 뜻입니다.", evidence: "receive feedback before frustration takes over" },
   ],
 };
+const importedCsatQuestionNumbers = new Set([20, 21, 22, 23, 24, 26, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]);
+const importedCsatQuestionMeta = {
+  20: ["필자의 주장", "다음 글에서 필자가 주장하는 바로 가장 적절한 것은?"],
+  21: ["함축 의미", "밑줄 친 부분이 다음 글에서 의미하는 바로 가장 적절한 것은?"],
+  22: ["요지", "다음 글의 요지로 가장 적절한 것은?"],
+  23: ["주제", "다음 글의 주제로 가장 적절한 것은?"],
+  24: ["제목", "다음 글의 제목으로 가장 적절한 것은?"],
+  26: ["내용 불일치", "다음 글의 내용과 일치하지 않는 것은?"],
+  29: ["어법", "다음 글의 밑줄 친 부분 중 어법상 틀린 것은?"],
+  30: ["어휘", "다음 글의 밑줄 친 낱말 중 문맥상 적절하지 않은 것은?"],
+  31: ["빈칸 추론", "다음 빈칸에 들어갈 말로 가장 적절한 것은?"],
+  32: ["빈칸 추론", "다음 빈칸에 들어갈 말로 가장 적절한 것은?"],
+  33: ["빈칸 추론", "다음 빈칸에 들어갈 말로 가장 적절한 것은?"],
+  34: ["빈칸 추론", "다음 빈칸에 들어갈 말로 가장 적절한 것은?"],
+  35: ["무관한 문장", "다음 글에서 전체 흐름과 관계없는 문장은?"],
+  36: ["글의 순서", "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?"],
+  37: ["글의 순서", "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?"],
+  38: ["문장 삽입", "주어진 문장이 들어가기에 가장 적절한 곳은?"],
+  39: ["문장 삽입", "주어진 문장이 들어가기에 가장 적절한 곳은?"],
+  40: ["요약문 완성", "다음 글의 내용을 한 문장으로 요약할 때 빈칸에 들어갈 말로 가장 적절한 것은?"],
+};
+
+function importedCsatPassageText(item) {
+  const raw = String(item.rawText || "");
+  const markers = [...raw.matchAll(/[①②③④⑤]/g)];
+  const choiceStart = markers.length >= 5 ? markers[markers.length - 5].index : raw.length;
+  let passage = raw.slice(0, choiceStart).trim();
+  const firstEnglish = passage.search(/[A-Za-z]/);
+  if (firstEnglish >= 0) passage = passage.slice(firstEnglish);
+  return passage
+    .replace(/\s*\n\s*/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function sanitizeImportedCsatChoice(value) {
+  let choice = String(value || "");
+  ["이제 듣기 문제가 끝났습니다.", "이 문제지에 관한 저작권은 한국교육과정평가원에 있습니다.", "짝수형", "홀수형"].forEach(marker => {
+    if (choice.includes(marker)) choice = choice.split(marker, 1)[0];
+  });
+  return choice.replace(/[\x00-\x1f\x7f]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+const importedSuneungPassages = (csatEnglishArchive?.questions || [])
+  .filter(item => importedCsatQuestionNumbers.has(Number(item.questionNo)))
+  .filter(item => Number.isInteger(Number(item.answer)) && Array.isArray(item.choices) && item.choices.length === 5)
+  .map(item => ({ item, passage: importedCsatPassageText(item) }))
+  .filter(({ passage }) => (passage.match(/[A-Za-z]/g) || []).length >= 250)
+  .map(({ item, passage }) => {
+    const [type, question] = importedCsatQuestionMeta[item.questionNo] || ["독해", "다음 글을 읽고 물음에 답하세요."];
+    return {
+      id: item.id,
+      number: `${item.year} CSAT · ${item.questionNo}번`,
+      topic: `${item.year}학년도 수능 영어 ${item.questionNo}번`,
+      type,
+      difficulty: Number(item.points) === 3 ? "상" : "중",
+      minutes: Number(item.points) === 3 ? 3 : 2,
+      limit: Number(item.points) === 3 ? "03:00" : "02:00",
+      source: "한국교육과정평가원",
+      sourceDetail: `${item.examName} 공식 공개문항 · 홀수형`,
+      tags: ["공식 기출", `${item.year}학년도`, type],
+      paragraphs: [passage],
+      translations: [""],
+      notes: [""],
+      expressions: [],
+      vocab: [],
+      questions: [{
+        id: `${item.id}-question`,
+        type,
+        question,
+        choices: item.choices.map(sanitizeImportedCsatChoice),
+        answer: Number(item.answer) - 1,
+        explanation: `공식 정답표 기준 정답은 ${item.answer}번입니다.`,
+        evidence: `${item.examName} 영어 영역 공식 정답표`,
+      }],
+    };
+  });
+
 const suneungPassages = [
   suneungPassage,
   {
@@ -1851,6 +1930,7 @@ const suneungPassages = [
       { id: "inference", type: "추론", question: "윗글로부터 추론할 수 있는 것은?", choices: ["모든 선택을 제거해야 한다.", "사소한 결정을 줄이면 중요한 판단에 집중할 수 있다.", "가장 쉬운 선택은 언제나 목표에 가장 적합하다.", "선택지가 많을수록 후회 가능성은 줄어든다."], answer: 1, explanation: "루틴으로 사소한 선택을 줄이면 중요한 결정에 정신적 에너지를 사용할 수 있습니다.", evidence: "reduce trivial choices ... protects mental energy" },
     ],
   },
+  ...importedSuneungPassages,
 ];
 
 function nextAvailablePassageIndex(currentIndex, masteredIds = []) {
@@ -1882,6 +1962,8 @@ suneungState.batchAnswers ||= {};
 suneungState.batchChecked ||= {};
 suneungState.batchQuestionIndexes ||= {};
 suneungState.batchAnalysisOpen ||= {};
+suneungState.batchDay = Math.max(1, Number(suneungState.batchDay) || 1);
+suneungState.batchPosition = Math.max(0, Number(suneungState.batchPosition) || 0);
 suneungState.masteredPassages = suneungState.masteredPassages.filter(id => suneungPassages.some(passage => passage.id === id));
 if (suneungState.masteredPassages.includes(suneungPassages[suneungState.passageIndex % suneungPassages.length].id)) {
   const nextIndex = nextAvailablePassageIndex(suneungState.passageIndex % suneungPassages.length, suneungState.masteredPassages);
@@ -3979,9 +4061,22 @@ function openSuneungPassage(index) {
 }
 
 function compactSuneungPassagePage() {
-  const availableIndexes = Array.from({ length: suneungPassages.length }, (_, offset) => (suneungState.passageIndex + offset) % suneungPassages.length)
+  let availableIndexes = suneungPassages.map((_, index) => index)
     .filter(index => !suneungState.masteredPassages.includes(suneungPassages[index].id));
-  const visibleIndexes = availableIndexes.slice(0, 2);
+  if (!availableIndexes.length && suneungPassages.length) {
+    suneungState.masteredPassages = [];
+    suneungState.batchDay = 1;
+    suneungState.batchPosition = 0;
+    availableIndexes = suneungPassages.map((_, index) => index);
+    saveSuneungState();
+  }
+  const perDay = 5;
+  const totalDays = Math.max(1, Math.ceil(availableIndexes.length / perDay));
+  suneungState.batchDay = Math.min(Math.max(1, suneungState.batchDay), totalDays);
+  const dayStart = (suneungState.batchDay - 1) * perDay;
+  const dayIndexes = availableIndexes.slice(dayStart, dayStart + perDay);
+  suneungState.batchPosition = Math.min(suneungState.batchPosition, Math.max(0, dayIndexes.length - 1));
+  const visibleIndexes = dayIndexes.length ? [dayIndexes[suneungState.batchPosition]] : [];
   const cards = visibleIndexes.map(index => {
     const passage = suneungPassages[index];
     const questionIndex = Math.min(suneungState.batchQuestionIndexes[passage.id] || 0, Math.max(0, passage.questions.length - 1));
@@ -3991,9 +4086,30 @@ function compactSuneungPassagePage() {
     const checked = Boolean(suneungState.batchChecked[answerKey]);
     const correct = checked && selected === question?.answer;
     const analysisOpen = Boolean(suneungState.batchAnalysisOpen[passage.id]);
-    return `<article class="csat-batch-card" data-csat-batch-card="${passage.id}"><header><div><span>${passage.number} · ${passage.type}</span><h2>${passage.topic}</h2><small>난이도 ${passage.difficulty} · 예상 ${passage.minutes}분</small></div><button type="button" data-csat-batch-skip="${passage.id}">건너뛰기 ${icon("arrow",12)}</button></header><section class="csat-batch-passage">${passage.paragraphs.map((paragraph, paragraphIndex) => `<p><i>${paragraphIndex + 1}</i>${paragraph}</p>`).join("")}</section><button class="csat-batch-analysis-toggle ${analysisOpen ? "active" : ""}" type="button" data-csat-batch-analysis="${passage.id}" aria-expanded="${analysisOpen}">${analysisOpen ? "지문 분석 닫기" : "지문 분석 보기"}</button>${analysisOpen ? `<section class="csat-batch-analysis">${passage.paragraphs.map((paragraph, paragraphIndex) => `<article><b>${String(paragraphIndex + 1).padStart(2,"0")} · 번역</b><p>${passage.translations[paragraphIndex] || "등록된 번역이 없습니다."}</p><b>문법·구조</b><p>${passage.notes?.[paragraphIndex] || "등록된 분석이 없습니다."}</p></article>`).join("")}</section>` : ""}${question ? `<section class="csat-batch-question"><div><span>QUESTION ${questionIndex + 1} / ${passage.questions.length}</span><b>${question.type}</b></div><h3>${question.question}</h3><div class="csat-batch-choices">${question.choices.map((choice, choiceIndex) => `<button class="${selected === choiceIndex ? "selected" : ""} ${checked && choiceIndex === question.answer ? "correct" : ""} ${checked && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : ""}" type="button" data-csat-batch-choice="${answerKey}:${choiceIndex}" ${checked ? "disabled" : ""}><i>${choiceIndex + 1}</i><span>${choice}</span></button>`).join("")}</div>${checked ? `<div class="csat-batch-feedback ${correct ? "success" : "error"}"><b>${correct ? "정답입니다." : "오답입니다."}</b><p>${question.explanation}</p><small>근거: ${question.evidence}</small></div>` : ""}<footer>${checked ? questionIndex < passage.questions.length - 1 ? `<button type="button" data-csat-batch-next-question="${passage.id}">다음 문제 ${icon("arrow",12)}</button>` : `<button type="button" data-csat-batch-master="${passage.id}">${icon("check",12)} 암기 완료 · 다음 지문</button>` : `<button type="button" data-csat-batch-check="${answerKey}" ${selected === undefined ? "disabled" : ""}>정답 확인</button>`}</footer></section>` : ""}</article>`;
+    return `<article class="csat-batch-card" data-csat-batch-card="${passage.id}"><header><div><span>${passage.number} · ${passage.type}</span><h2>${passage.topic}</h2><small>난이도 ${passage.difficulty} · 예상 ${passage.minutes}분</small></div><button type="button" data-csat-batch-skip="${passage.id}">건너뛰기 ${icon("arrow",12)}</button></header><section class="csat-batch-passage" data-no-ai-sentence>${passage.paragraphs.map((paragraph, paragraphIndex) => `<p><i>${paragraphIndex + 1}</i>${paragraph}</p>`).join("")}</section><button class="csat-batch-analysis-toggle ${analysisOpen ? "active" : ""}" type="button" data-csat-batch-analysis="${passage.id}" aria-expanded="${analysisOpen}">${analysisOpen ? "지문 분석 닫기" : "지문 분석 보기"}</button>${analysisOpen ? `<section class="csat-batch-analysis">${passage.paragraphs.map((paragraph, paragraphIndex) => `<article><b>${String(paragraphIndex + 1).padStart(2,"0")} · 번역</b><p>${passage.translations[paragraphIndex] || "등록된 번역이 없습니다."}</p><b>문법·구조</b><p>${passage.notes?.[paragraphIndex] || "등록된 분석이 없습니다."}</p></article>`).join("")}</section>` : ""}${question ? `<section class="csat-batch-question"><div><span>QUESTION ${questionIndex + 1} / ${passage.questions.length}</span><b>${question.type}</b></div><h3>${question.question}</h3><div class="csat-batch-choices">${question.choices.map((choice, choiceIndex) => `<button class="${selected === choiceIndex ? "selected" : ""} ${checked && choiceIndex === question.answer ? "correct" : ""} ${checked && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : ""}" type="button" data-csat-batch-choice="${answerKey}:${choiceIndex}" ${checked ? "disabled" : ""}><i>${choiceIndex + 1}</i><span>${choice}</span></button>`).join("")}</div>${checked ? `<div class="csat-batch-feedback ${correct ? "success" : "error"}"><b>${correct ? "정답입니다." : "오답입니다."}</b><p>${question.explanation}</p><small>근거: ${question.evidence}</small></div>` : ""}<footer>${checked ? questionIndex < passage.questions.length - 1 ? `<button type="button" data-csat-batch-next-question="${passage.id}">다음 문제 ${icon("arrow",12)}</button>` : `<button type="button" data-csat-batch-master="${passage.id}">${icon("check",12)} 암기 완료 · 다음 지문</button>` : `<button type="button" data-csat-batch-check="${answerKey}" ${selected === undefined ? "disabled" : ""}>정답 확인</button>`}</footer></section>` : ""}</article>`;
   }).join("");
-  return `${header("수능 지문 훈련")}<main class="suneung-page csat-batch-page"><section class="csat-batch-head"><div><span>CSAT PASSAGE TRAINING</span><h2>지문을 읽고 바로 문제를 푸세요</h2><p>암기 완료한 지문은 제외하고 미학습 지문을 두 개씩 보여줍니다.</p></div><div><b>${suneungState.masteredPassages.length} / ${suneungPassages.length} 암기</b><button type="button" data-csat-batch-next-set ${availableIndexes.length <= 2 ? "disabled" : ""}>다음 지문 세트 ${icon("arrow",12)}</button></div></section><section class="csat-batch-grid">${cards}</section></main>`;
+  const currentNumber = dayIndexes.length ? suneungState.batchPosition + 1 : 0;
+  const canGoPrevious = suneungState.batchDay > 1 || suneungState.batchPosition > 0;
+  const canGoNext = availableIndexes.length > 1;
+  const dayButtons = Array.from({ length: totalDays }, (_, index) => index + 1).map(day => `<button class="${day === suneungState.batchDay ? "active" : ""}" type="button" data-csat-batch-day="${day}" aria-current="${day === suneungState.batchDay ? "page" : "false"}">${day}</button>`).join("");
+  return `${header("수능 지문 훈련")}<main class="suneung-page csat-batch-page csat-batch-single"><section class="csat-batch-head"><div><span>DAY ${String(suneungState.batchDay).padStart(2, "0")} · 5 QUESTIONS</span><h2>오늘의 수능 지문</h2><p>하루 5문제를 한 문제씩 풀고 다음 DAY로 이어갑니다.</p></div><div><b>${currentNumber} / ${dayIndexes.length || 5} 문제 · 전체 ${availableIndexes.length}개 남음</b></div></section><section class="csat-batch-grid">${cards}</section><nav class="csat-batch-question-nav" aria-label="오늘의 문제 이동"><button type="button" data-csat-batch-move="-1" ${canGoPrevious ? "" : "disabled"}>이전 문제</button><span><b>DAY ${suneungState.batchDay}</b>${currentNumber} / ${dayIndexes.length}</span><button class="primary" type="button" data-csat-batch-move="1" ${canGoNext ? "" : "disabled"}>다음 문제 ${icon("arrow", 13)}</button></nav><nav class="csat-batch-day-nav" aria-label="수능 지문 DAY 선택">${dayButtons}</nav></main>`;
+}
+
+function resetCurrentCsatBatchAttempt() {
+  const availableIndexes = suneungPassages.map((_, index) => index)
+    .filter(index => !suneungState.masteredPassages.includes(suneungPassages[index].id));
+  if (!availableIndexes.length) return;
+  const day = Math.min(Math.max(1, Number(suneungState.batchDay) || 1), Math.max(1, Math.ceil(availableIndexes.length / 5)));
+  const dayIndexes = availableIndexes.slice((day - 1) * 5, (day - 1) * 5 + 5);
+  const position = Math.min(Math.max(0, Number(suneungState.batchPosition) || 0), Math.max(0, dayIndexes.length - 1));
+  const passage = suneungPassages[dayIndexes[position]];
+  if (!passage) return;
+  const questionIndex = Math.min(suneungState.batchQuestionIndexes[passage.id] || 0, Math.max(0, passage.questions.length - 1));
+  const question = passage.questions[questionIndex];
+  if (!question) return;
+  const answerKey = `${passage.id}:${question.id}`;
+  delete suneungState.batchAnswers[answerKey];
+  delete suneungState.batchChecked[answerKey];
 }
 
 function legacySuneungHomePage() {
@@ -4183,6 +4299,11 @@ function navigateTo(page, options = {}) {
   state.newsIndex = newsIndex;
   state.tedLessonId = tedLessonId;
   state.translatedSentence = null;
+
+  if (page === "suneung-passage") {
+    resetCurrentCsatBatchAttempt();
+    saveSuneungState();
+  }
 
   if (!isSameScreen) {
     window.history.pushState(
@@ -4445,6 +4566,8 @@ function bindEvents(){
   });
   document.querySelector("[data-csat-reset-mastered]")?.addEventListener("click", () => {
     suneungState.masteredPassages = [];
+    suneungState.batchDay = 1;
+    suneungState.batchPosition = 0;
     openSuneungPassage(0);
     render();
   });
@@ -4473,6 +4596,7 @@ function bindEvents(){
   document.querySelectorAll("[data-csat-batch-next-question]").forEach(button => button.addEventListener("click", event => {
     const id = event.currentTarget.dataset.csatBatchNextQuestion;
     suneungState.batchQuestionIndexes[id] = (suneungState.batchQuestionIndexes[id] || 0) + 1;
+    resetCurrentCsatBatchAttempt();
     saveSuneungState();
     render();
   }));
@@ -4486,24 +4610,40 @@ function bindEvents(){
       if (nextIndex >= 0) suneungState.passageIndex = nextIndex;
     }
     suneungState.dailyChecks.passage = true;
+    resetCurrentCsatBatchAttempt();
     saveSuneungState();
     render();
   }));
+  const moveCsatBatchQuestion = direction => {
+    const availableCount = suneungPassages.filter(passage => !suneungState.masteredPassages.includes(passage.id)).length;
+    const totalDays = Math.max(1, Math.ceil(availableCount / 5));
+    if (direction > 0) {
+      const currentDayCount = Math.min(5, Math.max(0, availableCount - ((suneungState.batchDay - 1) * 5)));
+      if (suneungState.batchPosition < currentDayCount - 1) suneungState.batchPosition += 1;
+      else if (suneungState.batchDay < totalDays) { suneungState.batchDay += 1; suneungState.batchPosition = 0; }
+      else { suneungState.batchDay = 1; suneungState.batchPosition = 0; }
+    } else if (suneungState.batchPosition > 0) suneungState.batchPosition -= 1;
+    else if (suneungState.batchDay > 1) {
+      suneungState.batchDay -= 1;
+      suneungState.batchPosition = Math.min(4, Math.max(0, availableCount - ((suneungState.batchDay - 1) * 5) - 1));
+    }
+    resetCurrentCsatBatchAttempt();
+    saveSuneungState();
+    render();
+  };
   document.querySelectorAll("[data-csat-batch-skip]").forEach(button => button.addEventListener("click", event => {
-    const id = event.currentTarget.dataset.csatBatchSkip;
-    const index = suneungPassages.findIndex(passage => passage.id === id);
-    const nextIndex = nextAvailablePassageIndex(index, suneungState.masteredPassages);
-    if (nextIndex >= 0) suneungState.passageIndex = nextIndex;
+    moveCsatBatchQuestion(1);
+  }));
+  document.querySelectorAll("[data-csat-batch-move]").forEach(button => button.addEventListener("click", event => {
+    moveCsatBatchQuestion(Number(event.currentTarget.dataset.csatBatchMove));
+  }));
+  document.querySelectorAll("[data-csat-batch-day]").forEach(button => button.addEventListener("click", event => {
+    suneungState.batchDay = Number(event.currentTarget.dataset.csatBatchDay) || 1;
+    suneungState.batchPosition = 0;
+    resetCurrentCsatBatchAttempt();
     saveSuneungState();
     render();
   }));
-  document.querySelector("[data-csat-batch-next-set]")?.addEventListener("click", () => {
-    const firstNext = nextAvailablePassageIndex(suneungState.passageIndex, suneungState.masteredPassages);
-    const secondNext = firstNext >= 0 ? nextAvailablePassageIndex(firstNext, suneungState.masteredPassages) : -1;
-    if (secondNext >= 0) suneungState.passageIndex = secondNext;
-    saveSuneungState();
-    render();
-  });
   document.querySelector("[data-kids-intro-complete]")?.addEventListener("click", () => {
     saveChildName(document.querySelector("[data-kids-name-input]")?.value);
     showKidsIntro = false;

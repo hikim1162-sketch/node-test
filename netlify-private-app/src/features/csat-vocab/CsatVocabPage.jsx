@@ -63,8 +63,6 @@ export default function CsatVocabPage({ embedded = false }) {
         <div>
           {embedded ? <span className="csat-back">수능 영어 · 단어장</span> : <Link to="/" className="csat-back">← 수능모드</Link>}
           <span className="csat-mode-label">수능모드</span>
-          <h1>Word Master 훈련</h1>
-          <p>빠르게 확인하고, 바로 테스트하고, 틀린 단어만 반복하세요.</p>
         </div>
         <div className="csat-series" aria-label="단어 시리즈 선택">
           {Object.values(SERIES).map((series) => (

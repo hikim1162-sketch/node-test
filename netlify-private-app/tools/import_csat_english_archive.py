@@ -103,7 +103,17 @@ def split_choices(block: str) -> list[str]:
     choices = []
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(block)
-        choices.append(clean_text(block[match.end():end]))
+        choice = clean_text(block[match.end():end])
+        for marker in (
+            "이제 듣기 문제가 끝났습니다.",
+            "이 문제지에 관한 저작권은 한국교육과정평가원에 있습니다.",
+            "짝수형",
+            "홀수형",
+        ):
+            if marker in choice:
+                choice = choice.split(marker, 1)[0]
+        choice = re.sub(r"[\x00-\x1f\x7f]", " ", choice)
+        choices.append(clean_text(choice))
     return choices
 
 

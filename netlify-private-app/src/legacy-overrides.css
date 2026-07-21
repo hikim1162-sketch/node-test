@@ -250,7 +250,126 @@
   gap: 13px;
 }
 
+#app .csat-batch-single .csat-batch-grid {
+  grid-template-columns: minmax(0, 920px);
+  justify-content: center;
+}
+
+#app .csat-batch-question-nav {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto minmax(120px, 1fr);
+  align-items: center;
+  gap: 10px;
+  max-width: 920px;
+  margin: 14px auto 0;
+}
+
+#app .csat-batch-question-nav > button {
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid #cbd8e2;
+  border-radius: 10px;
+  background: #fff;
+  color: #315e8b;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#app .csat-batch-question-nav > button:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+#app .csat-batch-question-nav > button.primary {
+  border-color: #183e6d;
+  background: #183e6d;
+  color: #fff;
+}
+
+#app .csat-batch-question-nav > button:disabled {
+  opacity: .4;
+  cursor: default;
+}
+
+#app .csat-batch-question-nav > span {
+  min-width: 110px;
+  color: #718191;
+  font-size: 10px;
+  text-align: center;
+}
+
+#app .csat-batch-question-nav > span b {
+  display: block;
+  margin-bottom: 3px;
+  color: #183e6d;
+  font-size: 13px;
+}
+
+#app .csat-batch-day-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  max-width: 920px;
+  margin: 13px auto 0;
+  padding: 13px;
+  border: 1px solid #d9e3eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+#app .csat-batch-day-nav button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #d4dfe7;
+  border-radius: 9px;
+  background: #f8fafb;
+  color: #60758a;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#app .csat-batch-day-nav button.active {
+  border-color: #183e6d;
+  background: #183e6d;
+  color: #fff;
+}
+
+#app .csat-batch-empty {
+  padding: 55px 24px;
+  border: 1px solid #d9e3eb;
+  border-radius: 14px;
+  background: #fff;
+  text-align: center;
+}
+
+#app .csat-batch-empty b {
+  font-size: 18px;
+}
+
+#app .csat-batch-empty p {
+  color: #718191;
+  font-size: 11px;
+}
+
+#app .csat-batch-empty button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 9px;
+  background: #183e6d;
+  color: #fff;
+  font-weight: 900;
+}
+
 #app .csat-batch-card {
+  --csat-passage-copy-size: calc(14px + 2pt);
   min-width: 0;
   overflow: hidden;
   border: 1px solid #d9e3eb;
@@ -303,7 +422,7 @@
   margin: 0 0 14px;
   padding-left: 23px;
   color: #24374d;
-  font: 14px/1.75 Georgia;
+  font: var(--csat-passage-copy-size)/1.75 Georgia;
   overflow-wrap: anywhere;
 }
 
@@ -383,10 +502,10 @@
   align-items: flex-start;
   gap: 8px;
   width: 100%;
-  min-height: 64px;
-  padding: 15px 16px;
+  min-height: 44px;
+  padding: 10px 12px;
   color: #354a60;
-  font-size: 22px;
+  font-size: calc(var(--csat-passage-copy-size) - 2pt);
   font-weight: 600;
   text-align: left;
   line-height: 1.6;
@@ -396,7 +515,7 @@
   display: block;
   min-width: 0;
   color: inherit;
-  font-size: 22px;
+  font-size: calc(var(--csat-passage-copy-size) - 2pt);
   font-weight: 600;
   letter-spacing: normal;
   line-height: 1.6;
@@ -406,9 +525,9 @@
 #app .csat-batch-choices button i {
   display: grid;
   place-items: center;
-  flex: 0 0 32px;
-  height: 32px;
-  font-size: 15px;
+  flex: 0 0 24px;
+  height: 24px;
+  font-size: 10px;
   border-radius: 50%;
   background: #edf1f5;
   font-style: normal;
@@ -751,6 +870,19 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
 }
 
 @media (max-width: 560px) {
+  #app .csat-batch-question-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #app .csat-batch-question-nav > span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  #app .csat-batch-day-nav {
+    justify-content: flex-start;
+  }
+
   #app .csat-batch-head,
   #app .csat-batch-head > div:last-child {
     align-items: stretch;
