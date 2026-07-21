@@ -14,7 +14,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("/.netlify/functions/login", {
+      const response = await fetch("/api/login", {
         method: "POST",
         credentials: "include",
         headers: {

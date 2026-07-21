@@ -12,7 +12,7 @@ export default function ProtectedRoute() {
       setAuthState("checking");
 
       try {
-        const response = await fetch("/.netlify/functions/check-auth", {
+        const response = await fetch("/api/check-auth", {
           method: "GET",
           credentials: "include",
           headers: { Accept: "application/json" },

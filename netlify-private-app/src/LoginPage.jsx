@@ -14,7 +14,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await fetch("/.netlify/functions/login", {
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: {
           Accept: "application/json",

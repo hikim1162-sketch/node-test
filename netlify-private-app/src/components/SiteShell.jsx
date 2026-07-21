@@ -5,7 +5,7 @@ export default function SiteShell({ children }) {
 
   async function logout() {
     try {
-      await fetch("/.netlify/functions/logout", {
+      await fetch("/api/logout", {
         method: "POST",
         credentials: "include",
         headers: { Accept: "application/json" },
