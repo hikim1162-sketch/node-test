@@ -1,0 +1,60 @@
+{
+  "userAgent": "ValueTimeOfficialDatasetBot/1.0 (+private-family-study; respectful metadata indexer)",
+  "requestDelaySeconds": 2.0,
+  "timeoutSeconds": 25,
+  "maxRetries": 3,
+  "sources": {
+    "kice": {
+      "enabled": true,
+      "sourceName": "한국교육과정평가원",
+      "allowedDomains": ["kice.re.kr", "www.kice.re.kr", "cdn.kice.re.kr", "cdn2.kice.re.kr", "csatcdn.kice.re.kr"],
+      "seedUrls": [
+        "https://cdn2.kice.re.kr/suneung27mo06/index.html"
+      ],
+      "staticResources": [
+        {
+          "title": "2026학년도 대학수학능력시험 영어 영역 문제지",
+          "sourceUrl": "https://cdn.kice.re.kr/suneung-26/suneung-26_3.pdf",
+          "fileUrl": "https://cdn.kice.re.kr/suneung-26/suneung-26_3.pdf",
+          "examName": "2026학년도 대학수학능력시험",
+          "session": "본시험"
+        },
+        {
+          "title": "2026학년도 대학수학능력시험 영어 영역 정답표",
+          "sourceUrl": "https://cdn.kice.re.kr/suneung-26/suneung-26_3a.pdf",
+          "fileUrl": "https://cdn.kice.re.kr/suneung-26/suneung-26_3a.pdf",
+          "examName": "2026학년도 대학수학능력시험",
+          "session": "본시험"
+        }
+      ],
+      "licenseStatus": "restricted",
+      "storeFullText": false,
+      "allowDownload": false,
+      "policyNote": "평가원 공개 페이지의 저작권 고지에 따라 기본값은 메타데이터와 공식 링크만 저장"
+    },
+    "sen": {
+      "enabled": true,
+      "sourceName": "서울특별시교육청",
+      "allowedDomains": ["sen.go.kr", "www.sen.go.kr"],
+      "seedUrls": [
+        "https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1036"
+      ],
+      "licenseStatus": "restricted",
+      "storeFullText": false,
+      "allowDownload": false,
+      "policyNote": "자료실 저작권 안내에 따라 전문 복제 없이 색인 메타데이터만 저장"
+    },
+    "ebsi": {
+      "enabled": true,
+      "sourceName": "EBSi",
+      "allowedDomains": ["ebsi.co.kr", "www.ebsi.co.kr", "cloud.ebsi.co.kr", "wdown.ebsi.co.kr"],
+      "seedUrls": [
+        "https://www.ebsi.co.kr/ebs/xip/xipc/previousPaperList.ebs?mainYn=Y"
+      ],
+      "licenseStatus": "unclear",
+      "storeFullText": false,
+      "allowDownload": false,
+      "policyNote": "재사용 범위가 명확히 확인되기 전까지 메타데이터와 링크만 저장"
+    }
+  }
+}

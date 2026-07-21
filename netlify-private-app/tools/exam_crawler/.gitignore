@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+data/raw/html/*
+data/raw/pdf/*
+data/raw/hwp/*
+data/raw/hwpx/*
+data/parsed/*
+!data/**/.gitkeep
+

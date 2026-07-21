@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-07-21T00:28:00.029763+00:00",
+  "discovered": 2,
+  "downloads": {
+    "total": 2,
+    "success": 0,
+    "failed": 0,
+    "policySkipped": 2
+  },
+  "parse": {
+    "total": 2,
+    "success": 0,
+    "metadataOnly": 2,
+    "successRate": 0.0,
+    "failureSamples": []
+  },
+  "normalized": 2,
+  "fullText": 0,
+  "metadataOnly": 2,
+  "bySource": {
+    "KICE": 2
+  },
+  "byYear": {
+    "2026": 2
+  },
+  "byQuestionType": {
+    "unknown": 2
+  },
+  "englishRatioDistribution": {
+    "0-0.24": 2
+  }
+}

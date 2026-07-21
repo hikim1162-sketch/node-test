@@ -1,0 +1,88 @@
+settings:
+  user_agent: "ValueTimeOfficialExamIndexer/1.0 (+private-family-study)"
+  request_delay_seconds: 2.0
+  timeout_seconds: 25
+  retries: 3
+
+sources:
+  kice:
+    class: KiceAdapter
+    module: sources.kice_adapter
+    enabled: true
+    source_name: KICE
+    allowed_domains: [kice.re.kr, cdn.kice.re.kr, cdn2.kice.re.kr, csatcdn.kice.re.kr]
+    list_urls: ["https://cdn2.kice.re.kr/suneung27mo06/index.html"]
+    license_status: restricted_or_unclear
+    allow_download: false
+    store_full_text: false
+  kice_mock:
+    class: KiceMockAdapter
+    module: sources.kice_mock_adapter
+    enabled: true
+    source_name: KICE
+    allowed_domains: [kice.re.kr, cdn2.kice.re.kr]
+    list_urls: ["https://cdn2.kice.re.kr/suneung27mo06/index.html"]
+    license_status: restricted_or_unclear
+    allow_download: false
+    store_full_text: false
+  csat:
+    class: CsatAdapter
+    module: sources.csat_adapter
+    enabled: true
+    source_name: KICE
+    allowed_domains: [cdn.kice.re.kr]
+    static_resources:
+      - title: 2026학년도 대학수학능력시험 영어영역 문제지
+        page_url: "https://cdn.kice.re.kr/suneung-26/suneung-26_3.pdf"
+        file_url: "https://cdn.kice.re.kr/suneung-26/suneung-26_3.pdf"
+        year: 2026
+        attachment_role: question_booklet
+      - title: 2026학년도 대학수학능력시험 영어영역 정답표
+        page_url: "https://cdn.kice.re.kr/suneung-26/suneung-26_3a.pdf"
+        file_url: "https://cdn.kice.re.kr/suneung-26/suneung-26_3a.pdf"
+        year: 2026
+        attachment_role: answer
+    license_status: restricted_or_unclear
+    allow_download: false
+    store_full_text: false
+  kice_csat_archive:
+    class: KiceCsatArchiveAdapter
+    module: sources.kice_csat_archive_adapter
+    enabled: true
+    source_name: KICE
+    allowed_domains: [kice.re.kr, www.kice.re.kr]
+    list_urls: []
+    max_pages: 50
+    license_status: restricted_or_unclear
+    allow_download: false
+    allow_internal_parsing: true
+    store_full_text: false
+    note: "검증된 KICE 기출문제 게시판 목록 URL을 list_urls에 추가해야 네트워크 탐색함"
+  seoul:
+    class: SeoulEduAdapter
+    module: sources.seoul_edu_adapter
+    enabled: true
+    source_name: 서울특별시교육청
+    region: 서울
+    allowed_domains: [sen.go.kr, www.sen.go.kr]
+    list_urls: ["https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1036"]
+    license_status: restricted_or_unclear
+    allow_download: false
+    store_full_text: false
+  gyeonggi: {class: GyeonggiEduAdapter, module: sources.gyeonggi_edu_adapter, enabled: false, source_name: 경기도교육청, region: 경기, allowed_domains: [goe.go.kr], list_urls: []}
+  busan: {class: BusanEduAdapter, module: sources.busan_edu_adapter, enabled: false, source_name: 부산광역시교육청, region: 부산, allowed_domains: [pen.go.kr], list_urls: []}
+  incheon: {class: IncheonEduAdapter, module: sources.incheon_edu_adapter, enabled: false, source_name: 인천광역시교육청, region: 인천, allowed_domains: [ice.go.kr], list_urls: []}
+  daejeon: {class: DaejeonEduAdapter, module: sources.daejeon_edu_adapter, enabled: false, source_name: 대전광역시교육청, region: 대전, allowed_domains: [dje.go.kr], list_urls: []}
+  daegu: {class: DaeguEduAdapter, module: sources.daegu_edu_adapter, enabled: false, source_name: 대구광역시교육청, region: 대구, allowed_domains: [dge.go.kr], list_urls: []}
+  gwangju: {class: GwangjuEduAdapter, module: sources.gwangju_edu_adapter, enabled: false, source_name: 광주광역시교육청, region: 광주, allowed_domains: [gen.go.kr], list_urls: []}
+  ulsan: {class: UlsanEduAdapter, module: sources.ulsan_edu_adapter, enabled: false, source_name: 울산광역시교육청, region: 울산, allowed_domains: [use.go.kr], list_urls: []}
+  sejong: {class: SejongEduAdapter, module: sources.sejong_edu_adapter, enabled: false, source_name: 세종특별자치시교육청, region: 세종, allowed_domains: [sje.go.kr], list_urls: []}
+  gangwon: {class: GangwonEduAdapter, module: sources.gangwon_edu_adapter, enabled: false, source_name: 강원특별자치도교육청, region: 강원, allowed_domains: [gwe.go.kr], list_urls: []}
+  chungbuk: {class: ChungbukEduAdapter, module: sources.chungbuk_edu_adapter, enabled: false, source_name: 충청북도교육청, region: 충북, allowed_domains: [cbe.go.kr], list_urls: []}
+  chungnam: {class: ChungnamEduAdapter, module: sources.chungnam_edu_adapter, enabled: false, source_name: 충청남도교육청, region: 충남, allowed_domains: [cne.go.kr], list_urls: []}
+  jeonbuk: {class: JeonbukEduAdapter, module: sources.jeonbuk_edu_adapter, enabled: false, source_name: 전북특별자치도교육청, region: 전북, allowed_domains: [jbe.go.kr], list_urls: []}
+  jeonnam: {class: JeonnamEduAdapter, module: sources.jeonnam_edu_adapter, enabled: false, source_name: 전라남도교육청, region: 전남, allowed_domains: [jne.go.kr], list_urls: []}
+  gyeongbuk: {class: GyeongbukEduAdapter, module: sources.gyeongbuk_edu_adapter, enabled: false, source_name: 경상북도교육청, region: 경북, allowed_domains: [gbe.kr], list_urls: []}
+  gyeongnam: {class: GyeongnamEduAdapter, module: sources.gyeongnam_edu_adapter, enabled: false, source_name: 경상남도교육청, region: 경남, allowed_domains: [gne.go.kr], list_urls: []}
+  jeju: {class: JejuEduAdapter, module: sources.jeju_edu_adapter, enabled: false, source_name: 제주특별자치도교육청, region: 제주, allowed_domains: [jje.go.kr], list_urls: []}
+

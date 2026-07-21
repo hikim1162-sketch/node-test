@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+data/raw/*
+data/parsed/*
+data/normalized/*
+logs/*
+!data/raw/.gitkeep
+!data/parsed/.gitkeep
+!data/normalized/.gitkeep
+!logs/.gitkeep
+

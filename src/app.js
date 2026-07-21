@@ -1773,8 +1773,9 @@ let dramaShortState = (() => {
     return stored?.date === localDateKey() ? { ...stored, translations: {}, expressions: {}, quizCard: null, questionIndex: 0 } : { date: localDateKey(), answers: {}, translations: {}, expressions: {}, quizCard: null, questionIndex: 0 };
   } catch { return { date: localDateKey(), answers: {}, translations: {}, expressions: {}, quizCard: null, questionIndex: 0 }; }
 })();
-const suneungPassage = {
+let suneungPassage = {
   id: "2026-07-20-inference-01", number: "DAY 01", topic: "Why Productive Struggle Improves Learning", type: "빈칸 추론", difficulty: "상", minutes: 8, limit: "07:00",
+  source: "ValueTime 수능형 학습 자료", sourceDetail: "학습용 자체 구성 · 공식 기출 아님", tags: ["빈칸 추론", "교육", "논리 전개"],
   paragraphs: [
     "Students often assume that effective learning should feel smooth and effortless. When an explanation is easy to follow, they may believe that they have fully mastered the material.",
     "Research on learning, however, suggests that temporary difficulty can strengthen long-term understanding. The effort required to retrieve an idea forces learners to organize and reconstruct what they know.",
@@ -1786,15 +1787,111 @@ const suneungPassage = {
   explanation: "글은 학습에 도움이 되는 어려움이 사고를 요구하면서도 학습자가 계속 진전할 수 있는 수준이어야 한다고 설명합니다. 따라서 ‘지적으로 감당 가능한’이 가장 적절합니다.",
   traps: ["① 감정에 관한 논의가 아닙니다.", "③ 예측 불가능성이 아니라 적절히 구조화된 도전을 강조합니다.", "④ 경쟁은 핵심 내용이 아닙니다.", "⑤ 지속적인 혼란은 productive difficulty와 반대입니다."], evidence: "demanding enough to require thought, but structured enough to remain ...",
   vocab: [{ word: "effortless", meaning: "힘이 들지 않는", usage: "smooth and effortless" }, { word: "retrieve", meaning: "인출하다", usage: "retrieve an idea" }, { word: "reconstruct", meaning: "재구성하다", usage: "reconstruct what they know" }, { word: "prior knowledge", meaning: "사전 지식", usage: "possess enough prior knowledge" }, { word: "frustration", meaning: "좌절감", usage: "before frustration takes over" }, { word: "manageable", meaning: "감당할 수 있는", usage: "intellectually manageable" }],
+  notes: [
+    "assume 뒤의 that절이 목적어이며, should feel은 학습에 대한 일반적인 기대를 나타냅니다.",
+    "however가 앞 문단의 통념을 반전합니다. required to retrieve an idea는 effort를 뒤에서 수식합니다.",
+    "only when은 생산적인 어려움이 성립하는 조건을 제한하며, before는 피드백의 시점을 보여줍니다.",
+    "not A but B에 가까운 대조 구조입니다. demanding과 structured의 균형이 빈칸 추론의 근거입니다.",
+  ],
+  expressions: [
+    { id: "effortless", text: "smooth and effortless", meaning: "매끄럽고 힘이 들지 않는", example: "Learning should feel smooth and effortless.", note: "겉으로 쉽게 느껴지는 학습에 대한 통념을 나타냅니다." },
+    { id: "retrieve", text: "retrieve an idea", meaning: "생각을 인출하다", example: "The effort required to retrieve an idea...", note: "기억 속 정보를 의식적으로 떠올리는 학습 맥락의 표현입니다." },
+    { id: "reconstruct", text: "reconstruct what they know", meaning: "알고 있는 것을 재구성하다", example: "Learners organize and reconstruct what they know.", note: "what절 전체가 reconstruct의 목적어입니다." },
+    { id: "prior-knowledge", text: "prior knowledge", meaning: "사전 지식", example: "Learners possess enough prior knowledge.", note: "새로운 내용을 이해하기 전에 이미 알고 있는 지식을 뜻합니다." },
+    { id: "take-over", text: "take over", meaning: "장악하다, 지배하기 시작하다", example: "before frustration takes over", note: "여기서는 좌절감이 학습 상태를 지배하게 되는 상황을 뜻합니다." },
+    { id: "manageable", text: "remain manageable", meaning: "감당할 수 있는 상태로 남다", example: "structured enough to remain manageable", note: "어려움이 지나치지 않고 학습자가 계속 다룰 수 있음을 나타냅니다." },
+  ],
+  questions: [
+    { id: "main-idea", type: "주제", question: "다음 글의 주제로 가장 적절한 것은?", choices: ["학습에서 적절한 어려움이 장기적 이해를 강화하는 방식", "모든 학습 장애물을 제거해야 하는 이유", "경쟁적인 학습 환경이 성취를 높이는 과정", "쉬운 설명만으로 완전한 숙달에 이르는 방법"], answer: 0, explanation: "글은 무조건 쉬운 학습보다, 피드백과 사전 지식이 뒷받침된 적절한 어려움이 이해를 강화한다고 설명합니다.", evidence: "temporary difficulty can strengthen long-term understanding" },
+    { id: "detail", type: "내용 불일치", question: "윗글의 내용과 일치하지 않는 것은?", choices: ["쉬운 설명은 완전한 숙달이라는 착각을 줄 수 있다.", "일시적인 어려움은 장기적 이해를 강화할 수 있다.", "모든 형태의 혼란은 학습에 유용하다.", "생산적인 어려움에는 충분한 사전 지식과 피드백이 필요하다."], answer: 2, explanation: "글은 모든 혼란이 유용한 것은 아니라고 명시합니다. 어려움이 생산적이려면 조건이 필요합니다.", evidence: "This does not mean that all confusion is useful." },
+    { id: "blank", type: "빈칸 추론", question: "마지막 문장의 빈칸에 들어갈 말로 가장 적절한 것은?", choices: ["intellectually manageable", "entirely unpredictable", "socially competitive", "permanently confusing"], answer: 0, explanation: "도전은 사고를 요구할 만큼 어렵지만 계속 학습할 수 있도록 감당 가능한 수준이어야 합니다.", evidence: "demanding enough to require thought, but structured enough" },
+    { id: "vocabulary", type: "어휘 추론", question: "문맥상 ‘frustration takes over’의 의미로 가장 적절한 것은?", choices: ["좌절감이 학습을 지배하기 시작한다", "좌절감이 완전히 사라진다", "학습자가 사전 지식을 전달한다", "피드백이 불필요해진다"], answer: 0, explanation: "take over는 어떤 상태가 주도권을 잡거나 지배하기 시작한다는 뜻입니다.", evidence: "receive feedback before frustration takes over" },
+  ],
 };
-let suneungState = (() => { try { const stored = JSON.parse(localStorage.getItem(SUNEUNG_STORAGE_KEY) || "null"); return stored?.date === localDateKey() ? stored : { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false }; } catch { return { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false }; } })();
+const suneungPassages = [
+  suneungPassage,
+  {
+    ...suneungPassage,
+    id: "2026-07-21-main-idea-02", number: "PASSAGE 02", topic: "Why Predictions Improve Reading", type: "주제", difficulty: "중", minutes: 7, limit: "06:30",
+    tags: ["주제", "학습 전략", "독해"],
+    paragraphs: [
+      "Before reading a difficult text, learners often wait for the writer to provide every answer. This passive approach can make each new sentence feel disconnected from the last.",
+      "Making a prediction changes the task. Even an imperfect guess gives the reader a temporary structure against which new information can be compared.",
+      "When the prediction is wrong, the difference between expectation and evidence attracts attention. Readers then revise their understanding instead of merely collecting isolated facts.",
+      "Prediction is therefore valuable not because it guarantees accuracy, but because it turns reading into an active process of testing and revision.",
+    ],
+    translations: ["어려운 글을 읽기 전에 학습자는 글쓴이가 모든 답을 제공하기를 기다리는 경우가 많다. 이런 수동적 접근은 새로운 문장들이 서로 단절된 것처럼 느껴지게 할 수 있다.", "예측을 하면 과제가 달라진다. 불완전한 추측이라도 새로운 정보를 비교할 임시 구조를 독자에게 제공한다.", "예측이 틀리면 기대와 근거의 차이가 주의를 끈다. 그러면 독자는 고립된 사실만 모으는 대신 이해를 수정한다.", "따라서 예측은 정확성을 보장해서가 아니라 읽기를 검증과 수정의 능동적 과정으로 바꾸기 때문에 가치가 있다."],
+    notes: ["wait for A to B 구조와 make+목적어+목적격보어 구조를 확인합니다.", "against which는 전치사+관계대명사이며 compared의 비교 기준을 나타냅니다.", "When절 뒤 주절에서 instead of가 대조 행동을 제시합니다.", "not because A, but because B가 글의 핵심 이유를 강조합니다."],
+    expressions: [
+      { id: "passive-approach", text: "a passive approach", meaning: "수동적인 접근", example: "This passive approach can make each sentence feel disconnected.", note: "정보를 능동적으로 처리하지 않는 읽기 태도입니다." },
+      { id: "against-which", text: "against which", meaning: "그것을 기준으로", example: "a structure against which information can be compared", note: "비교의 기준을 나타내는 관계사 표현입니다." },
+      { id: "revise-understanding", text: "revise their understanding", meaning: "이해를 수정하다", example: "Readers revise their understanding.", note: "새 근거에 맞춰 기존 해석을 조정한다는 뜻입니다." },
+    ],
+    vocab: [{ word: "passive", meaning: "수동적인", usage: "a passive approach" }, { word: "prediction", meaning: "예측", usage: "make a prediction" }, { word: "temporary", meaning: "일시적인", usage: "a temporary structure" }, { word: "revise", meaning: "수정하다", usage: "revise their understanding" }],
+    questions: [
+      { id: "main-idea", type: "주제", question: "다음 글의 주제로 가장 적절한 것은?", choices: ["예측이 독해를 능동적인 검증 과정으로 만드는 방식", "어려운 글에서 모든 예측을 피해야 하는 이유", "문장을 암기해 읽기 속도를 높이는 방법", "글쓴이의 답을 수동적으로 기다리는 장점"], answer: 0, explanation: "글은 예측이 새로운 정보를 비교하고 이해를 수정하게 하여 능동적 독해를 만든다고 설명합니다.", evidence: "it turns reading into an active process of testing and revision" },
+      { id: "detail", type: "내용 일치", question: "윗글의 내용과 일치하는 것은?", choices: ["예측은 반드시 정확해야 유용하다.", "틀린 예측도 기대와 근거의 차이에 주목하게 한다.", "수동적 읽기는 문장 간 연결을 강화한다.", "예측은 이해의 수정을 방해한다."], answer: 1, explanation: "글은 틀린 예측도 차이에 주의를 끌어 이해를 수정하게 한다고 말합니다.", evidence: "When the prediction is wrong, the difference ... attracts attention." },
+    ],
+  },
+  {
+    ...suneungPassage,
+    id: "2026-07-22-title-03", number: "PASSAGE 03", topic: "The Hidden Cost of Constant Choice", type: "제목", difficulty: "중", minutes: 7, limit: "06:30",
+    tags: ["제목", "의사결정", "심리"],
+    paragraphs: [
+      "Having many options is usually associated with freedom. Yet every additional choice also requires attention, comparison, and the possibility of regret.",
+      "When decisions accumulate throughout the day, people may begin to rely on the easiest option rather than the one that best serves their goals.",
+      "This is why effective systems often reduce trivial choices. A prepared routine does not remove meaningful freedom; it protects mental energy for decisions that deserve careful thought.",
+    ],
+    translations: ["많은 선택지는 보통 자유와 연관된다. 그러나 선택이 하나 늘어날 때마다 주의, 비교, 후회의 가능성도 필요해진다.", "결정이 하루 동안 누적되면 사람들은 목표에 가장 잘 맞는 선택보다 가장 쉬운 선택에 의존하기 시작할 수 있다.", "이것이 효과적인 시스템이 사소한 선택을 줄이는 이유다. 준비된 루틴은 의미 있는 자유를 없애는 것이 아니라 신중한 사고가 필요한 결정을 위해 정신적 에너지를 보호한다."],
+    notes: ["be associated with는 ‘~와 관련되다’라는 수동 표현입니다.", "rather than이 가장 쉬운 선택과 목표에 맞는 선택을 대조합니다.", "not A; it B 구조로 루틴의 역할을 재정의합니다."],
+    expressions: [{ id: "accumulate", text: "decisions accumulate", meaning: "결정이 누적되다", example: "When decisions accumulate throughout the day...", note: "작은 결정들이 계속 쌓이는 상황입니다." }, { id: "rely-on", text: "rely on", meaning: "~에 의존하다", example: "rely on the easiest option", note: "선택 피로 뒤의 행동을 나타냅니다." }, { id: "mental-energy", text: "mental energy", meaning: "정신적 에너지", example: "protects mental energy", note: "집중하고 판단하는 데 쓰이는 인지 자원을 뜻합니다." }],
+    vocab: [{ word: "accumulate", meaning: "누적되다", usage: "decisions accumulate" }, { word: "trivial", meaning: "사소한", usage: "trivial choices" }, { word: "meaningful", meaning: "의미 있는", usage: "meaningful freedom" }, { word: "deserve", meaning: "~할 가치가 있다", usage: "deserve careful thought" }],
+    questions: [
+      { id: "title", type: "제목", question: "다음 글의 제목으로 가장 적절한 것은?", choices: ["More Choices, Less Mental Energy", "Why Every Routine Removes Freedom", "The Simple Path to Unlimited Attention", "Regret as the Best Decision Strategy"], answer: 0, explanation: "선택이 많을수록 정신적 자원이 소모되며, 루틴이 중요한 결정에 에너지를 남긴다는 내용입니다.", evidence: "it protects mental energy for decisions that deserve careful thought" },
+      { id: "inference", type: "추론", question: "윗글로부터 추론할 수 있는 것은?", choices: ["모든 선택을 제거해야 한다.", "사소한 결정을 줄이면 중요한 판단에 집중할 수 있다.", "가장 쉬운 선택은 언제나 목표에 가장 적합하다.", "선택지가 많을수록 후회 가능성은 줄어든다."], answer: 1, explanation: "루틴으로 사소한 선택을 줄이면 중요한 결정에 정신적 에너지를 사용할 수 있습니다.", evidence: "reduce trivial choices ... protects mental energy" },
+    ],
+  },
+];
+
+function nextAvailablePassageIndex(currentIndex, masteredIds = []) {
+  for (let offset = 1; offset < suneungPassages.length; offset += 1) {
+    const index = (currentIndex + offset) % suneungPassages.length;
+    if (!masteredIds.includes(suneungPassages[index].id)) return index;
+  }
+  return -1;
+}
+
+let suneungState = (() => { try { const stored = JSON.parse(localStorage.getItem(SUNEUNG_STORAGE_KEY) || "null"); return stored?.date === localDateKey() ? stored : { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: stored?.masteredPassages || [], completedPassages: stored?.completedPassages || [] }; } catch { return { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: [], completedPassages: [] }; } })();
 suneungState.officialOnly ??= true;
 suneungState.sourceTab ||= "official";
 suneungState.dailyChecks ||= {};
+suneungState.passageTab = !suneungState.passageTab || suneungState.passageTab === "reading" ? "questions" : suneungState.passageTab;
+suneungState.passageTranslations ||= [];
+suneungState.passageNotes ||= [];
+suneungState.difficultSentences ||= [];
+suneungState.bookmarkedSentences ||= [];
+suneungState.expressionStatus ||= {};
+suneungState.passageQuestionIndex ??= 0;
+suneungState.passageAnswers ||= {};
+suneungState.passageChecked ||= {};
+suneungState.wrongPassageQuestions ||= [];
+suneungState.passageIndex ??= 0;
+suneungState.completedPassages ||= [];
+suneungState.masteredPassages ||= [];
+suneungState.batchAnswers ||= {};
+suneungState.batchChecked ||= {};
+suneungState.batchQuestionIndexes ||= {};
+suneungState.batchAnalysisOpen ||= {};
+suneungState.masteredPassages = suneungState.masteredPassages.filter(id => suneungPassages.some(passage => passage.id === id));
+if (suneungState.masteredPassages.includes(suneungPassages[suneungState.passageIndex % suneungPassages.length].id)) {
+  const nextIndex = nextAvailablePassageIndex(suneungState.passageIndex % suneungPassages.length, suneungState.masteredPassages);
+  if (nextIndex >= 0) suneungState.passageIndex = nextIndex;
+}
+suneungPassage = suneungPassages[suneungState.passageIndex % suneungPassages.length];
 
 const suneungHomeStudyItems = [
   { id: "wordmaster", number: "01", title: "수능 단어장", page: "suneung-wordmaster", icon: "book", color: "sage", tag: "Word Master", unit: "오늘의 단어 학습", cta: "단어 학습하기" },
-  { id: "passage", number: "02", title: "오늘의 수능 지문", page: "suneung-passage", icon: "book-open", color: "blue", tag: "실전 독해", unit: "수능형 지문 1개", cta: "지문 풀기" },
+  { id: "passage", number: "02", title: "수능 지문 훈련", page: "suneung-passage", icon: "book-open", color: "blue", tag: "실전 독해", unit: "완료 후 다음 지문 계속", cta: "지문 풀기" },
   { id: "types", number: "03", title: "유형별 훈련", page: "suneung-types", icon: "clipboard", color: "gold", tag: "유형 전략", unit: "취약 유형 집중 훈련", cta: "유형 훈련하기" },
   { id: "review", number: "04", title: "약점 복습", page: "suneung-review", icon: "check", color: "rose", tag: "오답 반복", unit: "최근 오답 다시 확인", cta: "오답 복습하기" },
   { id: "vocab", number: "05", title: "어휘 / 구문", page: "suneung-vocab", icon: "book", color: "mint", tag: "구문 분석", unit: "핵심 어휘와 문장 구조", cta: "어휘·구문 보기" },
@@ -1825,14 +1922,17 @@ function icon(name, size = 20) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.spark}</svg>`;
 }
 
-function navItem(id, label, ico) { return `<button class="nav-item ${state.page === id ? "active" : ""}" data-page="${id}">${icon(ico)}<span>${label}</span></button>`; }
+function navItem(id, label, ico) {
+  const isActive = state.page === id || (audienceMode === "suneung" && id === "suneung-home" && state.page === "home");
+  return `<button class="nav-item ${isActive ? "active" : ""}" data-page="${id}">${icon(ico)}<span>${label}</span></button>`;
+}
 function sidebar() {
   const todayDone = (state.history["2026-07-13"] || []).length;
   const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}<p class="nav-label space">MY SPACE</p>${navItem("calendar", "학습 캘린더", "calendar")}`;
   const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("drama", "오늘의 미드 숏폼", "play")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
-  const suneungNavigation = `${navItem("suneung-wordmaster", "수능 단어장", "book")}${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-passage", "오늘의 수능 지문", "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-review", "약점 복습", "check")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
+  const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", "수능 단어장", "book")}${navItem("suneung-passage", "오늘의 수능 지문", "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-review", "약점 복습", "check")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
   return `<aside class="sidebar">
-    <button class="brand" type="button" data-page="home" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
+    <button class="brand" type="button" data-page="${audienceMode === "suneung" ? "suneung-home" : "home"}" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
     <nav><p class="nav-label">${audienceMode === "suneung" ? "CSAT ENGLISH" : "LEARN"}</p>${audienceMode === "kids" ? kidsNavigation : audienceMode === "suneung" ? suneungNavigation : generalNavigation}</nav>
     <div class="sidebar-bottom"><div class="streak-card"><div class="streak-icon">${icon("flame")}</div><div><b>${audienceMode === "kids" ? `${childName}의 영어 탐험!` : audienceMode === "suneung" ? "5일 연속 수능 루틴" : "12일 연속 학습 중!"}</b><span>${audienceMode === "kids" ? "오늘도 별을 모아봐요" : audienceMode === "suneung" ? "이번 주 목표 5 / 7" : "이번 주도 멋져요"}</span></div></div><div class="profile"><span class="avatar">${audienceMode === "kids" ? childCallName() : "Kai"}</span><div><b>${audienceMode === "kids" ? childName : "Kai"}</b><span>${audienceMode === "kids" ? "초등학교 4학년" : audienceMode === "suneung" ? "상위권 수능 루틴" : "꾸준한 학습자"}</span></div><button type="button" ${audienceMode === "kids" ? 'data-kids-edit-name aria-label="학생 이름 변경"' : ""}>${audienceMode === "kids" ? "이름" : "···"}</button></div></div>
   </aside>`;
@@ -3115,9 +3215,9 @@ function reviewChatbotUi() {
 function selectionAssistantUi() {
   const selected = escapeMarkup(selectionAssistantState.text || "");
   const panel = selectionAssistantState.open ? `<aside class="selection-ai-panel" aria-label="선택 문장 AI 분석">
-    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>웹 검색과 문법 분석을 한 번에 제공해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
+    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>번역·유사 예문·문법 분석을 한 번에 제공해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
     <div class="selection-ai-context"><small>현재 분석 문장</small><p>${selected}</p></div>
-    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>${selectionAssistantState.origin === "icon" ? "문장 옆 AI 비서 요청" : "드래그 분석 요청"}</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i><span>웹에서 문맥과 문법 자료를 찾고 있어요</span></div></div>
+    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>${selectionAssistantState.origin === "icon" ? "문장 옆 AI 비서 요청" : "드래그 분석 요청"}</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i><span>번역과 유사 예문, 문법 구조를 만들고 있어요</span></div></div>
   </aside>` : "";
   return `<button class="selection-ai-trigger" type="button" data-selection-ai-trigger aria-label="선택한 영어 분석">${icon("spark",14)} <span>문장 분석</span></button>${panel}<div class="selection-ai-toast" data-selection-ai-toast role="status">${icon("check",14)} 학습장에 문장과 분석 결과가 저장되었습니다.</div>`;
 }
@@ -3154,27 +3254,90 @@ function sentencePatternAnalysis(text) {
   return patterns.length ? patterns.join("<br>• ") : "핵심 어순은 주어 + 동사(구)를 중심으로 하고, 뒤의 수식어가 의미를 확장합니다.";
 }
 
+function knownSentenceTranslation(text) {
+  const cleaned = text.replace(/\s+/g, " ").trim().replace(/[.!?]+$/, "").toLowerCase();
+  const titleTranslations = {
+    "why productive struggle improves learning": "생산적인 어려움이 학습을 향상시키는 이유",
+    "why predictions improve reading": "예측이 독해를 향상시키는 이유",
+    "the hidden cost of constant choice": "끊임없는 선택에 숨겨진 비용",
+  };
+  if (titleTranslations[cleaned]) return titleTranslations[cleaned];
+  for (const passage of suneungPassages) {
+    const index = passage.paragraphs.findIndex(paragraph => paragraph.replace(/\s+/g, " ").trim().replace(/[.!?]+$/, "").toLowerCase() === cleaned);
+    if (index >= 0) return passage.translations[index] || "";
+    const containingIndex = passage.paragraphs.findIndex(paragraph => paragraph.replace(/\s+/g, " ").trim().toLowerCase().includes(cleaned));
+    if (containingIndex >= 0) return passage.translations[containingIndex] || "";
+  }
+  for (const article of articleLibrary || []) {
+    const sentence = article.sentences?.find(item => String(item.en || "").replace(/\s+/g, " ").trim().replace(/[.!?]+$/, "").toLowerCase() === cleaned);
+    if (sentence?.ko) return sentence.ko;
+  }
+  return "AI 번역 연결을 통해 문맥에 맞는 자연스러운 한국어 해석을 제공합니다.";
+}
+
+function normalizeSentenceAssistantSections(sections, fallbackSections) {
+  const expected = [
+    { title: "문장 번역", aliases: ["문장 번역", "자연스러운 해석", "번역"] },
+    { title: "문장 문법적 해석", aliases: ["문장 문법적 해석", "문장 골격", "문법적 해석"] },
+    { title: "자주 착각하는 문법", aliases: ["자주 착각하는 문법", "자주 하는 실수", "문법 함정"] },
+    { title: "유사문장", aliases: ["유사문장", "유사 예문", "비슷한 문장"] },
+  ];
+  return expected.map((item, index) => {
+    const matched = Array.isArray(sections) ? sections.find(section => item.aliases.some(alias => String(section?.title || "").includes(alias))) : null;
+    const body = typeof matched?.body === "string" ? matched.body.trim() : "";
+    return body ? { title: item.title, body: escapeMarkup(body).replace(/\n/g, "<br>") } : fallbackSections[index];
+  });
+}
+
+function similarSentenceExamples(text) {
+  if (/^why\b/i.test(text)) return [
+    ["Why Regular Review Improves Memory", "정기적인 복습이 기억력을 향상시키는 이유"],
+    ["Why Active Reading Deepens Understanding", "능동적인 읽기가 이해를 깊게 하는 이유"],
+  ];
+  if (/\b(has|have)\b/i.test(text)) return [
+    ["Researchers have developed a more effective method.", "연구자들은 더 효과적인 방법을 개발해 왔다."],
+    ["The program has helped students build confidence.", "그 프로그램은 학생들이 자신감을 기르는 데 도움을 주었다."],
+  ];
+  if (/\b(which|who|that)\b/i.test(text)) return [
+    ["The strategy that worked yesterday may not work today.", "어제 효과가 있었던 전략이 오늘은 효과가 없을 수도 있다."],
+    ["Students who ask questions often understand the topic better.", "질문하는 학생들은 주제를 더 잘 이해하는 경우가 많다."],
+  ];
+  return [
+    ["Careful practice improves performance over time.", "신중한 연습은 시간이 지나면서 수행 능력을 향상시킨다."],
+    ["A clear purpose helps learners stay focused.", "분명한 목적은 학습자가 집중을 유지하도록 돕는다."],
+  ];
+}
+
+function commonMistakeAnalysis(text) {
+  if (/\bshould\b/i.test(text)) return "<b>should를 항상 ‘~해야 한다’로 번역하지 마세요.</b><br>왜 헷갈리나요? 의무 표현으로 먼저 외우기 쉽기 때문입니다.<br>어떻게 읽나요? 생각·기대 문맥에서는 ‘원래 ~할 것으로 기대하다’라는 통념으로 읽습니다.";
+  if (/\b(which|who|that)\b/i.test(text)) return "<b>관계사절이나 that절의 수식 범위를 확인하세요.</b><br>왜 헷갈리나요? that을 앞 명사의 수식어로만 보기 쉽기 때문입니다.<br>어떻게 읽나요? 앞의 동사가 목적어절을 요구하는지, 바로 앞 명사를 꾸미는지 먼저 판단합니다.";
+  if (/\bto\s+[a-z]+\b/i.test(text)) return "<b>to부정사를 무조건 ‘~하기 위해’로 읽지 마세요.</b><br>왜 헷갈리나요? 목적 용법이 가장 익숙하기 때문입니다.<br>어떻게 읽나요? 앞 명사를 꾸미는지, 동사의 목적어인지, 행동의 목적을 나타내는지 문장 속 위치로 판단합니다.";
+  if (/\b(am|is|are|was|were|feel|become|remain)\b/i.test(text)) return "<b>동사 뒤 형용사를 목적어로 착각하지 마세요.</b><br>왜 헷갈리나요? 동사 뒤의 요소를 모두 목적어로 보기 쉽기 때문입니다.<br>어떻게 읽나요? 연결동사 뒤의 형용사는 주어의 상태를 설명하는 보어로 연결합니다.";
+  return "<b>수식어보다 주어와 중심 동사를 먼저 찾으세요.</b><br>왜 헷갈리나요? 긴 전치사구와 부사구를 핵심 문장 성분으로 오해하기 쉽기 때문입니다.<br>어떻게 읽나요? 주어·동사를 먼저 연결하고 나머지 정보를 뒤에서 덧붙입니다.";
+}
+
 function detailedSelectionAnalysis(text) {
   const cleaned = text.replace(/\s+/g, " ").trim();
   const target = /has invested/i.test(cleaned) && /in an effort to/i.test(cleaned);
   const singleWord = /^[-A-Za-z']+$/.test(cleaned);
   if (singleWord) return [
-    { title: "단어 형태", body: `‘${cleaned}’의 품사와 문맥상 의미, 어형 변화를 확인합니다.` },
-    { title: "문맥 결합", body: "앞뒤 단어와 함께 쓰이는 연어(collocation)와 전치사 결합을 웹 검색 결과에서 확인해 보세요." },
-    { title: "학습 포인트", body: "단어 하나보다 현재 문장 전체를 함께 저장하면 실제 쓰임을 더 오래 기억할 수 있습니다." },
+    { title: "문장 번역", body: `선택한 단어 <b>${cleaned}</b>의 자연스러운 뜻은 현재 문맥과 함께 확인해야 합니다.<br><b>핵심 의미</b> 단독 의미보다 앞뒤 문장 속 쓰임을 우선하세요.` },
+    { title: "문장 문법적 해석", body: `‘${cleaned}’의 품사, 문장 안 역할, 함께 결합하는 전치사와 어형을 확인합니다.` },
+    { title: "자주 착각하는 문법", body: "같은 철자라도 품사와 문맥에 따라 뜻이 달라질 수 있습니다. 단어 하나보다 포함된 문장 전체를 선택해 분석하는 것이 정확합니다." },
+    { title: "유사문장", body: "전체 문장을 선택하면 같은 단어와 패턴을 활용한 유사문장 2~3개를 제공합니다." },
   ];
   const verb = findSentenceVerb(cleaned);
   const subject = verb.index > 0 ? cleaned.slice(0, verb.index).replace(/[,;:]$/, "").trim() : "문맥상 주어 확인 필요";
   const predicate = verb.index >= 0 ? cleaned.slice(verb.index).trim() : cleaned;
   const prepPhrases = [...cleaned.matchAll(/\b(in|on|at|for|with|by|from|of|about|through|during|into|across|between)\b\s+[^,.;]+/gi)].map(match => match[0]).slice(0, 4);
   const clauseWords = [...cleaned.matchAll(/\b(because|although|though|if|when|while|that|which|who|where|so that)\b/gi)].map(match => match[0]);
+  const similarExamples = similarSentenceExamples(cleaned);
+  const naturalTranslation = target ? "회사는 글로벌 시장 점유율을 안정시키기 위한 노력의 일환으로 최신 기술에 투자해 왔습니다." : knownSentenceTranslation(cleaned);
   return [
-    { title: "핵심 의미", body: target ? "회사는 글로벌 시장 점유율을 안정시키기 위한 노력의 일환으로 최신 기술에 투자해 왔습니다." : "문장의 중심 동작과 수식 관계를 기준으로 읽으면, 누가 무엇을 하고 그 행동에 어떤 배경·목적이 붙는지 파악할 수 있습니다." },
-    { title: "문장 골격", body: `<b>주어(S)</b> ${subject}<br><b>동사구(V)</b> ${verb.phrase}<br><b>서술부</b> ${predicate}` },
-    { title: "구·절 단위 분해", body: `${prepPhrases.length ? `<b>전치사구</b> ${prepPhrases.join(" / ")}<br>` : ""}${clauseWords.length ? `<b>절 연결어</b> ${[...new Set(clauseWords)].join(", ")}<br>` : ""}<b>문장형식</b> 주어와 동사구를 먼저 잡고 목적어·보어·부사어를 순서대로 연결합니다.` },
-    { title: "시제·태·동사 형태", body: sentenceTenseAnalysis(cleaned) },
-    { title: "핵심 문법과 수식 관계", body: `• ${sentencePatternAnalysis(cleaned)}` },
-    { title: "읽기 포인트", body: "전치사구와 to부정사구를 잠시 괄호로 묶은 뒤 주어와 동사만 먼저 읽고, 부가 정보를 다시 결합하면 긴 문장도 안정적으로 해석할 수 있습니다." },
+    { title: "문장 번역", body: `<b>자연스러운 해석</b><br>${naturalTranslation}<br><br><b>직역</b><br>${naturalTranslation}<br><br><b>핵심 의미</b><br>${naturalTranslation}` },
+    { title: "문장 문법적 해석", body: `<b>핵심 구조</b><br>주어(S) ${subject}<br>동사(V) ${verb.phrase}<br>나머지 서술부 ${predicate}<br><br>${prepPhrases.length ? `<b>구·절 구조</b><br>${prepPhrases.join(" / ")}<br>` : ""}${clauseWords.length ? `절 연결어: ${[...new Set(clauseWords)].join(", ")}<br>` : ""}<br><b>핵심 문법</b><br>${sentenceTenseAnalysis(cleaned)}<br>• ${sentencePatternAnalysis(cleaned)}<br><br><b>해석 순서</b><br>주어와 중심 동사를 먼저 읽고 목적어·보어를 연결한 뒤 수식 정보를 덧붙입니다.` },
+    { title: "자주 착각하는 문법", body: commonMistakeAnalysis(cleaned) },
+    { title: "유사문장", body: `<b>공통 패턴</b><br>현재 문장의 중심 동사와 문법 구조를 같은 순서로 적용합니다.<br><br>${similarExamples.map(([english, korean]) => `<b>${english}</b><br>${korean}`).join("<br><br>")}` },
   ];
 }
 
@@ -3211,13 +3374,17 @@ function captureLearningSelection() {
 async function appendSelectionAnalysis() {
   const chat = document.querySelector("[data-selection-ai-chat]");
   if (!chat) return;
+  const fallbackCards = detailedSelectionAnalysis(selectionAssistantState.text);
+  document.querySelector("[data-selection-ai-loading]")?.remove();
+  fallbackCards.forEach((item, index) => chat.insertAdjacentHTML("beforeend", `<details class="selection-ai-card selection-ai-learning-card" data-selection-ai-section="${index}" ${index === 0 ? "open" : ""}><summary><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeMarkup(item.title)}</span><em>${index === 0 ? "뜻을 먼저 확인하세요" : index === 1 ? "읽는 순서를 확인하세요" : index === 2 ? "실수 포인트를 확인하세요" : "같은 패턴을 연습하세요"}</em></summary><div>${item.body}</div></details>`));
+  chat.scrollTo({ top: 0, behavior: "smooth" });
+
   let web = { results: [], searchUrl: `https://www.bing.com/search?q=${encodeURIComponent(`"${selectionAssistantState.text}" English grammar`)}` };
   try {
     const response = await fetch(`/api/sentence-web-search?sentence=${encodeURIComponent(selectionAssistantState.text)}`, { cache: "no-store" });
     if (response.ok) web = await response.json();
   } catch {}
   selectionAssistantState.web = web;
-  let cards = detailedSelectionAnalysis(selectionAssistantState.text);
   try {
     const aiResponse = await fetch("/api/ai-sentence-analysis", {
       method: "POST",
@@ -3226,23 +3393,21 @@ async function appendSelectionAnalysis() {
     });
     const aiResult = await aiResponse.json();
     if (aiResult.ai && Array.isArray(aiResult.sections)) {
-      cards = aiResult.sections.map(section => ({ title: section.title, body: escapeMarkup(section.body).replace(/\n/g, "<br>") }));
+      const cards = normalizeSentenceAssistantSections(aiResult.sections, fallbackCards);
+      cards.forEach((item, index) => {
+        const card = document.querySelector(`[data-selection-ai-section="${index}"]`);
+        if (!card || !selectionAssistantState.open) return;
+        const title = card.querySelector("summary span");
+        const body = card.querySelector(":scope > div");
+        if (title) title.textContent = item.title;
+        if (body) body.innerHTML = item.body;
+      });
     }
   } catch {}
-  document.querySelector("[data-selection-ai-loading]")?.remove();
-  cards.forEach((item, index) => setTimeout(() => {
-    const currentChat = document.querySelector("[data-selection-ai-chat]");
-    if (!currentChat || !selectionAssistantState.open) return;
-    currentChat.insertAdjacentHTML("beforeend", `<section class="selection-ai-card"><small>${escapeMarkup(item.title)}</small><p>${item.body}</p></section>`);
-    currentChat.scrollTo({ top: currentChat.scrollHeight, behavior: "smooth" });
-    if (index === cards.length - 1) setTimeout(() => {
-      const activeChat = document.querySelector("[data-selection-ai-chat]");
-      if (!activeChat || !selectionAssistantState.open) return;
-      const sources = (web.results || []).map(result => `<a href="${escapeMarkup(result.url)}" target="_blank" rel="noopener noreferrer"><b>${escapeMarkup(result.title)}</b><span>${escapeMarkup(result.snippet || new URL(result.url).hostname)}</span>${icon("arrow",12)}</a>`).join("");
-      activeChat.insertAdjacentHTML("beforeend", `<section class="selection-ai-card selection-ai-web"><small>WEB SEARCH</small><p>해당 문장을 따옴표 검색하고 문법 자료를 함께 탐색했습니다.</p>${sources || "<p class=\"selection-ai-web-empty\">일치하는 공개 문서를 찾지 못했지만 문법 분석은 정상적으로 생성했습니다.</p>"}<a class="selection-ai-search-all" href="${escapeMarkup(web.searchUrl)}" target="_blank" rel="noopener noreferrer">웹에서 검색 결과 전체 보기 ${icon("arrow",12)}</a></section><button class="selection-ai-save ${selectionAssistantState.saved ? "saved" : ""}" type="button" data-selection-ai-save ${selectionAssistantState.saved ? "disabled" : ""}>${icon(selectionAssistantState.saved ? "check" : "bookmark",14)} ${selectionAssistantState.saved ? "학습장에 저장됨" : "학습장 저장"}</button>`);
-      activeChat.scrollTo({ top: activeChat.scrollHeight, behavior: "smooth" });
-    }, 320);
-  }, index * 420));
+  const activeChat = document.querySelector("[data-selection-ai-chat]");
+  if (!activeChat || !selectionAssistantState.open) return;
+  const sources = (web.results || []).map(result => `<a href="${escapeMarkup(result.url)}" target="_blank" rel="noopener noreferrer"><b>${escapeMarkup(result.title)}</b><span>${escapeMarkup(result.snippet || new URL(result.url).hostname)}</span>${icon("arrow",12)}</a>`).join("");
+  activeChat.insertAdjacentHTML("beforeend", `<details class="selection-ai-card selection-ai-web"><summary>참고 자료</summary><p>필요할 때만 웹 검색 자료를 확인하세요.</p>${sources || "<p class=\"selection-ai-web-empty\">일치하는 공개 자료가 없습니다.</p>"}<a class="selection-ai-search-all" href="${escapeMarkup(web.searchUrl)}" target="_blank" rel="noopener noreferrer">웹에서 검색 결과 전체 보기 ${icon("arrow",12)}</a></details><button class="selection-ai-save ${selectionAssistantState.saved ? "saved" : ""}" type="button" data-selection-ai-save ${selectionAssistantState.saved ? "disabled" : ""}>${icon(selectionAssistantState.saved ? "check" : "bookmark",14)} ${selectionAssistantState.saved ? "학습장에 저장됨" : "학습장 저장"}</button>`);
 }
 
 function openSentenceAssistant(text, origin = "icon") {
@@ -3791,6 +3956,46 @@ function kidsPage(page) {
 
 function saveSuneungState() { try { localStorage.setItem(SUNEUNG_STORAGE_KEY, JSON.stringify(suneungState)); } catch {} }
 
+function openSuneungPassage(index) {
+  if (index < 0 || index >= suneungPassages.length) return false;
+  suneungState.passageIndex = index;
+  suneungPassage = suneungPassages[index];
+  suneungState.passageTab = "questions";
+  suneungState.passageTranslations = [];
+  suneungState.passageNotes = [];
+  suneungState.difficultSentences = [];
+  suneungState.bookmarkedSentences = [];
+  suneungState.expressionStatus = {};
+  suneungState.passageQuestionIndex = 0;
+  suneungState.passageAnswers = {};
+  suneungState.passageChecked = {};
+  suneungState.wrongPassageQuestions = [];
+  suneungState.selected = null;
+  suneungState.submitted = false;
+  suneungState.completed = false;
+  suneungState.reviewSaved = false;
+  saveSuneungState();
+  return true;
+}
+
+function compactSuneungPassagePage() {
+  const availableIndexes = Array.from({ length: suneungPassages.length }, (_, offset) => (suneungState.passageIndex + offset) % suneungPassages.length)
+    .filter(index => !suneungState.masteredPassages.includes(suneungPassages[index].id));
+  const visibleIndexes = availableIndexes.slice(0, 2);
+  const cards = visibleIndexes.map(index => {
+    const passage = suneungPassages[index];
+    const questionIndex = Math.min(suneungState.batchQuestionIndexes[passage.id] || 0, Math.max(0, passage.questions.length - 1));
+    const question = passage.questions[questionIndex];
+    const answerKey = `${passage.id}:${question?.id || "none"}`;
+    const selected = suneungState.batchAnswers[answerKey];
+    const checked = Boolean(suneungState.batchChecked[answerKey]);
+    const correct = checked && selected === question?.answer;
+    const analysisOpen = Boolean(suneungState.batchAnalysisOpen[passage.id]);
+    return `<article class="csat-batch-card" data-csat-batch-card="${passage.id}"><header><div><span>${passage.number} · ${passage.type}</span><h2>${passage.topic}</h2><small>난이도 ${passage.difficulty} · 예상 ${passage.minutes}분</small></div><button type="button" data-csat-batch-skip="${passage.id}">건너뛰기 ${icon("arrow",12)}</button></header><section class="csat-batch-passage">${passage.paragraphs.map((paragraph, paragraphIndex) => `<p><i>${paragraphIndex + 1}</i>${paragraph}</p>`).join("")}</section><button class="csat-batch-analysis-toggle ${analysisOpen ? "active" : ""}" type="button" data-csat-batch-analysis="${passage.id}" aria-expanded="${analysisOpen}">${analysisOpen ? "지문 분석 닫기" : "지문 분석 보기"}</button>${analysisOpen ? `<section class="csat-batch-analysis">${passage.paragraphs.map((paragraph, paragraphIndex) => `<article><b>${String(paragraphIndex + 1).padStart(2,"0")} · 번역</b><p>${passage.translations[paragraphIndex] || "등록된 번역이 없습니다."}</p><b>문법·구조</b><p>${passage.notes?.[paragraphIndex] || "등록된 분석이 없습니다."}</p></article>`).join("")}</section>` : ""}${question ? `<section class="csat-batch-question"><div><span>QUESTION ${questionIndex + 1} / ${passage.questions.length}</span><b>${question.type}</b></div><h3>${question.question}</h3><div class="csat-batch-choices">${question.choices.map((choice, choiceIndex) => `<button class="${selected === choiceIndex ? "selected" : ""} ${checked && choiceIndex === question.answer ? "correct" : ""} ${checked && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : ""}" type="button" data-csat-batch-choice="${answerKey}:${choiceIndex}" ${checked ? "disabled" : ""}><i>${choiceIndex + 1}</i><span>${choice}</span></button>`).join("")}</div>${checked ? `<div class="csat-batch-feedback ${correct ? "success" : "error"}"><b>${correct ? "정답입니다." : "오답입니다."}</b><p>${question.explanation}</p><small>근거: ${question.evidence}</small></div>` : ""}<footer>${checked ? questionIndex < passage.questions.length - 1 ? `<button type="button" data-csat-batch-next-question="${passage.id}">다음 문제 ${icon("arrow",12)}</button>` : `<button type="button" data-csat-batch-master="${passage.id}">${icon("check",12)} 암기 완료 · 다음 지문</button>` : `<button type="button" data-csat-batch-check="${answerKey}" ${selected === undefined ? "disabled" : ""}>정답 확인</button>`}</footer></section>` : ""}</article>`;
+  }).join("");
+  return `${header("수능 지문 훈련")}<main class="suneung-page csat-batch-page"><section class="csat-batch-head"><div><span>CSAT PASSAGE TRAINING</span><h2>지문을 읽고 바로 문제를 푸세요</h2><p>암기 완료한 지문은 제외하고 미학습 지문을 두 개씩 보여줍니다.</p></div><div><b>${suneungState.masteredPassages.length} / ${suneungPassages.length} 암기</b><button type="button" data-csat-batch-next-set ${availableIndexes.length <= 2 ? "disabled" : ""}>다음 지문 세트 ${icon("arrow",12)}</button></div></section><section class="csat-batch-grid">${cards}</section></main>`;
+}
+
 function legacySuneungHomePage() {
   const status = suneungState.completed ? "완료" : suneungState.submitted ? "진행 중" : "오늘 학습 전";
   const quick = [["suneung-passage","오늘의 지문","book-open"],["suneung-wordmaster","수능 단어장","book"],["suneung-types","유형별 훈련","clipboard"],["suneung-review","약점 복습","check"],["suneung-vocab","어휘 / 구문","book"],["suneung-parent","부모 점검","calendar"]];
@@ -3849,11 +4054,59 @@ function suneungWordmasterPage() {
   return `${header("수능 단어장")}<main class="suneung-page suneung-wordmaster-page"><csat-wordmaster-mode></csat-wordmaster-mode></main>`;
 }
 
-function suneungPassagePage() {
+function legacySuneungPassagePage() {
   if (suneungState.officialOnly) return `${header("오늘의 수능 지문")}<main class="suneung-page"><section class="suneung-verified-empty"><span>${icon("check",24)}</span><h2>공식 원문 확인이 필요한 문항입니다.</h2><p>공식 공개문항의 지문·선택지를 임의로 재현하지 않습니다. 원출처에서 확인된 문항만 학습 화면에 등록됩니다.</p><div><b>출처 기준</b><span>한국교육과정평가원 공식 공개문항</span><b>현재 상태</b><span>원문 미등록</span><b>AI 생성 여부</b><span>기본 학습 모드 제외</span></div><a href="https://www.suneung.re.kr/" target="_blank" rel="noopener noreferrer">평가원 원출처 확인 ${icon("arrow",13)}</a><button data-page="suneung-home">공식 기출 목록으로</button></section></main>`;
   const answered = suneungState.submitted;
   const correct = suneungState.selected === suneungPassage.answer;
   return `${header("오늘의 수능 지문")}<main class="suneung-page"><section class="suneung-passage-head"><button data-page="suneung-home">← 수능 홈</button><div><span>${suneungPassage.number}</span><h2>${suneungPassage.topic}</h2><p>${suneungPassage.type} · 난이도 ${suneungPassage.difficulty} · 예상 ${suneungPassage.minutes}분 · 권장 ${suneungPassage.limit}</p></div><nav><button class="${suneungState.mode === "exam" ? "active" : ""}" data-suneung-mode="exam">실전 모드</button><button class="${suneungState.mode === "study" ? "active" : ""}" data-suneung-mode="study">학습 모드</button></nav></section><div class="suneung-study-layout"><article class="suneung-passage-card"><header><span>${suneungState.mode === "exam" ? "EXAM MODE · 해석과 힌트 비공개" : "STUDY MODE · 단락별 해석 가능"}</span><b>권장 제한 시간 ${suneungPassage.limit}</b></header><div class="suneung-passage-text">${suneungPassage.paragraphs.map((paragraph,index)=>`<section><i>${index+1}</i><p>${paragraph}</p>${suneungState.mode === "study" ? `<button data-suneung-translation="${index}">${suneungState.translations.includes(index) ? "해석 접기" : "문단 해석 보기"}</button>${suneungState.translations.includes(index) ? `<div>${suneungPassage.translations[index]}</div>` : ""}` : ""}</section>`).join("")}</div><fieldset class="suneung-question"><legend><small>${suneungPassage.type}</small>${suneungPassage.question}</legend>${suneungPassage.choices.map((choice,index)=>`<button class="${suneungState.selected===index?"selected":""} ${answered&&index===suneungPassage.answer?"correct":""} ${answered&&suneungState.selected===index&&index!==suneungPassage.answer?"wrong":""}" data-suneung-answer="${index}" ${answered?"disabled":""}><i>${index+1}</i>${choice}</button>`).join("")}<button class="submit" data-suneung-submit ${suneungState.selected===null||answered?"disabled":""}>정답 제출</button></fieldset>${answered?`<section class="suneung-explanation ${correct?"success":"error"}"><header><span>${correct?icon("check",17):icon("x",17)}</span><div><b>${correct?"정답입니다.":"오답입니다."}</b><p>정답 ${suneungPassage.answer+1}번 · ${suneungPassage.choices[suneungPassage.answer]}</p></div><button data-suneung-review-save>${suneungState.reviewSaved?"복습 예약됨":"오답 복습 예약"}</button></header><div><h3>정답 해설</h3><p>${suneungPassage.explanation}</p><blockquote><b>정답 근거</b>${suneungPassage.evidence}</blockquote><h3>오답 선택지 분석</h3>${suneungPassage.traps.map(item=>`<p>${item}</p>`).join("")}</div></section>`:""}</article><aside class="suneung-study-side"><section><span>오늘의 핵심 어휘</span>${suneungPassage.vocab.map(item=>`<article><b>${item.word}</b><p>${item.meaning}</p><small>${item.usage}</small></article>`).join("")}</section><section><span>핵심 구문</span><b>forces learners / to organize and reconstruct / what they know</b><p>동사 force + 목적어 + to부정사 구조입니다. what they know는 reconstruct의 목적어 역할을 합니다.</p></section></aside></div>${answered?`<section class="suneung-complete-bar"><div><b>${suneungState.completed?"오늘 지문 완료":"해설까지 확인했어요"}</b><p>${suneungState.completed?"오늘의 수능 루틴이 저장되었습니다.":"완료 처리 후 부모 점검 화면에도 반영됩니다."}</p></div><button data-suneung-complete ${suneungState.completed?"disabled":""}>${suneungState.completed?"학습 완료됨":"오늘 지문 완료"}</button><button data-page="suneung-review">약점 복습 보기</button></section>`:""}</main>`;
+}
+
+function suneungPassagePage() {
+  if (suneungState.masteredPassages.length >= suneungPassages.length) return `${header("수능 지문 훈련")}<main class="suneung-page"><section class="suneung-verified-empty"><span>${icon("check",24)}</span><h2>등록된 지문을 모두 암기했습니다.</h2><p>암기 완료한 지문은 다시 출제하지 않습니다. 새 지문이 추가되면 자동으로 다음 학습 대상에 포함됩니다.</p><button type="button" data-csat-reset-mastered>암기 완료 기록 초기화</button></section></main>`;
+  return compactSuneungPassagePage();
+  const tabs = [["questions", "문제 풀이"], ["expressions", "핵심 표현"], ["review", "복습 / 기록"]];
+  const activeTab = suneungState.passageTab === "explanation" ? "explanation" : tabs.some(([id]) => id === suneungState.passageTab) ? suneungState.passageTab : "questions";
+  const questions = Array.isArray(suneungPassage.questions) ? suneungPassage.questions : [];
+  const checkedIds = Object.keys(suneungState.passageChecked).filter(id => suneungState.passageChecked[id]);
+  const correctCount = questions.filter(question => suneungState.passageChecked[question.id] && suneungState.passageAnswers[question.id] === question.answer).length;
+  const wrongQuestions = questions.filter(question => suneungState.passageChecked[question.id] && suneungState.passageAnswers[question.id] !== question.answer);
+  const allQuestionsChecked = questions.length > 0 && checkedIds.length === questions.length;
+  const currentPassageMastered = suneungState.masteredPassages.includes(suneungPassage.id);
+  const nextPassageIndex = nextAvailablePassageIndex(suneungState.passageIndex, suneungState.masteredPassages);
+  const expressionStatusLabel = { known: "암기함", unsure: "헷갈림", unknown: "모름" };
+
+  const readingPanel = `<section class="csat-reading-panel" aria-label="수능 지문 읽기">
+    <div class="csat-reading-toolbar"><div><b>영어 원문을 먼저 읽어보세요</b><span>${suneungState.passageTranslations.length} / ${suneungPassage.paragraphs.length}개 해석 확인</span></div><button type="button" data-csat-show-all-meanings>${suneungState.passageTranslations.length === suneungPassage.paragraphs.length ? "해석 모두 숨기기" : "해석 모두 보기"}</button></div>
+    <article class="csat-reading-article">${suneungPassage.paragraphs.map((paragraph, index) => {
+      const translationOpen = suneungState.passageTranslations.includes(index);
+      const noteOpen = suneungState.passageNotes.includes(index);
+      const difficult = suneungState.difficultSentences.includes(index);
+      const bookmarked = suneungState.bookmarkedSentences.includes(index);
+      return `<section class="csat-reading-block ${bookmarked ? "bookmarked" : ""} ${difficult ? "difficult" : ""}"><div class="csat-sentence-number">${String(index + 1).padStart(2, "0")}</div><p>${paragraph}</p><div class="csat-sentence-actions"><button class="${translationOpen ? "active" : ""}" type="button" data-csat-translation="${index}">${translationOpen ? "해석 숨기기" : "해석 보기"}</button><button class="${noteOpen ? "active" : ""}" type="button" data-csat-note="${index}">${noteOpen ? "분석 닫기" : "문장 분석"}</button><button class="${difficult ? "active warning" : ""}" type="button" data-csat-difficult="${index}">${icon("bookmark", 12)} 모르는 문장</button><button class="${bookmarked ? "active" : ""}" type="button" data-csat-bookmark="${index}">${icon("bookmark", 12)} 중요 문장</button></div>${translationOpen ? `<div class="csat-translation"><b>해석</b><p>${suneungPassage.translations[index] || "등록된 해석이 없습니다."}</p></div>` : ""}${noteOpen ? `<div class="csat-analysis"><b>문장 분석</b><p>${suneungPassage.notes?.[index] || "등록된 문장 분석이 없습니다."}</p></div>` : ""}</section>`;
+    }).join("")}</article>
+    <button class="csat-panel-next" type="button" data-csat-passage-tab="expressions">핵심 표현 학습하기 ${icon("arrow", 14)}</button>
+  </section>`;
+
+  const expressionsPanel = `<section class="csat-expression-panel" aria-label="핵심 표현 학습"><header><div><span>KEY EXPRESSIONS</span><h3>지문을 이해하는 핵심 표현</h3></div><b>${Object.keys(suneungState.expressionStatus).length} / ${suneungPassage.expressions.length}개 분류</b></header><div class="csat-expression-grid">${suneungPassage.expressions.map(item => {
+    const status = suneungState.expressionStatus[item.id] || "";
+    return `<article><div><span>${status ? expressionStatusLabel[status] : "학습 전"}</span><h4>${item.text}</h4><strong>${item.meaning}</strong></div><details><summary>예문과 해설 보기</summary><p>${item.example}</p><small>${item.note}</small></details><div class="csat-expression-status" role="group" aria-label="${item.text} 학습 상태">${[["known", "암기함"], ["unsure", "헷갈림"], ["unknown", "모름"]].map(([value, label]) => `<button class="${status === value ? "active" : ""}" type="button" data-csat-expression="${item.id}" data-csat-expression-status="${value}">${label}</button>`).join("")}</div></article>`;
+  }).join("")}</div><button class="csat-panel-next" type="button" data-csat-passage-tab="review">복습 기록 확인 ${icon("arrow", 14)}</button></section>`;
+
+  const currentQuestion = questions[Math.min(suneungState.passageQuestionIndex, Math.max(0, questions.length - 1))];
+  const questionPanel = currentQuestion ? (() => {
+    const selected = suneungState.passageAnswers[currentQuestion.id];
+    const checked = Boolean(suneungState.passageChecked[currentQuestion.id]);
+    const correct = checked && selected === currentQuestion.answer;
+    const referencePassage = suneungPassage.paragraphs.map((paragraph, index) => `<section><i>${index + 1}</i><p>${paragraph}</p></section>`).join("");
+    return `<section class="csat-question-panel" aria-label="수능 지문 문제 풀이"><header><div><span>QUESTION ${suneungState.passageQuestionIndex + 1} / ${questions.length}</span><h3>${currentQuestion.type}</h3></div><div class="csat-question-progress"><i style="width:${((suneungState.passageQuestionIndex + 1) / questions.length) * 100}%"></i></div></header><div class="csat-question-workspace"><aside class="csat-question-passage"><div><b>PASSAGE</b><span>실전처럼 영어 지문만 읽고 풀어보세요</span></div>${referencePassage}${allQuestionsChecked ? `<button class="csat-passage-explanation-button" type="button" data-csat-passage-tab="explanation">해설 화면 ${icon("arrow", 13)}</button>` : ""}</aside><article><h4>${currentQuestion.question}</h4><div class="csat-question-choices">${currentQuestion.choices.map((choice, index) => `<button class="${selected === index ? "selected" : ""} ${checked && index === currentQuestion.answer ? "correct" : ""} ${checked && selected === index && index !== currentQuestion.answer ? "wrong" : ""}" type="button" data-csat-question-choice="${index}" ${checked ? "disabled" : ""}><i>${index + 1}</i><span>${choice}</span></button>`).join("")}</div>${checked ? `<section class="csat-question-feedback ${correct ? "success" : "error"}"><b>${correct ? "정답입니다." : "오답입니다."}</b><p>${currentQuestion.explanation}</p><blockquote><strong>근거</strong>${currentQuestion.evidence}</blockquote></section>` : ""}<div class="csat-question-actions"><button type="button" data-csat-question-prev ${suneungState.passageQuestionIndex === 0 ? "disabled" : ""}>이전 문제</button>${checked ? suneungState.passageQuestionIndex === questions.length - 1 ? `<span class="csat-questions-complete">전체 문제 풀이 완료</span>` : `<button class="primary" type="button" data-csat-question-next>다음 문제 ${icon("arrow", 13)}</button>` : `<button class="primary" type="button" data-csat-question-check ${selected === undefined ? "disabled" : ""}>정답 확인</button>`}</div></article></div></section>`;
+  })() : `<section class="csat-empty-panel"><h3>등록된 문제가 없습니다.</h3><p>지문 데이터에 문제가 추가되면 이곳에서 바로 풀 수 있습니다.</p></section>`;
+
+  const explanationPanel = `<section class="csat-passage-explanation" aria-label="수능 지문 전체 해설"><header><div><span>FULL EXPLANATION</span><h3>전체 번역과 문장 분석</h3><p>모든 문제를 푼 뒤 지문의 흐름과 문법 구조를 확인하세요.</p></div><button type="button" data-csat-passage-tab="questions">문제로 돌아가기</button></header><article>${suneungPassage.paragraphs.map((paragraph, index) => `<section><i>${String(index + 1).padStart(2, "0")}</i><div><h4>${paragraph}</h4><div class="csat-explanation-translation"><b>전체 번역</b><p>${suneungPassage.translations[index] || "등록된 번역이 없습니다."}</p></div><div class="csat-explanation-grammar"><b>문법·구조 분석</b><p>${suneungPassage.notes?.[index] || "등록된 문장 분석이 없습니다."}</p></div></div></section>`).join("")}</article><footer><button type="button" data-csat-passage-tab="expressions">핵심 표현 확인 ${icon("arrow", 13)}</button><button type="button" data-csat-passage-tab="review">풀이 결과·복습 기록 ${icon("arrow", 13)}</button></footer></section>`;
+
+  const reviewPanel = `<section class="csat-review-panel" aria-label="수능 지문 복습 기록"><div class="csat-result-summary"><article><span>풀이 문항</span><b>${checkedIds.length}<small> / ${questions.length}</small></b></article><article><span>정답</span><b>${correctCount}</b></article><article><span>오답</span><b>${wrongQuestions.length}</b></article><article><span>모르는 문장</span><b>${suneungState.difficultSentences.length}</b></article></div><div class="csat-review-grid"><section><header><h3>오답 문항</h3><span>${wrongQuestions.length}개</span></header>${wrongQuestions.length ? wrongQuestions.map(question => `<button type="button" data-csat-retry-question="${question.id}"><span>${question.type}</span><b>${question.question}</b>${icon("arrow", 13)}</button>`).join("") : `<p class="csat-review-empty">현재 저장된 오답이 없습니다.</p>`}</section><section><header><h3>저장한 학습 항목</h3></header><dl><div><dt>중요 문장</dt><dd>${suneungState.bookmarkedSentences.length}개</dd></div><div><dt>모르는 문장</dt><dd>${suneungState.difficultSentences.length}개</dd></div><div><dt>헷갈리는 표현</dt><dd>${Object.values(suneungState.expressionStatus).filter(value => value === "unsure" || value === "unknown").length}개</dd></div><div><dt>오늘 지문</dt><dd>${suneungState.completed ? "학습 완료" : "진행 중"}</dd></div></dl></section></div></section>`;
+
+  const panels = { expressions: expressionsPanel, questions: questionPanel, explanation: explanationPanel, review: reviewPanel };
+  return `${header("수능 지문 훈련")}<main class="suneung-page csat-passage-learning"><section class="csat-passage-hero"><div><button type="button" data-page="suneung-home">← 오늘의 학습</button><span>${suneungPassage.number} · ${suneungState.passageIndex + 1} / ${suneungPassages.length}</span><h2>${suneungPassage.topic}</h2><p>한 지문을 완료하면 다음 지문으로 계속 학습할 수 있습니다.</p></div><aside><span>${suneungPassage.source}</span><b>${suneungPassage.sourceDetail}</b><div>${suneungPassage.tags.map(tag => `<em>${tag}</em>`).join("")}</div><small>난이도 ${suneungPassage.difficulty} · 예상 ${suneungPassage.minutes}분 · 권장 ${suneungPassage.limit}</small><nav class="csat-passage-queue-actions"><button class="${currentPassageMastered ? "mastered" : ""}" type="button" data-csat-master-passage ${currentPassageMastered ? "disabled" : ""}>${currentPassageMastered ? `${icon("check", 13)} 암기 완료됨` : "암기 완료"}</button><button type="button" data-csat-skip-passage ${nextPassageIndex < 0 ? "disabled" : ""}>다음 지문 ${icon("arrow", 13)}</button></nav></aside></section><nav class="csat-passage-tabs" aria-label="수능 지문 학습 단계">${tabs.map(([id, label], index) => `<button class="${activeTab === id ? "active" : ""}" type="button" data-csat-passage-tab="${id}"><i>${index + 1}</i><span>${label}</span></button>`).join("")}</nav>${panels[activeTab]}<section class="csat-learning-footer"><div><b>${suneungState.completed ? "현재 지문 학습 완료" : allQuestionsChecked ? "문제 풀이를 완료했습니다" : "먼저 모든 문제를 풀어보세요"}</b><p>${suneungState.completed ? "다음 지문으로 바로 이어서 학습할 수 있습니다." : allQuestionsChecked ? "지문 아래의 해설 화면에서 전체 번역과 문법 분석을 확인할 수 있습니다." : `${checkedIds.length} / ${questions.length}문항 풀이 완료`}</p></div><button class="${suneungState.completed ? "done" : ""}" type="button" data-suneung-complete ${suneungState.completed || !allQuestionsChecked ? "disabled" : ""}>${suneungState.completed ? `${icon("check", 14)} 완료됨` : "이 지문 완료"}</button>${suneungState.completed ? `<button type="button" data-csat-next-passage>다음 지문 ${icon("arrow", 14)}</button>` : `<button type="button" data-page="suneung-review">약점 복습으로</button>`}</section></main>`;
 }
 
 function suneungSupportPage(view) {
@@ -4079,11 +4332,178 @@ function bindEvents(){
   document.querySelectorAll("[data-suneung-mode]").forEach(button => button.addEventListener("click", event => { suneungState.mode = event.currentTarget.dataset.suneungMode; saveSuneungState(); render(); }));
   document.querySelector("[data-suneung-official]")?.addEventListener("change", event => { suneungState.officialOnly = event.currentTarget.checked; saveSuneungState(); render(); });
   document.querySelectorAll("[data-suneung-source-tab]").forEach(button => button.addEventListener("click", event => { suneungState.sourceTab = event.currentTarget.dataset.suneungSourceTab; saveSuneungState(); render(); }));
+  document.querySelectorAll("[data-csat-passage-tab]").forEach(button => button.addEventListener("click", event => {
+    suneungState.passageTab = event.currentTarget.dataset.csatPassageTab;
+    saveSuneungState();
+    render();
+  }));
+  document.querySelector("[data-csat-show-all-meanings]")?.addEventListener("click", () => {
+    const allOpen = suneungState.passageTranslations.length === suneungPassage.paragraphs.length;
+    suneungState.passageTranslations = allOpen ? [] : suneungPassage.paragraphs.map((_, index) => index);
+    saveSuneungState();
+    render();
+  });
+  document.querySelectorAll("[data-csat-translation]").forEach(button => button.addEventListener("click", event => {
+    const index = Number(event.currentTarget.dataset.csatTranslation);
+    suneungState.passageTranslations = suneungState.passageTranslations.includes(index) ? suneungState.passageTranslations.filter(item => item !== index) : [...suneungState.passageTranslations, index];
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-note]").forEach(button => button.addEventListener("click", event => {
+    const index = Number(event.currentTarget.dataset.csatNote);
+    suneungState.passageNotes = suneungState.passageNotes.includes(index) ? suneungState.passageNotes.filter(item => item !== index) : [...suneungState.passageNotes, index];
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-difficult]").forEach(button => button.addEventListener("click", event => {
+    const index = Number(event.currentTarget.dataset.csatDifficult);
+    suneungState.difficultSentences = suneungState.difficultSentences.includes(index) ? suneungState.difficultSentences.filter(item => item !== index) : [...suneungState.difficultSentences, index];
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-bookmark]").forEach(button => button.addEventListener("click", event => {
+    const index = Number(event.currentTarget.dataset.csatBookmark);
+    suneungState.bookmarkedSentences = suneungState.bookmarkedSentences.includes(index) ? suneungState.bookmarkedSentences.filter(item => item !== index) : [...suneungState.bookmarkedSentences, index];
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-expression]").forEach(button => button.addEventListener("click", event => {
+    const id = event.currentTarget.dataset.csatExpression;
+    const status = event.currentTarget.dataset.csatExpressionStatus;
+    if (suneungState.expressionStatus[id] === status) delete suneungState.expressionStatus[id];
+    else suneungState.expressionStatus[id] = status;
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-question-choice]").forEach(button => button.addEventListener("click", event => {
+    const question = suneungPassage.questions[suneungState.passageQuestionIndex];
+    if (!question || suneungState.passageChecked[question.id]) return;
+    suneungState.passageAnswers[question.id] = Number(event.currentTarget.dataset.csatQuestionChoice);
+    saveSuneungState();
+    render();
+  }));
+  document.querySelector("[data-csat-question-check]")?.addEventListener("click", () => {
+    const question = suneungPassage.questions[suneungState.passageQuestionIndex];
+    if (!question || suneungState.passageAnswers[question.id] === undefined) return;
+    suneungState.passageChecked[question.id] = true;
+    suneungState.submitted = true;
+    if (suneungState.passageAnswers[question.id] !== question.answer && !suneungState.wrongPassageQuestions.includes(question.id)) suneungState.wrongPassageQuestions.push(question.id);
+    if (suneungState.passageAnswers[question.id] === question.answer) suneungState.wrongPassageQuestions = suneungState.wrongPassageQuestions.filter(id => id !== question.id);
+    saveSuneungState();
+    render();
+  });
+  document.querySelector("[data-csat-question-prev]")?.addEventListener("click", () => {
+    suneungState.passageQuestionIndex = Math.max(0, suneungState.passageQuestionIndex - 1);
+    saveSuneungState();
+    render();
+  });
+  document.querySelector("[data-csat-question-next]")?.addEventListener("click", () => {
+    if (suneungState.passageQuestionIndex >= suneungPassage.questions.length - 1) suneungState.passageTab = "explanation";
+    else suneungState.passageQuestionIndex += 1;
+    saveSuneungState();
+    render();
+  });
+  document.querySelectorAll("[data-csat-retry-question]").forEach(button => button.addEventListener("click", event => {
+    const id = event.currentTarget.dataset.csatRetryQuestion;
+    const index = suneungPassage.questions.findIndex(question => question.id === id);
+    if (index < 0) return;
+    delete suneungState.passageAnswers[id];
+    delete suneungState.passageChecked[id];
+    suneungState.passageQuestionIndex = index;
+    suneungState.passageTab = "questions";
+    saveSuneungState();
+    render();
+  }));
   document.querySelectorAll("[data-suneung-translation]").forEach(button => button.addEventListener("click", event => { const index = Number(event.currentTarget.dataset.suneungTranslation); suneungState.translations = suneungState.translations.includes(index) ? suneungState.translations.filter(item => item !== index) : [...suneungState.translations, index]; saveSuneungState(); render(); }));
   document.querySelectorAll("[data-suneung-answer]").forEach(button => button.addEventListener("click", event => { suneungState.selected = Number(event.currentTarget.dataset.suneungAnswer); saveSuneungState(); render(); }));
   document.querySelector("[data-suneung-submit]")?.addEventListener("click", () => { if (suneungState.selected === null) return; suneungState.submitted = true; saveSuneungState(); render(); });
   document.querySelector("[data-suneung-review-save]")?.addEventListener("click", () => { suneungState.reviewSaved = true; saveSuneungState(); render(); });
-  document.querySelector("[data-suneung-complete]")?.addEventListener("click", () => { suneungState.completed = true; saveSuneungState(); render(); });
+  document.querySelector("[data-suneung-complete]")?.addEventListener("click", () => {
+    suneungState.completed = true;
+    if (!suneungState.completedPassages.includes(suneungPassage.id)) suneungState.completedPassages.push(suneungPassage.id);
+    suneungState.dailyChecks.passage = true;
+    saveSuneungState();
+    render();
+  });
+  document.querySelector("[data-csat-next-passage]")?.addEventListener("click", () => {
+    const nextIndex = nextAvailablePassageIndex(suneungState.passageIndex, suneungState.masteredPassages);
+    if (openSuneungPassage(nextIndex)) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      render();
+    }
+  });
+  document.querySelector("[data-csat-skip-passage]")?.addEventListener("click", () => {
+    const nextIndex = nextAvailablePassageIndex(suneungState.passageIndex, suneungState.masteredPassages);
+    if (openSuneungPassage(nextIndex)) render();
+  });
+  document.querySelector("[data-csat-master-passage]")?.addEventListener("click", () => {
+    if (!suneungState.masteredPassages.includes(suneungPassage.id)) suneungState.masteredPassages.push(suneungPassage.id);
+    const nextIndex = nextAvailablePassageIndex(suneungState.passageIndex, suneungState.masteredPassages);
+    if (nextIndex >= 0) openSuneungPassage(nextIndex);
+    else saveSuneungState();
+    render();
+  });
+  document.querySelector("[data-csat-reset-mastered]")?.addEventListener("click", () => {
+    suneungState.masteredPassages = [];
+    openSuneungPassage(0);
+    render();
+  });
+  document.querySelectorAll("[data-csat-batch-analysis]").forEach(button => button.addEventListener("click", event => {
+    const id = event.currentTarget.dataset.csatBatchAnalysis;
+    suneungState.batchAnalysisOpen[id] = !suneungState.batchAnalysisOpen[id];
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-batch-choice]").forEach(button => button.addEventListener("click", event => {
+    const value = event.currentTarget.dataset.csatBatchChoice;
+    const splitAt = value.lastIndexOf(":");
+    const key = value.slice(0, splitAt);
+    if (suneungState.batchChecked[key]) return;
+    suneungState.batchAnswers[key] = Number(value.slice(splitAt + 1));
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-batch-check]").forEach(button => button.addEventListener("click", event => {
+    const key = event.currentTarget.dataset.csatBatchCheck;
+    if (suneungState.batchAnswers[key] === undefined) return;
+    suneungState.batchChecked[key] = true;
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-batch-next-question]").forEach(button => button.addEventListener("click", event => {
+    const id = event.currentTarget.dataset.csatBatchNextQuestion;
+    suneungState.batchQuestionIndexes[id] = (suneungState.batchQuestionIndexes[id] || 0) + 1;
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-batch-master]").forEach(button => button.addEventListener("click", event => {
+    const id = event.currentTarget.dataset.csatBatchMaster;
+    if (!suneungState.masteredPassages.includes(id)) suneungState.masteredPassages.push(id);
+    if (!suneungState.completedPassages.includes(id)) suneungState.completedPassages.push(id);
+    const masteredIndex = suneungPassages.findIndex(passage => passage.id === id);
+    if (masteredIndex === suneungState.passageIndex) {
+      const nextIndex = nextAvailablePassageIndex(masteredIndex, suneungState.masteredPassages);
+      if (nextIndex >= 0) suneungState.passageIndex = nextIndex;
+    }
+    suneungState.dailyChecks.passage = true;
+    saveSuneungState();
+    render();
+  }));
+  document.querySelectorAll("[data-csat-batch-skip]").forEach(button => button.addEventListener("click", event => {
+    const id = event.currentTarget.dataset.csatBatchSkip;
+    const index = suneungPassages.findIndex(passage => passage.id === id);
+    const nextIndex = nextAvailablePassageIndex(index, suneungState.masteredPassages);
+    if (nextIndex >= 0) suneungState.passageIndex = nextIndex;
+    saveSuneungState();
+    render();
+  }));
+  document.querySelector("[data-csat-batch-next-set]")?.addEventListener("click", () => {
+    const firstNext = nextAvailablePassageIndex(suneungState.passageIndex, suneungState.masteredPassages);
+    const secondNext = firstNext >= 0 ? nextAvailablePassageIndex(firstNext, suneungState.masteredPassages) : -1;
+    if (secondNext >= 0) suneungState.passageIndex = secondNext;
+    saveSuneungState();
+    render();
+  });
   document.querySelector("[data-kids-intro-complete]")?.addEventListener("click", () => {
     saveChildName(document.querySelector("[data-kids-name-input]")?.value);
     showKidsIntro = false;

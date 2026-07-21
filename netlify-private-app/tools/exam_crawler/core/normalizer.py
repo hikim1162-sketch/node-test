@@ -1,0 +1,10 @@
+from models.normalized_item import NormalizedItem,SentenceUnit
+from core.license_policy import decide
+from core.language_filter import english_ratio,is_quality_passage
+from core.sentence_splitter import split_sentences
+from core.hashing import text_hash
+def normalize(source_key,config,raw,parsed):
+    policy=decide(source_key,config,raw.metadata.get("copyright_notice_detected",False));internal=parsed.internal_extracted_text
+    public=internal if policy["storeFullText"] and is_quality_passage(internal) else "";ratio=english_ratio(internal)
+    return NormalizedItem(id=raw.id,sourceSubType=raw.source_sub_type,sourceName=raw.source_name,sourceUrl=raw.page_url,fileUrl=raw.file_url,detailUrl=raw.detail_url,postId=raw.post_id,collectionName=raw.collection_name,boardName=raw.board_name,collectedAt=raw.discovered_at,year=raw.year,examName=raw.exam_name,session=raw.session,subject=raw.subject,region=raw.region,title=raw.title,registeredAt=raw.registered_at,licenseStatus=policy["licenseStatus"],storeFullText=policy["storeFullText"],copyrightNoticeDetected=raw.metadata.get("copyright_notice_detected",False),passageText=public,sentenceUnits=[SentenceUnit(no=i+1,text=s) for i,s in enumerate(split_sentences(public))],attachments=raw.attachments,metadata={"institution":raw.source_name,"language":"ko_en_mixed","parseStatus":parsed.parse_status},derived={"passageLength":len(internal),"englishRatio":ratio,"textHash":text_hash(internal) if internal else "","parseConfidence":parsed.parse_confidence},reusePolicy={"storeFullText":policy["storeFullText"],"allowInternalParsing":policy["allowInternalParsing"],"allowPublicRedisplay":policy["allowPublicRedisplay"]},todayCandidate=bool(public and parsed.parse_confidence>=.8),recommendedReason="clean passage with high parse confidence" if public else "official archive metadata only; full text storage disabled by policy",uiPreview={"title":raw.title,"previewText":public[:140],"questionType":"unknown","sourceLabel":f"{raw.year or ''} {raw.exam_name}".strip()})
+

@@ -51,6 +51,12 @@ export default function CsatVocabPage({ embedded = false }) {
     setTab("study");
   }
 
+  function changeDay(nextDay) {
+    if (!days.includes(Number(nextDay))) return;
+    setDay(Number(nextDay));
+    setTab("study");
+  }
+
   return (
     <main className="csat-vocab-app">
       <header className="csat-vocab-header">
@@ -79,7 +85,7 @@ export default function CsatVocabPage({ embedded = false }) {
       <section className="csat-vocab-toolbar">
         <label>
           학습 범위
-          <select value={day} onChange={(event) => setDay(Number(event.target.value))}>
+          <select value={day} onChange={(event) => changeDay(event.target.value)}>
             {days.map((dayNumber) => <option value={dayNumber} key={dayNumber}>Day {dayNumber}</option>)}
           </select>
         </label>
@@ -99,7 +105,36 @@ export default function CsatVocabPage({ embedded = false }) {
       {tab === "test" && <TestPanel words={dayWords.slice(0, 10)} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
       {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} />}
       {tab === "progress" && <ProgressPanel progress={progress} />}
+      <DayPagination days={days} day={day} onChange={changeDay} />
     </main>
+  );
+}
+
+function DayPagination({ days, day, onChange }) {
+  const currentIndex = days.indexOf(day);
+  const visibleDays = days.filter((dayNumber, index) => (
+    index === 0
+    || index === days.length - 1
+    || Math.abs(index - currentIndex) <= 2
+  ));
+
+  return (
+    <nav className="csat-day-pagination" aria-label="단어장 Day 이동">
+      <button type="button" onClick={() => onChange(days[currentIndex - 1])} disabled={currentIndex <= 0}>← 이전 Day</button>
+      <div>
+        {visibleDays.map((dayNumber, index) => {
+          const previousVisible = visibleDays[index - 1];
+          const hasGap = previousVisible && dayNumber - previousVisible > 1;
+          return (
+            <span key={dayNumber}>
+              {hasGap ? <i aria-hidden="true">…</i> : null}
+              <button type="button" className={dayNumber === day ? "active" : ""} onClick={() => onChange(dayNumber)} aria-current={dayNumber === day ? "page" : undefined} aria-label={`Day ${dayNumber} 학습`}>{dayNumber}</button>
+            </span>
+          );
+        })}
+      </div>
+      <button type="button" onClick={() => onChange(days[currentIndex + 1])} disabled={currentIndex < 0 || currentIndex >= days.length - 1}>다음 Day →</button>
+    </nav>
   );
 }
 

@@ -43,6 +43,777 @@
   font-size: calc(10px + 1pt);
 }
 
+#app .csat-question-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(390px, .92fr);
+  min-width: 0;
+}
+
+#app .csat-question-passage {
+  max-height: 680px;
+  overflow: auto;
+  padding: 25px 27px;
+  border-right: 1px solid #e1e7ec;
+  background: #fbfcfd;
+}
+
+#app .csat-question-passage > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+
+#app .csat-question-passage > div > b {
+  color: #35638f;
+  font-size: 8px;
+  letter-spacing: 1.2px;
+}
+
+#app .csat-question-passage > div > button {
+  padding: 6px 8px;
+  border: 1px solid #cedbe5;
+  border-radius: 7px;
+  background: #fff;
+  color: #41698f;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+#app .csat-question-passage > section {
+  position: relative;
+  padding-left: 25px;
+}
+
+#app .csat-question-passage > section + section {
+  margin-top: 18px;
+}
+
+#app .csat-question-passage section > i {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  color: #7890aa;
+  font-size: 8px;
+  font-style: normal;
+}
+
+#app .csat-question-passage section > p {
+  margin: 0;
+  color: #26374e;
+  font: 14px/1.85 Georgia;
+  overflow-wrap: anywhere;
+}
+
+#app .csat-question-passage .csat-passage-explanation-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 24px;
+  border: 1px solid #183e6d;
+  border-radius: 10px;
+  background: #183e6d;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#app .csat-questions-complete {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  color: #39775a;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+#app .csat-passage-tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#app .csat-passage-queue-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+#app .csat-passage-queue-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 39px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#app .csat-passage-queue-actions button:last-child {
+  background: #fff;
+  color: #183e6d;
+}
+
+#app .csat-passage-queue-actions button.mastered {
+  background: rgba(102, 190, 145, .25);
+}
+
+#app .csat-passage-queue-actions button:disabled {
+  opacity: .55;
+  cursor: default;
+}
+
+#app .csat-batch-page {
+  padding-top: 14px;
+}
+
+#app .csat-batch-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 13px;
+  padding: 14px 18px;
+  border: 1px solid #d9e3eb;
+  border-radius: 13px;
+  background: #fff;
+}
+
+#app .csat-batch-head span {
+  color: #47709a;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+#app .csat-batch-head h2 {
+  margin: 3px 0;
+  font-size: 18px;
+}
+
+#app .csat-batch-head p {
+  margin: 0;
+  color: #6d7e90;
+  font-size: 9px;
+}
+
+#app .csat-batch-head > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#app .csat-batch-head b {
+  color: #315f91;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+#app .csat-batch-head button,
+#app .csat-batch-card button {
+  min-height: 40px;
+  border: 1px solid #ccd9e3;
+  border-radius: 9px;
+  background: #fff;
+  color: #315e8b;
+  font-size: 9px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#app .csat-batch-head button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+}
+
+#app .csat-batch-head button:disabled,
+#app .csat-batch-card button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+#app .csat-batch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 13px;
+}
+
+#app .csat-batch-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #d9e3eb;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 7px 20px rgba(24, 54, 85, .045);
+}
+
+#app .csat-batch-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 17px;
+  border-bottom: 1px solid #e5eaef;
+  background: #f7f9fb;
+}
+
+#app .csat-batch-card header span,
+#app .csat-batch-question > div:first-child > span {
+  color: #47709a;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .8px;
+}
+
+#app .csat-batch-card header h2 {
+  margin: 4px 0;
+  color: #203d5b;
+  font: 700 18px/1.3 Georgia;
+}
+
+#app .csat-batch-card header small {
+  color: #718191;
+  font-size: 8px;
+}
+
+#app .csat-batch-card header button {
+  flex: none;
+  min-height: 34px;
+  padding: 0 9px;
+}
+
+#app .csat-batch-passage {
+  padding: 19px 20px 9px;
+}
+
+#app .csat-batch-passage p {
+  position: relative;
+  margin: 0 0 14px;
+  padding-left: 23px;
+  color: #24374d;
+  font: 14px/1.75 Georgia;
+  overflow-wrap: anywhere;
+}
+
+#app .csat-batch-passage i {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  color: #7790a8;
+  font-size: 8px;
+  font-style: normal;
+}
+
+#app .csat-batch-analysis-toggle {
+  width: calc(100% - 40px);
+  margin: 0 20px 16px;
+}
+
+#app .csat-batch-analysis-toggle.active {
+  border-color: #315f91;
+  background: #edf3f8;
+}
+
+#app .csat-batch-analysis {
+  max-height: 420px;
+  margin: 0 20px 18px;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: #f3f7fa;
+}
+
+#app .csat-batch-analysis article {
+  padding: 13px 14px;
+  border-bottom: 1px solid #dfe7ed;
+}
+
+#app .csat-batch-analysis b {
+  display: block;
+  color: #315f91;
+  font-size: 8px;
+}
+
+#app .csat-batch-analysis p {
+  margin: 4px 0 10px;
+  color: #52677b;
+  font-size: 9px;
+  line-height: 1.65;
+}
+
+#app .csat-batch-question {
+  padding: 17px 20px 20px;
+  border-top: 1px solid #e3e9ee;
+}
+
+#app .csat-batch-question > div:first-child {
+  display: flex;
+  justify-content: space-between;
+}
+
+#app .csat-batch-question > div b {
+  color: #60758a;
+  font-size: 8px;
+}
+
+#app .csat-batch-question h3 {
+  margin: 11px 0 14px;
+  font-size: 21px;
+  line-height: 1.55;
+}
+
+#app .csat-batch-choices {
+  display: grid;
+  gap: 7px;
+}
+
+#app .csat-batch-choices button {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  min-height: 64px;
+  padding: 15px 16px;
+  color: #354a60;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.6;
+}
+
+#app .csat-batch-choices button > span {
+  display: block;
+  min-width: 0;
+  color: inherit;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+#app .csat-batch-choices button i {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  height: 32px;
+  font-size: 15px;
+  border-radius: 50%;
+  background: #edf1f5;
+  font-style: normal;
+}
+
+#app .csat-batch-choices button.selected {
+  border-color: #527fab;
+  background: #edf4fa;
+}
+
+#app .csat-batch-choices button.correct {
+  border-color: #4d9870;
+  background: #eaf6ee;
+}
+
+#app .csat-batch-choices button.wrong {
+  border-color: #c96d6d;
+  background: #fff0f0;
+}
+
+#app .csat-batch-feedback {
+  margin-top: 10px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  background: #edf7f1;
+  color: #286c49;
+}
+
+#app .csat-batch-feedback.error {
+  background: #fff1f0;
+  color: #914b48;
+}
+
+#app .csat-batch-feedback p,
+#app .csat-batch-feedback small {
+  display: block;
+  margin: 4px 0 0;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+#app .csat-batch-question footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 11px;
+}
+
+#app .csat-batch-question footer button {
+  min-width: 130px;
+  padding: 0 13px;
+  border-color: #183e6d;
+  background: #183e6d;
+  color: #fff;
+}
+
+#app .selection-ai-learning-card {
+  padding: 0;
+}
+
+#app .selection-ai-learning-card > summary {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  column-gap: 8px;
+  padding: 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+#app .selection-ai-learning-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+#app .selection-ai-learning-card > summary i {
+  display: grid;
+  grid-row: 1 / 3;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #e6f4ef;
+  color: #176c59;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+#app .selection-ai-learning-card > summary span {
+  color: #173e36;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+#app .selection-ai-learning-card > summary em {
+  margin-top: 3px;
+  color: #789089;
+  font-size: 8px;
+  font-style: normal;
+}
+
+#app .selection-ai-learning-card[open] > summary {
+  border-bottom: 1px solid #e3ece8;
+  background: #f4faf8;
+}
+
+#app .selection-ai-learning-card > div {
+  padding: 14px;
+  color: #415b55;
+  font-size: 10px;
+  line-height: 1.75;
+}
+
+#app .selection-ai-learning-card > div b {
+  color: #194f43;
+}
+
+#app .csat-question-passage details {
+  margin-top: 10px;
+  border-top: 1px solid #e3e9ee;
+}
+
+#app .csat-question-passage summary {
+  padding: 9px 0;
+  color: #315f91;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#app .csat-question-passage details > div {
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #f3f7fa;
+}
+
+#app .csat-question-passage details b,
+#app .csat-question-passage details p {
+  display: block;
+}
+
+#app .csat-passage-explanation {
+  overflow: hidden;
+  border: 1px solid #d9e3eb;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 23px rgba(24, 54, 85, .055);
+}
+
+#app .csat-passage-explanation > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e3e9ee;
+  background: #f7f9fb;
+}
+
+#app .csat-passage-explanation header span {
+  color: #47709a;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+#app .csat-passage-explanation header h3 {
+  margin: 5px 0 3px;
+  font-size: 18px;
+}
+
+#app .csat-passage-explanation header p {
+  margin: 0;
+  color: #6d7e90;
+  font-size: 10px;
+}
+
+#app .csat-passage-explanation button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid #cbd9e4;
+  border-radius: 9px;
+  background: #fff;
+  color: #315e8b;
+  font-size: 9px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#app .csat-passage-explanation > article {
+  max-width: 920px;
+  margin: auto;
+  padding: 12px 32px 28px;
+}
+
+#app .csat-passage-explanation > article > section {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  padding: 22px 0;
+  border-bottom: 1px solid #e7edf1;
+}
+
+#app .csat-passage-explanation > article i {
+  color: #6f8aa5;
+  font: 700 10px Georgia;
+  font-style: normal;
+}
+
+#app .csat-passage-explanation h4 {
+  margin: 0 0 15px;
+  color: #24374d;
+  font: 15px/1.8 Georgia;
+}
+
+#app .csat-explanation-translation,
+#app .csat-explanation-grammar {
+  padding: 13px 15px;
+  border-radius: 9px;
+}
+
+#app .csat-explanation-translation {
+  background: #edf4f8;
+}
+
+#app .csat-explanation-grammar {
+  margin-top: 8px;
+  background: #f7f4ed;
+}
+
+#app .csat-explanation-translation b,
+#app .csat-explanation-grammar b {
+  color: #315f8e;
+  font-size: 9px;
+}
+
+#app .csat-explanation-grammar b {
+  color: #7d673e;
+}
+
+#app .csat-explanation-translation p,
+#app .csat-explanation-grammar p {
+  margin: 5px 0 0;
+  color: #52677b;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+#app .csat-passage-explanation > footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 17px 24px;
+  border-top: 1px solid #e3e9ee;
+  background: #f7f9fb;
+}
+
+#app .csat-passage-explanation > footer button:last-child {
+  border-color: #183e6d;
+  background: #183e6d;
+  color: #fff;
+}
+
+#app .csat-question-passage details b {
+  margin-top: 7px;
+  color: #315f91;
+  font-size: 8px;
+}
+
+#app .csat-question-passage details p {
+  margin: 4px 0 0;
+  color: #52677b;
+  font: 10px/1.65 Arial, sans-serif;
+}
+
+#app .csat-question-workspace > article {
+  min-width: 0;
+  padding: 27px 31px;
+}
+
+#app .csat-question-workspace > article > h4 {
+  margin: 0 0 19px;
+  color: #24374e;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* 오늘의 수능 지문 선택지는 본문보다 작아지지 않도록 충분히 크게 표시합니다. */
+#app .csat-question-choices > button {
+  min-height: 64px;
+  padding: 16px 18px;
+  color: #354a60;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+#app .csat-question-choices > button > span {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+#app .csat-question-choices > button > i {
+  margin-top: 3px;
+  flex: 0 0 32px;
+  height: 32px;
+  font-size: 15px;
+}
+
+html[data-theme="dark"] #app .csat-question-choices > button {
+  color: #e1eaf1;
+}
+
+html[data-theme="dark"] #app .csat-question-passage {
+  border-color: #344656;
+  background: #17252f;
+}
+
+html[data-theme="dark"] #app .csat-question-passage section > p {
+  color: #dce7ef;
+}
+
+@media (max-width: 980px) {
+  #app .csat-batch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #app .csat-question-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  #app .csat-question-passage {
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid #e1e7ec;
+  }
+
+  #app .csat-question-workspace > article {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  #app .csat-batch-head,
+  #app .csat-batch-head > div:last-child {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  #app .csat-batch-head button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  #app .csat-batch-card > header {
+    flex-direction: column;
+  }
+
+  #app .csat-batch-card header button {
+    width: 100%;
+  }
+
+  #app .csat-batch-passage,
+  #app .csat-batch-question {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+
+  #app .csat-batch-analysis-toggle,
+  #app .csat-batch-analysis {
+    width: calc(100% - 30px);
+    margin-right: 15px;
+    margin-left: 15px;
+  }
+
+  #app .csat-passage-explanation > header,
+  #app .csat-passage-explanation > footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  #app .csat-passage-explanation > article {
+    padding: 8px 16px 20px;
+  }
+
+  #app .csat-passage-explanation > article > section {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+
+  #app .csat-passage-explanation button {
+    width: 100%;
+  }
+
+  #app .csat-question-passage {
+    padding: 20px 16px;
+  }
+
+  #app .csat-question-passage section > p {
+    font-size: 14px;
+  }
+
+  #app .csat-question-workspace > article {
+    padding: 21px 16px;
+  }
+}
+
 #app .content > header > .header-title-block {
   display: none;
 }

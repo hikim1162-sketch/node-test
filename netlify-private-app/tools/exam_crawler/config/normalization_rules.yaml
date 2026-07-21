@@ -1,0 +1,5 @@
+today_candidate_min_confidence: 0.8
+exact_deduplication: [file_url, sha256, text_hash, title_year_question]
+default_license_status: unclear
+default_store_full_text: false
+
