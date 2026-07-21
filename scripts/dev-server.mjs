@@ -71,6 +71,16 @@ function meta(html, property) {
   return decodeHtml(first?.[1] || reversed?.[1] || "");
 }
 
+function extractOriginalArticleParagraphs(html = "") {
+  const bodyMatch = String(html).match(/<article\b(?=[^>]*\bid=["']articleText["'])(?=[^>]*\bclass=["'][^"']*\barticle-body\b[^"']*["'])[^>]*>([\s\S]*?)<\/article>/i)
+    || String(html).match(/<article\b[^>]*\bid=["']articleText["'][^>]*>([\s\S]*?)<\/article>/i);
+  if (!bodyMatch) return [];
+  return [...new Set([...bodyMatch[1].matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
+    .map(match => decodeHtml(match[1]))
+    .filter(text => text.length >= 40)
+    .filter(text => (text.match(/[A-Za-z]/g) || []).length / Math.max(text.length, 1) >= 0.55))];
+}
+
 async function fetchText(url) {
   const target = new URL(url);
   if (target.hostname !== "www.koreaherald.com") throw new Error("Unsupported news host");
@@ -213,6 +223,8 @@ async function collectLatestArticle(section) {
   const description = meta(detail, "og:description") || meta(detail, "description");
   const image = meta(detail, "og:image");
   const published = meta(detail, "article:published_time") || meta(detail, "date");
+  const originalArticleParagraphs = extractOriginalArticleParagraphs(detail);
+  if (originalArticleParagraphs.length < 3) throw new Error(`Only ${originalArticleParagraphs.length} article paragraphs found for ${articleId}`);
   const date = published ? new Date(published).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Seoul" }) : new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Seoul" });
   const safeDescription = description || "Open the original article to read the latest report.";
   return {
@@ -222,6 +234,11 @@ async function collectLatestArticle(section) {
     title, dek: safeDescription, image,
     caption: "Original article thumbnail from The Korea Herald",
     originalUrl,
+    contentStatus: "original_available",
+    originalArticleParagraphs,
+    originalArticleText: originalArticleParagraphs.join("\n\n"),
+    originalArticleStatus: "available",
+    parsedWith: "article#articleText.article-body > p",
     summary: [safeDescription],
     sentences: [{
       en: title,

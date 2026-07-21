@@ -1,4 +1,4 @@
-import { vocabularyWords } from "../data/vocabulary.js";
+﻿import { vocabularyWords } from "../data/vocabulary.js";
 import { vocabularyPartOfSpeech } from "../data/vocabulary-pos.js";
 import { vocabularyExamples } from "../data/vocabulary-examples.js";
 import { tedLessons, tedSettings } from "../data/ted-lessons.js";
@@ -305,6 +305,7 @@ const articleLibraryBase = [
 
 // Verified Korea Herald articles. The titles, dates and links point to the
 // original detail pages; summaries and study sentences are our paraphrases.
+// bodyParagraphs is intentionally empty until licensed/original body text is supplied.
 let articleLibrary = [
   {
     id: "business-10438888",
@@ -399,7 +400,12 @@ let articleLibrary = [
       }
     ]
   }
-];
+].map(article => ({
+  ...article,
+  contentStatus: "metadata_only",
+  bodyParagraphs: [],
+  studySentences: article.sentences,
+}));
 
 async function refreshDailyNewsLibrary() {
   try {
@@ -407,7 +413,19 @@ async function refreshDailyNewsLibrary() {
     if (!response.ok) return;
     const payload = await response.json();
     if (!Array.isArray(payload.articles) || !payload.articles.length) return;
-    articleLibrary = payload.articles;
+    const fetchedById = new Map(payload.articles.map(article => [article.id, article]));
+    articleLibrary = articleLibrary.map(article => {
+      const fetched = fetchedById.get(article.id);
+      if (!fetched) return article;
+      return {
+        ...article,
+        ...fetched,
+        title: fetched.title || article.title,
+        dek: fetched.dek || article.dek,
+        image: fetched.image || article.image,
+        date: fetched.publishedAt ? new Date(fetched.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : article.date,
+      };
+    });
     state.newsIndex = 0;
     if (document.body.dataset.page === "news" || location.pathname.endsWith("/news.html")) render();
   } catch (error) {
@@ -1747,7 +1765,7 @@ let state = {
   understoodSentences: JSON.parse(localStorage.getItem("value_time_understood_sentences_v1") || "[]"),
   clearedSentences: JSON.parse(localStorage.getItem("value_time_cleared_sentences_v1") || "[]"),
   wordIndex: 0, vocabPage: Number(localStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(localStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, translatedSentence: null,
-  newsSearch: "", newsCategory: "all", newsSort: "latest", tedLessonId: null, tedSentenceIndex: 0,
+  newsSearch: "", newsCategory: "all", newsSort: "latest", tedLessonId: null, tedSentenceIndex: 0, tedMeaningOpen: false,
 };
 
 let activeBlogPostId = null;
@@ -1810,6 +1828,7 @@ let suneungPassage = {
   ],
 };
 const importedCsatQuestionNumbers = new Set([20, 21, 22, 23, 24, 26, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]);
+const displaySafeCsatQuestionNumbers = new Set([20, 22, 23, 24, 26, 31, 32, 33, 34, 36, 37, 40]);
 const importedCsatQuestionMeta = {
   20: ["필자의 주장", "다음 글에서 필자가 주장하는 바로 가장 적절한 것은?"],
   21: ["함축 의미", "밑줄 친 부분이 다음 글에서 의미하는 바로 가장 적절한 것은?"],
@@ -1831,17 +1850,61 @@ const importedCsatQuestionMeta = {
   40: ["요약문 완성", "다음 글의 내용을 한 문장으로 요약할 때 빈칸에 들어갈 말로 가장 적절한 것은?"],
 };
 
+function repairImportedCsatOcr(value) {
+  const repairs = {
+    "var y": "vary", "c an": "can", "abou t": "about", "inst ance": "instance", "pro gram": "program",
+    "imag ine": "imagine", "m uch": "much", "in crement": "increment", "n o more": "no more", "h ave": "have",
+    "di fferent": "different", "decision s": "decisions", "l ikely": "likely", "sh ared": "shared", "strong er": "stronger",
+    "ot her": "other", "plant s": "plants", "d ecisions": "decisions", "destro ying": "destroying",
+  };
+  let text = String(value || "");
+  Object.entries(repairs).forEach(([broken, fixed]) => { text = text.replaceAll(broken, fixed); });
+  return text;
+}
+
+function getArticleBodyParagraphs(article) {
+  const source = article?.originalArticleParagraphs ?? article?.originalArticleText ?? article?.bodyParagraphs ?? article?.paragraphs ?? article?.body ?? article?.content ?? article?.articleText;
+  if (Array.isArray(source)) {
+    return source.map((paragraph, index) => {
+      if (typeof paragraph === "string") return { id: index, text: paragraph.trim(), translation: "" };
+      return {
+        id: paragraph?.id ?? index,
+        text: String(paragraph?.text ?? paragraph?.en ?? "").trim(),
+        translation: String(paragraph?.translation ?? paragraph?.ko ?? "").trim(),
+      };
+    }).filter(paragraph => paragraph.text);
+  }
+  if (typeof source === "string" && source.trim()) {
+    return source.trim().split(/\n\s*\n/).map((text, index) => ({ id: index, text: text.trim(), translation: "" })).filter(paragraph => paragraph.text);
+  }
+  return [];
+}
+
 function importedCsatPassageText(item) {
   const raw = String(item.rawText || "");
   const markers = [...raw.matchAll(/[①②③④⑤]/g)];
   const choiceStart = markers.length >= 5 ? markers[markers.length - 5].index : raw.length;
-  let passage = raw.slice(0, choiceStart).trim();
+  let passage = raw.slice(0, choiceStart)
+    .split(/\r?\n/)
+    .filter(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return true;
+      if (/^[*＊]{1,3}\s*[A-Za-z].*[:：].*[가-힣]/.test(trimmed)) return false;
+      if (/^(?:짝수형|홀수형|\d+\s*\/\s*\d+|\d+\s+\d+\s+\d+)$/.test(trimmed)) return false;
+      if (/이제 듣기 문제가 끝났습니다|문제지의 지시에 따라|저작권은 한국교육과정평가원/.test(trimmed)) return false;
+      if (/[ÇÈÉÀÅÐÕ¬üÓÆµ²ä]{3,}/.test(trimmed)) return false;
+      return true;
+    })
+    .join(" ")
+    .trim();
   const firstEnglish = passage.search(/[A-Za-z]/);
   if (firstEnglish >= 0) passage = passage.slice(firstEnglish);
-  return passage
-    .replace(/\s*\n\s*/g, " ")
+  return repairImportedCsatOcr(passage
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .replace(/[ÇÈÉÀÅÐÕ¬üÓÆµ²ä]{2,}.*$/g, "")
+    .replace(/\s+(?:짝수형|홀수형)\s+\d+(?:\s+\d+)*\s*$/g, "")
     .replace(/\s{2,}/g, " ")
-    .trim();
+    .trim());
 }
 
 function sanitizeImportedCsatChoice(value) {
@@ -1849,15 +1912,39 @@ function sanitizeImportedCsatChoice(value) {
   ["이제 듣기 문제가 끝났습니다.", "이 문제지에 관한 저작권은 한국교육과정평가원에 있습니다.", "짝수형", "홀수형"].forEach(marker => {
     if (choice.includes(marker)) choice = choice.split(marker, 1)[0];
   });
-  return choice.replace(/[\x00-\x1f\x7f]/g, " ").replace(/\s+/g, " ").trim();
+  choice = choice.split(/[ÇÈÉÀÅÐÕ¬üÓÆµ²ä]{2,}|\*\s*확인 사항|\r?\n\s*\*{1,3}\s*[A-Za-z]/)[0];
+  return repairImportedCsatOcr(choice
+    .replace(/[\x00-\x1f\x7f]/g, " ")
+    .replace(/\s+(?:짝수형|홀수형)\s+\d+(?:\s+\d+)*\s*$/g, "")
+    .replace(/\s+/g, " ")
+    .trim());
+}
+
+function isUsableImportedCsatPassage(passage) {
+  const words = passage.match(/[A-Za-z]+(?:['’][A-Za-z]+)?/g) || [];
+  const singleLetterRatio = words.length ? words.filter(word => word.length === 1 && !/^[AIa]$/.test(word)).length / words.length : 1;
+  return (passage.match(/[A-Za-z]/g) || []).length >= 250
+    && !/[ÇÈÉÀÅÐÕ¬üÓÆµ²ä]{2,}|\uFFFD/.test(passage)
+    && !/이제 듣기 문제가 끝났습니다|짝수형|홀수형|확인 사항/.test(passage)
+    && singleLetterRatio < 0.12;
+}
+
+function isUsableImportedCsatChoice(choice) {
+  if (!choice || choice.length < 1 || choice.length > 220) return false;
+  if (/[ÇÈÉÀÅÐÕ¬üÓÆµ²ä]{2,}|\uFFFD/.test(choice)) return false;
+  if (/이제 듣기 문제가 끝났습니다|문제지의 지시에|짝수형|홀수형|확인 사항|저작권/.test(choice)) return false;
+  const words = choice.match(/[A-Za-z]+/g) || [];
+  const singleLetterRatio = words.length ? words.filter(word => word.length === 1 && !/^[AIa]$/.test(word)).length / words.length : 0;
+  return singleLetterRatio < 0.18;
 }
 
 const importedSuneungPassages = (csatEnglishArchive?.questions || [])
   .filter(item => importedCsatQuestionNumbers.has(Number(item.questionNo)))
+  .filter(item => displaySafeCsatQuestionNumbers.has(Number(item.questionNo)))
   .filter(item => Number.isInteger(Number(item.answer)) && Array.isArray(item.choices) && item.choices.length === 5)
-  .map(item => ({ item, passage: importedCsatPassageText(item) }))
-  .filter(({ passage }) => (passage.match(/[A-Za-z]/g) || []).length >= 250)
-  .map(({ item, passage }) => {
+  .map(item => ({ item, passage: importedCsatPassageText(item), choices: item.choices.map(sanitizeImportedCsatChoice) }))
+  .filter(({ passage, choices }) => isUsableImportedCsatPassage(passage) && choices.length === 5 && choices.every(isUsableImportedCsatChoice))
+  .map(({ item, passage, choices }) => {
     const [type, question] = importedCsatQuestionMeta[item.questionNo] || ["독해", "다음 글을 읽고 물음에 답하세요."];
     return {
       id: item.id,
@@ -1879,7 +1966,7 @@ const importedSuneungPassages = (csatEnglishArchive?.questions || [])
         id: `${item.id}-question`,
         type,
         question,
-        choices: item.choices.map(sanitizeImportedCsatChoice),
+        choices,
         answer: Number(item.answer) - 1,
         explanation: `공식 정답표 기준 정답은 ${item.answer}번입니다.`,
         evidence: `${item.examName} 영어 영역 공식 정답표`,
@@ -1941,7 +2028,7 @@ function nextAvailablePassageIndex(currentIndex, masteredIds = []) {
   return -1;
 }
 
-let suneungState = (() => { try { const stored = JSON.parse(localStorage.getItem(SUNEUNG_STORAGE_KEY) || "null"); return stored?.date === localDateKey() ? stored : { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: stored?.masteredPassages || [], completedPassages: stored?.completedPassages || [] }; } catch { return { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: [], completedPassages: [] }; } })();
+let suneungState = (() => { try { const stored = JSON.parse(localStorage.getItem(SUNEUNG_STORAGE_KEY) || "null"); return stored?.date === localDateKey() ? stored : { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: stored?.masteredPassages || [], completedPassages: stored?.completedPassages || [], typeTrainingHistory: stored?.typeTrainingHistory || [] }; } catch { return { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: [], completedPassages: [], typeTrainingHistory: [] }; } })();
 suneungState.officialOnly ??= true;
 suneungState.sourceTab ||= "official";
 suneungState.dailyChecks ||= {};
@@ -1955,6 +2042,7 @@ suneungState.passageQuestionIndex ??= 0;
 suneungState.passageAnswers ||= {};
 suneungState.passageChecked ||= {};
 suneungState.wrongPassageQuestions ||= [];
+suneungState.typeTrainingHistory ||= [];
 suneungState.passageIndex ??= 0;
 suneungState.completedPassages ||= [];
 suneungState.masteredPassages ||= [];
@@ -1975,7 +2063,6 @@ const suneungHomeStudyItems = [
   { id: "wordmaster", number: "01", title: "수능 단어장", page: "suneung-wordmaster", icon: "book", color: "sage", tag: "Word Master", unit: "오늘의 단어 학습", cta: "단어 학습하기" },
   { id: "passage", number: "02", title: "수능 지문 훈련", page: "suneung-passage", icon: "book-open", color: "blue", tag: "실전 독해", unit: "완료 후 다음 지문 계속", cta: "지문 풀기" },
   { id: "types", number: "03", title: "유형별 훈련", page: "suneung-types", icon: "clipboard", color: "gold", tag: "유형 전략", unit: "취약 유형 집중 훈련", cta: "유형 훈련하기" },
-  { id: "review", number: "04", title: "약점 복습", page: "suneung-review", icon: "check", color: "rose", tag: "오답 반복", unit: "최근 오답 다시 확인", cta: "오답 복습하기" },
   { id: "vocab", number: "05", title: "어휘 / 구문", page: "suneung-vocab", icon: "book", color: "mint", tag: "구문 분석", unit: "핵심 어휘와 문장 구조", cta: "어휘·구문 보기" },
   { id: "parent", number: "06", title: "부모 점검", page: "suneung-parent", icon: "calendar", color: "navy", tag: "학습 기록", unit: "오늘의 진도와 약점 확인", cta: "학습 현황 보기" },
 ];
@@ -2012,7 +2099,7 @@ function sidebar() {
   const todayDone = (state.history["2026-07-13"] || []).length;
   const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}<p class="nav-label space">MY SPACE</p>${navItem("calendar", "학습 캘린더", "calendar")}`;
   const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("drama", "오늘의 미드 숏폼", "play")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
-  const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", "수능 단어장", "book")}${navItem("suneung-passage", "오늘의 수능 지문", "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-review", "약점 복습", "check")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
+  const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", "수능 단어장", "book")}${navItem("suneung-passage", "오늘의 수능 지문", "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
   return `<aside class="sidebar">
     <button class="brand" type="button" data-page="${audienceMode === "suneung" ? "suneung-home" : "home"}" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
     <nav><p class="nav-label">${audienceMode === "suneung" ? "CSAT ENGLISH" : "LEARN"}</p>${audienceMode === "kids" ? kidsNavigation : audienceMode === "suneung" ? suneungNavigation : generalNavigation}</nav>
@@ -2594,7 +2681,8 @@ function tedStudyPage() {
           <p data-ted-focus-en>${sentence.en}</p>
           <button class="ted-listen-button" type="button" data-ted-focus-listen data-speak="${sentence.en.replaceAll('"', '&quot;')}" aria-label="현재 영어 문장 듣기">${icon("volume", 17)} 문장 듣기</button>
           ${learningMode === "speaking" ? `<div class="ted-speaking-controls" aria-label="말하기 재생 설정"><span>재생 속도</span><button class="${speakingSpeed === 0.8 ? "active" : ""}" type="button" data-speaking-speed="0.8">0.8×</button><button class="${speakingSpeed === 1 ? "active" : ""}" type="button" data-speaking-speed="1">1.0×</button><button type="button" data-speaking-replay="${sentence.en.replaceAll('"', '&quot;')}">${icon("volume",14)} Repeat aloud</button></div>` : ""}
-          <div class="ted-focus-translation"><span>학습 메모</span><strong data-ted-focus-ko>${sentence.ko || "제공된 영어 원문을 의미 단위로 끊어 직접 해석해 보세요."}</strong></div>
+          <button class="ted-meaning-toggle ${state.tedMeaningOpen ? "active" : ""}" type="button" data-ted-meaning-toggle aria-expanded="${state.tedMeaningOpen}">${state.tedMeaningOpen ? "뜻 숨기기" : "뜻 보기"} ${icon("chevron", 13)}</button>
+          <div class="ted-focus-translation" data-ted-meaning-panel ${state.tedMeaningOpen ? "" : "hidden"}><span>문장 뜻</span><strong data-ted-focus-ko>${sentence.ko || "제공된 영어 원문을 의미 단위로 끊어 직접 해석해 보세요."}</strong></div>
           <div class="ted-shadowing-guide"><span>1. 문장을 듣고 의미를 확인하세요.</span><span>2. 화면을 보며 천천히 따라 말하세요.</span><span>3. 화면을 덜 보고 자연스럽게 말해보세요.</span></div>
         </article>
         <div class="ted-step-actions">
@@ -2608,7 +2696,7 @@ function tedStudyPage() {
         <div>${dailyExpressions.map((item, index) => {
           const expressionKey = `${lesson.id}:${index}:${item.term}`;
           const expressionDone = speakingExpressionDone.includes(expressionKey);
-          return `<article class="${learningMode === "speaking" && expressionDone ? "speaking-done" : ""}"><span>${index + 1}</span><h4>${item.term}</h4><p>${item.meaning}</p><small>${item.example}</small><button type="button" data-speak="${item.term.replaceAll('"', '&quot;')}" aria-label="${item.term} 발음 듣기">${icon("volume", 14)}</button>${learningMode === "speaking" ? `<div class="expression-speaking-actions"><button type="button" data-speaking-replay="${item.example.replaceAll('"', '&quot;')}">${icon("volume",12)} 예문 듣기</button><button type="button" data-speaking-repeat="${item.example.replaceAll('"', '&quot;')}">3회 반복</button><button class="${expressionDone ? "active" : ""}" type="button" data-speaking-expression-done="${expressionKey.replaceAll('"', '&quot;')}" aria-pressed="${expressionDone}">${icon("check",12)} ${expressionDone ? "완료" : "말했어요"}</button></div>` : ""}</article>`;
+          return `<article class="${expressionDone ? "expression-clear-done" : ""}"><span>${index + 1}</span><h4>${item.term}</h4><p>${item.meaning}</p><small>${item.example}</small><button type="button" data-speak="${item.term.replaceAll('"', '&quot;')}" aria-label="${item.term} 발음 듣기">${icon("volume", 14)}</button>${learningMode === "speaking" ? `<div class="expression-speaking-actions"><button type="button" data-speaking-replay="${item.example.replaceAll('"', '&quot;')}">${icon("volume",12)} 예문 듣기</button><button type="button" data-speaking-repeat="${item.example.replaceAll('"', '&quot;')}">3회 반복</button></div>` : ""}<div class="ted-expression-clear-actions"><button class="${expressionDone ? "active" : ""}" type="button" data-ted-expression-clear="${expressionKey.replaceAll('"', '&quot;')}" aria-pressed="${expressionDone}">${icon("check",12)} ${expressionDone ? "Clear 완료" : "Clear"}</button></div></article>`;
         }).join("")}</div>
         <section class="ted-routine"><b>${icon("check", 16)} 추천 학습 루틴</b><p>영상 1회 시청 → 스크립트 확인 → 문장별 쉐도잉 3회 → 핵심 표현 복습</p></section>
       </aside>
@@ -2648,6 +2736,15 @@ function updateTedSentenceStepView(lesson) {
   panel.querySelector("[data-ted-clear-status]").innerHTML = isComplete ? `${icon("check", 13)} 클리어 완료` : "학습 중";
   panel.querySelector("[data-ted-focus-en]").textContent = sentence.en;
   panel.querySelector("[data-ted-focus-ko]").textContent = sentence.ko || "제공된 영어 원문을 의미 단위로 끊어 직접 해석해 보세요.";
+  state.tedMeaningOpen = false;
+  const meaningToggle = panel.querySelector("[data-ted-meaning-toggle]");
+  const meaningPanel = panel.querySelector("[data-ted-meaning-panel]");
+  if (meaningToggle) {
+    meaningToggle.classList.remove("active");
+    meaningToggle.setAttribute("aria-expanded", "false");
+    meaningToggle.innerHTML = `뜻 보기 ${icon("chevron", 13)}`;
+  }
+  if (meaningPanel) meaningPanel.hidden = true;
   const listenButton = panel.querySelector("[data-ted-focus-listen]");
   listenButton.dataset.speak = sentence.en;
   listenButton.setAttribute("aria-label", `${index + 1}번 영어 문장 듣기`);
@@ -2688,6 +2785,7 @@ function newsPage() {
   const dailyArticle = getDailyNewsArticle(todayKey) || articleLibrary[0];
   const dailyArticleIndex = articleLibrary.findIndex(article => article.id === dailyArticle.id);
   const dailySentence = dailyArticle.sentences[0];
+  const dailyBodyParagraphs = getArticleBodyParagraphs(dailyArticle);
   const dailyStudyDate = formatNewsStudyDate(todayKey);
   const categories = [...new Set(articleLibrary.map(article => article.category))];
   const keyword = state.newsSearch.trim().toLowerCase();
@@ -2701,10 +2799,9 @@ function newsPage() {
         <article class="news-daily-article">
           <figure class="news-daily-visual"><img src="${dailyArticle.image}" alt="${dailyArticle.title} 기사 주제를 나타내는 대표 이미지"><figcaption><span>DAILY NEWS</span><time datetime="${todayKey}">${dailyStudyDate}</time></figcaption></figure>
           <div class="news-daily-label"><span>${dailyArticle.source} · ${dailyArticle.category}</span><button type="button" data-speak="${dailySentence.en.replaceAll('"', '&quot;')}" aria-label="오늘의 뉴스 핵심 문장 듣기">${icon("volume",16)} 문장 듣기</button></div>
-          <h3 id="daily-news-title">${dailyArticle.title}</h3><p class="news-daily-summary">${dailySentence.en}</p>
-          <div class="news-daily-block"><b>해석</b><p>${dailySentence.ko}</p></div>
-          <div class="news-daily-block"><b>핵심 표현</b><div>${dailySentence.expressions.slice(0, 3).map(expression => `<span><strong>${expression.term}</strong> ${expression.meaning}</span>`).join("")}</div></div>
-          <div class="news-daily-block"><b>학습 포인트</b><p>${dailySentence.note}</p></div>
+          <h3 id="daily-news-title">${dailyArticle.title}</h3><p class="news-daily-dek">${dailyArticle.dek}</p>
+          ${dailyBodyParagraphs.length ? `<section class="news-daily-body" aria-labelledby="daily-news-body-title"><header><div><span>FULL ARTICLE</span><h4 id="daily-news-body-title">기사 본문 · 영문 기사 읽기</h4></div><b>전체 ${dailyBodyParagraphs.length}문단</b></header><div>${dailyBodyParagraphs.map((paragraph, index) => `<article><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.text}</p>${paragraph.translation ? `<div class="news-daily-sentence-tools"><details><summary>이 문단 해석 보기</summary><p>${paragraph.translation}</p></details></div>` : ""}</article>`).join("")}</div></section>` : `<section class="news-daily-body news-daily-body-missing" aria-labelledby="daily-news-body-title"><header><div><span>SOURCE DATA REQUIRED</span><h4 id="daily-news-body-title">기사 원문 본문이 등록되지 않았습니다</h4></div><b>원문 0문단</b></header><div><p>현재 보유한 데이터는 기사 제목·요약과 학습용 재구성 문장뿐입니다. 이 문장들을 실제 기사 본문으로 표시하지 않습니다.</p><a href="${dailyArticle.originalUrl}" target="_blank" rel="noopener noreferrer">출처에서 원문 확인 ${icon("arrow", 13)}</a></div></section>`}
+          <section class="news-daily-focus" aria-labelledby="daily-news-support-title"><span>LEARNING SUPPORT · 본문을 읽은 뒤 확인하세요</span><h4 id="daily-news-support-title">대표 문장과 학습 포인트</h4><blockquote>${dailySentence.en}</blockquote><div class="news-daily-focus-grid"><article><b>대표 문장 해석</b><p>${dailySentence.ko}</p></article><article><b>핵심 표현</b><div>${dailySentence.expressions.slice(0, 3).map(expression => `<span><strong>${expression.term}</strong> ${expression.meaning}</span>`).join("")}</div></article><article><b>학습 포인트</b><p>${dailySentence.note}</p></article></div></section>
           <div class="news-daily-actions"><span>기사 등록일 · ${dailyArticle.date}</span><button type="button" data-open-news="${dailyArticleIndex}">전체 기사 학습하기 ${icon("arrow",15)}</button></div>
         </article>
         <aside class="news-daily-guide"><section class="news-status-card"><span>${icon("calendar",18)}</span><div><h3>학습 상태</h3><b class="news-status-badge ${isDone ? "done" : "todo"}">${isDone ? icon("check",12) : ""}${isDone ? "완료됨" : "진행 전"}</b><p>${newsMeta.lastStudiedAt ? `최근 학습 · ${newsMeta.lastStudiedAt}` : "최근 학습 기록 없음"}</p></div></section><section><span>${icon("news",18)}</span><div><h3>읽기 팁</h3><p>모든 문장을 완벽히 이해하기보다 핵심 동사와 주제를 먼저 잡아보세요.</p></div></section><section><span>${icon("check",18)}</span><div><h3>추천 루틴</h3><p>기사 읽기 → 필요한 단락 해석 → 표현 확인 → 1분 퀴즈</p></div></section><section class="news-complete-box"><button class="primary ${isDone ? "done" : ""}" type="button" disabled>${icon("check",17)} ${isDone ? "오늘의 기사 완료됨" : "읽기 + 퀴즈로 자동 완료"}</button><button class="secondary" type="button" data-news-undo ${!isDone ? "disabled" : ""}>완료 해제</button><p aria-live="polite">${isDone ? "읽기와 퀴즈 기록이 저장되었습니다." : "본문을 읽고 퀴즈 3문제 이상 맞히면 완료됩니다."}</p></section></aside>
@@ -2757,7 +2854,8 @@ function saveNewsArticleLearningState() {
 function completeNewsArticleIfEligible(article) {
   const questions = buildArticleReviewQuestions(article);
   const score = questions.filter(question => newsArticleLearningState.quizAnswers[question.id] === question.answer).length;
-  const eligible = newsArticleLearningState.readParagraphs.length >= article.sentences.length && newsArticleLearningState.quizSubmitted && score >= 3;
+  const bodyParagraphs = getArticleBodyParagraphs(article);
+  const eligible = bodyParagraphs.length > 0 && newsArticleLearningState.readParagraphs.length >= bodyParagraphs.length && newsArticleLearningState.quizSubmitted && score >= 3;
   if (!eligible || homeStudyState.checked.news) return;
   homeStudyState.checked.news = true;
   saveHomeStudyState("news");
@@ -2784,21 +2882,21 @@ function featuredArticleView() {
   const article = articleLibrary[state.newsIndex] || articleLibrary[0];
   if (newsArticleLearningState.articleId !== article.id) newsArticleLearningState = { date: localDateKey(), articleId: article.id, readParagraphs: [], translations: [], expressions: [], difficult: [], savedArticles: newsArticleLearningState.savedArticles || [], quizAnswers: {}, quizSubmitted: false };
   const questions = buildArticleReviewQuestions(article);
+  const bodyParagraphs = getArticleBodyParagraphs(article);
   const readCount = newsArticleLearningState.readParagraphs.length;
-  const readingComplete = readCount >= article.sentences.length;
-  const readProgress = Math.round(readCount / article.sentences.length * 100);
+  const readingComplete = bodyParagraphs.length > 0 && readCount >= bodyParagraphs.length;
+  const readProgress = bodyParagraphs.length ? Math.round(readCount / bodyParagraphs.length * 100) : 0;
   const score = questions.filter(question => newsArticleLearningState.quizAnswers[question.id] === question.answer).length;
   const quizPassed = newsArticleLearningState.quizSubmitted && score >= 3;
   const learningComplete = readingComplete && quizPassed;
   const keywords = [...new Set(article.sentences.flatMap(sentence => sentence.expressions.map(expression => expression.term)))].slice(0, 3);
-  const paragraphs = article.sentences.map((paragraph, index) => {
+  const paragraphs = bodyParagraphs.map((paragraph, index) => {
     const translationOpen = newsArticleLearningState.translations.includes(index);
-    const expressionsOpen = newsArticleLearningState.expressions.includes(index);
     const difficult = newsArticleLearningState.difficult.includes(index);
-    return `<section class="news-reader-paragraph ${difficult ? "difficult" : ""}" data-news-reader-paragraph="${index}"><span>SENTENCE ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.en}</p><div class="news-reader-tools"><button type="button" data-news-translation="${index}">${translationOpen ? "Hide Meaning" : "Show Meaning"}</button><button type="button" data-news-expressions="${index}">${expressionsOpen ? "Hide Expression Note" : "Expression Note"}</button><button class="${difficult ? "active" : ""}" type="button" data-news-difficult="${index}">${icon(difficult ? "check" : "bookmark",11)} ${difficult ? "Difficult saved" : "Mark difficult"}</button></div>${translationOpen ? `<div class="news-reader-translation"><b>KOREAN MEANING</b><p>${paragraph.ko}</p></div>` : ""}${expressionsOpen ? `<div class="news-reader-expressions">${paragraph.expressions.map((expression, expressionIndex) => { const savedId = `news:${article.id}:${index}-${expressionIndex}`; const saved = state.savedBlogItems.some(item => item.id === savedId); return `<article><div><b>${expression.term}</b><span>${expression.meaning}</span></div><button type="button" data-save-news-expression="${index}-${expressionIndex}" ${saved ? "disabled" : ""}>${icon(saved ? "check" : "bookmark",12)} ${saved ? "저장됨" : "저장"}</button></article>`; }).join("")}<p>${paragraph.note}</p></div>` : ""}</section>`;
+    return `<section class="news-reader-paragraph ${difficult ? "difficult" : ""}" data-news-reader-paragraph="${index}"><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.text}</p><div class="news-reader-tools">${paragraph.translation ? `<button type="button" data-news-translation="${index}">${translationOpen ? "Hide Meaning" : "Show Meaning"}</button>` : ""}<button class="${difficult ? "active" : ""}" type="button" data-news-difficult="${index}">${icon(difficult ? "check" : "bookmark",11)} ${difficult ? "Difficult saved" : "Mark difficult"}</button></div>${translationOpen && paragraph.translation ? `<div class="news-reader-translation"><b>KOREAN MEANING</b><p>${paragraph.translation}</p></div>` : ""}</section>`;
   }).join("");
   const quiz = `<section class="news-reader-quiz"><header><div><span>QUICK REVIEW</span><h2>1분 뉴스 이해 퀴즈</h2><p>표현·단락·기사 전체 내용을 4문제로 확인합니다.</p></div><b>${questions.length} QUESTIONS</b></header><div>${questions.map((question, questionIndex) => { const selected = newsArticleLearningState.quizAnswers[question.id]; return `<fieldset><legend><small>${question.type}</small>${questionIndex + 1}. ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<button class="${selected === choiceIndex ? "selected" : ""} ${newsArticleLearningState.quizSubmitted && choiceIndex === question.answer ? "correct" : ""} ${newsArticleLearningState.quizSubmitted && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : ""}" type="button" data-news-quiz-answer="${question.id}:${choiceIndex}" ${newsArticleLearningState.quizSubmitted ? "disabled" : ""}><i>${String.fromCharCode(65 + choiceIndex)}</i>${choice}</button>`).join("")}${newsArticleLearningState.quizSubmitted ? `<p>${question.explanation}</p>` : ""}</fieldset>`; }).join("")}</div>${newsArticleLearningState.quizSubmitted ? `<section class="news-reader-result ${quizPassed ? "passed" : "retry"}"><strong>${score} / ${questions.length}</strong><div><b>${quizPassed ? "퀴즈 기준을 통과했어요!" : "한 번 더 확인해볼까요?"}</b><p>${learningComplete ? "오늘의 기사 학습이 자동 완료되었습니다." : quizPassed ? "본문을 끝까지 읽으면 학습이 완료됩니다." : "3문제 이상 맞히면 학습 완료 기준을 충족합니다."}</p></div>${!quizPassed ? `<button type="button" data-news-quiz-retry>다시 풀기</button>` : ""}</section>` : `<button class="news-reader-submit" type="button" data-news-quiz-submit>퀴즈 제출하기</button>`}</section>`;
-  return `${header("영어 뉴스")}<main class="news-reader-page"><nav class="news-reader-toolbar"><button type="button" data-back-news>← 기사 목록</button><button type="button" data-copy-article-title>${icon("bookmark",14)} 제목 복사</button></nav><article class="news-reader"><figure><img src="${article.image}" alt="${article.title} 기사 대표 이미지"><figcaption>${article.caption}</figcaption></figure><header><span>TODAY'S ARTICLE</span><h1>${article.title}</h1><p>${article.dek}</p><div><b>${article.source}</b><time>${article.date}</time><em>중급</em><em>약 ${Math.max(4, article.sentences.length * 2)}분</em></div><ul>${keywords.map(keyword => `<li>#${keyword}</li>`).join("")}</ul></header><section class="news-reader-progress"><div><span>${readingComplete ? "본문 읽기 완료" : `읽는 중 · ${readProgress}%`}</span><b>${readCount} / ${article.sentences.length} 단락</b></div><div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${readProgress}"><i style="width:${readProgress}%"></i></div></section><div class="news-reader-body"><p class="news-reader-kicker">ARTICLE</p>${paragraphs}</div><section class="news-reader-summary"><span>EASY SUMMARY</span><h2>기사 전체 핵심 정리</h2>${article.summary.map(item => `<p>${item}</p>`).join("")}</section>${quiz}<section class="news-reader-completion ${learningComplete ? "complete" : "pending"}"><span>${learningComplete ? icon("check",19) : icon("spark",19)}</span><div><b>${learningComplete ? "오늘의 기사 완료!" : readingComplete ? "읽기 완료 · 퀴즈가 남았어요" : "기사를 읽고 학습을 마쳐보세요"}</b><p>${learningComplete ? `퀴즈 ${score}/${questions.length} · 완료 기록 저장됨` : "본문 읽기와 퀴즈 3문제 이상 정답이 완료 기준입니다."}</p></div></section><footer><p>제목·날짜·출처 링크는 실제 기사 정보이며, 본문과 요약은 영어 학습용으로 재구성했습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">원문 사이트에서 더 읽기 ${icon("arrow",12)}</a></footer></article></main>`;
+  return `${header("영어 뉴스")}<main class="news-reader-page"><nav class="news-reader-toolbar"><button type="button" data-back-news>← 기사 목록</button><button type="button" data-copy-article-title>${icon("bookmark",14)} 제목 복사</button></nav><article class="news-reader"><figure><img src="${article.image}" alt="${article.title} 기사 대표 이미지"><figcaption>${article.caption}</figcaption></figure><header><span>TODAY'S ARTICLE</span><h1>${article.title}</h1><p>${article.dek}</p><div><b>${article.source}</b><time>${article.date}</time><em>중급</em><em>${bodyParagraphs.length ? `약 ${Math.max(4, bodyParagraphs.length * 2)}분` : "원문 미등록"}</em></div><ul>${keywords.map(keyword => `<li>#${keyword}</li>`).join("")}</ul></header>${bodyParagraphs.length ? `<section class="news-reader-progress"><div><span>${readingComplete ? "본문 읽기 완료" : `읽는 중 · ${readProgress}%`}</span><b>${readCount} / ${bodyParagraphs.length} 단락</b></div><div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${readProgress}"><i style="width:${readProgress}%"></i></div></section><div class="news-reader-body"><p class="news-reader-kicker">FULL ARTICLE</p>${paragraphs}</div>` : `<section class="news-reader-body news-reader-body-missing"><p class="news-reader-kicker">SOURCE DATA REQUIRED</p><h2>기사 원문 본문이 현재 데이터에 없습니다</h2><p>등록된 2개 문장은 원문이 아니라 학습용 재구성 문장이므로 본문으로 표시하지 않았습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">출처에서 원문 확인 ${icon("arrow", 12)}</a></section>`}<section class="news-reader-summary"><span>LEARNING SUMMARY</span><h2>학습용 핵심 정리</h2>${article.summary.map(item => `<p>${item}</p>`).join("")}</section>${quiz}<section class="news-reader-completion ${learningComplete ? "complete" : "pending"}"><span>${learningComplete ? icon("check",19) : icon("spark",19)}</span><div><b>${learningComplete ? "오늘의 기사 완료!" : bodyParagraphs.length ? readingComplete ? "읽기 완료 · 퀴즈가 남았어요" : "기사를 읽고 학습을 마쳐보세요" : "원문 데이터 등록이 필요합니다"}</b><p>${learningComplete ? `퀴즈 ${score}/${questions.length} · 완료 기록 저장됨` : bodyParagraphs.length ? "본문 읽기와 퀴즈 3문제 이상 정답이 완료 기준입니다." : "원문 본문이 등록된 기사만 읽기 완료 처리할 수 있습니다."}</p></div></section><footer><p>제목·날짜·출처 링크는 실제 기사 정보이며, 요약과 학습 문장은 기사 내용을 바탕으로 재구성했습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">원문 사이트에서 더 읽기 ${icon("arrow",12)}</a></footer></article></main>`;
 }
 
 function blogPage() {
@@ -2833,28 +2931,84 @@ function saveDramaShortState() {
   try { localStorage.setItem(DRAMA_SHORT_STORAGE_KEY, JSON.stringify(persisted)); } catch {}
 }
 
-const FAMILY_SHORTS_STORAGE_KEY = "valuetime_family_youtube_shorts_v1";
+const FAMILY_SHORTS_STORAGE_KEY = "valuetime_family_youtube_shorts_v2";
 const familyShortSamples = [
-  { id:"sample-1",youtubeUrl:"https://www.youtube.com/shorts/M7lc1UVf-VE",videoId:"M7lc1UVf-VE",title:"오늘의 짧은 영어 표현",channelName:"YouTube Developers",sentence:"Let's take a closer look.",meaningKo:"좀 더 자세히 살펴보자.",expressionNote:"설명하거나 함께 확인할 때 자연스럽게 쓰는 표현",difficulty:"easy",tags:["일상 표현","가족 대화"],tip:"Let's를 짧고 가볍게 연결해 말해보세요.",example:"Let's take a closer look at this picture.",createdAt:"2026-07-20"},
-  { id:"sample-2",youtubeUrl:"https://www.youtube.com/shorts/jNQXAC9IVRw",videoId:"jNQXAC9IVRw",title:"처음 만났을 때 하는 말",channelName:"YouTube",sentence:"It's nice to meet you.",meaningKo:"만나서 반가워요.",expressionNote:"처음 인사할 때 가장 기본적인 표현",difficulty:"easy",tags:["일상 표현","인터뷰 영어"],tip:"nice에 힘을 주고 미소와 함께 말해보세요.",example:"Hi, I'm Kai. It's nice to meet you.",createdAt:"2026-07-20"},
-  { id:"sample-3",youtubeUrl:"https://www.youtube.com/shorts/dQw4w9WgXcQ",videoId:"dQw4w9WgXcQ",title:"약속과 다짐을 말하는 표현",channelName:"Rick Astley",sentence:"I'll never let you down.",meaningKo:"절대 실망시키지 않을게.",expressionNote:"let someone down은 누군가를 실망시키다는 뜻",difficulty:"medium",tags:["감정 표현","미드 표현"],tip:"never와 down에 자연스럽게 강세를 주세요.",example:"Trust me. I won't let you down.",createdAt:"2026-07-20"},
-  { id:"sample-4",youtubeUrl:"https://www.youtube.com/shorts/aqz-KE-bpKQ",videoId:"aqz-KE-bpKQ",title:"천천히 해도 괜찮아",channelName:"Blender Foundation",sentence:"Take your time.",meaningKo:"천천히 해도 돼.",expressionNote:"상대에게 서두르지 않아도 된다고 말할 때 사용",difficulty:"easy",tags:["가족 대화","학교 생활"],tip:"명령처럼 들리지 않도록 부드럽게 내려 말하세요.",example:"Take your time. There's no rush.",createdAt:"2026-07-20"},
-  { id:"sample-5",youtubeUrl:"https://www.youtube.com/shorts/ScMzIvxBSi4",videoId:"ScMzIvxBSi4",title:"기분을 묻는 한 문장",channelName:"YouTube Creator",sentence:"How are you feeling?",meaningKo:"기분이 어때?",expressionNote:"몸 상태나 감정을 다정하게 확인하는 질문",difficulty:"easy",tags:["감정 표현","가족 대화"],tip:"feeling을 길게 끌지 말고 편안하게 질문하세요.",example:"How are you feeling today?",createdAt:"2026-07-20"},
-  { id:"sample-6",youtubeUrl:"https://www.youtube.com/shorts/ysz5S6PUM-U",videoId:"ysz5S6PUM-U",title:"한 단계씩 해보자",channelName:"Sample Channel",sentence:"One step at a time.",meaningKo:"한 번에 한 단계씩 하자.",expressionNote:"조급해하는 사람을 차분하게 격려하는 표현",difficulty:"medium",tags:["학교 생활","가족 대화"],tip:"step과 time에 리듬을 주어 말해보세요.",example:"Don't worry. One step at a time.",createdAt:"2026-07-20"}
+  { id:"scene-1",youtubeUrl:"https://www.youtube.com/shorts/M7lc1UVf-VE",videoId:"M7lc1UVf-VE",series:"매일 미드 한문장",title:"망설이다가 용기를 내는 순간",channelName:"가족 등록 클립",sentence:"Here goes nothing.",meaningKo:"에라 모르겠다. 한번 해보자.",situation:"망설이다가 결국 시작하기로 마음먹을 때",duration:"00:18",expressionNote:"결과를 확신할 수 없지만 일단 해보겠다는 순간에 쓰는 반응",difficulty:"medium",tags:["미드 표현","도전"],tip:"Here goes를 한 덩어리처럼 자연스럽게 이어 말해보세요.",example:"Here goes nothing. I'm going to ask her.",createdAt:"2026-07-21"},
+  { id:"scene-2",youtubeUrl:"https://www.youtube.com/shorts/aqz-KE-bpKQ",videoId:"aqz-KE-bpKQ",series:"매일 미드 한문장",title:"상대를 안심시키는 장면",channelName:"가족 등록 클립",sentence:"Take your time.",meaningKo:"천천히 해도 돼.",situation:"상대가 긴장하거나 서두를 때 여유를 주는 말",duration:"00:16",expressionNote:"상대에게 서두르지 않아도 된다고 부드럽게 말하는 표현",difficulty:"easy",tags:["일상 회화","배려"],tip:"명령처럼 들리지 않도록 부드럽게 내려 말하세요.",example:"Take your time. There's no rush.",createdAt:"2026-07-21"},
+  { id:"scene-3",youtubeUrl:"https://www.youtube.com/shorts/ysz5S6PUM-U",videoId:"ysz5S6PUM-U",series:"매일 미드 한문장",title:"너무 앞서가지 말자는 장면",channelName:"가족 등록 클립",sentence:"Let's not get ahead of ourselves.",meaningKo:"너무 앞서가지는 말자.",situation:"아직 확정되지 않은 일을 미리 기대할 때",duration:"00:21",expressionNote:"상황이 확정되기 전에 성급하게 판단하지 말자는 표현",difficulty:"hard",tags:["미드 표현","조절"],tip:"get ahead of ourselves를 한 호흡으로 따라 해보세요.",example:"We may win, but let's not get ahead of ourselves.",createdAt:"2026-07-21"}
 ];
 let familyShortState = (()=>{try{const stored=JSON.parse(localStorage.getItem(FAMILY_SHORTS_STORAGE_KEY)||"null");return {items:stored?.items?.length?stored.items:familyShortSamples,saved:stored?.saved||[],view:"home",activeId:null,tag:"전체",unlocked:sessionStorage.getItem("family_shorts_unlocked")==="yes",error:""};}catch{return {items:familyShortSamples,saved:[],view:"home",activeId:null,tag:"전체",unlocked:false,error:""};}})();
 familyShortState.unlocked = true;
+const youtubeShortsFeed = { status: "idle", items: [], channel: null, message: "" };
+
+function youtubeTitleToSentence(title = "") {
+  const remainder = String(title)
+    .replace(/[\[【(]?\s*매일\s*미드\s*한문장\s*[\]】)]?/gi, "")
+    .replace(/^[\s|:·#\-–—]+/, "")
+    .trim();
+  return remainder || "영상에서 오늘의 핵심 문장을 확인해 보세요.";
+}
+
+function mapYoutubeShortToLearningItem(video) {
+  return {
+    id: `youtube-${video.videoId}`,
+    youtubeUrl: video.shortsUrl || video.videoUrl,
+    videoId: video.videoId,
+    thumbnailUrl: video.thumbnailUrl,
+    embedUrl: video.embedUrl,
+    series: "매일 미드 한문장",
+    title: video.title,
+    channelName: video.channelTitle,
+    sentence: youtubeTitleToSentence(video.title),
+    meaningKo: "영상에서 문장의 뜻과 쓰임을 확인하세요.",
+    situation: "짧은 장면 속 실제 회화 표현",
+    duration: video.durationLabel || "SHORT",
+    expressionNote: "영상 재생 후 핵심 표현을 한 번 더 따라 말해보세요.",
+    difficulty: "medium",
+    tags: ["미드 표현", "YouTube Shorts"],
+    tip: "장면을 본 뒤 자막 없이 같은 억양으로 따라 말해보세요.",
+    example: youtubeTitleToSentence(video.title),
+    publishedAt: video.publishedAt,
+    embeddable: video.embeddable !== false,
+    remote: true,
+  };
+}
+
+function currentFamilyShortItems() {
+  return youtubeShortsFeed.status === "success" ? youtubeShortsFeed.items : familyShortState.items;
+}
+
+async function refreshYoutubeShortsFeed() {
+  youtubeShortsFeed.status = "loading";
+  youtubeShortsFeed.message = "";
+  if (state.page === "drama") render();
+  try {
+    const response = await fetch("/api/youtube-shorts", { credentials: "include", cache: "no-store" });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.ok) throw new Error(payload.message || `YouTube feed returned ${response.status}`);
+    youtubeShortsFeed.items = (payload.videos || []).map(mapYoutubeShortToLearningItem);
+    youtubeShortsFeed.channel = payload.channel || null;
+    youtubeShortsFeed.status = "success";
+  } catch (error) {
+    console.error("[today-shorts]", error);
+    youtubeShortsFeed.status = "error";
+    youtubeShortsFeed.message = error.message || "오늘의 쇼츠를 불러오지 못했습니다.";
+  }
+  if (state.page === "drama") render();
+}
+
 function saveFamilyShorts(){localStorage.setItem(FAMILY_SHORTS_STORAGE_KEY,JSON.stringify({items:familyShortState.items,saved:familyShortState.saved}));}
 function youtubeIdFrom(value){const text=String(value||"").trim();if(/^[\w-]{11}$/.test(text))return text;const match=text.match(/(?:shorts\/|youtu\.be\/|v=|embed\/)([\w-]{11})/);return match?.[1]||"";}
-function familyShortCard(item,compact=false){const saved=familyShortState.saved.includes(item.id);return `<article class="family-short-card ${compact?"compact":""}"><button class="family-short-thumb" data-family-open="${item.id}" aria-label="${item.title} 상세 보기"><img src="https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg" alt="${item.title} YouTube 썸네일"><span>${icon("play",22)}</span><em>YouTube</em></button><div><p>${item.channelName}<b class="difficulty ${item.difficulty}">${item.difficulty}</b></p><h3>${item.title}</h3><blockquote>${item.sentence}</blockquote><strong>${item.meaningKo}</strong>${compact?"":`<small>${item.expressionNote}</small><nav>${item.tags.map(tag=>`<i>#${tag}</i>`).join("")}</nav>`}<footer><button class="${saved?"saved":""}" data-family-save="${item.id}">${icon(saved?"check":"bookmark",14)} ${saved?"저장됨":"저장"}</button><button class="primary" data-family-open="${item.id}">상세 보기</button></footer></div></article>`;}
+function familyShortCard(item,compact=false,featured=false){const saved=familyShortState.saved.includes(item.id);return `<article class="family-short-card ${compact?"compact":""} ${featured?"featured":""}"><button class="family-short-thumb" data-family-open="${item.id}" aria-label="${item.sentence} 학습 쇼츠 보기"><img src="${item.thumbnailUrl||`https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`}" alt="${item.title} 장면 썸네일"><span class="family-short-play">${icon("play",featured?26:21)}</span><div class="family-short-overlay"><small>${item.series||"매일 미드 한문장"}</small><blockquote>${item.sentence}</blockquote><strong>${item.meaningKo}</strong><p>${item.situation||item.expressionNote}</p></div><em>${item.duration||"SHORT"}</em><b class="difficulty ${item.difficulty}">${item.difficulty}</b></button><div class="family-short-meta"><p>${item.title}</p>${item.publishedAt?`<time datetime="${item.publishedAt}">${new Date(item.publishedAt).toLocaleDateString("ko-KR")}</time>`:""}${compact?"":`<nav>${(item.tags||[]).map(tag=>`<i>#${tag}</i>`).join("")}</nav>`}<footer><button class="${saved?"saved":""}" data-family-save="${item.id}">${icon(saved?"check":"bookmark",14)} ${saved?"저장됨":"저장"}</button><button type="button" data-speak="${item.sentence.replaceAll('"','&quot;')}">${icon("mic",14)} 따라 말하기</button><button class="primary" data-family-open="${item.id}">보기 ${icon("arrow",12)}</button></footer></div></article>`;}
 function familyShortsPage(){
   if(!familyShortState.unlocked)return `${header("가족 영어")}<main class="family-private-page"><section class="family-lock"><span>${icon("heart",25)}</span><p>PRIVATE FAMILY SPACE</p><h2>우리 가족 영어 한 문장</h2><strong>매일 짧은 쇼츠로 영어 한 문장씩 익혀요</strong><form data-family-login><label>가족 비밀번호<input name="password" type="password" autocomplete="current-password" placeholder="비밀번호를 입력하세요" required></label>${familyShortState.error?`<p class="error">${familyShortState.error}</p>`:""}<button>가족 학습방 들어가기</button></form><small>가족 구성원만 사용하는 비공개 학습 공간입니다.</small></section></main>`;
-  const active=familyShortState.items.find(item=>item.id===familyShortState.activeId);
+  const feedItems=currentFamilyShortItems();
+  const active=feedItems.find(item=>item.id===familyShortState.activeId);
   const nav=`<nav class="family-short-nav"><button class="${familyShortState.view==="home"?"active":""}" data-family-view="home">오늘의 쇼츠</button><button class="${familyShortState.view==="saved"?"active":""}" data-family-view="saved">저장한 문장</button><button class="${familyShortState.view==="admin"?"active":""}" data-family-view="admin">관리</button></nav>`;
-  if(active){const saved=familyShortState.saved.includes(active.id);const next=familyShortState.items.filter(item=>item.id!==active.id).slice(0,3);return `${header("우리 가족 영어 한 문장")}<main class="family-shorts-page">${nav}<button class="family-detail-back" data-family-back>← 오늘의 쇼츠</button><article class="family-short-detail"><div class="family-youtube-frame"><iframe src="https://www.youtube-nocookie.com/embed/${active.videoId}?rel=0&playsinline=1" title="${active.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><section class="family-video-source"><div><h2>${active.title}</h2><p>${active.channelName}</p></div><button class="${saved?"saved":""}" data-family-save="${active.id}">${icon(saved?"check":"bookmark",15)} ${saved?"저장됨":"문장 저장"}</button><a href="${active.youtubeUrl}" target="_blank" rel="noopener noreferrer">YouTube 원본 보기 ${icon("arrow",12)}</a><small>이 영상은 YouTube 원본 임베드로 제공됩니다.</small></section><section class="family-learning-note"><span>TODAY'S SENTENCE</span><blockquote>${active.sentence}</blockquote><strong>${active.meaningKo}</strong><div><b>표현 포인트</b><p>${active.expressionNote}</p></div><div><b>따라 말하기 팁</b><p>${active.tip}</p></div><div><b>이렇게도 말해보세요</b><p>${active.example}</p></div><button data-speak="${active.sentence.replaceAll('"','&quot;')}">${icon("mic",15)} 문장 따라 말하기</button></section></article><section class="family-next"><h3>다음 추천 쇼츠</h3><div>${next.map(item=>familyShortCard(item,true)).join("")}</div></section></main>`;}
-  if(familyShortState.view==="saved"){const items=familyShortState.items.filter(item=>familyShortState.saved.includes(item.id));return `${header("저장한 문장")}<main class="family-shorts-page">${nav}<section class="family-section-head"><p>SAVED SENTENCES</p><h2>다시 보고 싶은 문장</h2><span>${items.length}개 저장됨</span></section><div class="family-saved-list">${items.length?items.map(item=>familyShortCard(item,true)).join(""):`<div class="family-empty">아직 저장한 문장이 없어요.<br><button data-family-view="home">오늘의 문장 둘러보기</button></div>`}</div></main>`;}
-  if(familyShortState.view==="admin")return `${header("쇼츠 관리")}<main class="family-shorts-page">${nav}<section class="family-section-head"><p>FAMILY ADMIN</p><h2>새로운 쇼츠 추가</h2><span>URL에서 video ID를 자동으로 찾습니다.</span></section><form class="family-admin-form" data-family-add><label class="wide">YouTube Shorts URL 또는 video ID<input name="youtube" placeholder="https://youtube.com/shorts/..." required></label><label>영상 제목<input name="title" required></label><label>채널명<input name="channel" required></label><label class="wide">핵심 문장<input name="sentence" required></label><label class="wide">한국어 해석<input name="meaning" required></label><label class="wide">표현 포인트<textarea name="note" required></textarea></label><label>난이도<select name="difficulty"><option value="easy">easy</option><option value="medium">medium</option><option value="hard">hard</option></select></label><label>태그<input name="tags" placeholder="일상 표현, 가족 대화"></label><label class="wide">따라 말하기 팁<input name="tip"></label><label class="wide">짧은 예문<input name="example"></label><button class="wide">쇼츠 학습 카드 만들기</button></form><section class="family-admin-list"><h3>등록된 쇼츠 ${familyShortState.items.length}개</h3>${familyShortState.items.map(item=>`<article><img src="https://i.ytimg.com/vi/${item.videoId}/default.jpg" alt=""><div><b>${item.title}</b><span>${item.channelName} · ${item.videoId}</span></div><button data-family-delete="${item.id}">삭제</button></article>`).join("")}</section></main>`;
-  const tags=["전체",...new Set(familyShortState.items.flatMap(item=>item.tags))];const filtered=familyShortState.tag==="전체"?familyShortState.items:familyShortState.items.filter(item=>item.tags.includes(familyShortState.tag));const daily=filtered.slice(0,3);return `${header("우리 가족 영어 한 문장")}<main class="family-shorts-page">${nav}<section class="family-shorts-hero"><div><p>PRIVATE FAMILY ENGLISH</p><h2>우리 가족 영어 한 문장</h2><strong>매일 짧은 쇼츠로 영어 한 문장씩 익혀요</strong></div><span>${icon("heart",17)} 가족 전용</span></section><section class="family-summary"><article><span>오늘 저장한 문장</span><b>${familyShortState.saved.length}개</b></article><article><span>이번 주 학습</span><b>4일</b></article></section><nav class="family-tags">${tags.map(tag=>`<button class="${familyShortState.tag===tag?"active":""}" data-family-tag="${tag}">${tag}</button>`).join("")}</nav><section class="family-today"><div><p>TODAY'S 3 SHORTS</p><h2>오늘의 추천 쇼츠</h2></div><div class="family-short-grid">${daily.map(item=>familyShortCard(item)).join("")}</div></section><p class="family-youtube-notice">${icon("play",14)} 영상은 저장하지 않으며 YouTube 원본 임베드로만 재생됩니다.</p></main>`;
+  if(active){const saved=familyShortState.saved.includes(active.id);const next=feedItems.filter(item=>item.id!==active.id).slice(0,3);return `${header("매일 미드 한문장")}<main class="family-shorts-page">${nav}<button class="family-detail-back" data-family-back>← 오늘의 쇼츠</button><article class="family-short-detail"><div class="family-youtube-frame"><iframe src="https://www.youtube-nocookie.com/embed/${active.videoId}?rel=0&playsinline=1" title="${active.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><section class="family-video-source"><div><span>${active.series||"매일 미드 한문장"}</span><h2>${active.title}</h2><p>${active.channelName} · ${active.duration||"SHORT"}</p><p>${active.situation||active.expressionNote}</p></div><button class="${saved?"saved":""}" data-family-save="${active.id}">${icon(saved?"check":"bookmark",15)} ${saved?"저장됨":"문장 저장"}</button><a href="${active.youtubeUrl}" target="_blank" rel="noopener noreferrer">YouTube 원본 보기 ${icon("arrow",12)}</a><small>이 영상은 YouTube 원본 임베드로 제공됩니다. 재생할 수 없으면 원본 보기 버튼을 이용해 주세요.</small></section><section class="family-learning-note"><span>TODAY'S SENTENCE</span><blockquote>${active.sentence}</blockquote><strong>${active.meaningKo}</strong><div><b>표현 포인트</b><p>${active.expressionNote}</p></div><div><b>따라 말하기 팁</b><p>${active.tip}</p></div><div><b>이렇게도 말해보세요</b><p>${active.example}</p></div><button data-speak="${active.sentence.replaceAll('"','&quot;')}">${icon("mic",15)} 문장 따라 말하기</button></section></article><section class="family-next"><h3>다음 학습 쇼츠</h3><div>${next.map(item=>familyShortCard(item,true)).join("")}</div></section></main>`;}
+  if(familyShortState.view==="saved"){const items=feedItems.filter(item=>familyShortState.saved.includes(item.id));return `${header("저장한 문장")}<main class="family-shorts-page">${nav}<section class="family-section-head"><p>SAVED SENTENCES</p><h2>다시 보고 싶은 문장</h2><span>${items.length}개 저장됨</span></section><div class="family-saved-list">${items.length?items.map(item=>familyShortCard(item,true)).join(""):`<div class="family-empty">아직 저장한 문장이 없어요.<br><button data-family-view="home">오늘의 문장 둘러보기</button></div>`}</div></main>`;}
+  if(familyShortState.view==="admin")return `${header("쇼츠 관리")}<main class="family-shorts-page">${nav}<section class="family-section-head"><p>FAMILY ADMIN</p><h2>새로운 학습 쇼츠 추가</h2><span>한 영상에 핵심 표현 하나만 등록해 주세요.</span></section><form class="family-admin-form" data-family-add><label class="wide">YouTube Shorts URL 또는 video ID<input name="youtube" placeholder="https://youtube.com/shorts/..." required></label><label>시리즈명<input name="series" value="매일 미드 한문장" required></label><label>영상 제목<input name="title" required></label><label>채널명<input name="channel" required></label><label>영상 길이<input name="duration" placeholder="00:20"></label><label class="wide">핵심 문장<input name="sentence" required></label><label class="wide">한국어 해석<input name="meaning" required></label><label class="wide">상황 설명<input name="situation" placeholder="망설이다가 시작하기로 마음먹을 때" required></label><label class="wide">표현 포인트<textarea name="note" required></textarea></label><label>난이도<select name="difficulty"><option value="easy">easy</option><option value="medium">medium</option><option value="hard">hard</option></select></label><label>태그<input name="tags" placeholder="미드 표현, 일상 회화"></label><label class="wide">따라 말하기 팁<input name="tip"></label><label class="wide">짧은 예문<input name="example"></label><button class="wide">표현 학습 쇼츠 만들기</button></form><section class="family-admin-list"><h3>등록된 쇼츠 ${familyShortState.items.length}개</h3>${familyShortState.items.map(item=>`<article><img src="https://i.ytimg.com/vi/${item.videoId}/default.jpg" alt=""><div><b>${item.sentence}</b><span>${item.series||"매일 미드 한문장"} · ${item.channelName}</span></div><button data-family-delete="${item.id}">삭제</button></article>`).join("")}</section></main>`;
+  const tags=["전체",...new Set(feedItems.flatMap(item=>item.tags||[]))];const filtered=familyShortState.tag==="전체"?feedItems:feedItems.filter(item=>(item.tags||[]).includes(familyShortState.tag));const daily=filtered.slice(0,9);const featured=daily[0];const similar=daily.slice(1);const feedBody=["idle","loading"].includes(youtubeShortsFeed.status)?`<div class="family-shorts-loading" role="status"><i></i><b>최신 학습 쇼츠를 불러오는 중입니다.</b><span>잠시만 기다려 주세요.</span></div>`:youtubeShortsFeed.status==="error"?`<div class="family-shorts-feed-state error" role="alert"><b>오늘의 쇼츠를 불러오지 못했습니다.</b><span>${youtubeShortsFeed.message||"잠시 후 다시 확인해 주세요."}</span><button type="button" data-family-feed-retry>다시 불러오기</button></div>`:!featured?`<div class="family-shorts-feed-state"><b>매일 미드 한문장 영상이 없습니다.</b><span>채널에 조건에 맞는 새 영상이 등록되면 자동으로 표시됩니다.</span></div>`:`<div class="family-short-showcase"><div>${familyShortCard(featured,false,true)}</div><section><p>MORE EXPRESSIONS</p><h3>최신 학습 쇼츠</h3><div class="family-short-grid">${similar.map(item=>familyShortCard(item)).join("")}</div></section></div>`;return `${header("우리 가족 영어 한 문장")}<main class="family-shorts-page">${nav}<section class="family-shorts-hero"><div><p>ONE SCENE · ONE EXPRESSION</p><h2>오늘의 쇼츠</h2><strong>짧은 장면 하나로, 오늘 쓸 표현 하나를 익혀요.</strong></div><span>${icon("play",17)} ${youtubeShortsFeed.channel?.channelTitle||"매일 미드 한문장"}</span></section><section class="family-summary"><article><span>오늘 저장한 문장</span><b>${familyShortState.saved.length}개</b></article><article><span>불러온 학습 쇼츠</span><b>${youtubeShortsFeed.status==="success"?`${feedItems.length}개`:"확인 중"}</b></article></section>${youtubeShortsFeed.status==="success"&&feedItems.length?`<nav class="family-tags">${tags.map(tag=>`<button class="${familyShortState.tag===tag?"active":""}" data-family-tag="${tag}">${tag}</button>`).join("")}</nav>`:""}<section class="family-today"><header><div><p>TODAY'S SCENE</p><h2>매일 미드 한문장</h2></div><span>보고 · 뜻 확인 · 따라 말하기</span></header>${feedBody}</section><p class="family-youtube-notice">${icon("play",14)} 영상은 저장하지 않으며 YouTube 공식 임베드로 재생됩니다.</p></main>`;
 }
 
 function completeDramaStudyIfAllCardsDone() {
@@ -3297,9 +3451,9 @@ function reviewChatbotUi() {
 function selectionAssistantUi() {
   const selected = escapeMarkup(selectionAssistantState.text || "");
   const panel = selectionAssistantState.open ? `<aside class="selection-ai-panel" aria-label="선택 문장 AI 분석">
-    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>번역·유사 예문·문법 분석을 한 번에 제공해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
+    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>한글 번역부터 단어별 뜻과 유사문장까지 확인해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
     <div class="selection-ai-context"><small>현재 분석 문장</small><p>${selected}</p></div>
-    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>${selectionAssistantState.origin === "icon" ? "문장 옆 AI 비서 요청" : "드래그 분석 요청"}</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i><span>번역과 유사 예문, 문법 구조를 만들고 있어요</span></div></div>
+    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>${selectionAssistantState.origin === "icon" ? "문장 옆 AI 비서 요청" : "드래그 분석 요청"}</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i><span>한글 번역과 단어별 뜻을 정리하고 있어요</span></div></div>
   </aside>` : "";
   return `<button class="selection-ai-trigger" type="button" data-selection-ai-trigger aria-label="선택한 영어 분석">${icon("spark",14)} <span>문장 분석</span></button>${panel}<div class="selection-ai-toast" data-selection-ai-toast role="status">${icon("check",14)} 학습장에 문장과 분석 결과가 저장되었습니다.</div>`;
 }
@@ -3360,7 +3514,7 @@ function knownSentenceTranslation(text) {
 function normalizeSentenceAssistantSections(sections, fallbackSections) {
   const expected = [
     { title: "문장 번역", aliases: ["문장 번역", "자연스러운 해석", "번역"] },
-    { title: "문장 문법적 해석", aliases: ["문장 문법적 해석", "문장 골격", "문법적 해석"] },
+    { title: "단어별 뜻", aliases: ["단어별 뜻", "단어 뜻", "어휘 뜻"] },
     { title: "자주 착각하는 문법", aliases: ["자주 착각하는 문법", "자주 하는 실수", "문법 함정"] },
     { title: "유사문장", aliases: ["유사문장", "유사 예문", "비슷한 문장"] },
   ];
@@ -3369,6 +3523,32 @@ function normalizeSentenceAssistantSections(sections, fallbackSections) {
     const body = typeof matched?.body === "string" ? matched.body.trim() : "";
     return body ? { title: item.title, body: escapeMarkup(body).replace(/\n/g, "<br>") } : fallbackSections[index];
   });
+}
+
+function sentenceWordMeanings(text) {
+  const commonMeanings = {
+    a: "하나의, 어떤", an: "하나의, 어떤", the: "그, 해당", and: "그리고", or: "또는", but: "하지만",
+    that: "~라는 것, 그", this: "이것, 이", these: "이것들", those: "저것들", of: "~의", to: "~로, ~하기",
+    in: "~안에, ~에서", on: "~위에, ~에", at: "~에서", for: "~을 위해", with: "~와 함께, ~을 가지고",
+    by: "~에 의해, ~로", from: "~로부터", as: "~로서, ~처럼", is: "~이다", are: "~이다", was: "~였다", were: "~였다",
+    be: "~이다, 존재하다", been: "be의 과거분사", being: "존재함, ~되고 있는", have: "가지다", has: "가지고 있다", had: "가지고 있었다",
+    do: "하다", does: "한다", did: "했다", can: "~할 수 있다", could: "~할 수 있었다", may: "~일 수 있다",
+    might: "~일지도 모른다", must: "~해야 한다", should: "~해야 한다, ~일 것으로 보다", will: "~할 것이다", would: "~할 것이다",
+    often: "자주", usually: "보통", always: "항상", never: "결코 ~않다", more: "더 많은, 더", most: "가장 많은, 가장",
+    students: "학생들", student: "학생", learning: "학습", effective: "효과적인", smooth: "매끄러운", effortless: "힘이 들지 않는",
+    assume: "가정하다, 생각하다", feel: "느끼다", improves: "향상시킨다", improve: "향상시키다", reading: "읽기, 독해",
+    why: "왜, ~하는 이유", productive: "생산적인", struggle: "어려움, 분투", predictions: "예측들", prediction: "예측",
+  };
+  const tokens = text.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g) || [];
+  const uniqueTokens = tokens.filter((token, index) => tokens.findIndex(item => item.toLowerCase() === token.toLowerCase()) === index);
+  const lookupMeaning = token => {
+    const lower = token.toLowerCase();
+    if (commonMeanings[lower]) return commonMeanings[lower];
+    const candidates = [lower, lower.replace(/ies$/, "y"), lower.replace(/es$/, ""), lower.replace(/s$/, ""), lower.replace(/ied$/, "y"), lower.replace(/ed$/, ""), lower.replace(/ing$/, "")];
+    const found = words.find(item => candidates.includes(String(item.word || "").toLowerCase()));
+    return found?.meaning || "문맥에 따라 뜻 확인";
+  };
+  return `<div class="selection-ai-word-list">${uniqueTokens.map(token => `<p><b>${escapeMarkup(token)}</b><span>${escapeMarkup(lookupMeaning(token))}</span></p>`).join("")}</div>`;
 }
 
 function similarSentenceExamples(text) {
@@ -3404,7 +3584,7 @@ function detailedSelectionAnalysis(text) {
   const singleWord = /^[-A-Za-z']+$/.test(cleaned);
   if (singleWord) return [
     { title: "문장 번역", body: `선택한 단어 <b>${cleaned}</b>의 자연스러운 뜻은 현재 문맥과 함께 확인해야 합니다.<br><b>핵심 의미</b> 단독 의미보다 앞뒤 문장 속 쓰임을 우선하세요.` },
-    { title: "문장 문법적 해석", body: `‘${cleaned}’의 품사, 문장 안 역할, 함께 결합하는 전치사와 어형을 확인합니다.` },
+    { title: "단어별 뜻", body: sentenceWordMeanings(cleaned) },
     { title: "자주 착각하는 문법", body: "같은 철자라도 품사와 문맥에 따라 뜻이 달라질 수 있습니다. 단어 하나보다 포함된 문장 전체를 선택해 분석하는 것이 정확합니다." },
     { title: "유사문장", body: "전체 문장을 선택하면 같은 단어와 패턴을 활용한 유사문장 2~3개를 제공합니다." },
   ];
@@ -3417,7 +3597,7 @@ function detailedSelectionAnalysis(text) {
   const naturalTranslation = target ? "회사는 글로벌 시장 점유율을 안정시키기 위한 노력의 일환으로 최신 기술에 투자해 왔습니다." : knownSentenceTranslation(cleaned);
   return [
     { title: "문장 번역", body: `<b>자연스러운 해석</b><br>${naturalTranslation}<br><br><b>직역</b><br>${naturalTranslation}<br><br><b>핵심 의미</b><br>${naturalTranslation}` },
-    { title: "문장 문법적 해석", body: `<b>핵심 구조</b><br>주어(S) ${subject}<br>동사(V) ${verb.phrase}<br>나머지 서술부 ${predicate}<br><br>${prepPhrases.length ? `<b>구·절 구조</b><br>${prepPhrases.join(" / ")}<br>` : ""}${clauseWords.length ? `절 연결어: ${[...new Set(clauseWords)].join(", ")}<br>` : ""}<br><b>핵심 문법</b><br>${sentenceTenseAnalysis(cleaned)}<br>• ${sentencePatternAnalysis(cleaned)}<br><br><b>해석 순서</b><br>주어와 중심 동사를 먼저 읽고 목적어·보어를 연결한 뒤 수식 정보를 덧붙입니다.` },
+    { title: "단어별 뜻", body: sentenceWordMeanings(cleaned) },
     { title: "자주 착각하는 문법", body: commonMistakeAnalysis(cleaned) },
     { title: "유사문장", body: `<b>공통 패턴</b><br>현재 문장의 중심 동사와 문법 구조를 같은 순서로 적용합니다.<br><br>${similarExamples.map(([english, korean]) => `<b>${english}</b><br>${korean}`).join("<br><br>")}` },
   ];
@@ -3458,7 +3638,7 @@ async function appendSelectionAnalysis() {
   if (!chat) return;
   const fallbackCards = detailedSelectionAnalysis(selectionAssistantState.text);
   document.querySelector("[data-selection-ai-loading]")?.remove();
-  fallbackCards.forEach((item, index) => chat.insertAdjacentHTML("beforeend", `<details class="selection-ai-card selection-ai-learning-card" data-selection-ai-section="${index}" ${index === 0 ? "open" : ""}><summary><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeMarkup(item.title)}</span><em>${index === 0 ? "뜻을 먼저 확인하세요" : index === 1 ? "읽는 순서를 확인하세요" : index === 2 ? "실수 포인트를 확인하세요" : "같은 패턴을 연습하세요"}</em></summary><div>${item.body}</div></details>`));
+  fallbackCards.forEach((item, index) => chat.insertAdjacentHTML("beforeend", `<details class="selection-ai-card selection-ai-learning-card" data-selection-ai-section="${index}" ${index === 0 ? "open" : ""}><summary><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeMarkup(item.title)}</span><em>${index === 0 ? "한글 뜻을 먼저 확인하세요" : index === 1 ? "문장 속 단어 뜻을 확인하세요" : index === 2 ? "실수 포인트를 확인하세요" : "같은 패턴을 연습하세요"}</em></summary><div>${item.body}</div></details>`));
   chat.scrollTo({ top: 0, behavior: "smooth" });
 
   let web = { results: [], searchUrl: `https://www.bing.com/search?q=${encodeURIComponent(`"${selectionAssistantState.text}" English grammar`)}` };
@@ -4063,6 +4243,22 @@ function openSuneungPassage(index) {
 function compactSuneungPassagePage() {
   let availableIndexes = suneungPassages.map((_, index) => index)
     .filter(index => !suneungState.masteredPassages.includes(suneungPassages[index].id));
+  const activeTypeTraining = suneungState.activeTypeTraining;
+  if (activeTypeTraining?.typeId) {
+    availableIndexes = availableIndexes.filter(index => passageMatchesCsatType(suneungPassages[index], activeTypeTraining.typeId));
+    if (activeTypeTraining.size === "wrong") {
+      const wrongPassageIds = new Set((suneungState.typeTrainingHistory || []).filter(entry => entry.typeId === activeTypeTraining.typeId && !entry.correct).map(entry => entry.passageId));
+      if (wrongPassageIds.size) availableIndexes = availableIndexes.filter(index => wrongPassageIds.has(suneungPassages[index].id));
+    } else {
+      const limit = Number(activeTypeTraining.size);
+      if (Number.isFinite(limit) && limit > 0) availableIndexes = availableIndexes.slice(0, limit);
+    }
+  }
+  if (!availableIndexes.length && activeTypeTraining?.typeId) {
+    suneungState.activeTypeTraining = null;
+    saveSuneungState();
+    return `${header("유형 훈련 완료")}<main class="suneung-page"><section class="suneung-verified-empty"><span>${icon("check",24)}</span><h2>선택한 유형 훈련을 완료했습니다.</h2><p>유형별 훈련 화면에서 새 정답률과 개선폭을 확인해보세요.</p><button type="button" data-page="suneung-types">개선 결과 확인</button></section></main>`;
+  }
   if (!availableIndexes.length && suneungPassages.length) {
     suneungState.masteredPassages = [];
     suneungState.batchDay = 1;
@@ -4114,7 +4310,7 @@ function resetCurrentCsatBatchAttempt() {
 
 function legacySuneungHomePage() {
   const status = suneungState.completed ? "완료" : suneungState.submitted ? "진행 중" : "오늘 학습 전";
-  const quick = [["suneung-passage","오늘의 지문","book-open"],["suneung-wordmaster","수능 단어장","book"],["suneung-types","유형별 훈련","clipboard"],["suneung-review","약점 복습","check"],["suneung-vocab","어휘 / 구문","book"],["suneung-parent","부모 점검","calendar"]];
+  const quick = [["suneung-passage","오늘의 지문","book-open"],["suneung-wordmaster","수능 단어장","book"],["suneung-types","유형별 훈련","clipboard"],["suneung-vocab","어휘 / 구문","book"],["suneung-parent","부모 점검","calendar"]];
   return `${header("수능 영어")}<main class="suneung-page"><section class="suneung-home-hero"><div><span>TOP-TIER CSAT ENGLISH</span><h2>오늘도 1지문,<br>꾸준히 고득점 루틴</h2><p>실전 독해부터 정답 근거, 오답 원인까지 한 흐름으로 정리합니다.</p></div><div><article><b>${status}</b><span>오늘 상태</span></article><article><b>5일</b><span>연속 학습</span></article><article><b>5 / 7</b><span>주간 목표</span></article></div></section><section class="suneung-daily-card"><div><span>${suneungPassage.number} · TODAY'S PASSAGE</span><em>${suneungState.completed ? "완료" : "학습 대기"}</em></div><h2>${suneungPassage.topic}</h2><p>생산적인 어려움이 학습 효과를 높이는 이유</p><ul><li>${suneungPassage.type}</li><li>난이도 ${suneungPassage.difficulty}</li><li>약 ${suneungPassage.minutes}분</li><li>권장 ${suneungPassage.limit}</li></ul><button type="button" data-page="suneung-passage">${suneungState.completed ? "복습하기" : suneungState.selected !== null ? "이어서 학습" : "오늘 지문 시작하기"} ${icon("arrow",14)}</button></section><div class="suneung-home-grid"><section><header><div><span>WEAK POINTS</span><h3>최근 취약 유형 TOP 3</h3></div><button data-page="suneung-types">전체 유형</button></header>${[["빈칸 추론","58%","취약"],["문장 삽입","64%","복습 필요"],["순서 배열","71%","점검"]].map((item,index)=>`<article><i>${index+1}</i><b>${item[0]}</b><span>${item[1]}</span><em>${item[2]}</em></article>`).join("")}</section><section><header><div><span>TODAY'S VOCAB</span><h3>오늘의 핵심 단어</h3></div><button data-page="suneung-vocab">학습하기</button></header><div class="suneung-word-preview">${suneungPassage.vocab.slice(0,6).map(item=>`<b>${item.word}<small>${item.meaning}</small></b>`).join("")}</div></section></div><section class="suneung-performance"><article><span>최근 7일 학습</span><b>5일</b></article><article><span>평균 정답률</span><b>74%</b></article><article><span>복습 필요</span><b>6문제</b></article><article><span>가장 약한 유형</span><b>빈칸</b></article></section><nav class="suneung-quick-menu">${quick.map(item=>`<button data-page="${item[0]}">${icon(item[2],17)}<span>${item[1]}</span>${icon("chevron",13)}</button>`).join("")}</nav></main>`;
 }
 
@@ -4174,7 +4370,7 @@ function legacySuneungPassagePage() {
   if (suneungState.officialOnly) return `${header("오늘의 수능 지문")}<main class="suneung-page"><section class="suneung-verified-empty"><span>${icon("check",24)}</span><h2>공식 원문 확인이 필요한 문항입니다.</h2><p>공식 공개문항의 지문·선택지를 임의로 재현하지 않습니다. 원출처에서 확인된 문항만 학습 화면에 등록됩니다.</p><div><b>출처 기준</b><span>한국교육과정평가원 공식 공개문항</span><b>현재 상태</b><span>원문 미등록</span><b>AI 생성 여부</b><span>기본 학습 모드 제외</span></div><a href="https://www.suneung.re.kr/" target="_blank" rel="noopener noreferrer">평가원 원출처 확인 ${icon("arrow",13)}</a><button data-page="suneung-home">공식 기출 목록으로</button></section></main>`;
   const answered = suneungState.submitted;
   const correct = suneungState.selected === suneungPassage.answer;
-  return `${header("오늘의 수능 지문")}<main class="suneung-page"><section class="suneung-passage-head"><button data-page="suneung-home">← 수능 홈</button><div><span>${suneungPassage.number}</span><h2>${suneungPassage.topic}</h2><p>${suneungPassage.type} · 난이도 ${suneungPassage.difficulty} · 예상 ${suneungPassage.minutes}분 · 권장 ${suneungPassage.limit}</p></div><nav><button class="${suneungState.mode === "exam" ? "active" : ""}" data-suneung-mode="exam">실전 모드</button><button class="${suneungState.mode === "study" ? "active" : ""}" data-suneung-mode="study">학습 모드</button></nav></section><div class="suneung-study-layout"><article class="suneung-passage-card"><header><span>${suneungState.mode === "exam" ? "EXAM MODE · 해석과 힌트 비공개" : "STUDY MODE · 단락별 해석 가능"}</span><b>권장 제한 시간 ${suneungPassage.limit}</b></header><div class="suneung-passage-text">${suneungPassage.paragraphs.map((paragraph,index)=>`<section><i>${index+1}</i><p>${paragraph}</p>${suneungState.mode === "study" ? `<button data-suneung-translation="${index}">${suneungState.translations.includes(index) ? "해석 접기" : "문단 해석 보기"}</button>${suneungState.translations.includes(index) ? `<div>${suneungPassage.translations[index]}</div>` : ""}` : ""}</section>`).join("")}</div><fieldset class="suneung-question"><legend><small>${suneungPassage.type}</small>${suneungPassage.question}</legend>${suneungPassage.choices.map((choice,index)=>`<button class="${suneungState.selected===index?"selected":""} ${answered&&index===suneungPassage.answer?"correct":""} ${answered&&suneungState.selected===index&&index!==suneungPassage.answer?"wrong":""}" data-suneung-answer="${index}" ${answered?"disabled":""}><i>${index+1}</i>${choice}</button>`).join("")}<button class="submit" data-suneung-submit ${suneungState.selected===null||answered?"disabled":""}>정답 제출</button></fieldset>${answered?`<section class="suneung-explanation ${correct?"success":"error"}"><header><span>${correct?icon("check",17):icon("x",17)}</span><div><b>${correct?"정답입니다.":"오답입니다."}</b><p>정답 ${suneungPassage.answer+1}번 · ${suneungPassage.choices[suneungPassage.answer]}</p></div><button data-suneung-review-save>${suneungState.reviewSaved?"복습 예약됨":"오답 복습 예약"}</button></header><div><h3>정답 해설</h3><p>${suneungPassage.explanation}</p><blockquote><b>정답 근거</b>${suneungPassage.evidence}</blockquote><h3>오답 선택지 분석</h3>${suneungPassage.traps.map(item=>`<p>${item}</p>`).join("")}</div></section>`:""}</article><aside class="suneung-study-side"><section><span>오늘의 핵심 어휘</span>${suneungPassage.vocab.map(item=>`<article><b>${item.word}</b><p>${item.meaning}</p><small>${item.usage}</small></article>`).join("")}</section><section><span>핵심 구문</span><b>forces learners / to organize and reconstruct / what they know</b><p>동사 force + 목적어 + to부정사 구조입니다. what they know는 reconstruct의 목적어 역할을 합니다.</p></section></aside></div>${answered?`<section class="suneung-complete-bar"><div><b>${suneungState.completed?"오늘 지문 완료":"해설까지 확인했어요"}</b><p>${suneungState.completed?"오늘의 수능 루틴이 저장되었습니다.":"완료 처리 후 부모 점검 화면에도 반영됩니다."}</p></div><button data-suneung-complete ${suneungState.completed?"disabled":""}>${suneungState.completed?"학습 완료됨":"오늘 지문 완료"}</button><button data-page="suneung-review">약점 복습 보기</button></section>`:""}</main>`;
+  return `${header("오늘의 수능 지문")}<main class="suneung-page"><section class="suneung-passage-head"><button data-page="suneung-home">← 수능 홈</button><div><span>${suneungPassage.number}</span><h2>${suneungPassage.topic}</h2><p>${suneungPassage.type} · 난이도 ${suneungPassage.difficulty} · 예상 ${suneungPassage.minutes}분 · 권장 ${suneungPassage.limit}</p></div><nav><button class="${suneungState.mode === "exam" ? "active" : ""}" data-suneung-mode="exam">실전 모드</button><button class="${suneungState.mode === "study" ? "active" : ""}" data-suneung-mode="study">학습 모드</button></nav></section><div class="suneung-study-layout"><article class="suneung-passage-card"><header><span>${suneungState.mode === "exam" ? "EXAM MODE · 해석과 힌트 비공개" : "STUDY MODE · 단락별 해석 가능"}</span><b>권장 제한 시간 ${suneungPassage.limit}</b></header><div class="suneung-passage-text">${suneungPassage.paragraphs.map((paragraph,index)=>`<section><i>${index+1}</i><p>${paragraph}</p>${suneungState.mode === "study" ? `<button data-suneung-translation="${index}">${suneungState.translations.includes(index) ? "해석 접기" : "문단 해석 보기"}</button>${suneungState.translations.includes(index) ? `<div>${suneungPassage.translations[index]}</div>` : ""}` : ""}</section>`).join("")}</div><fieldset class="suneung-question"><legend><small>${suneungPassage.type}</small>${suneungPassage.question}</legend>${suneungPassage.choices.map((choice,index)=>`<button class="${suneungState.selected===index?"selected":""} ${answered&&index===suneungPassage.answer?"correct":""} ${answered&&suneungState.selected===index&&index!==suneungPassage.answer?"wrong":""}" data-suneung-answer="${index}" ${answered?"disabled":""}><i>${index+1}</i>${choice}</button>`).join("")}<button class="submit" data-suneung-submit ${suneungState.selected===null||answered?"disabled":""}>정답 제출</button></fieldset>${answered?`<section class="suneung-explanation ${correct?"success":"error"}"><header><span>${correct?icon("check",17):icon("x",17)}</span><div><b>${correct?"정답입니다.":"오답입니다."}</b><p>정답 ${suneungPassage.answer+1}번 · ${suneungPassage.choices[suneungPassage.answer]}</p></div><button data-suneung-review-save>${suneungState.reviewSaved?"복습 예약됨":"오답 복습 예약"}</button></header><div><h3>정답 해설</h3><p>${suneungPassage.explanation}</p><blockquote><b>정답 근거</b>${suneungPassage.evidence}</blockquote><h3>오답 선택지 분석</h3>${suneungPassage.traps.map(item=>`<p>${item}</p>`).join("")}</div></section>`:""}</article><aside class="suneung-study-side"><section><span>오늘의 핵심 어휘</span>${suneungPassage.vocab.map(item=>`<article><b>${item.word}</b><p>${item.meaning}</p><small>${item.usage}</small></article>`).join("")}</section><section><span>핵심 구문</span><b>forces learners / to organize and reconstruct / what they know</b><p>동사 force + 목적어 + to부정사 구조입니다. what they know는 reconstruct의 목적어 역할을 합니다.</p></section></aside></div>${answered?`<section class="suneung-complete-bar"><div><b>${suneungState.completed?"오늘 지문 완료":"해설까지 확인했어요"}</b><p>${suneungState.completed?"오늘의 수능 루틴이 저장되었습니다.":"완료 처리 후 부모 점검 화면에도 반영됩니다."}</p></div><button data-suneung-complete ${suneungState.completed?"disabled":""}>${suneungState.completed?"학습 완료됨":"오늘 지문 완료"}</button><button data-page="suneung-types">취약 유형 훈련</button></section>`:""}</main>`;
 }
 
 function suneungPassagePage() {
@@ -4222,14 +4418,138 @@ function suneungPassagePage() {
   const reviewPanel = `<section class="csat-review-panel" aria-label="수능 지문 복습 기록"><div class="csat-result-summary"><article><span>풀이 문항</span><b>${checkedIds.length}<small> / ${questions.length}</small></b></article><article><span>정답</span><b>${correctCount}</b></article><article><span>오답</span><b>${wrongQuestions.length}</b></article><article><span>모르는 문장</span><b>${suneungState.difficultSentences.length}</b></article></div><div class="csat-review-grid"><section><header><h3>오답 문항</h3><span>${wrongQuestions.length}개</span></header>${wrongQuestions.length ? wrongQuestions.map(question => `<button type="button" data-csat-retry-question="${question.id}"><span>${question.type}</span><b>${question.question}</b>${icon("arrow", 13)}</button>`).join("") : `<p class="csat-review-empty">현재 저장된 오답이 없습니다.</p>`}</section><section><header><h3>저장한 학습 항목</h3></header><dl><div><dt>중요 문장</dt><dd>${suneungState.bookmarkedSentences.length}개</dd></div><div><dt>모르는 문장</dt><dd>${suneungState.difficultSentences.length}개</dd></div><div><dt>헷갈리는 표현</dt><dd>${Object.values(suneungState.expressionStatus).filter(value => value === "unsure" || value === "unknown").length}개</dd></div><div><dt>오늘 지문</dt><dd>${suneungState.completed ? "학습 완료" : "진행 중"}</dd></div></dl></section></div></section>`;
 
   const panels = { expressions: expressionsPanel, questions: questionPanel, explanation: explanationPanel, review: reviewPanel };
-  return `${header("수능 지문 훈련")}<main class="suneung-page csat-passage-learning"><section class="csat-passage-hero"><div><button type="button" data-page="suneung-home">← 오늘의 학습</button><span>${suneungPassage.number} · ${suneungState.passageIndex + 1} / ${suneungPassages.length}</span><h2>${suneungPassage.topic}</h2><p>한 지문을 완료하면 다음 지문으로 계속 학습할 수 있습니다.</p></div><aside><span>${suneungPassage.source}</span><b>${suneungPassage.sourceDetail}</b><div>${suneungPassage.tags.map(tag => `<em>${tag}</em>`).join("")}</div><small>난이도 ${suneungPassage.difficulty} · 예상 ${suneungPassage.minutes}분 · 권장 ${suneungPassage.limit}</small><nav class="csat-passage-queue-actions"><button class="${currentPassageMastered ? "mastered" : ""}" type="button" data-csat-master-passage ${currentPassageMastered ? "disabled" : ""}>${currentPassageMastered ? `${icon("check", 13)} 암기 완료됨` : "암기 완료"}</button><button type="button" data-csat-skip-passage ${nextPassageIndex < 0 ? "disabled" : ""}>다음 지문 ${icon("arrow", 13)}</button></nav></aside></section><nav class="csat-passage-tabs" aria-label="수능 지문 학습 단계">${tabs.map(([id, label], index) => `<button class="${activeTab === id ? "active" : ""}" type="button" data-csat-passage-tab="${id}"><i>${index + 1}</i><span>${label}</span></button>`).join("")}</nav>${panels[activeTab]}<section class="csat-learning-footer"><div><b>${suneungState.completed ? "현재 지문 학습 완료" : allQuestionsChecked ? "문제 풀이를 완료했습니다" : "먼저 모든 문제를 풀어보세요"}</b><p>${suneungState.completed ? "다음 지문으로 바로 이어서 학습할 수 있습니다." : allQuestionsChecked ? "지문 아래의 해설 화면에서 전체 번역과 문법 분석을 확인할 수 있습니다." : `${checkedIds.length} / ${questions.length}문항 풀이 완료`}</p></div><button class="${suneungState.completed ? "done" : ""}" type="button" data-suneung-complete ${suneungState.completed || !allQuestionsChecked ? "disabled" : ""}>${suneungState.completed ? `${icon("check", 14)} 완료됨` : "이 지문 완료"}</button>${suneungState.completed ? `<button type="button" data-csat-next-passage>다음 지문 ${icon("arrow", 14)}</button>` : `<button type="button" data-page="suneung-review">약점 복습으로</button>`}</section></main>`;
+  return `${header("수능 지문 훈련")}<main class="suneung-page csat-passage-learning"><section class="csat-passage-hero"><div><button type="button" data-page="suneung-home">← 오늘의 학습</button><span>${suneungPassage.number} · ${suneungState.passageIndex + 1} / ${suneungPassages.length}</span><h2>${suneungPassage.topic}</h2><p>한 지문을 완료하면 다음 지문으로 계속 학습할 수 있습니다.</p></div><aside><span>${suneungPassage.source}</span><b>${suneungPassage.sourceDetail}</b><div>${suneungPassage.tags.map(tag => `<em>${tag}</em>`).join("")}</div><small>난이도 ${suneungPassage.difficulty} · 예상 ${suneungPassage.minutes}분 · 권장 ${suneungPassage.limit}</small><nav class="csat-passage-queue-actions"><button class="${currentPassageMastered ? "mastered" : ""}" type="button" data-csat-master-passage ${currentPassageMastered ? "disabled" : ""}>${currentPassageMastered ? `${icon("check", 13)} 암기 완료됨` : "암기 완료"}</button><button type="button" data-csat-skip-passage ${nextPassageIndex < 0 ? "disabled" : ""}>다음 지문 ${icon("arrow", 13)}</button></nav></aside></section><nav class="csat-passage-tabs" aria-label="수능 지문 학습 단계">${tabs.map(([id, label], index) => `<button class="${activeTab === id ? "active" : ""}" type="button" data-csat-passage-tab="${id}"><i>${index + 1}</i><span>${label}</span></button>`).join("")}</nav>${panels[activeTab]}<section class="csat-learning-footer"><div><b>${suneungState.completed ? "현재 지문 학습 완료" : allQuestionsChecked ? "문제 풀이를 완료했습니다" : "먼저 모든 문제를 풀어보세요"}</b><p>${suneungState.completed ? "다음 지문으로 바로 이어서 학습할 수 있습니다." : allQuestionsChecked ? "지문 아래의 해설 화면에서 전체 번역과 문법 분석을 확인할 수 있습니다." : `${checkedIds.length} / ${questions.length}문항 풀이 완료`}</p></div><button class="${suneungState.completed ? "done" : ""}" type="button" data-suneung-complete ${suneungState.completed || !allQuestionsChecked ? "disabled" : ""}>${suneungState.completed ? `${icon("check", 14)} 완료됨` : "이 지문 완료"}</button>${suneungState.completed ? `<button type="button" data-csat-next-passage>다음 지문 ${icon("arrow", 14)}</button>` : `<button type="button" data-page="suneung-types">취약 유형 훈련으로</button>`}</section></main>`;
+}
+
+const csatTypeTrainingData = [
+  { id: "title", name: "제목 찾기", accuracy: 82, delta: 4, attempts: 12, wrong: 2, status: "strong", badge: "안정권", description: "글 전체를 아우르는 핵심 제목을 고르는 유형", reason: "핵심어 대응이 안정적으로 유지되고 있어요.", focus: "핵심어 대응", weakPoint: "매력적인 부분 제목을 전체 제목으로 고르는 실수" },
+  { id: "topic", name: "주제 파악", accuracy: 78, delta: 6, attempts: 14, wrong: 3, status: "rising", badge: "최근 상승", description: "반복되는 핵심 개념으로 글의 중심 소재를 찾는 유형", reason: "최근 3회 훈련에서 6%p 상승했어요.", focus: "주제문 파악", weakPoint: "첫 문장만 보고 주제를 성급하게 결정하는 실수" },
+  { id: "main-point", name: "요지", accuracy: 76, delta: 3, attempts: 11, wrong: 3, status: "maintain", badge: "유지 필요", description: "필자가 전달하려는 핵심 메시지를 파악하는 유형", reason: "결론 문장과 근거의 연결을 한 번 더 점검하세요.", focus: "주장과 근거", weakPoint: "소재와 필자의 메시지를 혼동하는 실수" },
+  { id: "blank", name: "빈칸 추론", accuracy: 58, delta: 8, attempts: 16, wrong: 7, status: "recommended", badge: "최우선 추천", description: "전후 문맥과 논리 흐름으로 핵심 의미를 추론하는 유형", reason: "가장 낮은 정답률이지만 최근 8%p 개선됐어요.", focus: "대조 구조 파악", weakPoint: "빈칸 주변 문장만 읽고 전체 논리를 놓치는 실수" },
+  { id: "implicit", name: "함축 의미 추론", accuracy: 67, delta: -2, attempts: 8, wrong: 4, status: "weak", badge: "취약", description: "비유와 문맥 속 표현이 실제로 의미하는 바를 찾는 유형", reason: "추상어 해석에서 최근 오답이 반복됐어요.", focus: "추상어 해석", weakPoint: "표현의 사전적 의미를 그대로 선택하는 실수" },
+  { id: "vocabulary", name: "어휘 추론", accuracy: 73, delta: 5, attempts: 10, wrong: 3, status: "rising", badge: "최근 상승", description: "문맥에 맞는 어휘 의미와 쓰임을 판단하는 유형", reason: "문맥 단서 활용이 좋아지고 있어요.", focus: "문맥 단서", weakPoint: "익숙한 뜻만 보고 문맥상 의미를 놓치는 실수" },
+  { id: "grammar", name: "어법", accuracy: 80, delta: 1, attempts: 13, wrong: 2, status: "strong", badge: "안정권", description: "문장 구조와 문법 관계가 올바른지 판단하는 유형", reason: "현재 안정권이며 주 1회 유지 훈련을 권장해요.", focus: "수식 관계", weakPoint: "긴 수식어 때문에 주어와 동사의 수 일치를 놓치는 실수" },
+  { id: "insertion", name: "문장 삽입", accuracy: 64, delta: 4, attempts: 12, wrong: 5, status: "weak", badge: "취약", description: "지시어와 연결 관계로 문장이 들어갈 위치를 찾는 유형", reason: "지시어 추적 오답이 최근 3회 반복됐어요.", focus: "지시어 추적", weakPoint: "앞 문장만 보고 뒤 문장과의 연결을 확인하지 않는 실수" },
+  { id: "ordering", name: "글의 순서 배열", accuracy: 71, delta: 7, attempts: 10, wrong: 3, status: "rising", badge: "최근 상승", description: "연결사와 정보 흐름으로 문단의 순서를 배열하는 유형", reason: "논리 흐름 파악이 최근 7%p 개선됐어요.", focus: "연결사 판단", weakPoint: "대명사가 가리키는 대상을 확인하지 않는 실수" },
+  { id: "summary", name: "요약문 완성", accuracy: 77, delta: 2, attempts: 7, wrong: 2, status: "maintain", badge: "유지 필요", description: "핵심 내용을 압축한 요약문의 빈칸을 완성하는 유형", reason: "핵심어 대응은 좋지만 반대 방향 선택지를 주의하세요.", focus: "핵심어 대응", weakPoint: "원문의 방향과 반대인 어휘 조합을 고르는 실수" },
+  { id: "long", name: "장문 독해", accuracy: 75, delta: 5, attempts: 6, wrong: 2, status: "maintain", badge: "유지 필요", description: "긴 글의 흐름을 유지하며 여러 문항을 해결하는 유형", reason: "정확도는 양호하며 시간 관리 훈련이 필요해요.", focus: "정보 위치 추적", weakPoint: "앞 문항을 풀며 뒤 문항의 근거를 놓치는 실수" },
+];
+
+function csatTypeIdFromLabel(label = "") {
+  const value = String(label);
+  if (value.includes("제목")) return "title";
+  if (value.includes("주제")) return "topic";
+  if (value.includes("요지") || value.includes("주장")) return "main-point";
+  if (value.includes("빈칸")) return "blank";
+  if (value.includes("함축")) return "implicit";
+  if (value.includes("어휘")) return "vocabulary";
+  if (value.includes("어법")) return "grammar";
+  if (value.includes("삽입")) return "insertion";
+  if (value.includes("순서")) return "ordering";
+  if (value.includes("요약")) return "summary";
+  if (value.includes("장문")) return "long";
+  return "";
+}
+
+function currentCsatTypeTrainingData() {
+  const history = Array.isArray(suneungState.typeTrainingHistory) ? suneungState.typeTrainingHistory : [];
+  return csatTypeTrainingData.map(seed => {
+    const entries = history.filter(entry => entry.typeId === seed.id).slice(-20);
+    if (!entries.length) return { ...seed, previousAccuracy: Math.max(0, seed.accuracy - seed.delta), isPersonal: false };
+    const recent = entries.slice(-5);
+    const previous = entries.slice(-10, -5);
+    const accuracy = Math.round((recent.filter(entry => entry.correct).length / recent.length) * 100);
+    const previousAccuracy = previous.length ? Math.round((previous.filter(entry => entry.correct).length / previous.length) * 100) : seed.accuracy;
+    const delta = accuracy - previousAccuracy;
+    const wrong = entries.filter(entry => !entry.correct).length;
+    const status = accuracy < 60 ? "recommended" : accuracy < 70 ? "weak" : delta >= 5 ? "rising" : accuracy >= 80 ? "strong" : "maintain";
+    const badge = status === "recommended" ? "최우선 추천" : status === "weak" ? "취약" : status === "rising" ? "최근 상승" : status === "strong" ? "안정권" : "유지 필요";
+    const reason = status === "recommended" ? `최근 ${recent.length}문제 정답률이 가장 낮아 우선 훈련이 필요해요.` : status === "weak" ? `최근 오답 ${wrong}개가 누적되어 다시 확인이 필요해요.` : delta > 0 ? `이전 훈련보다 ${delta}%p 향상됐어요.` : delta < 0 ? `이전 훈련보다 ${Math.abs(delta)}%p 낮아져 점검이 필요해요.` : "최근 정답률이 유지되고 있어요.";
+    return { ...seed, accuracy, previousAccuracy, delta, attempts: entries.length, wrong, status, badge, reason, isPersonal: true };
+  });
+}
+
+function recordCsatTypeTrainingResult(passage, question, selected) {
+  const typeId = csatTypeIdFromLabel(question?.type || passage?.type);
+  if (!typeId || !question) return;
+  const attemptId = `${passage.id}:${question.id}:${Date.now()}`;
+  suneungState.typeTrainingHistory.push({
+    id: attemptId,
+    passageId: passage.id,
+    questionId: question.id,
+    typeId,
+    correct: Number(selected) === Number(question.answer),
+    answeredAt: new Date().toISOString(),
+  });
+  suneungState.typeTrainingHistory = suneungState.typeTrainingHistory.slice(-300);
+}
+
+function csatTypeTrainingPage() {
+  const trainingData = currentCsatTypeTrainingData();
+  const filter = suneungState.typeFilter || "all";
+  const sort = suneungState.typeSort || "priority";
+  const selected = trainingData.find(item => item.id === suneungState.selectedTypeId);
+  const filters = [["all", "전체"], ["recommended", "추천"], ["weak", "취약"], ["strong", "강점"]];
+  let items = trainingData.filter(item => filter === "all"
+    || (filter === "recommended" && ["recommended", "weak"].includes(item.status))
+    || (filter === "weak" && item.accuracy < 70)
+    || (filter === "strong" && item.accuracy >= 80));
+  items = [...items].sort((a, b) => sort === "accuracy" ? a.accuracy - b.accuracy : sort === "improvement" ? b.delta - a.delta : sort === "recent" ? b.attempts - a.attempts : (a.status === "recommended" ? -1 : b.status === "recommended" ? 1 : a.accuracy - b.accuracy));
+  const weakest = [...trainingData].sort((a, b) => a.accuracy - b.accuracy)[0];
+  const improved = [...trainingData].sort((a, b) => b.delta - a.delta)[0];
+  const detail = selected ? `<section class="csat-type-detail"><header><div><span>${selected.badge} · ${selected.focus}</span><h2>${selected.name}</h2><p>${selected.description}</p></div><button type="button" data-csat-type-close aria-label="유형 상세 닫기">×</button></header><div class="csat-type-achievement ${selected.delta >= 0 ? "up" : "down"}"><b>${selected.delta > 0 ? `이전 ${selected.previousAccuracy}%에서 현재 ${selected.accuracy}%로 향상됐어요.` : selected.delta < 0 ? `이전보다 ${Math.abs(selected.delta)}%p 낮아져 집중 점검이 필요해요.` : "최근 정답률을 안정적으로 유지하고 있어요."}</b><span>${selected.isPersonal ? "실제 풀이 이력을 기준으로 계산했습니다." : "풀이 이력이 쌓이면 개인 기록으로 자동 전환됩니다."}</span></div><div class="csat-type-detail-grid"><section><span>현재 정답률</span><strong>${selected.accuracy}%</strong><em class="${selected.delta >= 0 ? "up" : "down"}">${selected.delta >= 0 ? "↑" : "↓"} ${Math.abs(selected.delta)}%p</em><div class="csat-type-detail-chart">${[-10,-6,-3,0].map((offset,index)=>`<i style="height:${Math.max(18,selected.accuracy+offset)}%"><small>${index+1}회</small></i>`).join("")}<i class="current" style="height:${selected.accuracy}%"><small>현재</small></i></div></section><section><h3>자주 틀리는 포인트</h3><p>${selected.weakPoint}</p><h3>이번 훈련 전략</h3><p>${selected.reason}</p><div class="csat-type-skill"><b>${selected.focus}</b><span>이 세부 기술을 우선 확인합니다.</span></div></section></div><footer><button type="button" data-csat-type-train="${selected.id}" data-csat-type-size="wrong">오답 다시 풀기</button><button type="button" data-csat-type-train="${selected.id}" data-csat-type-size="5">5문제 빠르게</button><button class="primary" type="button" data-csat-type-train="${selected.id}" data-csat-type-size="10">실전 10문제 ${icon("arrow",13)}</button></footer></section>` : "";
+  const cards = items.length ? items.map(item => `<article class="csat-type-card ${item.status}"><header><span>${item.badge}</span><em>${item.focus}</em></header><h3>${item.name}</h3><p>${item.description}</p><section class="csat-type-kpi"><div><small>현재 정답률</small><strong>${item.accuracy}<i>%</i></strong></div><em class="${item.delta >= 0 ? "up" : "down"}">${item.delta >= 0 ? "+" : ""}${item.delta}%p</em></section><div class="csat-type-meter"><i style="width:${item.accuracy}%"></i></div><p class="csat-type-reason">${icon(item.delta >= 0 ? "arrow" : "x",12)} ${item.reason}</p><dl><div><dt>최근 풀이</dt><dd>${item.attempts}문제</dd></div><div><dt>최근 오답</dt><dd>${item.wrong}문제</dd></div></dl><footer><button type="button" data-csat-type-detail="${item.id}">유형 상세</button><button type="button" data-csat-type-train="${item.id}" data-csat-type-size="5">5문제 훈련</button><button type="button" data-csat-type-train="${item.id}" data-csat-type-size="wrong">오답 복습</button></footer></article>`).join("") : `<section class="csat-type-no-result"><b>해당 상태의 유형이 없습니다.</b><p>다른 필터를 선택해 확인해보세요.</p></section>`;
+  return `${header("유형별 훈련")}<main class="suneung-page csat-type-page"><section class="csat-type-hero"><div><span>PERSONALIZED TYPE TRAINING</span><h1>취약한 유형부터 훈련하고<br>정답률 개선을 확인하세요</h1><p>문제은행이 아니라, 내 오답을 다음 훈련으로 연결하는 맞춤형 학습 허브입니다.</p></div><div><button type="button" data-csat-type-detail="${weakest.id}"><span>가장 취약 · 먼저 훈련</span><b>${weakest.name}</b><strong>${weakest.accuracy}%</strong></button><button type="button" data-csat-type-train="${weakest.id}" data-csat-type-size="5"><span>이번 주 추천</span><b>${weakest.name}</b><strong>5문제 시작</strong></button><button type="button" data-csat-type-detail="${improved.id}"><span>가장 많이 개선</span><b>${improved.name}</b><strong>${improved.delta >= 0 ? "+" : ""}${improved.delta}%p</strong></button></div></section>${detail}<section class="csat-type-controls"><nav>${filters.map(([id,label])=>`<button class="${filter===id?"active":""}" type="button" data-csat-type-filter="${id}">${label}</button>`).join("")}</nav><label>정렬<select data-csat-type-sort><option value="priority" ${sort==="priority"?"selected":""}>취약도순</option><option value="accuracy" ${sort==="accuracy"?"selected":""}>정답률 낮은순</option><option value="improvement" ${sort==="improvement"?"selected":""}>최근 개선순</option><option value="recent" ${sort==="recent"?"selected":""}>최근 풀이순</option></select></label></section><section class="csat-type-grid-new">${cards}</section></main>`;
+}
+
+function openCsatTypeTraining(typeId, size = "5") {
+  const availableIndexes = suneungPassages.map((passage, index) => ({ passage, index }))
+    .filter(({ passage }) => !suneungState.masteredPassages.includes(passage.id))
+    .filter(({ passage }) => passageMatchesCsatType(passage, typeId));
+  let candidates = availableIndexes;
+  if (size === "wrong") {
+    const wrongPassageIds = new Set((suneungState.typeTrainingHistory || []).filter(entry => entry.typeId === typeId && !entry.correct).map(entry => entry.passageId));
+    if (wrongPassageIds.size) candidates = candidates.filter(({ passage }) => wrongPassageIds.has(passage.id));
+  } else {
+    const limit = Number(size);
+    if (Number.isFinite(limit) && limit > 0) candidates = candidates.slice(0, limit);
+  }
+  const target = candidates[0];
+  if (!target) return false;
+  suneungState.batchDay = 1;
+  suneungState.batchPosition = 0;
+  suneungState.typeTrainingSize = size;
+  suneungState.activeTypeTraining = { typeId, size };
+  suneungState.passageIndex = target.index;
+  resetCurrentCsatBatchAttempt();
+  saveSuneungState();
+  navigateTo("suneung-passage", { preserveTypeTraining: true });
+  return true;
+}
+
+function passageMatchesCsatType(passage, typeId) {
+  const typePatterns = {
+    title: ["제목"],
+    topic: ["주제"],
+    "main-point": ["요지", "주장"],
+    blank: ["빈칸"],
+    implicit: ["함축"],
+    vocabulary: ["어휘"],
+    grammar: ["어법"],
+    insertion: ["삽입"],
+    ordering: ["순서"],
+    summary: ["요약"],
+    long: ["장문"],
+  };
+  const patterns = typePatterns[typeId] || [];
+  const searchable = [passage.type, ...(passage.questions || []).map(question => question.type)].join(" ");
+  return patterns.some(pattern => searchable.includes(pattern));
 }
 
 function suneungSupportPage(view) {
   if (view === "suneung-parent") return `${header("부모 점검")}<main class="suneung-page"><section class="suneung-parent-head"><div><span>WEEKLY CHECK</span><h2>학습 루틴 점검</h2><p>압박보다 꾸준한 학습 방향을 확인하는 요약입니다.</p></div><b>${suneungState.completed?"오늘 완료":"오늘 진행 전"}</b></section><section class="suneung-parent-stats">${[["최근 7일","5일 학습"],["평균 정답률","74%"],["해설 확인","82%"],["복습 대기","6문제"]].map(item=>`<article><span>${item[0]}</span><b>${item[1]}</b></article>`).join("")}</section><div class="suneung-parent-grid"><section><h3>오늘 확인</h3>${[["오늘 지문 풀이",suneungState.submitted],["해설 확인",suneungState.submitted],["학습 완료",suneungState.completed],["오답 복습 예약",suneungState.reviewSaved]].map(item=>`<p class="${item[1]?"done":""}">${item[1]?icon("check",13):"○"}<b>${item[0]}</b><span>${item[1]?"확인":"대기"}</span></p>`).join("")}</section><section><h3>취약 유형 TOP 3</h3><p><b>빈칸 추론</b><span>58%</span></p><p><b>문장 삽입</b><span>64%</span></p><p><b>순서 배열</b><span>71%</span></p></section></div><section class="suneung-parent-comment"><span>${icon("message",17)}</span><div><b>이번 주 학습 코멘트</b><p>최근 7일 중 5일 학습해 루틴이 잘 유지되고 있습니다. 빈칸 추론은 정답 근거 문장을 먼저 찾는 연습을 권장합니다.</p></div></section></main>`;
   if (view === "suneung-vocab") return `${header("어휘 / 구문")}<main class="suneung-page"><section class="suneung-section-head"><span>VOCABULARY & STRUCTURE</span><h2>오늘 지문으로 익히는 어휘와 구문</h2></section><div class="suneung-vocab-grid">${suneungPassage.vocab.map(item=>`<article><span>필수 어휘</span><h3>${item.word}</h3><b>${item.meaning}</b><p>${item.usage}</p><button>복습 단어로 저장</button></article>`).join("")}</div><section class="suneung-syntax"><span>문장 끊어읽기</span><h3>The effort required to retrieve an idea / forces learners / to organize and reconstruct / what they know.</h3><p><b>주어</b> The effort required to retrieve an idea</p><p><b>동사</b> forces</p><p><b>목적격 보어</b> to organize and reconstruct what they know</p></section></main>`;
-  const types = [["제목 찾기",82,4],["주제 파악",78,6],["요지",76,5],["빈칸 추론",58,8],["어휘 추론",73,4],["어법",80,5],["문장 삽입",64,7],["글의 순서 배열",71,6],["요약문 완성",77,3],["장문 독해",75,4]];
-  if (view === "suneung-types") return `${header("유형별 훈련")}<main class="suneung-page"><section class="suneung-section-head"><span>TYPE TRAINING</span><h2>약한 유형만 전략적으로 훈련하세요</h2><p>최근 정답률과 학습 기록을 기준으로 우선순위를 제안합니다.</p></section><div class="suneung-type-grid">${types.map(item=>`<article class="${item[1]<70?"weak":""}"><span>${item[1]<70?"취약 유형":"유형 훈련"}</span><h3>${item[0]}</h3><p>${item[0]} 문제의 핵심 근거와 선택지 비교 전략을 연습합니다.</p><div><b>정답률 ${item[1]}%</b><small>최근 ${item[2]}회</small></div><button data-page="suneung-passage">훈련 시작</button></article>`).join("")}</div></main>`;
+  if (view === "suneung-types") return csatTypeTrainingPage();
   return `${header("약점 복습")}<main class="suneung-page"><section class="suneung-section-head"><span>WEAKNESS REVIEW</span><h2>틀린 이유까지 확인하는 복습</h2><p>정답만 다시 보는 대신 오답 원인을 분류해 다음 풀이에 반영합니다.</p></section><nav class="suneung-review-filter"><button class="active">전체</button><button>어휘 부족</button><button>구조 해석 실패</button><button>선택지 비교 실패</button><button>시간 부족</button></nav><section class="suneung-review-list"><article><span>복습 필요 · 빈칸 추론</span><h3>${suneungPassage.topic}</h3><p>오답 원인: <b>${suneungState.selected!==suneungPassage.answer&&suneungState.submitted?"선택지 비교 실패":"취약 유형 정기 복습"}</b></p><button data-page="suneung-passage">다시 풀기</button></article><article><span>헷갈린 문제 · 문장 삽입</span><h3>How Context Shapes Memory</h3><p>오답 원인: <b>문장 구조 해석 실패</b></p><button>복습 시작</button></article></section></main>`;
 }
 
@@ -4237,13 +4557,19 @@ function suneungPolicyPage() {
   return `${header("출처 정책")}<main class="suneung-page"><section class="suneung-policy-hero"><span>SOURCE POLICY</span><h2>공식 공개문항 중심 운영 원칙</h2><p>학생과 부모가 모든 문항의 출처와 변형 여부를 즉시 확인할 수 있도록 관리합니다.</p></section><section class="suneung-policy-grid"><article><span>01</span><h3>허용하는 기본 출처</h3><p>한국교육과정평가원 수능·6월·9월 모의평가, 시도교육청 전국연합학력평가, EBS 공식 연계 자료만 기본 학습 목록에 포함합니다.</p></article><article><span>02</span><h3>기본 모드 제외 기준</h3><p>출처가 불명확한 사설 문항, 출처를 검증하지 못한 전재 자료, AI 생성 문항은 공식 기출 기본 모드에서 제외합니다.</p></article><article><span>03</span><h3>문항별 신뢰 정보</h3><p>출처 기관, 시험명, 시행 시기, 문항 번호, 공식성 등급, 원문 여부와 원출처 기준을 함께 표시합니다.</p></article><article><span>04</span><h3>해설과 변형 표기</h3><p>공식 정답과 학습용 자체 해설을 구분하고, 원문 그대로인지 일부 재구성인지 눈에 띄게 표시합니다.</p></article></section><section class="suneung-policy-sources"><h3>공식 확인 경로</h3><a href="https://www.suneung.re.kr/" target="_blank" rel="noopener noreferrer"><b>한국교육과정평가원 수능 홈페이지</b><span>수능 및 모의평가 공식 공개자료 확인</span>${icon("arrow",14)}</a><a href="https://www.ebsi.co.kr/ebs/xip/xipc/previousPaperList.ebs?mainYn=Y" target="_blank" rel="noopener noreferrer"><b>EBSi 기출문제</b><span>수능·모평·학평 기출 및 EBS 자료 확인</span>${icon("arrow",14)}</a></section><p class="suneung-policy-note">운영 원칙: 원출처 확인이 끝나지 않은 문항은 내용 대신 ‘원문 미등록’ 상태로 표시합니다.</p></main>`;
 }
 
-function suneungPage(page) { return page === "suneung-wordmaster" ? suneungWordmasterPage() : page === "suneung-passage" ? suneungPassagePage() : page === "suneung-policy" ? suneungPolicyPage() : ["suneung-types","suneung-review","suneung-vocab","suneung-parent"].includes(page) ? suneungSupportPage(page) : suneungHomePage(); }
+function suneungPage(page) {
+  if (page === "suneung-review") {
+    suneungState.typeFilter = "weak";
+    return csatTypeTrainingPage();
+  }
+  return page === "suneung-wordmaster" ? suneungWordmasterPage() : page === "suneung-passage" ? suneungPassagePage() : page === "suneung-policy" ? suneungPolicyPage() : ["suneung-types","suneung-vocab","suneung-parent"].includes(page) ? suneungSupportPage(page) : suneungHomePage();
+}
 
 function enhanceNewsGuidedReader() {
   const reader = document.querySelector(".news-reader");
   if (!reader || state.newsIndex === null) return;
   const article = articleLibrary[state.newsIndex] || articleLibrary[0];
-  const total = article.sentences.length;
+  const total = getArticleBodyParagraphs(article).length;
   const checked = newsArticleLearningState.translations.length;
   const saved = newsArticleLearningState.savedArticles.includes(article.id);
   const progressLabel = reader.querySelector(".news-reader-progress b");
@@ -4268,6 +4594,7 @@ function render() {
   document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}</div>`;
   enhanceNewsGuidedReader();
   bindEvents();
+  if (state.page === "drama" && youtubeShortsFeed.status === "idle") queueMicrotask(refreshYoutubeShortsFeed);
 }
 
 function saveHistory(){localStorage.setItem("worthy_life_history",JSON.stringify(state.history));}
@@ -4289,11 +4616,20 @@ function navigationUrl(page, newsIndex = null) {
 }
 
 function navigateTo(page, options = {}) {
+  if (page === "suneung-review") {
+    page = "suneung-types";
+    suneungState.typeFilter = "weak";
+    saveSuneungState();
+  }
+  if (page === "suneung-passage" && !options.preserveTypeTraining) suneungState.activeTypeTraining = null;
   const newsIndex = page === "news" ? (options.newsIndex ?? null) : null;
   const tedLessonId = page === "ted" ? (options.tedLessonId ?? state.tedLessonId ?? null) : null;
   const isSameScreen = state.page === page && state.newsIndex === newsIndex && state.tedLessonId === tedLessonId;
 
-  if (page === "ted" && tedLessonId !== state.tedLessonId) state.tedSentenceIndex = 0;
+  if (page === "ted" && tedLessonId !== state.tedLessonId) {
+    state.tedSentenceIndex = 0;
+    state.tedMeaningOpen = false;
+  }
 
   state.page = page;
   state.newsIndex = newsIndex;
@@ -4453,6 +4789,32 @@ function bindEvents(){
   document.querySelectorAll("[data-suneung-mode]").forEach(button => button.addEventListener("click", event => { suneungState.mode = event.currentTarget.dataset.suneungMode; saveSuneungState(); render(); }));
   document.querySelector("[data-suneung-official]")?.addEventListener("change", event => { suneungState.officialOnly = event.currentTarget.checked; saveSuneungState(); render(); });
   document.querySelectorAll("[data-suneung-source-tab]").forEach(button => button.addEventListener("click", event => { suneungState.sourceTab = event.currentTarget.dataset.suneungSourceTab; saveSuneungState(); render(); }));
+  document.querySelectorAll("[data-csat-type-filter]").forEach(button => button.addEventListener("click", event => {
+    suneungState.typeFilter = event.currentTarget.dataset.csatTypeFilter;
+    saveSuneungState();
+    render();
+  }));
+  document.querySelector("[data-csat-type-sort]")?.addEventListener("change", event => {
+    suneungState.typeSort = event.currentTarget.value;
+    saveSuneungState();
+    render();
+  });
+  document.querySelectorAll("[data-csat-type-detail]").forEach(button => button.addEventListener("click", event => {
+    suneungState.selectedTypeId = event.currentTarget.dataset.csatTypeDetail;
+    saveSuneungState();
+    render();
+    requestAnimationFrame(() => document.querySelector(".csat-type-detail")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }));
+  document.querySelector("[data-csat-type-close]")?.addEventListener("click", () => {
+    suneungState.selectedTypeId = "";
+    saveSuneungState();
+    render();
+  });
+  document.querySelectorAll("[data-csat-type-train]").forEach(button => button.addEventListener("click", event => {
+    const typeId = event.currentTarget.dataset.csatTypeTrain;
+    const size = event.currentTarget.dataset.csatTypeSize || "5";
+    openCsatTypeTraining(typeId, size);
+  }));
   document.querySelectorAll("[data-csat-passage-tab]").forEach(button => button.addEventListener("click", event => {
     suneungState.passageTab = event.currentTarget.dataset.csatPassageTab;
     saveSuneungState();
@@ -4507,6 +4869,7 @@ function bindEvents(){
     const question = suneungPassage.questions[suneungState.passageQuestionIndex];
     if (!question || suneungState.passageAnswers[question.id] === undefined) return;
     suneungState.passageChecked[question.id] = true;
+    recordCsatTypeTrainingResult(suneungPassage, question, suneungState.passageAnswers[question.id]);
     suneungState.submitted = true;
     if (suneungState.passageAnswers[question.id] !== question.answer && !suneungState.wrongPassageQuestions.includes(question.id)) suneungState.wrongPassageQuestions.push(question.id);
     if (suneungState.passageAnswers[question.id] === question.answer) suneungState.wrongPassageQuestions = suneungState.wrongPassageQuestions.filter(id => id !== question.id);
@@ -4590,6 +4953,10 @@ function bindEvents(){
     const key = event.currentTarget.dataset.csatBatchCheck;
     if (suneungState.batchAnswers[key] === undefined) return;
     suneungState.batchChecked[key] = true;
+    const passage = suneungPassages.find(item => key.startsWith(`${item.id}:`));
+    const questionId = passage ? key.slice(passage.id.length + 1) : "";
+    const question = passage?.questions.find(item => item.id === questionId);
+    if (passage && question) recordCsatTypeTrainingResult(passage, question, suneungState.batchAnswers[key]);
     saveSuneungState();
     render();
   }));
@@ -4812,6 +5179,15 @@ function bindEvents(){
     navigateTo("ted", { tedLessonId: event.currentTarget.dataset.openTed });
   });
   document.querySelector("[data-ted-back]")?.addEventListener("click", () => navigateTo("home"));
+  document.querySelector("[data-ted-meaning-toggle]")?.addEventListener("click", event => {
+    state.tedMeaningOpen = !state.tedMeaningOpen;
+    const button = event.currentTarget;
+    const panel = document.querySelector("[data-ted-meaning-panel]");
+    button.classList.toggle("active", state.tedMeaningOpen);
+    button.setAttribute("aria-expanded", String(state.tedMeaningOpen));
+    button.innerHTML = `${state.tedMeaningOpen ? "뜻 숨기기" : "뜻 보기"} ${icon("chevron", 13)}`;
+    if (panel) panel.hidden = !state.tedMeaningOpen;
+  });
   document.querySelector("[data-ted-sentence-prev]")?.addEventListener("click", () => {
     if (state.tedSentenceIndex <= 0) return;
     state.tedSentenceIndex -= 1;
@@ -5036,15 +5412,15 @@ function bindEvents(){
     saveSpeakingSpeed(Number(event.currentTarget.dataset.speakingSpeed));
     document.querySelectorAll("[data-speaking-speed]").forEach(item => item.classList.toggle("active", Number(item.dataset.speakingSpeed) === speakingSpeed));
   }));
-  document.querySelectorAll("[data-speaking-expression-done]").forEach(button => button.addEventListener("click", event => {
-    const key = event.currentTarget.dataset.speakingExpressionDone;
+  document.querySelectorAll("[data-ted-expression-clear]").forEach(button => button.addEventListener("click", event => {
+    const key = event.currentTarget.dataset.tedExpressionClear;
     const isDone = speakingExpressionDone.includes(key);
     speakingExpressionDone = isDone ? speakingExpressionDone.filter(item => item !== key) : [...speakingExpressionDone, key];
     try { localStorage.setItem(SPEAKING_EXPRESSION_STORAGE_KEY, JSON.stringify(speakingExpressionDone)); } catch {}
     event.currentTarget.classList.toggle("active", !isDone);
     event.currentTarget.setAttribute("aria-pressed", String(!isDone));
-    event.currentTarget.innerHTML = `${icon("check",12)} ${!isDone ? "완료" : "말했어요"}`;
-    event.currentTarget.closest(".ted-expression-panel article")?.classList.toggle("speaking-done", !isDone);
+    event.currentTarget.innerHTML = `${icon("check",12)} ${!isDone ? "Clear 완료" : "Clear"}`;
+    event.currentTarget.closest(".ted-expression-panel article")?.classList.toggle("expression-clear-done", !isDone);
   }));
   document.querySelectorAll("[data-kids-parent]").forEach(button => button.addEventListener("click", event => {
     kidsProgress.parent[event.currentTarget.dataset.kidsParent] = true;
@@ -5292,8 +5668,9 @@ function bindEvents(){
   document.querySelector("[data-family-back]")?.addEventListener("click",()=>{familyShortState.activeId=null;familyShortState.view="home";render();});
   document.querySelectorAll("[data-family-save]").forEach(button=>button.addEventListener("click",event=>{const id=event.currentTarget.dataset.familySave;familyShortState.saved=familyShortState.saved.includes(id)?familyShortState.saved.filter(item=>item!==id):[...familyShortState.saved,id];saveFamilyShorts();render();}));
   document.querySelectorAll("[data-family-tag]").forEach(button=>button.addEventListener("click",event=>{familyShortState.tag=event.currentTarget.dataset.familyTag;render();}));
+  document.querySelector("[data-family-feed-retry]")?.addEventListener("click",()=>refreshYoutubeShortsFeed());
   document.querySelector("[data-family-lock]")?.addEventListener("click",()=>{familyShortState.unlocked=false;familyShortState.activeId=null;sessionStorage.removeItem("family_shorts_unlocked");render();});
-  document.querySelector("[data-family-add]")?.addEventListener("submit",event=>{event.preventDefault();const form=new FormData(event.currentTarget);const videoId=youtubeIdFrom(form.get("youtube"));if(!videoId){alert("올바른 YouTube URL 또는 video ID를 입력해주세요.");return;}const item={id:`family-${Date.now()}`,youtubeUrl:`https://www.youtube.com/shorts/${videoId}`,videoId,title:String(form.get("title")),channelName:String(form.get("channel")),sentence:String(form.get("sentence")),meaningKo:String(form.get("meaning")),expressionNote:String(form.get("note")),difficulty:String(form.get("difficulty")),tags:String(form.get("tags")).split(",").map(tag=>tag.trim()).filter(Boolean),tip:String(form.get("tip")||"문장을 짧게 나누어 두 번 따라 말해보세요."),example:String(form.get("example")||form.get("sentence")),createdAt:localDateKey()};familyShortState.items=[item,...familyShortState.items];saveFamilyShorts();familyShortState.view="home";render();});
+  document.querySelector("[data-family-add]")?.addEventListener("submit",event=>{event.preventDefault();const form=new FormData(event.currentTarget);const videoId=youtubeIdFrom(form.get("youtube"));if(!videoId){alert("올바른 YouTube URL 또는 video ID를 입력해주세요.");return;}const item={id:`family-${Date.now()}`,youtubeUrl:`https://www.youtube.com/shorts/${videoId}`,videoId,series:String(form.get("series")||"매일 미드 한문장"),title:String(form.get("title")),channelName:String(form.get("channel")),duration:String(form.get("duration")||"SHORT"),sentence:String(form.get("sentence")),meaningKo:String(form.get("meaning")),situation:String(form.get("situation")),expressionNote:String(form.get("note")),difficulty:String(form.get("difficulty")),tags:String(form.get("tags")).split(",").map(tag=>tag.trim()).filter(Boolean),tip:String(form.get("tip")||"문장을 짧게 나누어 두 번 따라 말해보세요."),example:String(form.get("example")||form.get("sentence")),createdAt:localDateKey()};familyShortState.items=[item,...familyShortState.items];saveFamilyShorts();familyShortState.view="home";render();});
   document.querySelectorAll("[data-family-delete]").forEach(button=>button.addEventListener("click",event=>{const id=event.currentTarget.dataset.familyDelete;familyShortState.items=familyShortState.items.filter(item=>item.id!==id);familyShortState.saved=familyShortState.saved.filter(item=>item!==id);saveFamilyShorts();render();}));
   document.querySelectorAll("[data-drama-open]").forEach(button => button.addEventListener("click", event => {
     dramaShortState.activeClip = event.currentTarget.dataset.dramaOpen;
@@ -5626,3 +6003,4 @@ if (initialNavigation?.worthyLife) {
 
 render();
 refreshDailyNewsLibrary();
+
