@@ -1,10 +1,11 @@
 import { json } from "./_response.js";
 
-const ARTICLE_SOURCES = [
+const FALLBACK_ARTICLE_SOURCES = [
   { id: "business-10438888", url: "https://www.koreaherald.com/article/10438888" },
   { id: "travel-10432202", url: "https://www.koreaherald.com/article/10432202" },
   { id: "retail-10434176", url: "https://www.koreaherald.com/article/10434176" },
 ];
+const RSS_URL = "https://www.koreaherald.com/rss/newsAll";
 const CACHE_TTL_MS = 60 * 60 * 1000;
 let memoryCache = { expiresAt: 0, payload: null };
 
@@ -86,17 +87,54 @@ async function fetchArticle(source) {
   }
 }
 
-async function loadArticles() {
-  const settled = await Promise.allSettled(ARTICLE_SOURCES.map(fetchArticle));
-  return settled.map((result, index) => result.status === "fulfilled" ? result.value : {
-    id: ARTICLE_SOURCES[index].id,
-    source: "The Korea Herald",
-    originalUrl: ARTICLE_SOURCES[index].url,
-    originalArticleParagraphs: [],
-    originalArticleText: "",
-    originalArticleStatus: "unavailable",
-    parseError: result.reason?.message || "Article parsing failed",
+async function discoverLatestArticleSources() {
+  const response = await fetch(RSS_URL, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; ValueTimeLearning/1.0)", Accept: "application/rss+xml, application/xml, text/xml" },
   });
+  if (!response.ok) throw new Error(`Korea Herald RSS returned ${response.status}`);
+  const xml = await response.text();
+  const sources = [...xml.matchAll(/<item\b[\s\S]*?<\/item>/gi)].map(match => {
+    const block = match[0];
+    const rawLink = block.match(/<link>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/link>/i)?.[1] || "";
+    const url = decodeHtml(rawLink).trim();
+    const articleId = url.match(/\/article\/(\d+)/i)?.[1];
+    return articleId ? { id: `daily-${articleId}`, url } : null;
+  }).filter(Boolean);
+  return [...new Map(sources.map(source => [source.url, source])).values()].slice(0, 10);
+}
+
+function addLearningFields(article) {
+  const paragraphs = article.originalArticleParagraphs || [];
+  const sentenceText = paragraphs[0] || article.dek || article.title;
+  const expression = sentenceText.split(/\s+/).slice(0, 3).join(" ");
+  return {
+    ...article,
+    category: "Latest News",
+    summary: paragraphs.slice(0, 3),
+    sentences: [{
+      en: sentenceText,
+      ko: "문단 해석 모드에서 의미를 확인해 보세요.",
+      note: "기사 첫 문장의 주어와 핵심 동사를 먼저 찾아보세요.",
+      expressions: [{ term: expression || "key idea", meaning: "기사의 핵심 표현" }],
+    }],
+  };
+}
+
+async function loadArticles() {
+  let sources;
+  try { sources = await discoverLatestArticleSources(); }
+  catch { sources = FALLBACK_ARTICLE_SOURCES; }
+
+  for (const source of sources) {
+    try { return [addLearningFields(await fetchArticle(source))]; }
+    catch { /* 다음 최신 기사 후보에서 본문 추출을 계속 시도합니다. */ }
+  }
+
+  for (const source of FALLBACK_ARTICLE_SOURCES) {
+    try { return [addLearningFields(await fetchArticle(source))]; }
+    catch { /* 고정 예비 기사도 순서대로 시도합니다. */ }
+  }
+  throw new Error("No readable Korea Herald article was found");
 }
 
 export default async function handler(request) {

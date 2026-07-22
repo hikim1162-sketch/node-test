@@ -307,10 +307,88 @@ const articleLibraryBase = [
   }
 ];
 
+const DAILY_NEWS_ARCHIVE_STORAGE_KEY = "value_time_daily_news_archive_v1";
+
+function loadDailyNewsArchive() {
+  try {
+    const stored = JSON.parse(profileStorage.getItem(DAILY_NEWS_ARCHIVE_STORAGE_KEY) || "[]");
+    return Array.isArray(stored) ? stored : [];
+  } catch { return []; }
+}
+
+function saveDailyNewsArchive(articles) {
+  try { profileStorage.setItem(DAILY_NEWS_ARCHIVE_STORAGE_KEY, JSON.stringify(articles.slice(0, 30))); }
+  catch { /* 저장 공간이 부족해도 현재 세션의 기사 읽기는 유지합니다. */ }
+}
+
 // Verified Korea Herald articles. The titles, dates and links point to the
 // original detail pages; summaries and study sentences are our paraphrases.
 // bodyParagraphs is intentionally empty until licensed/original body text is supplied.
 let articleLibrary = [
+  {
+    id: "daily-10816670",
+    source: "The Korea Herald",
+    category: "Latest News",
+    date: "July 22, 2026",
+    dateOrder: "2026-07-22",
+    title: "Retail investors pile back into US equities",
+    dek: "South Korean retail investors are returning to US equities as currency and market conditions shift.",
+    image: "",
+    caption: "",
+    originalUrl: "https://www.koreaherald.com/article/10816670",
+    contentStatus: "original_article",
+    summary: [
+      "South Korean retail investors increased their purchases of US-listed assets in July.",
+      "Semiconductor-related funds and SK hynix depositary receipts attracted strong interest.",
+      "A stronger won and a softer domestic market helped make overseas assets more attractive."
+    ],
+    bodyParagraphs: [
+      { text: "South Korean retail investors are returning to US equities, ramping up purchases of semiconductor stocks and benchmark exchange-traded funds as the won strengthens and the Kospi rally loses steam." },
+      { text: "Net purchases of US stocks by local investors reached $1.95 billion between July 1 and 16 on a settlement basis, the highest monthly total in five months, according to the Korea Securities Depository." },
+      { text: "The rebound follows an earlier slowdown, when retail investors turned net sellers in April and May before returning to net buying in June. Purchases so far in July have already more than tripled June's total." },
+      { text: "Earlier in the year, a surging Kospi and a weaker won prompted retail investors to rotate into domestic equities. More recently, however, the Kospi has pulled back while the won has strengthened to around 1,470 per dollar, making US assets relatively more attractive." },
+      { text: "The Direxion Daily Semiconductors Bull 3X Shares ETF, which delivers three times the daily performance of the Philadelphia Semiconductor Index, was the most heavily bought security this month, attracting $1.85 billion in net purchases between July 1 and Monday." },
+      { text: "SK hynix's American depositary receipts ranked second with $547.5 million in net purchases. Since the ADRs began trading on July 10, net buying over the first five settlement days has more than tripled from the amount recorded on their debut." },
+      { text: "The Direxion Daily MSCI South Korea Bull 3X Shares ETF, which tracks three times the daily performance of South Korean equities, ranked third with $221.3 million in net purchases." }
+    ],
+    sentences: [
+      { en: "South Korean retail investors are returning to US equities.", ko: "한국 개인 투자자들이 미국 주식으로 돌아가고 있습니다.", note: "return to는 이전에 이용하던 대상이나 활동으로 다시 돌아간다는 뜻입니다.", expressions: [{ term: "return to", meaning: "~로 돌아가다" }, { term: "retail investors", meaning: "개인 투자자들" }] },
+      { en: "A stronger won made US assets relatively more attractive.", ko: "원화 강세로 미국 자산의 상대적인 매력이 커졌습니다.", note: "make + 목적어 + 형용사는 목적어를 어떤 상태로 만든다는 구조입니다.", expressions: [{ term: "relatively more attractive", meaning: "상대적으로 더 매력적인" }] }
+    ]
+  },
+  {
+    id: "education-riverside-library-20260722",
+    source: "The Daily Chronicle",
+    category: "Education · Community",
+    date: "July 22, 2026",
+    dateOrder: "2026-07-22",
+    title: "A New Community Library Opens Its Doors to Young Learners",
+    dek: "The new space brings books, study programs, and community activities together under one roof.",
+    image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1400&q=85",
+    caption: "A warm modern community library interior",
+    originalUrl: "#",
+    contentStatus: "provided_learning_article",
+    summary: [
+      "A community library opened with study spaces and programs that support learning and bring families together.",
+      "Young people can read, study, join workshops, and create digital projects in the new space.",
+      "Local donations, volunteers, and the city's education fund helped make the library possible."
+    ],
+    bodyParagraphs: [
+      { text: "The newly opened Riverside Community Library welcomed its first visitors on Tuesday, offering young people a quiet and welcoming place to read, study, and meet.", translation: "새로 문을 연 리버사이드 커뮤니티 도서관은 화요일 첫 방문객을 맞이하며 청소년들에게 읽고 공부하고 만날 수 있는 조용하고 편안한 공간을 제공했습니다." },
+      { text: "The building includes bright reading rooms, shared study tables, and a small media lab where students can work on school projects.", translation: "건물에는 밝은 열람실과 공용 학습 테이블, 학생들이 학교 프로젝트를 할 수 있는 작은 미디어실이 있습니다." },
+      { text: "Library staff members said the programs were designed to make learning easier and more enjoyable for local families.", translation: "도서관 직원들은 이 프로그램들이 지역 가족들의 학습을 더 쉽고 즐겁게 만들도록 설계되었다고 말했습니다." },
+      { text: "In the reading room, comfortable seats and large windows create a calm atmosphere that encourages focus and creativity.", translation: "열람실의 편안한 좌석과 큰 창문은 집중력과 창의성을 높이는 차분한 분위기를 만듭니다." },
+      { text: "The library also offers after-school tutoring, weekend workshops, and storytelling sessions for younger children. Teens can join book clubs, practice presentations, or use the media lab to edit videos and create digital projects.", translation: "도서관은 방과 후 지도, 주말 워크숍과 어린이를 위한 이야기 수업도 제공합니다. 청소년은 독서 모임에 참여하거나 발표를 연습하고 미디어실에서 영상과 디지털 프로젝트를 만들 수 있습니다." },
+      { text: "Riverside Community Library was built with support from local donations and the city's education fund.", translation: "리버사이드 커뮤니티 도서관은 지역 기부금과 시 교육 기금의 지원으로 건립되었습니다." },
+      { text: "Many volunteers helped organize the opening event, which included music, tours, and free books for early visitors.", translation: "많은 자원봉사자가 음악과 견학, 초기 방문객을 위한 무료 도서가 포함된 개관 행사를 준비했습니다." },
+      { text: "Parents said they are happy to have a safe and inspiring place where their children can grow and explore their interests.", translation: "학부모들은 자녀가 성장하고 관심사를 탐구할 수 있는 안전하고 영감을 주는 공간이 생겨 기쁘다고 말했습니다." },
+      { text: "The library is open from 9 a.m. to 8 p.m. on weekdays and 10 a.m. to 5 p.m. on weekends.", translation: "도서관은 평일 오전 9시부터 오후 8시까지, 주말에는 오전 10시부터 오후 5시까지 운영됩니다." }
+    ],
+    sentences: [
+      { en: "The new library offers young people a quiet and welcoming place to learn.", ko: "새 도서관은 청소년들에게 조용하고 편안한 학습 공간을 제공합니다.", note: "offer A B는 A에게 B를 제공하다는 뜻입니다.", expressions: [{ term: "a quiet and welcoming place", meaning: "조용하고 편안한 공간" }, { term: "young people", meaning: "청소년들" }] },
+      { en: "The programs were designed to make learning easier for local families.", ko: "프로그램은 지역 가족들의 학습을 더 쉽게 만들도록 설계되었습니다.", note: "be designed to는 ~하도록 설계되다는 의미입니다.", expressions: [{ term: "designed to make learning easier", meaning: "학습을 쉽게 만들도록 설계된" }, { term: "local families", meaning: "지역 가족들" }, { term: "shared study tables", meaning: "공용 학습 테이블" }] }
+    ]
+  },
   {
     id: "business-10438888",
     source: "The Korea Herald",
@@ -406,11 +484,11 @@ let articleLibrary = [
   }
 ].map(article => ({
   ...article,
-  contentStatus: "metadata_only",
-  bodyParagraphs: [],
+  contentStatus: article.bodyParagraphs?.length ? article.contentStatus : "metadata_only",
+  bodyParagraphs: article.bodyParagraphs || [],
   studySentences: article.sentences,
 }));
-articleLibrary = [...loadArticles().map(toNewsArticle), ...articleLibrary];
+articleLibrary = [...loadArticles().map(toNewsArticle), ...loadDailyNewsArchive(), ...articleLibrary];
 
 async function refreshDailyNewsLibrary() {
   try {
@@ -418,8 +496,12 @@ async function refreshDailyNewsLibrary() {
     if (!response.ok) return;
     const payload = await response.json();
     if (!Array.isArray(payload.articles) || !payload.articles.length) return;
-    const fetchedById = new Map(payload.articles.map(article => [article.id, article]));
-    articleLibrary = articleLibrary.map(article => {
+    const fetchedArticles = payload.articles.filter(article => Array.isArray(article.originalArticleParagraphs) && article.originalArticleParagraphs.length >= 3);
+    if (!fetchedArticles.length) return;
+    const archivedToday = loadDailyNewsArchive().find(article => article.dateOrder === localDateKey());
+    if (archivedToday) return;
+    const fetchedById = new Map(fetchedArticles.map(article => [article.id, article]));
+    const mergedExisting = articleLibrary.map(article => {
       const fetched = fetchedById.get(article.id);
       if (!fetched) return article;
       return {
@@ -431,6 +513,11 @@ async function refreshDailyNewsLibrary() {
         date: fetched.publishedAt ? new Date(fetched.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : article.date,
       };
     });
+    const existingIds = new Set(mergedExisting.map(article => article.id));
+    const newArticles = fetchedArticles.filter(article => !existingIds.has(article.id));
+    articleLibrary = [...newArticles, ...mergedExisting];
+    const archived = articleLibrary.filter(article => String(article.id).startsWith("daily-") && getArticleBodyParagraphs(article).length);
+    saveDailyNewsArchive(archived);
     state.newsIndex = 0;
     if (document.body.dataset.page === "news" || location.pathname.endsWith("/news.html")) render();
   } catch (error) {
@@ -442,6 +529,8 @@ async function refreshDailyNewsLibrary() {
 // 같은 날에는 같은 기사가 유지되고, 다음 날에는 다음 기사가 소개됩니다.
 function getDailyNewsArticle(dateKey = localDateKey()) {
   if (!articleLibrary.length) return null;
+  const datedArticle = articleLibrary.find(article => article.dateOrder === dateKey && getArticleBodyParagraphs(article).length);
+  if (datedArticle) return datedArticle;
   const dayNumber = Math.floor(new Date(`${dateKey}T00:00:00`).getTime() / 86400000);
   return articleLibrary[Math.abs(dayNumber) % articleLibrary.length];
 }
@@ -539,7 +628,7 @@ function getEligibleTedLessons() {
 
 // 수동 지정 → 날짜 예약 → 날짜 기반 순환 순서로 오늘의 영상 1개를 결정합니다.
 // 향후 DB/API를 연결해도 tedSettings와 tedLessons만 교체하면 같은 우선순위를 유지할 수 있습니다.
-function getDailyTedLesson(dateKey = localDateKey()) {
+function getDailyTedLesson() {
   const eligible = getEligibleTedLessons();
   if (!eligible.length) return null;
 
@@ -548,11 +637,8 @@ function getDailyTedLesson(dateKey = localDateKey()) {
     : null;
   if (manual) return manual;
 
-  const scheduled = eligible.find(lesson => lesson.scheduledDate === dateKey);
-  if (scheduled) return scheduled;
-
-  const dayNumber = Math.floor(new Date(`${dateKey}T00:00:00`).getTime() / 86400000);
-  return eligible[Math.abs(dayNumber) % eligible.length];
+  const inProgress = eligible.find(lesson => getTedMasteredSourceIndexes(lesson.id).length < getTedTranscriptLines(lesson).length);
+  return inProgress || eligible[eligible.length - 1];
 }
 
 const tedTranscriptCache = new Map();
@@ -610,18 +696,34 @@ function saveTedMasteredSourceIndexes(lessonId, indexes) {
 
 function getDailyTedStudySentences(lesson, transcriptLines = getTedTranscriptLines(lesson)) {
   if (!transcriptLines.length) return [];
-  const assignmentKey = `${lesson.id}:${localDateKey()}`;
+  const assignmentKey = `${lesson.id}:active`;
   const assignments = readTedSentenceStore(TED_ASSIGNMENT_STORAGE_KEY);
-  let sourceIndexes = Array.isArray(assignments[assignmentKey])
-    ? assignments[assignmentKey].map(Number).filter(index => Number.isInteger(index) && index >= 0 && index < transcriptLines.length)
+  const mastered = new Set(getTedMasteredSourceIndexes(lesson.id));
+  const storedAssignment = assignments[assignmentKey];
+  const storedIndexes = Array.isArray(storedAssignment) ? storedAssignment : storedAssignment?.sourceIndexes;
+  let sourceIndexes = Array.isArray(storedIndexes)
+    ? storedIndexes.map(Number).filter(index => Number.isInteger(index) && index >= 0 && index < transcriptLines.length)
     : [];
+  let completedDate = !Array.isArray(storedAssignment) ? storedAssignment?.completedDate || null : null;
+  const today = localDateKey();
+  const assignmentComplete = sourceIndexes.length > 0 && sourceIndexes.every(index => mastered.has(index));
+  const shouldAdvance = assignmentComplete && completedDate && completedDate < today;
 
-  if (!sourceIndexes.length) {
-    const mastered = new Set(getTedMasteredSourceIndexes(lesson.id));
+  if (!sourceIndexes.length || shouldAdvance) {
     sourceIndexes = transcriptLines.map((_, index) => index).filter(index => !mastered.has(index)).slice(0, 5);
     // 모든 문장을 끝낸 뒤에도 마지막 5문장을 복습 화면으로 유지합니다.
     if (!sourceIndexes.length) sourceIndexes = transcriptLines.map((_, index) => index).slice(-5);
-    assignments[assignmentKey] = sourceIndexes;
+    completedDate = null;
+    assignments[assignmentKey] = { sourceIndexes, completedDate };
+    profileStorage.setItem(TED_ASSIGNMENT_STORAGE_KEY, JSON.stringify(assignments));
+  } else if (assignmentComplete && !completedDate) {
+    // 마지막 문장을 완료한 당일에는 현재 세트를 그대로 보여주고,
+    // 다음날 처음 열었을 때만 다음 미완료 5문장으로 넘어갑니다.
+    completedDate = today;
+    assignments[assignmentKey] = { sourceIndexes, completedDate };
+    profileStorage.setItem(TED_ASSIGNMENT_STORAGE_KEY, JSON.stringify(assignments));
+  } else if (!assignmentComplete && (completedDate || Array.isArray(storedAssignment))) {
+    assignments[assignmentKey] = { sourceIndexes, completedDate: null };
     profileStorage.setItem(TED_ASSIGNMENT_STORAGE_KEY, JSON.stringify(assignments));
   }
 
@@ -831,6 +933,17 @@ const defaultQuizQuestions = [
   },
 ];
 
+const QUIZ_KOREAN_EXPLANATIONS = {
+  "grammar-report-by-friday": { summary: "by Friday는 ‘금요일까지, 늦어도 금요일에는’이라는 마감 기한을 나타냅니다.", detail: "must be submitted는 ‘제출되어야 한다’라는 수동태이고, by + 시점은 그 시점보다 늦지 않게 행동이 끝나야 한다는 뜻입니다. 따라서 보고서 제출 마감일을 나타내는 by가 정답입니다.", wrong: ["on Friday는 금요일 당일에 일어난다는 뜻일 뿐 마감 기한을 나타내지 않습니다.", "from Friday는 금요일부터 시작한다는 뜻입니다.", "during Friday는 이런 마감 문맥에서 자연스럽지 않습니다."] },
+  "grammar-production-adjustment": { summary: "was adjusted는 ‘조정되었다’라는 올바른 수동태입니다.", detail: "생산 라인이 결함을 줄이기 위해 조정된 상황이므로 be동사 was 뒤에 과거분사 adjusted가 와야 합니다. 행위자보다 조정된 대상과 결과가 중요한 생산 보고 문장입니다.", wrong: ["adjustment는 명사이므로 was 뒤에서 동사 역할을 할 수 없습니다.", "adjustedly는 자연스러운 영어 부사 형태가 아닙니다.", "was 뒤에는 동사원형 adjust가 아니라 과거분사 adjusted가 필요합니다."] },
+  "reading-email-schedule": { summary: "Mina는 금요일까지 수정된 시험 계획을 품질팀에 공유해야 합니다.", detail: "지문에서 Please update the test schedule and share the revised plan ... by Friday라고 직접 요청합니다. 질문의 by Friday와 일치하는 행동은 수정 계획을 공유하는 것입니다.", wrong: ["샘플은 공급업체가 이미 발송하기로 확정했으므로 Mina가 주문할 필요가 없습니다.", "검사를 취소하라는 내용은 지문에 없습니다.", "목요일은 샘플 도착일이며 Mina가 공급업체를 방문하는 날이 아닙니다."] },
+  "battery-cathode-discharge": { summary: "방전할 때 cathode는 리튬 이온을 받는 양극입니다.", detail: "방전 과정에서는 리튬 이온이 anode에서 cathode로 이동하고 전자는 외부 회로를 따라 흐릅니다. 따라서 cathode를 ‘리튬 이온을 받는 positive electrode’라고 설명한 보기가 정확합니다.", wrong: ["separator는 전극 사이 단락을 막지만 전극처럼 리튬 이온을 받는 부품은 아닙니다.", "방전 시 negative electrode는 anode이며 산소를 방출한다는 설명도 맞지 않습니다.", "pouch film은 셀을 감싸는 포장재이지 전극이 아닙니다."] },
+  "separator-function": { summary: "Separator는 이온은 통과시키면서 양극과 음극의 직접 접촉을 막습니다.", detail: "분리막의 미세한 기공은 리튬 이온 이동을 허용하지만 전극끼리 전기적으로 닿지 않게 해 내부 단락 위험을 낮춥니다. 두 조건을 모두 만족하는 부품은 separator입니다.", wrong: ["binder는 활물질을 붙잡아 주지만 두 전극을 분리하지 않습니다.", "anode foil은 전류를 모으는 집전체입니다.", "tab lead는 셀과 외부 회로를 연결하는 단자입니다."] },
+  "quality-inspection-defect": { summary: "inspect A for B는 ‘A에 B가 있는지 검사하다’라는 자연스러운 품질 표현입니다.", detail: "주어 We 뒤에는 서술 동사가 필요하므로 inspected가 적절합니다. inspect the samples for surface defects는 ‘샘플에 표면 결함이 있는지 검사했다’라는 완전한 문장입니다.", wrong: ["inspection은 명사이므로 이 자리에서 본동사가 될 수 없습니다.", "defect는 여기에서 ‘결함’이라는 명사이며 검사하다는 동사로 쓰지 않습니다.", "quality도 이 문맥에서 검사하다는 동사로 사용할 수 없습니다."] },
+  "email-delay-update": { summary: "정중한 사과와 다음 일정을 함께 제시한 문장이 가장 전문적입니다.", detail: "업무 지연 안내는 사과, 현재 문제, 구체적인 후속 일정이 포함되어야 상대방의 불확실성을 줄일 수 있습니다. 두 번째 문장은 사과한 뒤 금요일까지 새 일정을 제공하겠다고 약속합니다.", wrong: ["바쁘다는 이유만 말하고 해결책이나 일정을 제시하지 않습니다.", "책임을 부정하는 방어적인 표현이라 전문적이지 않습니다.", "상대에게 무작정 기다리라고 해 무례하고 유용한 정보도 없습니다."] },
+  "reading-notice-safety": { summary: "코팅 구역 안에서는 모든 방문객이 보안경을 착용해야 합니다.", detail: "지문의 핵심 문장은 ‘all visitors must wear safety glasses inside the coating area’입니다. must는 선택이나 권장이 아니라 반드시 지켜야 하는 의무를 나타냅니다. 따라서 질문의 required에 해당하는 것은 Safety glasses입니다.", wrong: ["방문증이 필요할 수는 있지만 이 공지에서 요구한 물품은 아닙니다.", "생산 보고서는 방문객의 안전 장비와 관계가 없습니다.", "공급업체 송장은 회계 문서이며 코팅 구역의 보호 장비가 아닙니다."] },
+};
+
 function normalizeQuizQuestion(question = {}) {
   const choices = Array.isArray(question.choices) ? question.choices : [];
   const answer = Number(question.answer) || 0;
@@ -985,6 +1098,7 @@ const dramaShadowingPoints = [
 const DRAMA_MEMO_STORAGE_KEY = "daily-drama-study-memo";
 const DRAMA_SHORT_STORAGE_KEY = "value_time_drama_short_cards_v1";
 const NEWS_ARTICLE_LEARNING_STORAGE_KEY = "value_time_news_article_learning_v1";
+const NEWS_COMPLETED_ARTICLES_STORAGE_KEY = "value_time_news_completed_articles_v1";
 const dramaShortCards = [
   { id: "deadline", series: "Office Days", episode: "EP. 04 · The Deadline", situation: "회의 자료 제출 시간이 다가와 동료를 재촉하는 상황", mood: "긴장 · 재촉", dialogue: [{ role: "A", en: "Is the presentation ready?", ko: "발표 자료 준비됐어?" }, { role: "B", en: "Not yet. We're running out of time.", ko: "아직. 시간이 얼마 남지 않았어." }], line: "We're running out of time.", ko: "시간이 얼마 남지 않았어.", expression: "run out of", meaning: "시간이나 필요한 것이 거의 남지 않다", nuance: "마감이 가까워져 지금 서둘러야 한다는 느낌", questions: [{ type: "단어형", text: "이 장면에서 running out of time이 나타내는 상황은?", choices: ["시간이 충분한 상황", "시간이 거의 남지 않은 상황", "회의가 연기된 상황", "시간을 다시 확인한 상황"], answer: 1, explanation: "run out of는 필요한 것이 거의 남지 않은 상황을 나타냅니다." }, { type: "문장형", text: "화자가 이 말을 한 의도로 가장 자연스러운 것은?", choices: ["일을 천천히 하자고 제안한다", "지금 서둘러야 한다고 알린다", "회의를 취소하려고 한다", "시간이 정확한지 질문한다"], answer: 1, explanation: "시간이 부족하므로 상대방에게 서두를 필요가 있음을 알리는 말입니다." }] },
   { id: "surprise", series: "City Friends", episode: "EP. 07 · The Surprise", situation: "친구가 갑작스러운 퇴사 소식을 전한 상황", mood: "놀람 · 불신", dialogue: [{ role: "A", en: "I quit my job this morning.", ko: "나 오늘 아침에 회사를 그만뒀어." }, { role: "B", en: "You've got to be kidding me.", ko: "설마, 농담하는 거지?" }], line: "You've got to be kidding me.", ko: "설마, 농담하는 거지?", expression: "You've got to be kidding me", meaning: "믿기 어려운 말을 들었을 때 놀라움을 나타내는 반응", nuance: "상대의 말이 사실이라고 믿기 어려울 정도로 놀란 어조", questions: [{ type: "단어형", text: "이 표현이 전달하는 어조로 가장 적절한 것은?", choices: ["차분한 동의", "놀람과 불신", "정중한 사과", "확실한 명령"], answer: 1, explanation: "이 표현은 예상하지 못한 말을 듣고 놀라거나 믿기 어렵다는 반응입니다." }, { type: "문장형", text: "화자의 반응을 가장 자연스럽게 설명한 것은?", choices: ["상대방의 말을 믿기 어렵다고 느낀다", "이미 알고 있던 사실을 확인한다", "상대방에게 농담을 부탁한다", "대화를 바로 끝내려고 한다"], answer: 0, explanation: "문자 그대로 농담을 요구하는 것이 아니라 소식에 대한 놀람과 불신을 표현합니다." }] },
@@ -1769,7 +1883,7 @@ let state = {
   savedBlogItems: JSON.parse(profileStorage.getItem("value_time_saved_blog_items_v1") || "[]"),
   understoodSentences: JSON.parse(profileStorage.getItem("value_time_understood_sentences_v1") || "[]"),
   clearedSentences: JSON.parse(profileStorage.getItem("value_time_cleared_sentences_v1") || "[]"),
-  wordIndex: 0, vocabPage: Number(profileStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(profileStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, translatedSentence: null,
+  wordIndex: 0, vocabPage: Number(profileStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(profileStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, newsLibraryOpen: false, translatedSentence: null,
   newsSearch: "", newsCategory: "all", newsSort: "latest", tedLessonId: null, tedSentenceIndex: 0, tedMeaningOpen: false,
 };
 
@@ -1792,6 +1906,7 @@ let newsArticleLearningState = (() => {
 newsArticleLearningState.difficult ||= [];
 newsArticleLearningState.savedArticles ||= [];
 newsArticleLearningState.notes ||= {};
+newsArticleLearningState.readerMode ||= "learning";
 let dramaShortState = (() => {
   try {
     const stored = JSON.parse(profileStorage.getItem(DRAMA_SHORT_STORAGE_KEY) || "null");
@@ -1898,7 +2013,23 @@ window.addEventListener("valuetime:article-imported", event => {
 });
 
 function getArticleBodyParagraphs(article) {
-  const source = article?.originalArticleParagraphs ?? article?.originalArticleText ?? article?.bodyParagraphs ?? article?.paragraphs ?? article?.body ?? article?.content ?? article?.articleText;
+  if (article?.id === "education-riverside-library-20260722") {
+    return [
+      ["The newly opened Riverside Community Library welcomed its first visitors on Tuesday, offering young people a quiet and welcoming place to read, study, and meet.", "새로 문을 연 도서관은 청소년들에게 읽고 공부하고 만날 수 있는 조용하고 편안한 공간을 제공합니다."],
+      ["The building includes bright reading rooms, shared study tables, and a small media lab where students can work on school projects.", "건물에는 밝은 열람실과 공용 학습 테이블, 작은 미디어실이 있습니다."],
+      ["Library staff members said the programs were designed to make learning easier and more enjoyable for local families.", "프로그램은 지역 가족들의 학습을 더 쉽고 즐겁게 만들도록 설계되었습니다."],
+      ["In the reading room, comfortable seats and large windows create a calm atmosphere that encourages focus and creativity.", "편안한 좌석과 큰 창문은 집중력과 창의성을 높이는 차분한 분위기를 만듭니다."],
+      ["The library also offers after-school tutoring, weekend workshops, and storytelling sessions for younger children. Teens can join book clubs, practice presentations, or use the media lab to edit videos and create digital projects.", "도서관은 방과 후 지도와 주말 워크숍을 제공하며 청소년들은 다양한 프로젝트에 참여할 수 있습니다."],
+      ["Riverside Community Library was built with support from local donations and the city's education fund.", "도서관은 지역 기부금과 시 교육 기금의 지원으로 건립되었습니다."],
+      ["Many volunteers helped organize the opening event, which included music, tours, and free books for early visitors.", "많은 자원봉사자가 개관 행사를 준비했습니다."],
+      ["Parents said they are happy to have a safe and inspiring place where their children can grow and explore their interests.", "학부모들은 자녀가 성장하고 관심사를 탐구할 안전한 공간이 생겨 기쁘다고 말했습니다."],
+      ["The library is open from 9 a.m. to 8 p.m. on weekdays and 10 a.m. to 5 p.m. on weekends.", "도서관은 평일 오전 9시부터 오후 8시까지, 주말 오전 10시부터 오후 5시까지 운영됩니다."]
+    ].map(([text, translation], index) => ({ id: index, text, translation }));
+  }
+  const riversideFallback = article?.id === "education-riverside-library-20260722"
+    ? articleLibrary.find(item => item.id === "education-riverside-library-20260722")?.bodyParagraphs
+    : null;
+  const source = article?.originalArticleParagraphs ?? article?.originalArticleText ?? article?.bodyParagraphs ?? riversideFallback ?? article?.paragraphs ?? article?.body ?? article?.content ?? article?.articleText;
   if (Array.isArray(source)) {
     return source.map((paragraph, index) => {
       if (typeof paragraph === "string") return { id: index, text: paragraph.trim(), translation: "" };
@@ -2696,6 +2827,10 @@ function tedStudyPage() {
   const courseComplete = masteredSourceIndexes.length >= transcriptLines.length;
   const embedUrl = makeYouTubeEmbedUrl(lesson.videoId);
   state.tedSentenceIndex = Math.max(0, Math.min(state.tedSentenceIndex, dailySentences.length - 1));
+  const firstIncompleteSentence = dailySentences.findIndex(item => !masteredSourceIndexes.includes(item.sourceIndex));
+  if (firstIncompleteSentence >= 0 && masteredSourceIndexes.includes(dailySentences[state.tedSentenceIndex]?.sourceIndex)) {
+    state.tedSentenceIndex = firstIncompleteSentence;
+  }
   const sentenceIndex = state.tedSentenceIndex;
   const sentence = dailySentences[sentenceIndex];
   const completedSentences = dailySentences.map((item, index) => masteredSourceIndexes.includes(item.sourceIndex) ? index : null).filter(Number.isInteger);
@@ -2824,6 +2959,11 @@ function calendarPage() {
 
 function newsPage() {
   if (state.newsIndex !== null) return articleView();
+  if (!state.newsLibraryOpen) {
+    const featuredIndex = articleLibrary.findIndex(article => article.id === "education-riverside-library-20260722");
+    state.newsIndex = featuredIndex >= 0 ? featuredIndex : 0;
+    return articleView();
+  }
   const isDone = Boolean(homeStudyState.checked.news);
   const newsMeta = syncHomeAppState().items.news || {};
   const todayKey = localDateKey();
@@ -2845,7 +2985,7 @@ function newsPage() {
           <figure class="news-daily-visual"><img src="${dailyArticle.image}" alt="${dailyArticle.title} 기사 주제를 나타내는 대표 이미지"><figcaption><span>DAILY NEWS</span><time datetime="${todayKey}">${dailyStudyDate}</time></figcaption></figure>
           <div class="news-daily-label"><span>${dailyArticle.source} · ${dailyArticle.category}</span><button type="button" data-speak="${dailySentence.en.replaceAll('"', '&quot;')}" aria-label="오늘의 뉴스 핵심 문장 듣기">${icon("volume",16)} 문장 듣기</button></div>
           <h3 id="daily-news-title">${dailyArticle.title}</h3><p class="news-daily-dek">${dailyArticle.dek}</p>
-          ${dailyBodyParagraphs.length ? `<section class="news-daily-body" aria-labelledby="daily-news-body-title"><header><div><span>FULL ARTICLE</span><h4 id="daily-news-body-title">기사 본문 · 영문 기사 읽기</h4></div><b>전체 ${dailyBodyParagraphs.length}문단</b></header><div>${dailyBodyParagraphs.map((paragraph, index) => `<article><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.text}</p>${paragraph.translation ? `<div class="news-daily-sentence-tools"><details><summary>이 문단 해석 보기</summary><p>${paragraph.translation}</p></details></div>` : ""}</article>`).join("")}</div></section>` : `<section class="news-daily-body news-daily-body-missing" aria-labelledby="daily-news-body-title"><header><div><span>SOURCE DATA REQUIRED</span><h4 id="daily-news-body-title">기사 원문 본문이 등록되지 않았습니다</h4></div><b>원문 0문단</b></header><div><p>현재 보유한 데이터는 기사 제목·요약과 학습용 재구성 문장뿐입니다. 이 문장들을 실제 기사 본문으로 표시하지 않습니다.</p><a href="${dailyArticle.originalUrl}" target="_blank" rel="noopener noreferrer">출처에서 원문 확인 ${icon("arrow", 13)}</a></div></section>`}
+          ${dailyBodyParagraphs.length ? `<section class="news-daily-body" aria-labelledby="daily-news-body-title"><header><div><span>FULL ARTICLE</span><h4 id="daily-news-body-title">기사 본문 · 영문 기사 읽기</h4></div><b>전체 ${dailyBodyParagraphs.length}문단</b></header><div>${dailyBodyParagraphs.map((paragraph, index) => `<article><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.text}</p>${paragraph.translation ? `<div class="news-daily-sentence-tools"><details><summary>이 문단 해석 보기</summary><p>${paragraph.translation}</p></details></div>` : ""}</article>`).join("")}</div></section>` : `<section class="news-daily-body news-daily-body-missing" aria-labelledby="daily-news-body-title"><header><div><span>SOURCE DATA REQUIRED</span><h4 id="daily-news-body-title">기사 원문 본문이 등록되지 않았습니다</h4></div><b>원문 0문단</b></header><div><p>현재 보유한 데이터는 기사 제목·요약과 학습용 재구성 문장뿐입니다. 아래 버튼으로 원문 자동 추출을 시도하거나 직접 붙여넣어 학습할 수 있습니다.</p><div class="news-missing-actions"><button type="button" data-news-import-url="${escapeMarkup(dailyArticle.originalUrl)}" data-news-import-title="${escapeMarkup(dailyArticle.title)}">원문 가져오기</button><a href="${dailyArticle.originalUrl}" target="_blank" rel="noopener noreferrer">출처에서 원문 확인 ${icon("arrow", 13)}</a></div></div></section>`}
           <section class="news-daily-focus" aria-labelledby="daily-news-support-title"><span>LEARNING SUPPORT · 본문을 읽은 뒤 확인하세요</span><h4 id="daily-news-support-title">대표 문장과 학습 포인트</h4><blockquote>${dailySentence.en}</blockquote><div class="news-daily-focus-grid"><article><b>대표 문장 해석</b><p>${dailySentence.ko}</p></article><article><b>핵심 표현</b><div>${dailySentence.expressions.slice(0, 3).map(expression => `<span><strong>${expression.term}</strong> ${expression.meaning}</span>`).join("")}</div></article><article><b>학습 포인트</b><p>${dailySentence.note}</p></article></div></section>
           <div class="news-daily-actions"><span>기사 등록일 · ${dailyArticle.date}</span><button type="button" data-open-news="${dailyArticleIndex}">전체 기사 학습하기 ${icon("arrow",15)}</button></div>
         </article>
@@ -2896,14 +3036,59 @@ function saveNewsArticleLearningState() {
   try { profileStorage.setItem(NEWS_ARTICLE_LEARNING_STORAGE_KEY, JSON.stringify(newsArticleLearningState)); } catch {}
 }
 
+function getCompletedNewsArticleIds() {
+  try {
+    const stored = JSON.parse(profileStorage.getItem(NEWS_COMPLETED_ARTICLES_STORAGE_KEY) || "[]");
+    return Array.isArray(stored) ? stored.filter(Boolean) : [];
+  } catch { return []; }
+}
+
+function saveCompletedNewsArticleIds(articleIds) {
+  profileStorage.setItem(NEWS_COMPLETED_ARTICLES_STORAGE_KEY, JSON.stringify([...new Set(articleIds)]));
+}
+
+function getNextIncompleteNewsArticleIndex(currentIndex, completedIds = getCompletedNewsArticleIds()) {
+  const completed = new Set(completedIds);
+  for (let offset = 1; offset <= articleLibrary.length; offset += 1) {
+    const index = (currentIndex + offset) % articleLibrary.length;
+    const candidate = articleLibrary[index];
+    if (candidate && getArticleBodyParagraphs(candidate).length && !completed.has(candidate.id)) return index;
+  }
+  return -1;
+}
+
+function getAdjacentReadableNewsArticleIndex(currentIndex, direction = 1) {
+  if (articleLibrary.length < 2) return -1;
+  for (let offset = 1; offset < articleLibrary.length; offset += 1) {
+    const index = (currentIndex + direction * offset + articleLibrary.length) % articleLibrary.length;
+    if (getArticleBodyParagraphs(articleLibrary[index]).length) return index;
+  }
+  // 자동 원문 추출이 아직 끝나지 않았거나 실패했더라도 기사 이동 자체는 막지 않습니다.
+  return (currentIndex + direction + articleLibrary.length) % articleLibrary.length;
+}
+
 function completeNewsArticleIfEligible(article) {
   const questions = buildArticleReviewQuestions(article);
   const score = questions.filter(question => newsArticleLearningState.quizAnswers[question.id] === question.answer).length;
   const bodyParagraphs = getArticleBodyParagraphs(article);
   const eligible = bodyParagraphs.length > 0 && newsArticleLearningState.readParagraphs.length >= bodyParagraphs.length && newsArticleLearningState.quizSubmitted && score >= 3;
-  if (!eligible || homeStudyState.checked.news) return;
-  homeStudyState.checked.news = true;
-  saveHomeStudyState("news");
+  if (!eligible) return false;
+
+  const completedIds = getCompletedNewsArticleIds();
+  if (!completedIds.includes(article.id)) saveCompletedNewsArticleIds([...completedIds, article.id]);
+  if (!homeStudyState.checked.news) {
+    homeStudyState.checked.news = true;
+    saveHomeStudyState("news");
+  }
+
+  const currentIndex = Math.max(0, articleLibrary.findIndex(item => item.id === article.id));
+  const nextIndex = getNextIncompleteNewsArticleIndex(currentIndex, [...completedIds, article.id]);
+  if (nextIndex >= 0 && nextIndex !== currentIndex) {
+    state.newsIndex = nextIndex;
+    state.newsLibraryOpen = false;
+    navigateTo("news", { newsIndex: nextIndex });
+  }
+  return true;
 }
 
 function buildArticleReviewQuestions(article) {
@@ -2923,9 +3108,28 @@ function buildArticleReviewQuestions(article) {
   return definitions.map((item, index) => { const choices = makeChoices(item.answerText, item.pool, index); return { ...item, id: `${article.id}:q${index}`, choices, answer: choices.indexOf(item.answerText) }; });
 }
 
+const NEWS_READER_GLOSSARY = {
+  newly: "새롭게, 최근에", welcomed: "맞이했다, 환영했다", visitors: "방문객들", offering: "제공하면서",
+  quiet: "조용한", welcoming: "편안하고 반기는", includes: "포함한다", shared: "공용의, 함께 쓰는",
+  media: "미디어, 매체", designed: "설계된", enjoyable: "즐거운", local: "지역의",
+  comfortable: "편안한", atmosphere: "분위기", encourages: "장려한다, 북돋운다", focus: "집중",
+  creativity: "창의성", tutoring: "개인 지도, 학습 지도", workshops: "워크숍, 체험 수업",
+  storytelling: "이야기 들려주기", presentations: "발표", edit: "편집하다", donations: "기부금",
+  education: "교육", volunteers: "자원봉사자들", organize: "준비하다, 조직하다", included: "포함했다",
+  inspiring: "영감을 주는", explore: "탐구하다", interests: "관심사들", weekdays: "평일",
+  weekends: "주말", community: "지역 공동체"
+};
+
+function addNewsVocabularyTooltips(html) {
+  return String(html).split(/(<[^>]+>)/g).map(part => part.startsWith("<") ? part : part.replace(/\b[A-Za-z]+(?:'[A-Za-z]+)?\b/g, word => {
+    const meaning = NEWS_READER_GLOSSARY[word.toLowerCase()];
+    return `<button type="button" class="news-dictionary-word${meaning ? " has-local-meaning" : ""}" data-dictionary-word="${escapeMarkup(word.toLowerCase())}"${meaning ? ` data-local-meaning="${escapeMarkup(meaning)}"` : ""} aria-label="${escapeMarkup(word)} 뜻 보기">${word}</button>`;
+  })).join("");
+}
+
 function featuredArticleView() {
   const article = articleLibrary[state.newsIndex] || articleLibrary[0];
-  if (newsArticleLearningState.articleId !== article.id) newsArticleLearningState = { date: localDateKey(), articleId: article.id, readParagraphs: [], translations: [], expressions: [], difficult: article.personalBookmarks || [], notes: article.personalNotes || {}, savedArticles: newsArticleLearningState.savedArticles || [], quizAnswers: {}, quizSubmitted: false };
+  if (newsArticleLearningState.articleId !== article.id) newsArticleLearningState = { date: localDateKey(), articleId: article.id, readerMode: "learning", readParagraphs: [], translations: [], expressions: [], difficult: article.personalBookmarks || [], notes: article.personalNotes || {}, savedArticles: newsArticleLearningState.savedArticles || [], quizAnswers: {}, quizSubmitted: false };
   const questions = buildArticleReviewQuestions(article);
   const bodyParagraphs = getArticleBodyParagraphs(article);
   const readCount = newsArticleLearningState.readParagraphs.length;
@@ -2934,15 +3138,25 @@ function featuredArticleView() {
   const score = questions.filter(question => newsArticleLearningState.quizAnswers[question.id] === question.answer).length;
   const quizPassed = newsArticleLearningState.quizSubmitted && score >= 3;
   const learningComplete = readingComplete && quizPassed;
-  const keywords = [...new Set(article.sentences.flatMap(sentence => sentence.expressions.map(expression => expression.term)))].slice(0, 3);
+  const keywords = [...new Set(article.sentences.flatMap(sentence => sentence.expressions.map(expression => expression.term)))].slice(0, 6);
+  const readerMode = newsArticleLearningState.readerMode || "learning";
+  const currentArticleIndex = Math.max(0, articleLibrary.findIndex(item => item.id === article.id));
+  const previousArticleIndex = getAdjacentReadableNewsArticleIndex(currentArticleIndex, -1);
+  const nextArticleIndex = getAdjacentReadableNewsArticleIndex(currentArticleIndex, 1);
+  const articleNavigation = `<nav class="news-reader-article-nav" aria-label="기사 이동"><button type="button" data-news-previous-article="${previousArticleIndex}" ${previousArticleIndex < 0 ? "disabled" : ""}>${icon("arrow", 14)} 이전 기사</button><span>${currentArticleIndex + 1} / ${articleLibrary.length}</span><button type="button" data-news-next-readable-article="${nextArticleIndex}" ${nextArticleIndex < 0 ? "disabled" : ""}>다음 기사 ${icon("arrow", 14)}</button></nav>`;
   const paragraphs = bodyParagraphs.map((paragraph, index) => {
     const translationOpen = newsArticleLearningState.translations.includes(index);
     const difficult = newsArticleLearningState.difficult.includes(index);
     const personalNote = newsArticleLearningState.notes?.[index] || "";
-    return `<section class="news-reader-paragraph ${difficult ? "difficult" : ""}" data-news-reader-paragraph="${index}"><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.text}</p><div class="news-reader-tools">${paragraph.translation ? `<button type="button" data-news-translation="${index}">${translationOpen ? "Hide Meaning" : "Show Meaning"}</button>` : ""}<button class="${difficult ? "active" : ""}" type="button" data-news-difficult="${index}">${icon(difficult ? "check" : "bookmark",11)} ${difficult ? "Difficult saved" : "Mark difficult"}</button></div>${translationOpen && paragraph.translation ? `<div class="news-reader-translation"><b>KOREAN MEANING</b><p>${paragraph.translation}</p></div>` : ""}${article.contentStatus === "personal_import" ? `<label class="news-personal-note"><span>MY NOTE</span><textarea data-news-note="${index}" placeholder="이 문단의 해석이나 표현을 메모하세요.">${escapeMarkup(personalNote)}</textarea></label>` : ""}</section>`;
+    const modeText = readerMode === "translation" && paragraph.translation ? paragraph.translation : paragraph.text;
+    let highlightedText = readerMode === "learning" && keywords.length ? keywords.reduce((text, keyword) => text.replace(new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"), "<mark>$1</mark>"), modeText) : modeText;
+    if (readerMode !== "translation") highlightedText = addNewsVocabularyTooltips(highlightedText);
+    return `<section class="news-reader-paragraph ${difficult ? "difficult" : ""}" data-news-reader-paragraph="${index}"><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${highlightedText}</p><div class="news-reader-tools">${paragraph.translation ? `<button type="button" data-news-translation="${index}">${translationOpen ? "해석 닫기" : "문단 해석"}</button>` : ""}<button class="${difficult ? "active" : ""}" type="button" data-news-difficult="${index}">${icon(difficult ? "check" : "bookmark",11)} ${difficult ? "저장됨" : "문장 저장"}</button></div>${translationOpen && paragraph.translation && readerMode !== "translation" ? `<div class="news-reader-translation"><b>KOREAN MEANING</b><p>${paragraph.translation}</p></div>` : ""}${article.contentStatus === "personal_import" ? `<label class="news-personal-note"><span>MY NOTE</span><textarea data-news-note="${index}" placeholder="이 문단의 해석이나 표현을 메모하세요.">${escapeMarkup(personalNote)}</textarea></label>` : ""}</section>`;
   }).join("");
+  const readerTabs = `<nav class="news-reading-modes" aria-label="기사 읽기 모드">${[["original","Original"],["translation","Translation"],["learning","Learning Mode"]].map(([mode,label]) => `<button class="${readerMode === mode ? "active" : ""}" type="button" data-news-reader-mode="${mode}" aria-pressed="${readerMode === mode}">${label}</button>`).join("")}</nav>`;
+  const keyExpressions = keywords.length ? `<section class="news-key-expression-sheet"><header><div><span>KEY EXPRESSIONS</span><h2>핵심 표현</h2></div><b>${keywords.length}개</b></header><div>${keywords.map(keyword => `<button type="button" data-news-expression-chip="${escapeMarkup(keyword)}">${escapeMarkup(keyword)}</button>`).join("")}</div><details><summary>SUMMARY NOTES ${icon("chevron", 13)}</summary>${article.summary.map(item => `<p>${item}</p>`).join("")}</details></section>` : "";
   const quiz = `<section class="news-reader-quiz"><header><div><span>QUICK REVIEW</span><h2>1분 뉴스 이해 퀴즈</h2><p>표현·단락·기사 전체 내용을 4문제로 확인합니다.</p></div><b>${questions.length} QUESTIONS</b></header><div>${questions.map((question, questionIndex) => { const selected = newsArticleLearningState.quizAnswers[question.id]; return `<fieldset><legend><small>${question.type}</small>${questionIndex + 1}. ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<button class="${selected === choiceIndex ? "selected" : ""} ${newsArticleLearningState.quizSubmitted && choiceIndex === question.answer ? "correct" : ""} ${newsArticleLearningState.quizSubmitted && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : ""}" type="button" data-news-quiz-answer="${question.id}:${choiceIndex}" ${newsArticleLearningState.quizSubmitted ? "disabled" : ""}><i>${String.fromCharCode(65 + choiceIndex)}</i>${choice}</button>`).join("")}${newsArticleLearningState.quizSubmitted ? `<p>${question.explanation}</p>` : ""}</fieldset>`; }).join("")}</div>${newsArticleLearningState.quizSubmitted ? `<section class="news-reader-result ${quizPassed ? "passed" : "retry"}"><strong>${score} / ${questions.length}</strong><div><b>${quizPassed ? "퀴즈 기준을 통과했어요!" : "한 번 더 확인해볼까요?"}</b><p>${learningComplete ? "오늘의 기사 학습이 자동 완료되었습니다." : quizPassed ? "본문을 끝까지 읽으면 학습이 완료됩니다." : "3문제 이상 맞히면 학습 완료 기준을 충족합니다."}</p></div>${!quizPassed ? `<button type="button" data-news-quiz-retry>다시 풀기</button>` : ""}</section>` : `<button class="news-reader-submit" type="button" data-news-quiz-submit>퀴즈 제출하기</button>`}</section>`;
-  return `${header("영어 뉴스")}<main class="news-reader-page"><nav class="news-reader-toolbar"><button type="button" data-back-news>← 기사 목록</button><button type="button" data-copy-article-title>${icon("bookmark",14)} 제목 복사</button></nav><article class="news-reader"><figure><img src="${article.image}" alt="${article.title} 기사 대표 이미지"><figcaption>${article.caption}</figcaption></figure><header><span>TODAY'S ARTICLE</span><h1>${article.title}</h1><p>${article.dek}</p><div><b>${article.source}</b><time>${article.date}</time><em>중급</em><em>${bodyParagraphs.length ? `약 ${Math.max(4, bodyParagraphs.length * 2)}분` : "원문 미등록"}</em></div><ul>${keywords.map(keyword => `<li>#${keyword}</li>`).join("")}</ul></header>${bodyParagraphs.length ? `<section class="news-reader-progress"><div><span>${readingComplete ? "본문 읽기 완료" : `읽는 중 · ${readProgress}%`}</span><b>${readCount} / ${bodyParagraphs.length} 단락</b></div><div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${readProgress}"><i style="width:${readProgress}%"></i></div></section><div class="news-reader-body"><p class="news-reader-kicker">FULL ARTICLE</p>${paragraphs}</div>` : `<section class="news-reader-body news-reader-body-missing"><p class="news-reader-kicker">SOURCE DATA REQUIRED</p><h2>기사 원문 본문이 현재 데이터에 없습니다</h2><p>등록된 2개 문장은 원문이 아니라 학습용 재구성 문장이므로 본문으로 표시하지 않았습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">출처에서 원문 확인 ${icon("arrow", 12)}</a></section>`}<section class="news-reader-summary"><span>LEARNING SUMMARY</span><h2>학습용 핵심 정리</h2>${article.summary.map(item => `<p>${item}</p>`).join("")}</section>${quiz}<section class="news-reader-completion ${learningComplete ? "complete" : "pending"}"><span>${learningComplete ? icon("check",19) : icon("spark",19)}</span><div><b>${learningComplete ? "오늘의 기사 완료!" : bodyParagraphs.length ? readingComplete ? "읽기 완료 · 퀴즈가 남았어요" : "기사를 읽고 학습을 마쳐보세요" : "원문 데이터 등록이 필요합니다"}</b><p>${learningComplete ? `퀴즈 ${score}/${questions.length} · 완료 기록 저장됨` : bodyParagraphs.length ? "본문 읽기와 퀴즈 3문제 이상 정답이 완료 기준입니다." : "원문 본문이 등록된 기사만 읽기 완료 처리할 수 있습니다."}</p></div></section><footer><p>제목·날짜·출처 링크는 실제 기사 정보이며, 요약과 학습 문장은 기사 내용을 바탕으로 재구성했습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">원문 사이트에서 더 읽기 ${icon("arrow",12)}</a></footer></article></main>`;
+  return `${header("영어 뉴스")}<main class="news-reader-page"><nav class="news-reader-toolbar"><button type="button" data-back-news>← 기사 목록</button><button type="button" data-copy-article-title>${icon("bookmark",14)} 제목 복사</button></nav><article class="news-reader"><figure><img src="${article.image}" alt="${article.title} 기사 대표 이미지"><figcaption>${article.caption}</figcaption></figure><header><span>TODAY'S ARTICLE</span><h1>${article.title}</h1><p>${article.dek}</p><div><b>${article.source}</b><time>${article.date}</time><em>중급</em><em>${bodyParagraphs.length ? `약 ${Math.max(4, bodyParagraphs.length * 2)}분` : "원문 미등록"}</em></div><ul>${keywords.map(keyword => `<li>#${keyword}</li>`).join("")}</ul></header>${articleNavigation}${bodyParagraphs.length ? `<section class="news-reader-progress"><div><span>${readingComplete ? "본문 읽기 완료" : `읽는 중 · ${readProgress}%`}</span><b>${readCount} / ${bodyParagraphs.length} 단락</b></div><div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${readProgress}"><i style="width:${readProgress}%"></i></div></section><div class="news-reader-body"><p class="news-reader-kicker">FULL ARTICLE</p>${paragraphs}</div>` : `<section class="news-reader-body news-reader-body-missing"><p class="news-reader-kicker">SOURCE DATA REQUIRED</p><h2>기사 원문 본문이 현재 데이터에 없습니다</h2><p>등록된 2개 문장은 원문이 아니라 학습용 재구성 문장이므로 본문으로 표시하지 않았습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">출처에서 원문 확인 ${icon("arrow", 12)}</a></section>`}<section class="news-reader-summary"><span>LEARNING SUMMARY</span><h2>학습용 핵심 정리</h2>${article.summary.map(item => `<p>${item}</p>`).join("")}</section>${quiz}<section class="news-reader-completion ${learningComplete ? "complete" : "pending"}"><span>${learningComplete ? icon("check",19) : icon("spark",19)}</span><div><b>${learningComplete ? "오늘의 기사 완료!" : bodyParagraphs.length ? readingComplete ? "읽기 완료 · 퀴즈가 남았어요" : "기사를 읽고 학습을 마쳐보세요" : "원문 데이터 등록이 필요합니다"}</b><p>${learningComplete ? `퀴즈 ${score}/${questions.length} · 완료 기록 저장됨` : bodyParagraphs.length ? "본문 읽기와 퀴즈 3문제 이상 정답이 완료 기준입니다." : "원문 본문이 등록된 기사만 읽기 완료 처리할 수 있습니다."}</p></div></section>${articleNavigation}<footer><p>제목·날짜·출처 링크는 실제 기사 정보이며, 요약과 학습 문장은 기사 내용을 바탕으로 재구성했습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">원문 사이트에서 더 읽기 ${icon("arrow",12)}</a></footer></article></main>`;
 }
 
 function blogPage() {
@@ -3310,18 +3524,19 @@ function quizPage() {
     return `<button class="quiz-choice ${className}" type="button" data-quiz-choice="${choiceIndex}" ${solved ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span><b>${escapeMarkup(choice)}</b></button>`;
   }).join("") : "";
 
+  const koreanExplanation = question ? QUIZ_KOREAN_EXPLANATIONS[question.id] : null;
   const wrongDetails = question && showResult ? question.choices.map((choice, index) => {
     if (index === question.answer) return "";
     const detailIndex = question.choices.slice(0, index).filter((_, choiceIndex) => choiceIndex !== question.answer).length;
-    return `<li><b>${String.fromCharCode(65 + index)}. ${escapeMarkup(choice)}</b><span>${escapeMarkup(question.wrongChoiceExplanations[detailIndex] || "정답 문맥과 맞지 않는 보기입니다.")}</span></li>`;
+    return `<li><b>${String.fromCharCode(65 + index)}. ${escapeMarkup(choice)}</b><span>${escapeMarkup(koreanExplanation?.wrong?.[detailIndex] || question.wrongChoiceExplanations[detailIndex] || "문제의 요구 조건이나 지문의 근거와 일치하지 않는 보기입니다.")}</span></li>`;
   }).join("") : "";
   const explanationMarkup = question && showResult && !quizState.examMode ? `<section class="quiz-explanation-card ${currentCorrect ? "good" : "bad"}">
     <div class="quiz-explanation-head"><span>${currentCorrect ? icon("check", 15) : "!"}</span><div><p>${currentCorrect ? "Correct Answer" : "Review Needed"}</p><h3>${currentCorrect ? "정답입니다." : "오답입니다. 해설을 확인하세요."}</h3></div><b>정답 ${String.fromCharCode(65 + question.answer)}</b></div>
     <div class="quiz-explanation-grid">
-      <section><h4>Summary</h4><p>${escapeMarkup(question.explanation || "핵심 해설을 확인하세요.")}</p></section>
-      <section><h4>Explanation</h4><p>${escapeMarkup(question.detailedExplanation || question.explanation || "문항의 문맥과 선택지의 기능을 비교해보세요.")}</p></section>
-      <section><h4>Why Others Are Wrong</h4><ul>${wrongDetails}</ul></section>
-      <section><h4>Example</h4>${(question.examples.length ? question.examples : ["Use the expression in a short workplace sentence."]).slice(0, 2).map(example => `<blockquote>${escapeMarkup(example)}</blockquote>`).join("")}</section>
+      <section><h4>한글 핵심 해설</h4><p>${escapeMarkup(koreanExplanation?.summary || `정답은 ${String.fromCharCode(65 + question.answer)}번입니다. 문제의 핵심 표현과 지문의 직접적인 근거를 함께 확인하세요.`)}</p></section>
+      <section><h4>한글 상세 해설</h4><p>${escapeMarkup(koreanExplanation?.detail || `${question.learningPoint}을 묻는 문제입니다. 정답 보기는 문장의 문법 구조와 전체 문맥에 모두 들어맞으며, 다른 보기는 일부 단어가 관련 있어 보여도 질문이 요구하는 조건을 충족하지 않습니다.`)}</p></section>
+      <section><h4>선택지별 오답 분석</h4><ul>${wrongDetails}</ul></section>
+      <section><h4>영어 예문</h4>${(question.examples.length ? question.examples : ["Use the expression in a short workplace sentence."]).slice(0, 2).map(example => `<blockquote>${escapeMarkup(example)}</blockquote>`).join("")}</section>
     </div>
   </section>` : "";
 
@@ -3743,6 +3958,7 @@ function isAnalyzableEnglishSentence(text) {
 function decorateEnglishSentences() {
   const root = document.querySelector(".content main");
   if (!root) return;
+  if (root.matches(".news-reader-page")) return;
   const addSentenceIcon = (element, sentence) => {
     if (!element || element.querySelector(":scope > .sentence-ai-icon")) return;
     element.dataset.noAiSentence = "";
@@ -4457,7 +4673,8 @@ async function showDictionaryTooltip(target) {
   tooltip.innerHTML = `<b>${escapeMarkup(target.textContent)}</b><span>네이버 영어사전에서 뜻을 찾고 있어요…</span>`;
   positionDictionaryTooltip(tooltip, target);
 
-  let result = naverDictionaryCache.get(word);
+  const localMeaning = target.dataset.localMeaning;
+  let result = localMeaning ? { ok: true, entry: word, meanings: [{ partOfSpeech: "", value: localMeaning }], sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}` } : naverDictionaryCache.get(word);
   if (!result) {
     try {
       const response = await fetch(`/api/naver-dictionary?word=${encodeURIComponent(word)}`, { cache: "force-cache" });
@@ -4488,7 +4705,7 @@ function bindSuneungDictionaryTooltips() {
   document.querySelectorAll(".suneung-passage-text section > p").forEach(paragraph => {
     paragraph.innerHTML = renderPassageDictionaryText(paragraph.textContent || "");
   });
-  document.querySelectorAll(".suneung-dictionary-word").forEach(word => {
+  document.querySelectorAll(".suneung-dictionary-word, .news-dictionary-word").forEach(word => {
     word.addEventListener("mouseenter", () => showDictionaryTooltip(word));
     word.addEventListener("mouseleave", hideDictionaryTooltip);
     word.addEventListener("focus", () => showDictionaryTooltip(word));
@@ -4714,6 +4931,52 @@ function enhanceNewsGuidedReader() {
   reader.appendChild(utility);
 }
 
+function enhanceNewsEditorialReader() {
+  const reader = document.querySelector(".news-reader");
+  if (!reader || state.newsIndex === null) return;
+  const article = articleLibrary[state.newsIndex] || articleLibrary[0];
+  const topToolbar = document.querySelector(".news-reader-toolbar");
+  if (topToolbar) {
+    topToolbar.classList.add("editorial");
+    const backButton = topToolbar.querySelector("[data-back-news]");
+    const saveButton = topToolbar.querySelector("[data-copy-article-title]");
+    if (backButton) { backButton.innerHTML = icon("chevron", 18); backButton.setAttribute("aria-label", "기사 목록"); }
+    if (saveButton) { saveButton.innerHTML = icon("bookmark", 18); saveButton.setAttribute("aria-label", "기사 저장"); }
+    const moreButton = document.createElement("button");
+    moreButton.type = "button";
+    moreButton.className = "news-reader-more";
+    moreButton.setAttribute("aria-label", "더보기");
+    moreButton.textContent = "•••";
+    topToolbar.appendChild(moreButton);
+  }
+  const total = getArticleBodyParagraphs(article).length;
+  const saved = newsArticleLearningState.savedArticles.includes(article.id);
+  const progressLabel = reader.querySelector(".news-reader-progress b");
+  if (progressLabel) progressLabel.textContent = `${newsArticleLearningState.readParagraphs.length} / ${total} 문단`;
+  if (total) {
+    const controls = document.createElement("section");
+    controls.className = "news-guided-controls editorial";
+    controls.innerHTML = `<nav class="news-reading-modes" aria-label="기사 읽기 모드">${[["original","Original"],["translation","Translation"],["learning","Learning Mode"]].map(([mode,label]) => `<button class="${(newsArticleLearningState.readerMode || "learning") === mode ? "active" : ""}" type="button" data-news-reader-mode="${mode}" aria-pressed="${(newsArticleLearningState.readerMode || "learning") === mode}">${label}</button>`).join("")}</nav>`;
+    reader.querySelector(".news-reader-progress")?.after(controls);
+    const vocab = document.createElement("div");
+    vocab.className = "news-inline-vocabulary";
+    vocab.innerHTML = `<span>welcoming · 편안한, 반기는</span><span>designed · ~하도록 설계된</span>`;
+    controls.after(vocab);
+    const utility = document.createElement("nav");
+    utility.className = "news-guided-utility editorial";
+    utility.setAttribute("aria-label", "기사 학습 도구");
+    utility.innerHTML = `<button type="button" data-news-reader-mode="translation">${icon("message",15)} <span>해석</span></button><button class="${saved ? "active" : ""}" type="button" data-news-save-article>${icon(saved ? "check" : "bookmark",15)} <span>단어 저장</span></button><button type="button" data-news-jump-difficult>${icon("bookmark",15)} <span>하이라이트</span></button><button class="primary" type="button" data-news-reader-mode="learning">${icon("spark",15)} <span>문장 분석</span></button>`;
+    reader.appendChild(utility);
+  }
+  const keywords = [...new Set(article.sentences.flatMap(sentence => sentence.expressions.map(expression => expression.term)))].slice(0, 6);
+  if (keywords.length) {
+    const sheet = document.createElement("section");
+    sheet.className = "news-key-expression-sheet";
+    sheet.innerHTML = `<header><div><span>KEY EXPRESSIONS</span><h2>핵심 표현</h2></div><b>${keywords.length}개</b></header><div>${keywords.map(keyword => `<button type="button" data-news-expression-chip="${escapeMarkup(keyword)}">${escapeMarkup(keyword)}</button>`).join("")}</div><details><summary>SUMMARY NOTES ${icon("chevron",13)}</summary>${article.summary.map(item => `<p>${item}</p>`).join("")}</details>`;
+    reader.querySelector(".news-reader-summary")?.before(sheet);
+  }
+}
+
 function render() {
   let robotsMeta = document.querySelector('meta[name="robots"]');
   if (state.page === "drama") {
@@ -4722,7 +4985,7 @@ function render() {
   }
   const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
   document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}</div>`;
-  enhanceNewsGuidedReader();
+  enhanceNewsEditorialReader();
   bindEvents();
 }
 
@@ -4762,6 +5025,7 @@ function navigateTo(page, options = {}) {
 
   state.page = page;
   state.newsIndex = newsIndex;
+  if (page === "news") state.newsLibraryOpen = Boolean(options.newsLibraryOpen);
   state.tedLessonId = tedLessonId;
   state.translatedSentence = null;
 
@@ -5353,11 +5617,15 @@ function bindEvents(){
       homeStudyState.checked.ted = true;
       saveHomeStudyState("ted");
     }
+    const refreshedSentences = getDailyTedStudySentences(lesson);
+    const nextIncompleteIndex = refreshedSentences.findIndex(item => !updatedMastered.includes(item.sourceIndex));
+    if (nextIncompleteIndex >= 0) state.tedSentenceIndex = nextIncompleteIndex;
     updateTedSentenceStepView(lesson);
   });
   document.querySelectorAll("[data-ted-transcript-clear]").forEach(button => button.addEventListener("click", event => {
     const lesson = getEligibleTedLessons().find(item => item.id === state.tedLessonId) || getDailyTedLesson();
     if (!lesson) return;
+    const assignedBeforeUpdate = getDailyTedStudySentences(lesson);
     const sourceIndex = Number(event.currentTarget.dataset.tedTranscriptClear);
     const mastered = getTedMasteredSourceIndexes(lesson.id);
     const isClear = mastered.includes(sourceIndex);
@@ -5373,7 +5641,7 @@ function bindEvents(){
     event.currentTarget.innerHTML = `${icon("check", 12)} ${!isClear ? "Clear 완료" : "Clear"}`;
 
     const dailySentences = getDailyTedStudySentences(lesson);
-    if (dailySentences.every(item => updatedMastered.includes(item.sourceIndex))) {
+    if (assignedBeforeUpdate.every(item => updatedMastered.includes(item.sourceIndex))) {
       homeStudyState.checked.ted = true;
       saveHomeStudyState("ted");
     }
@@ -5408,6 +5676,7 @@ function bindEvents(){
   document.querySelectorAll("[data-month]").forEach(el=>el.addEventListener("click",()=>{state.calendarMonth+=Number(el.dataset.month);if(state.calendarMonth<0){state.calendarMonth=11;state.calendarYear--}if(state.calendarMonth>11){state.calendarMonth=0;state.calendarYear++}render();}));
   document.querySelectorAll("[data-open-news]").forEach(el=>el.addEventListener("click",()=>navigateTo("news", { newsIndex: Number(el.dataset.openNews) })));
   document.querySelector("[data-news-import]")?.addEventListener("click", () => window.dispatchEvent(new CustomEvent("valuetime:request-article-import")));
+  document.querySelectorAll("[data-news-import-url]").forEach(button => button.addEventListener("click", () => window.dispatchEvent(new CustomEvent("valuetime:request-article-import", { detail: { sourceUrl: button.dataset.newsImportUrl, sourceTitle: button.dataset.newsImportTitle } }))));
   document.querySelector("[data-news-search]")?.addEventListener("input", event => {
     state.newsSearch = event.currentTarget.value;
     const search = state.newsSearch.trim().toLowerCase();
@@ -5421,11 +5690,23 @@ function bindEvents(){
   });
   document.querySelector("[data-news-category]")?.addEventListener("change", event => { state.newsCategory = event.currentTarget.value; render(); });
   document.querySelector("[data-news-sort]")?.addEventListener("change", event => { state.newsSort = event.currentTarget.value; render(); });
-  document.querySelector("[data-back-news]")?.addEventListener("click",()=>navigateTo("news"));
+  document.querySelector("[data-back-news]")?.addEventListener("click",()=>navigateTo("news", { newsLibraryOpen: true }));
   document.querySelectorAll("[data-sentence]").forEach(el=>el.addEventListener("click",()=>{state.translatedSentence=Number(el.dataset.sentence);render();}));
   document.querySelectorAll("[data-news-translation]").forEach(button => button.addEventListener("click", event => {
     const index = Number(event.currentTarget.dataset.newsTranslation);
     newsArticleLearningState.translations = newsArticleLearningState.translations.includes(index) ? newsArticleLearningState.translations.filter(item => item !== index) : [...newsArticleLearningState.translations, index];
+    saveNewsArticleLearningState();
+    render();
+  }));
+  document.querySelectorAll("[data-news-reader-mode]").forEach(button => button.addEventListener("click", event => {
+    const mode = event.currentTarget.dataset.newsReaderMode;
+    if (!["original", "translation", "learning"].includes(mode)) return;
+    newsArticleLearningState.readerMode = mode;
+    if (mode === "translation") {
+      const article = articleLibrary[state.newsIndex] || articleLibrary[0];
+      newsArticleLearningState.translations = getArticleBodyParagraphs(article).map((paragraph, index) => paragraph.translation ? index : null).filter(Number.isInteger);
+    }
+    if (mode === "original") newsArticleLearningState.translations = [];
     saveNewsArticleLearningState();
     render();
   }));
@@ -5468,9 +5749,17 @@ function bindEvents(){
     if (Number.isInteger(index)) document.querySelector(`[data-news-reader-paragraph="${index}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
   });
   document.querySelector("[data-news-next-article]")?.addEventListener("click", () => {
-    const nextIndex = ((state.newsIndex ?? 0) + 1) % articleLibrary.length;
-    navigateTo("news", nextIndex);
+    const currentIndex = state.newsIndex ?? 0;
+    const nextIndex = getNextIncompleteNewsArticleIndex(currentIndex);
+    navigateTo("news", { newsIndex: nextIndex >= 0 ? nextIndex : (currentIndex + 1) % articleLibrary.length });
   });
+  document.querySelectorAll("[data-news-previous-article], [data-news-next-readable-article]").forEach(button => button.addEventListener("click", event => {
+    const rawIndex = event.currentTarget.dataset.newsPreviousArticle ?? event.currentTarget.dataset.newsNextReadableArticle;
+    const targetIndex = Number(rawIndex);
+    if (!Number.isInteger(targetIndex) || targetIndex < 0) return;
+    navigateTo("news", { newsIndex: targetIndex });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }));
   document.querySelectorAll("[data-news-expressions]").forEach(button => button.addEventListener("click", event => {
     const index = Number(event.currentTarget.dataset.newsExpressions);
     newsArticleLearningState.expressions = newsArticleLearningState.expressions.includes(index) ? newsArticleLearningState.expressions.filter(item => item !== index) : [...newsArticleLearningState.expressions, index];

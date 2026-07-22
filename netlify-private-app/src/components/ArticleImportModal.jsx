@@ -1,14 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { extractFromUrl } from "../articles/articleImportService.js";
 import { MIN_ARTICLE_LENGTH, createArticleRecord, saveArticle, toNewsArticle } from "../articles/articleStorage.js";
 
-export default function ArticleImportModal({ open, onClose }) {
+export default function ArticleImportModal({ open, request, onClose }) {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [manualText, setManualText] = useState("");
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
   const [savedArticle, setSavedArticle] = useState(null);
+
+  useEffect(() => {
+    if (!open) return;
+    setUrl(request?.sourceUrl || "");
+    setTitle(request?.sourceTitle || "");
+    setManualText("");
+    setStatus("idle");
+    setMessage("");
+    setSavedArticle(null);
+  }, [open, request?.requestId]);
   if (!open) return null;
 
   function store(record) {

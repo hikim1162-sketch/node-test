@@ -7,7 +7,7 @@ import "../legacy-overrides.css";
 export default function ValueTimeApp({ page }) {
   const [loadError, setLoadError] = useState(false);
   const [selectorMode, setSelectorMode] = useState(null);
-  const [articleImportOpen, setArticleImportOpen] = useState(false);
+  const [articleImportRequest, setArticleImportRequest] = useState(null);
 
   useEffect(() => {
     const stylesheet = document.createElement("link");
@@ -30,7 +30,11 @@ export default function ValueTimeApp({ page }) {
     observer.observe(document.querySelector("#app"), { childList: true, subtree: true });
     import("../../../src/app.js").then(registerCsatWordmaster).catch(() => setLoadError(true));
     const openSelector = (event) => setSelectorMode(["normal", "middle", "suneung"].includes(event.detail?.mode) ? event.detail.mode : "normal");
-    const openArticleImport = () => setArticleImportOpen(true);
+    const openArticleImport = (event) => setArticleImportRequest({
+      requestId: Date.now(),
+      sourceUrl: event.detail?.sourceUrl || "",
+      sourceTitle: event.detail?.sourceTitle || "",
+    });
     window.addEventListener("valuetime:request-user", openSelector);
     window.addEventListener("valuetime:request-article-import", openArticleImport);
 
@@ -43,5 +47,5 @@ export default function ValueTimeApp({ page }) {
   }, [page]);
 
   if (loadError) return <div id="app" />;
-  return <><div id="app" /><UserSelectorModal mode={selectorMode} onClose={() => setSelectorMode(null)} /><ArticleImportModal open={articleImportOpen} onClose={() => setArticleImportOpen(false)} /></>;
+  return <><div id="app" /><UserSelectorModal mode={selectorMode} onClose={() => setSelectorMode(null)} /><ArticleImportModal open={Boolean(articleImportRequest)} request={articleImportRequest} onClose={() => setArticleImportRequest(null)} /></>;
 }
