@@ -6,7 +6,7 @@ class CsatWordmasterElement extends HTMLElement {
   connectedCallback() {
     if (this.root) return;
     this.root = ReactDOM.createRoot(this);
-    this.root.render(<CsatVocabPage embedded />);
+    this.root.render(<CsatVocabPage embedded mode={this.getAttribute("mode") || "suneung"} />);
   }
 
   disconnectedCallback() {

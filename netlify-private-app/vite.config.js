@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 import naverDictionary from "./netlify/functions/naver-dictionary.js";
+import articleExtract from "./netlify/functions/article-extract.js";
 
 const valueTimeRoot = fileURLToPath(new URL("..", import.meta.url));
 
@@ -11,6 +12,13 @@ export default defineConfig({
     {
       name: "local-naver-dictionary",
       configureServer(server) {
+        server.middlewares.use("/api/article-extract", async (request, response) => {
+          const webRequest = new Request(`http://${request.headers.host || "127.0.0.1"}${request.originalUrl || request.url}`, { method: request.method, headers: request.headers });
+          const result = await articleExtract(webRequest);
+          response.statusCode = result.status;
+          result.headers.forEach((value, name) => response.setHeader(name, value));
+          response.end(Buffer.from(await result.arrayBuffer()));
+        });
         server.middlewares.use("/api/naver-dictionary", async (request, response) => {
           const webRequest = new Request(`http://${request.headers.host || "127.0.0.1"}${request.originalUrl || request.url}`, {
             method: request.method,

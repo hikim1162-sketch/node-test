@@ -1,4 +1,4 @@
-﻿import { vocabularyWords } from "../data/vocabulary.js";
+import { vocabularyWords } from "../data/vocabulary.js";
 import { vocabularyPartOfSpeech } from "../data/vocabulary-pos.js";
 import { vocabularyExamples } from "../data/vocabulary-examples.js";
 import { tedLessons, tedSettings } from "../data/ted-lessons.js";
@@ -7,6 +7,10 @@ import { favoriteBlogArticles } from "../data/favorite-blogs.js";
 import { normalizeSavedLearningItems, generateCustomTestFromSavedItems } from "./custom-learning.js";
 import { REVIEW_STORAGE_KEY, createReviewProgress, selectDueReviewItems, createReviewQuestion, applyReviewAnswer, detectUsedWords, evaluateEmailReply, toNotebookItem } from "./connected-learning.js";
 import csatEnglishArchive from "../netlify-private-app/data/imported/csat-english-2021-2026.json";
+import { getCurrentUser, modeFromAudience, profileStorage } from "../netlify-private-app/src/profiles/profileStorage.js";
+import { getModeConfig } from "../netlify-private-app/src/profiles/learningModes.js";
+import { middleEnglishPassages } from "../netlify-private-app/src/data/middleEnglish.js";
+import { loadArticles, toNewsArticle, updateArticleLearning } from "../netlify-private-app/src/articles/articleStorage.js";
 
 const CATEGORIES = {
   word: { label: "단어", short: "단", icon: "book-open" },
@@ -406,6 +410,7 @@ let articleLibrary = [
   bodyParagraphs: [],
   studySentences: article.sentences,
 }));
+articleLibrary = [...loadArticles().map(toNewsArticle), ...articleLibrary];
 
 async function refreshDailyNewsLibrary() {
   try {
@@ -588,7 +593,7 @@ const TED_MASTERY_STORAGE_KEY = "value_time_ted_mastered_sentences_v1";
 const TED_ASSIGNMENT_STORAGE_KEY = "value_time_ted_daily_assignments_v1";
 
 function readTedSentenceStore(key) {
-  try { return JSON.parse(localStorage.getItem(key) || "{}"); }
+  try { return JSON.parse(profileStorage.getItem(key) || "{}"); }
   catch { return {}; }
 }
 
@@ -600,7 +605,7 @@ function getTedMasteredSourceIndexes(lessonId) {
 function saveTedMasteredSourceIndexes(lessonId, indexes) {
   const stored = readTedSentenceStore(TED_MASTERY_STORAGE_KEY);
   stored[lessonId] = [...new Set(indexes)].sort((a, b) => a - b);
-  localStorage.setItem(TED_MASTERY_STORAGE_KEY, JSON.stringify(stored));
+  profileStorage.setItem(TED_MASTERY_STORAGE_KEY, JSON.stringify(stored));
 }
 
 function getDailyTedStudySentences(lesson, transcriptLines = getTedTranscriptLines(lesson)) {
@@ -617,7 +622,7 @@ function getDailyTedStudySentences(lesson, transcriptLines = getTedTranscriptLin
     // 모든 문장을 끝낸 뒤에도 마지막 5문장을 복습 화면으로 유지합니다.
     if (!sourceIndexes.length) sourceIndexes = transcriptLines.map((_, index) => index).slice(-5);
     assignments[assignmentKey] = sourceIndexes;
-    localStorage.setItem(TED_ASSIGNMENT_STORAGE_KEY, JSON.stringify(assignments));
+    profileStorage.setItem(TED_ASSIGNMENT_STORAGE_KEY, JSON.stringify(assignments));
   }
 
   return sourceIndexes.map(sourceIndex => ({ ...transcriptLines[sourceIndex], sourceIndex }));
@@ -864,7 +869,7 @@ function mergeDefaultQuizQuestions(savedQuestions = []) {
 function loadQuizState() {
   const initial = { questions: mergeDefaultQuizQuestions([]), current: 0, solvedMap: {}, wrongSet: [], bookmarkSet: [], solvedDates: [], dailyPlan: null, recentQuestionHistory: [], activeGroup: "", darkMode: false, examMode: false, search: "", filter: "all", answerVisible: false, selectedChoice: null };
   try {
-    const saved = JSON.parse(localStorage.getItem(QUIZ_APP_STORAGE_KEY) || "null");
+    const saved = JSON.parse(profileStorage.getItem(QUIZ_APP_STORAGE_KEY) || "null");
     if (!saved) return initial;
     return {
       ...initial,
@@ -883,7 +888,7 @@ const quizState = loadQuizState();
 
 function saveQuizState() {
   try {
-    localStorage.setItem(QUIZ_APP_STORAGE_KEY, JSON.stringify({ questions: quizState.questions, current: quizState.current, solvedMap: quizState.solvedMap, wrongSet: quizState.wrongSet, bookmarkSet: quizState.bookmarkSet, todaySolvedDates: quizState.solvedDates, dailyPlan: quizState.dailyPlan, recentQuestionHistory: quizState.recentQuestionHistory, activeGroup: quizState.activeGroup, darkMode: quizState.darkMode, examMode: quizState.examMode }));
+    profileStorage.setItem(QUIZ_APP_STORAGE_KEY, JSON.stringify({ questions: quizState.questions, current: quizState.current, solvedMap: quizState.solvedMap, wrongSet: quizState.wrongSet, bookmarkSet: quizState.bookmarkSet, todaySolvedDates: quizState.solvedDates, dailyPlan: quizState.dailyPlan, recentQuestionHistory: quizState.recentQuestionHistory, activeGroup: quizState.activeGroup, darkMode: quizState.darkMode, examMode: quizState.examMode }));
   } catch {}
 }
 
@@ -1234,7 +1239,7 @@ function localDateKey(date = new Date()) {
 }
 
 function readStoredJSON(key, fallback) {
-  try { return JSON.parse(localStorage.getItem(key) || "null") || fallback; }
+  try { return JSON.parse(profileStorage.getItem(key) || "null") || fallback; }
   catch { return fallback; }
 }
 
@@ -1284,8 +1289,8 @@ function getTestHistory() {
 
   // 새 키와 형식으로 저장하고 이전 키는 정리합니다.
   try {
-    localStorage.setItem(DAILY_TEST_HISTORY_KEY, JSON.stringify(normalizedHistory));
-    localStorage.removeItem(LEGACY_DAILY_TEST_HISTORY_KEY);
+    profileStorage.setItem(DAILY_TEST_HISTORY_KEY, JSON.stringify(normalizedHistory));
+    profileStorage.removeItem(LEGACY_DAILY_TEST_HISTORY_KEY);
   } catch {}
 
   return normalizedHistory;
@@ -1313,8 +1318,8 @@ function getWrongNotes() {
   const legacyNotes = readStoredJSON(LEGACY_DAILY_TEST_WRONG_KEY, null);
   if (legacyNotes) {
     try {
-      localStorage.setItem(DAILY_TEST_WRONG_KEY, JSON.stringify(legacyNotes));
-      localStorage.removeItem(LEGACY_DAILY_TEST_WRONG_KEY);
+      profileStorage.setItem(DAILY_TEST_WRONG_KEY, JSON.stringify(legacyNotes));
+      profileStorage.removeItem(LEGACY_DAILY_TEST_WRONG_KEY);
     } catch {}
     return { ...emptyNotes, ...legacyNotes };
   }
@@ -1386,7 +1391,7 @@ function syncHomeAppState(changedId = null, score = undefined) {
       score: changedId === item.id && score !== undefined ? score : previous.score,
     };
   });
-  try { localStorage.setItem(HOME_APP_STORAGE_KEY, JSON.stringify(appState)); }
+  try { profileStorage.setItem(HOME_APP_STORAGE_KEY, JSON.stringify(appState)); }
   catch {}
   return appState;
 }
@@ -1429,8 +1434,8 @@ let homeStudyState = getHomeStudyState();
 
 function saveHomeStudyState(changedId = null, score = undefined) {
   try {
-    localStorage.setItem(HOME_STUDY_STORAGE_KEY, JSON.stringify(homeStudyState));
-    localStorage.removeItem(LEGACY_HOME_STUDY_STORAGE_KEY);
+    profileStorage.setItem(HOME_STUDY_STORAGE_KEY, JSON.stringify(homeStudyState));
+    profileStorage.removeItem(LEGACY_HOME_STUDY_STORAGE_KEY);
   }
   catch {}
   syncHomeAppState(changedId, score);
@@ -1452,36 +1457,36 @@ const KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY = "value_time_kids_word_day_offset_d
 const KIDS_SENTENCE_PAGE_STORAGE_KEY = "value_time_kids_sentence_page_v1";
 const KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY = "value_time_kids_sentence_page_date_v1";
 let learningMode = (() => {
-  try { return localStorage.getItem(LEARNING_MODE_STORAGE_KEY) === "speaking" ? "speaking" : "default"; }
+  try { return profileStorage.getItem(LEARNING_MODE_STORAGE_KEY) === "speaking" ? "speaking" : "default"; }
   catch { return "default"; }
 })();
 let speakingSpeed = (() => {
-  try { return Number(localStorage.getItem(SPEAKING_SPEED_STORAGE_KEY)) === 0.8 ? 0.8 : 1; }
+  try { return Number(profileStorage.getItem(SPEAKING_SPEED_STORAGE_KEY)) === 0.8 ? 0.8 : 1; }
   catch { return 1; }
 })();
 let speakingExpressionDone = (() => {
-  try { return JSON.parse(localStorage.getItem(SPEAKING_EXPRESSION_STORAGE_KEY) || "[]"); }
+  try { return JSON.parse(profileStorage.getItem(SPEAKING_EXPRESSION_STORAGE_KEY) || "[]"); }
   catch { return []; }
 })();
 let audienceMode = (() => {
-  try { const stored = localStorage.getItem(AUDIENCE_MODE_STORAGE_KEY) || localStorage.getItem("mode"); return stored === "kids" || stored === "elementary" ? "kids" : stored === "suneung" ? "suneung" : "general"; }
+  try { const stored = profileStorage.getItem(AUDIENCE_MODE_STORAGE_KEY) || profileStorage.getItem("mode"); return stored === "kids" || stored === "elementary" ? "kids" : stored === "suneung" ? "suneung" : stored === "middle" ? "middle" : "general"; }
   catch { return "general"; }
 })();
 let childName = (() => {
-  try { return localStorage.getItem("studentName") || localStorage.getItem(CHILD_NAME_STORAGE_KEY) || "김나혜"; }
+  try { return profileStorage.getItem("studentName") || profileStorage.getItem(CHILD_NAME_STORAGE_KEY) || "김나혜"; }
   catch { return "김나혜"; }
 })();
 let showKidsIntro = (() => {
-  try { return localStorage.getItem(KIDS_INTRO_STORAGE_KEY) !== "true"; }
+  try { return profileStorage.getItem(KIDS_INTRO_STORAGE_KEY) !== "true"; }
   catch { return true; }
 })();
 let kidsHistory = (() => {
-  try { return JSON.parse(localStorage.getItem(KIDS_HISTORY_STORAGE_KEY) || "{}") || {}; }
+  try { return JSON.parse(profileStorage.getItem(KIDS_HISTORY_STORAGE_KEY) || "{}") || {}; }
   catch { return {}; }
 })();
 let kidsProgress = (() => {
   try {
-    const stored = JSON.parse(localStorage.getItem(KIDS_PROGRESS_STORAGE_KEY) || "null");
+    const stored = JSON.parse(profileStorage.getItem(KIDS_PROGRESS_STORAGE_KEY) || "null");
     if (stored?.date && stored.date !== localDateKey()) {
       kidsHistory[stored.date] = kidsEntryFromProgress(stored);
       saveKidsHistory();
@@ -1494,16 +1499,16 @@ let kidsWordQuizStep = 0;
 let kidsTestAnswers = {};
 let kidsWordDayOffset = (() => {
   try {
-    return localStorage.getItem(KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY) === localDateKey()
-      ? Math.max(0, Number(localStorage.getItem(KIDS_WORD_DAY_OFFSET_STORAGE_KEY) || 0))
+    return profileStorage.getItem(KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY) === localDateKey()
+      ? Math.max(0, Number(profileStorage.getItem(KIDS_WORD_DAY_OFFSET_STORAGE_KEY) || 0))
       : 0;
   }
   catch { return 0; }
 })();
 let kidsSentencePageIndex = (() => {
   try {
-    return localStorage.getItem(KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY) === localDateKey()
-      ? Math.max(0, Number(localStorage.getItem(KIDS_SENTENCE_PAGE_STORAGE_KEY) || 0))
+    return profileStorage.getItem(KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY) === localDateKey()
+      ? Math.max(0, Number(profileStorage.getItem(KIDS_SENTENCE_PAGE_STORAGE_KEY) || 0))
       : 0;
   }
   catch { return 0; }
@@ -1513,18 +1518,18 @@ function applyLearningMode(mode) {
   learningMode = mode === "speaking" ? "speaking" : "default";
   document.documentElement.dataset.mode = learningMode;
   if (document.body) document.body.dataset.mode = learningMode;
-  try { localStorage.setItem(LEARNING_MODE_STORAGE_KEY, learningMode); } catch {}
+  try { profileStorage.setItem(LEARNING_MODE_STORAGE_KEY, learningMode); } catch {}
 }
 
 function applyAudienceMode(mode) {
-  audienceMode = ["kids", "suneung"].includes(mode) ? mode : "general";
+  audienceMode = ["kids", "middle", "suneung"].includes(mode) ? mode : "general";
   document.documentElement.dataset.audience = audienceMode;
   if (document.body) document.body.dataset.audience = audienceMode;
   try {
-    localStorage.setItem(AUDIENCE_MODE_STORAGE_KEY, audienceMode);
-    localStorage.setItem(CHILD_NAME_STORAGE_KEY, childName);
-    localStorage.setItem("mode", audienceMode === "kids" ? "elementary" : audienceMode === "suneung" ? "suneung" : "default");
-    localStorage.setItem("studentName", childName);
+    profileStorage.setItem(AUDIENCE_MODE_STORAGE_KEY, audienceMode);
+    profileStorage.setItem(CHILD_NAME_STORAGE_KEY, childName);
+    profileStorage.setItem("mode", audienceMode === "kids" ? "elementary" : audienceMode === "suneung" ? "suneung" : audienceMode === "middle" ? "middle" : "default");
+    profileStorage.setItem("studentName", childName);
   } catch {}
 }
 
@@ -1538,8 +1543,8 @@ function saveChildName(name) {
   if (!nextName) return;
   childName = nextName.slice(0, 12);
   try {
-    localStorage.setItem(CHILD_NAME_STORAGE_KEY, childName);
-    localStorage.setItem("studentName", childName);
+    profileStorage.setItem(CHILD_NAME_STORAGE_KEY, childName);
+    profileStorage.setItem("studentName", childName);
   } catch {}
 }
 
@@ -1558,13 +1563,13 @@ function kidsEntryFromProgress(progress = kidsProgress) {
 }
 
 function saveKidsHistory() {
-  try { localStorage.setItem(KIDS_HISTORY_STORAGE_KEY, JSON.stringify(kidsHistory)); } catch {}
+  try { profileStorage.setItem(KIDS_HISTORY_STORAGE_KEY, JSON.stringify(kidsHistory)); } catch {}
 }
 
 function saveKidsProgress() {
   kidsProgress.date = kidsProgress.date || localDateKey();
   kidsHistory[kidsProgress.date] = kidsEntryFromProgress(kidsProgress);
-  try { localStorage.setItem(KIDS_PROGRESS_STORAGE_KEY, JSON.stringify(kidsProgress)); } catch {}
+  try { profileStorage.setItem(KIDS_PROGRESS_STORAGE_KEY, JSON.stringify(kidsProgress)); } catch {}
   saveKidsHistory();
 }
 
@@ -1629,8 +1634,8 @@ function getKidsWordDateKey() {
 
 function saveKidsWordDayOffset() {
   try {
-    localStorage.setItem(KIDS_WORD_DAY_OFFSET_STORAGE_KEY, String(kidsWordDayOffset));
-    localStorage.setItem(KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY, localDateKey());
+    profileStorage.setItem(KIDS_WORD_DAY_OFFSET_STORAGE_KEY, String(kidsWordDayOffset));
+    profileStorage.setItem(KIDS_WORD_DAY_OFFSET_DATE_STORAGE_KEY, localDateKey());
   } catch {}
 }
 
@@ -1640,8 +1645,8 @@ function getKidsSentencePageKey() {
 
 function saveKidsSentencePageIndex() {
   try {
-    localStorage.setItem(KIDS_SENTENCE_PAGE_STORAGE_KEY, String(kidsSentencePageIndex));
-    localStorage.setItem(KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY, localDateKey());
+    profileStorage.setItem(KIDS_SENTENCE_PAGE_STORAGE_KEY, String(kidsSentencePageIndex));
+    profileStorage.setItem(KIDS_SENTENCE_PAGE_DATE_STORAGE_KEY, localDateKey());
   } catch {}
 }
 
@@ -1712,7 +1717,7 @@ function getKidsDailySession(id, initial = {}) {
 
 function saveSpeakingSpeed(speed) {
   speakingSpeed = speed === 0.8 ? 0.8 : 1;
-  try { localStorage.setItem(SPEAKING_SPEED_STORAGE_KEY, String(speakingSpeed)); } catch {}
+  try { profileStorage.setItem(SPEAKING_SPEED_STORAGE_KEY, String(speakingSpeed)); } catch {}
 }
 
 function speakText(text, repeat = 1) {
@@ -1738,7 +1743,7 @@ applyAudienceMode(audienceMode);
 const THEME_STORAGE_KEY = "today_learning_theme_v3";
 const LEGACY_THEME_STORAGE_KEYS = ["today_learning_theme_v2", "worthy_life_theme"];
 let currentTheme = (() => {
-  try { return (localStorage.getItem(THEME_STORAGE_KEY) || LEGACY_THEME_STORAGE_KEYS.map(key => localStorage.getItem(key)).find(Boolean)) === "dark" ? "dark" : "light"; }
+  try { return (profileStorage.getItem(THEME_STORAGE_KEY) || LEGACY_THEME_STORAGE_KEYS.map(key => profileStorage.getItem(key)).find(Boolean)) === "dark" ? "dark" : "light"; }
   catch { return "light"; }
 })();
 document.documentElement.dataset.theme = currentTheme;
@@ -1747,8 +1752,8 @@ function saveTheme(theme) {
   currentTheme = theme;
   document.documentElement.dataset.theme = theme;
   try {
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-    LEGACY_THEME_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
+    profileStorage.setItem(THEME_STORAGE_KEY, theme);
+    LEGACY_THEME_STORAGE_KEYS.forEach(key => profileStorage.removeItem(key));
   }
   catch {}
 }
@@ -1756,22 +1761,22 @@ saveTheme(currentTheme);
 
 let state = {
   page: "home", selectedDate: localDateKey(), calendarMonth: new Date().getMonth(), calendarYear: new Date().getFullYear(),
-  history: JSON.parse(localStorage.getItem("worthy_life_history") || "null") || defaultHistory,
-  savedWords: JSON.parse(localStorage.getItem("worthy_life_words") || "[]"),
-  knownWords: JSON.parse(localStorage.getItem("value_time_known_words_v1") || "[]"),
-  clearedWordSentences: JSON.parse(localStorage.getItem("value_time_cleared_word_sentences_v1") || "[]"),
-  savedSentences: JSON.parse(localStorage.getItem("value_time_saved_sentences_v1") || "[]"),
-  savedBlogItems: JSON.parse(localStorage.getItem("value_time_saved_blog_items_v1") || "[]"),
-  understoodSentences: JSON.parse(localStorage.getItem("value_time_understood_sentences_v1") || "[]"),
-  clearedSentences: JSON.parse(localStorage.getItem("value_time_cleared_sentences_v1") || "[]"),
-  wordIndex: 0, vocabPage: Number(localStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(localStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, translatedSentence: null,
+  history: JSON.parse(profileStorage.getItem("worthy_life_history") || "null") || defaultHistory,
+  savedWords: JSON.parse(profileStorage.getItem("worthy_life_words") || "[]"),
+  knownWords: JSON.parse(profileStorage.getItem("value_time_known_words_v1") || "[]"),
+  clearedWordSentences: JSON.parse(profileStorage.getItem("value_time_cleared_word_sentences_v1") || "[]"),
+  savedSentences: JSON.parse(profileStorage.getItem("value_time_saved_sentences_v1") || "[]"),
+  savedBlogItems: JSON.parse(profileStorage.getItem("value_time_saved_blog_items_v1") || "[]"),
+  understoodSentences: JSON.parse(profileStorage.getItem("value_time_understood_sentences_v1") || "[]"),
+  clearedSentences: JSON.parse(profileStorage.getItem("value_time_cleared_sentences_v1") || "[]"),
+  wordIndex: 0, vocabPage: Number(profileStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(profileStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, translatedSentence: null,
   newsSearch: "", newsCategory: "all", newsSort: "latest", tedLessonId: null, tedSentenceIndex: 0, tedMeaningOpen: false,
 };
 
 let activeBlogPostId = null;
 let blogSaveToast = "";
 let journalTestState = { view: "closed", scope: "all", count: 5, difficulty: "normal", test: null, answers: {}, submitted: false, wrongOnly: false, wrongQuestionIds: [] };
-let reviewProgressMap = JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) || "{}");
+let reviewProgressMap = JSON.parse(profileStorage.getItem(REVIEW_STORAGE_KEY) || "{}");
 let reviewChatState = { open: false, selected: null, answered: null, completed: false, wrongNotes: [] };
 let selectionAssistantState = { open: false, text: "", range: null, busy: false, saved: false, origin: "selection", web: null };
 let selectionAssistantDocumentBound = false;
@@ -1780,15 +1785,16 @@ let newsSaveToast = "";
 let newsReviewState = { articleId: null, sentenceIndex: null, questionIndex: 0, answers: {} };
 let newsArticleLearningState = (() => {
   try {
-    const stored = JSON.parse(localStorage.getItem(NEWS_ARTICLE_LEARNING_STORAGE_KEY) || "null");
+    const stored = JSON.parse(profileStorage.getItem(NEWS_ARTICLE_LEARNING_STORAGE_KEY) || "null");
     return stored?.date === localDateKey() ? stored : { date: localDateKey(), articleId: null, readParagraphs: [], translations: [], expressions: [], quizAnswers: {}, quizSubmitted: false };
   } catch { return { date: localDateKey(), articleId: null, readParagraphs: [], translations: [], expressions: [], quizAnswers: {}, quizSubmitted: false }; }
 })();
 newsArticleLearningState.difficult ||= [];
 newsArticleLearningState.savedArticles ||= [];
+newsArticleLearningState.notes ||= {};
 let dramaShortState = (() => {
   try {
-    const stored = JSON.parse(localStorage.getItem(DRAMA_SHORT_STORAGE_KEY) || "null");
+    const stored = JSON.parse(profileStorage.getItem(DRAMA_SHORT_STORAGE_KEY) || "null");
     return stored?.date === localDateKey() ? { ...stored, translations: {}, expressions: {}, quizCard: null, questionIndex: 0 } : { date: localDateKey(), answers: {}, translations: {}, expressions: {}, quizCard: null, questionIndex: 0 };
   } catch { return { date: localDateKey(), answers: {}, translations: {}, expressions: {}, quizCard: null, questionIndex: 0 }; }
 })();
@@ -1861,6 +1867,35 @@ function repairImportedCsatOcr(value) {
   Object.entries(repairs).forEach(([broken, fixed]) => { text = text.replaceAll(broken, fixed); });
   return text;
 }
+
+function currentLearningUser() {
+  return getCurrentUser(modeFromAudience(audienceMode));
+}
+
+function isAcademicMode(mode = audienceMode) {
+  return mode === "suneung" || mode === "middle";
+}
+
+function currentModeConfig() {
+  return getModeConfig(modeFromAudience(audienceMode));
+}
+
+function requestLearningUser(mode = modeFromAudience(audienceMode)) {
+  window.dispatchEvent(new CustomEvent("valuetime:request-user", { detail: { mode } }));
+}
+
+window.addEventListener("valuetime:user-selected", event => {
+  const nextAudience = event.detail?.mode === "suneung" ? "suneung" : event.detail?.mode === "middle" ? "middle" : "general";
+  applyAudienceMode(nextAudience);
+  window.location.reload();
+});
+
+window.addEventListener("valuetime:article-imported", event => {
+  const article = event.detail?.article;
+  if (!article?.id || !getArticleBodyParagraphs(article).length) return;
+  articleLibrary = [article, ...articleLibrary.filter(item => item.id !== article.id && (!article.originalUrl || item.originalUrl !== article.originalUrl))];
+  navigateTo("news", { newsIndex: 0 });
+});
 
 function getArticleBodyParagraphs(article) {
   const source = article?.originalArticleParagraphs ?? article?.originalArticleText ?? article?.bodyParagraphs ?? article?.paragraphs ?? article?.body ?? article?.content ?? article?.articleText;
@@ -1974,7 +2009,7 @@ const importedSuneungPassages = (csatEnglishArchive?.questions || [])
     };
   });
 
-const suneungPassages = [
+const csatPassages = [
   suneungPassage,
   {
     ...suneungPassage,
@@ -2019,6 +2054,7 @@ const suneungPassages = [
   },
   ...importedSuneungPassages,
 ];
+const suneungPassages = audienceMode === "middle" ? middleEnglishPassages : csatPassages;
 
 function nextAvailablePassageIndex(currentIndex, masteredIds = []) {
   for (let offset = 1; offset < suneungPassages.length; offset += 1) {
@@ -2028,7 +2064,7 @@ function nextAvailablePassageIndex(currentIndex, masteredIds = []) {
   return -1;
 }
 
-let suneungState = (() => { try { const stored = JSON.parse(localStorage.getItem(SUNEUNG_STORAGE_KEY) || "null"); return stored?.date === localDateKey() ? stored : { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: stored?.masteredPassages || [], completedPassages: stored?.completedPassages || [], typeTrainingHistory: stored?.typeTrainingHistory || [] }; } catch { return { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: [], completedPassages: [], typeTrainingHistory: [] }; } })();
+let suneungState = (() => { try { const stored = JSON.parse(profileStorage.getItem(SUNEUNG_STORAGE_KEY) || "null"); return stored?.date === localDateKey() ? stored : { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: stored?.masteredPassages || [], completedPassages: stored?.completedPassages || [], typeTrainingHistory: stored?.typeTrainingHistory || [] }; } catch { return { date: localDateKey(), view: "home", mode: "exam", translations: [], selected: null, submitted: false, completed: false, reviewSaved: false, masteredPassages: [], completedPassages: [], typeTrainingHistory: [] }; } })();
 suneungState.officialOnly ??= true;
 suneungState.sourceTab ||= "official";
 suneungState.dailyChecks ||= {};
@@ -2060,8 +2096,8 @@ if (suneungState.masteredPassages.includes(suneungPassages[suneungState.passageI
 suneungPassage = suneungPassages[suneungState.passageIndex % suneungPassages.length];
 
 const suneungHomeStudyItems = [
-  { id: "wordmaster", number: "01", title: "수능 단어장", page: "suneung-wordmaster", icon: "book", color: "sage", tag: "Word Master", unit: "오늘의 단어 학습", cta: "단어 학습하기" },
-  { id: "passage", number: "02", title: "수능 지문 훈련", page: "suneung-passage", icon: "book-open", color: "blue", tag: "실전 독해", unit: "완료 후 다음 지문 계속", cta: "지문 풀기" },
+  { id: "wordmaster", number: "01", title: `${currentModeConfig().shortLabel} 단어장`, page: "suneung-wordmaster", icon: "book", color: "sage", tag: "Word Master", unit: "오늘의 단어 학습", cta: "단어 학습하기" },
+  { id: "passage", number: "02", title: `${currentModeConfig().shortLabel} 지문 훈련`, page: "suneung-passage", icon: "book-open", color: "blue", tag: audienceMode === "middle" ? "기본 독해" : "실전 독해", unit: "완료 후 다음 지문 계속", cta: "지문 풀기" },
   { id: "types", number: "03", title: "유형별 훈련", page: "suneung-types", icon: "clipboard", color: "gold", tag: "유형 전략", unit: "취약 유형 집중 훈련", cta: "유형 훈련하기" },
   { id: "vocab", number: "05", title: "어휘 / 구문", page: "suneung-vocab", icon: "book", color: "mint", tag: "구문 분석", unit: "핵심 어휘와 문장 구조", cta: "어휘·구문 보기" },
   { id: "parent", number: "06", title: "부모 점검", page: "suneung-parent", icon: "calendar", color: "navy", tag: "학습 기록", unit: "오늘의 진도와 약점 확인", cta: "학습 현황 보기" },
@@ -2092,28 +2128,29 @@ function icon(name, size = 20) {
 }
 
 function navItem(id, label, ico) {
-  const isActive = state.page === id || (audienceMode === "suneung" && id === "suneung-home" && state.page === "home");
+  const isActive = state.page === id || (isAcademicMode() && id === "suneung-home" && state.page === "home");
   return `<button class="nav-item ${isActive ? "active" : ""}" data-page="${id}">${icon(ico)}<span>${label}</span></button>`;
 }
 function sidebar() {
   const todayDone = (state.history["2026-07-13"] || []).length;
   const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}<p class="nav-label space">MY SPACE</p>${navItem("calendar", "학습 캘린더", "calendar")}`;
   const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
-  const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", "수능 단어장", "book")}${navItem("suneung-passage", "오늘의 수능 지문", "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
+  const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", `${currentModeConfig().shortLabel} 단어장`, "book")}${navItem("suneung-passage", `오늘의 ${currentModeConfig().shortLabel} 지문`, "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
   return `<aside class="sidebar">
-    <button class="brand" type="button" data-page="${audienceMode === "suneung" ? "suneung-home" : "home"}" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
-    <nav><p class="nav-label">${audienceMode === "suneung" ? "CSAT ENGLISH" : "LEARN"}</p>${audienceMode === "kids" ? kidsNavigation : audienceMode === "suneung" ? suneungNavigation : generalNavigation}</nav>
-    <div class="sidebar-bottom"><div class="streak-card"><div class="streak-icon">${icon("flame")}</div><div><b>${audienceMode === "kids" ? `${childName}의 영어 탐험!` : audienceMode === "suneung" ? "5일 연속 수능 루틴" : "12일 연속 학습 중!"}</b><span>${audienceMode === "kids" ? "오늘도 별을 모아봐요" : audienceMode === "suneung" ? "이번 주 목표 5 / 7" : "이번 주도 멋져요"}</span></div></div><div class="profile"><span class="avatar">${audienceMode === "kids" ? childCallName() : "Kai"}</span><div><b>${audienceMode === "kids" ? childName : "Kai"}</b><span>${audienceMode === "kids" ? "초등학교 4학년" : audienceMode === "suneung" ? "상위권 수능 루틴" : "꾸준한 학습자"}</span></div><button type="button" ${audienceMode === "kids" ? 'data-kids-edit-name aria-label="학생 이름 변경"' : ""}>${audienceMode === "kids" ? "이름" : "···"}</button></div></div>
+    <button class="brand" type="button" data-page="${isAcademicMode() ? "suneung-home" : "home"}" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
+    <nav><p class="nav-label">${isAcademicMode() ? (audienceMode === "middle" ? "MIDDLE ENGLISH" : "CSAT ENGLISH") : "LEARN"}</p>${audienceMode === "kids" ? kidsNavigation : isAcademicMode() ? suneungNavigation : generalNavigation}</nav>
+    <div class="sidebar-bottom"><div class="streak-card"><div class="streak-icon">${icon("flame")}</div><div><b>${audienceMode === "kids" ? `${childName}의 영어 탐험!` : isAcademicMode() ? `5일 연속 ${currentModeConfig().shortLabel} 루틴` : "12일 연속 학습 중!"}</b><span>${audienceMode === "kids" ? "오늘도 별을 모아봐요" : isAcademicMode() ? "이번 주 목표 5 / 7" : "이번 주도 멋져요"}</span></div></div><div class="profile"><span class="avatar">${audienceMode === "kids" ? childCallName() : audienceMode === "middle" ? "M" : currentLearningUser().slice(0, 1).toUpperCase()}</span><div><b>${audienceMode === "kids" ? childName : audienceMode === "middle" ? "중등 공용" : currentLearningUser()}</b><span>${audienceMode === "kids" ? "초등학교 4학년" : `${currentModeConfig().label} 학습자`}</span></div>${audienceMode === "kids" ? '<button type="button" data-kids-edit-name aria-label="학생 이름 변경">이름</button>' : audienceMode === "middle" ? "" : '<button type="button" data-user-change aria-label="학습자 변경">변경</button>'}</div></div>
   </aside>`;
 }
 
 function header(title = "오늘의 학습") {
-  return `<header><button class="mobile-menu" aria-label="메뉴">${icon("menu")}</button><div class="header-title-block"><p class="eyebrow">${audienceMode === "kids" ? `${childName}의 오늘 영어` : audienceMode === "suneung" ? "DAILY CSAT ROUTINE" : "MONDAY, JULY 13"}</p><div class="header-title-row"><h1>${title}</h1></div></div><div class="header-actions"><div class="audience-mode-switch" role="group" aria-label="학습 트랙 선택"><button class="${audienceMode === "general" ? "active" : ""}" type="button" data-audience-mode="general">일반</button><button class="${audienceMode === "kids" ? "active" : ""}" type="button" data-audience-mode="kids">초등</button><button class="${audienceMode === "suneung" ? "active" : ""}" type="button" data-audience-mode="suneung">수능</button></div>${audienceMode === "suneung" ? "" : `<div class="learning-mode-switch" role="group" aria-label="학습 모드 선택"><button class="${learningMode === "default" ? "active" : ""}" type="button" data-learning-mode="default">Silent</button><button class="${learningMode === "speaking" ? "active" : ""}" type="button" data-learning-mode="speaking">${icon("mic",14)} Speaking</button></div>`}<div class="mini-streak">${icon("flame",18)} <b>${audienceMode === "kids" ? "★" : audienceMode === "suneung" ? "5" : "12"}</b> ${audienceMode === "kids" ? "오늘의 별" : "day streak"}</div><button class="theme-toggle" type="button" data-theme-toggle aria-label="화면 모드 변경">${icon(currentTheme === "dark" ? "sun" : "moon",18)}</button><button class="avatar" aria-label="사용자 프로필">${audienceMode === "kids" ? childCallName() : "Kai"}</button></div></header>`;
+  return `<header><button class="mobile-menu" aria-label="메뉴">${icon("menu")}</button><div class="header-title-block"><p class="eyebrow">${audienceMode === "kids" ? `${childName}의 오늘 영어` : isAcademicMode() ? currentModeConfig().eyebrow : "MONDAY, JULY 13"}</p><div class="header-title-row"><h1>${title}</h1></div></div><div class="header-actions"><div class="audience-mode-switch" role="group" aria-label="학습 트랙 선택"><span class="audience-mode-group primary"><button class="${audienceMode === "general" ? "active" : ""}" type="button" data-audience-mode="general">일반</button><button class="${audienceMode === "suneung" ? "active" : ""}" type="button" data-audience-mode="suneung">수능</button></span><span class="audience-mode-group school"><button class="${audienceMode === "kids" ? "active" : ""}" type="button" data-audience-mode="kids">초등</button><button class="${audienceMode === "middle" ? "active" : ""}" type="button" data-audience-mode="middle">중등</button></span></div>${isAcademicMode() ? "" : `<div class="learning-mode-switch" role="group" aria-label="학습 모드 선택"><button class="${learningMode === "default" ? "active" : ""}" type="button" data-learning-mode="default">Silent</button><button class="${learningMode === "speaking" ? "active" : ""}" type="button" data-learning-mode="speaking">${icon("mic",14)} Speaking</button></div>`}${["general", "suneung"].includes(audienceMode) ? `<button class="current-learner-button" type="button" data-user-change>${currentModeConfig().label} · ${currentLearningUser()}</button>` : ""}<div class="mini-streak">${icon("flame",18)} <b>${audienceMode === "kids" ? "★" : isAcademicMode() ? "5" : "12"}</b> ${audienceMode === "kids" ? "오늘의 별" : "day streak"}</div><button class="theme-toggle" type="button" data-theme-toggle aria-label="화면 모드 변경">${icon(currentTheme === "dark" ? "sun" : "moon",18)}</button><button class="avatar" type="button" ${["general", "suneung"].includes(audienceMode) ? 'data-user-change aria-label="학습자 변경"' : 'aria-label="현재 학습 모드"'}>${audienceMode === "kids" ? childCallName() : audienceMode === "middle" ? "M" : currentLearningUser().slice(0, 1).toUpperCase()}</button></div></header>`;
 }
 
 function homeQuickLinks() {
   if (audienceMode !== "general") return "";
   const links = [
+    { className: "quick-drama", label: "매일미드한문장", badge: "SHORTS", href: "https://www.youtube.com/@Englishlamp2024/shorts", page: "shorts", aria: "매일미드한문장 YouTube 쇼츠 채널 새 창에서 열기" },
     { className: "quick-rc", label: "매일 토익 RC 풀기", badge: "RC", href: "https://www.hackers.co.kr/?c=s_toeic/toeic_study/drc", page: "quiz", aria: "해커스 매일 토익 RC 풀기 새 창에서 열기" },
     { className: "quick-ted", label: "TED 바로가기", badge: "TED", page: "ted", aria: "TED 학습 바로가기" },
     { className: "quick-bbc", label: "BBC Learning", badge: "BBC", href: "https://www.bbc.co.uk/learningenglish/english/course/towards-advanced", page: "news", aria: "BBC Learning English Towards Advanced 새 창에서 열기" },
@@ -2427,13 +2464,13 @@ function vocabularyPage() {
   const orderedWords = getDailyOrderedVocabularyWords(todayKey);
   const vocabPageCount = Math.ceil(orderedWords.length / vocabPageSize);
   if (
-    localStorage.getItem("value_time_vocab_daily_order_version") !== dailyOrderVersion
-    || localStorage.getItem("value_time_vocab_page_date") !== todayKey
+    profileStorage.getItem("value_time_vocab_daily_order_version") !== dailyOrderVersion
+    || profileStorage.getItem("value_time_vocab_page_date") !== todayKey
   ) {
     state.vocabPage = 0;
-    localStorage.setItem("value_time_vocab_daily_order_version", dailyOrderVersion);
-    localStorage.setItem("value_time_vocab_page_date", todayKey);
-    localStorage.setItem("value_time_vocab_page", String(state.vocabPage));
+    profileStorage.setItem("value_time_vocab_daily_order_version", dailyOrderVersion);
+    profileStorage.setItem("value_time_vocab_page_date", todayKey);
+    profileStorage.setItem("value_time_vocab_page", String(state.vocabPage));
   }
   state.vocabPage = Math.min(Math.max(state.vocabPage, 0), vocabPageCount - 1);
   const todayWords = orderedWords.slice(state.vocabPage * vocabPageSize, (state.vocabPage + 1) * vocabPageSize);
@@ -2591,17 +2628,9 @@ function silentHomeCoach(homeAppState, completed) {
 function dailyDramaSentenceCard() {
   const item = familyShortSamples[Math.abs(dateSeed(localDateKey())) % familyShortSamples.length];
   const sentence = item.sentence.trim();
-  const youtubeScene = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${sentence} movie scene`)}`;
-  const youtubeUsage = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${sentence} TV series clip`)}`;
-  const youglish = `https://youglish.com/pronounce/${encodeURIComponent(sentence)}/english`;
-  const googleQuote = `https://www.google.com/search?q=${encodeURIComponent(`${sentence} movie quote`)}`;
-  const links = [
-    [youtubeScene, "play", "장면 검색"],
-    [youtubeUsage, "play", "유튜브에서 보기"],
-    [youglish, "volume", "발음·실사용 예문"],
-    [googleQuote, "message", "대사·스크립트 검색"],
-  ];
-  return `<section class="home-drama-sentence" aria-labelledby="home-drama-title"><div class="home-drama-copy"><span>DAILY SCENE ENGLISH</span><h2 id="home-drama-title">매일 미드 한문장</h2><blockquote>“${escapeMarkup(sentence)}”</blockquote><strong>${escapeMarkup(item.meaningKo)}</strong><p>${escapeMarkup(item.situation)}</p><div><button type="button" data-speak="${escapeMarkup(sentence)}">${icon("mic", 15)} 문장 듣고 따라 말하기</button></div></div><nav aria-label="오늘의 미드 문장 관련 학습 링크">${links.map(([href, linkIcon, label]) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${icon(linkIcon, 14)} <span>${label}</span>${icon("arrow", 12)}</a>`).join("")}</nav></section>`;
+  const shortsUrl = "https://www.youtube.com/@Englishlamp2024/shorts";
+  const links = [[shortsUrl, "play", "쇼츠 바로가기"]];
+  return `<section class="home-drama-sentence" aria-label="오늘의 영어 한 문장"><div class="home-drama-copy"><span>DAILY SCENE ENGLISH</span><blockquote>“${escapeMarkup(sentence)}”</blockquote><strong>${escapeMarkup(item.meaningKo)}</strong><p>${escapeMarkup(item.situation)}</p><div><button type="button" data-speak="${escapeMarkup(sentence)}">${icon("mic", 15)} 문장 듣고 따라 말하기</button></div></div><nav aria-label="오늘의 미드 문장 관련 학습 링크">${links.map(([href, linkIcon, label]) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${icon(linkIcon, 14)} <span>${label}</span>${icon("arrow", 12)}</a>`).join("")}</nav></section>`;
 }
 
 function homePage() {
@@ -2628,7 +2657,6 @@ function homePage() {
   return `${header()}<main class="home-dashboard-page">
   ${speakingMission}
   ${homeQuickLinks()}
-  ${dailyDramaSentenceCard()}
   <div class="home-dashboard-layout">
     <section class="home-study-section" aria-labelledby="home-study-title"><div class="home-study-heading"><div><p class="eyebrow">DAILY ROUTINE</p><h3 id="home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${homeStudyItems.length} 완료</span></div>
       <div class="home-study-grid">${homeStudyItems.map(item => {
@@ -2823,7 +2851,7 @@ function newsPage() {
         </article>
         <aside class="news-daily-guide"><section class="news-status-card"><span>${icon("calendar",18)}</span><div><h3>학습 상태</h3><b class="news-status-badge ${isDone ? "done" : "todo"}">${isDone ? icon("check",12) : ""}${isDone ? "완료됨" : "진행 전"}</b><p>${newsMeta.lastStudiedAt ? `최근 학습 · ${newsMeta.lastStudiedAt}` : "최근 학습 기록 없음"}</p></div></section><section><span>${icon("news",18)}</span><div><h3>읽기 팁</h3><p>모든 문장을 완벽히 이해하기보다 핵심 동사와 주제를 먼저 잡아보세요.</p></div></section><section><span>${icon("check",18)}</span><div><h3>추천 루틴</h3><p>기사 읽기 → 필요한 단락 해석 → 표현 확인 → 1분 퀴즈</p></div></section><section class="news-complete-box"><button class="primary ${isDone ? "done" : ""}" type="button" disabled>${icon("check",17)} ${isDone ? "오늘의 기사 완료됨" : "읽기 + 퀴즈로 자동 완료"}</button><button class="secondary" type="button" data-news-undo ${!isDone ? "disabled" : ""}>완료 해제</button><p aria-live="polite">${isDone ? "읽기와 퀴즈 기록이 저장되었습니다." : "본문을 읽고 퀴즈 3문제 이상 맞히면 완료됩니다."}</p></section></aside>
       </section>
-      <div class="news-library-section-title"><div><p class="eyebrow">MORE ARTICLES</p><h3>더 많은 기사 학습하기</h3></div><span>검색과 필터로 원하는 기사를 찾아보세요.</span></div>
+      <div class="news-library-section-title"><div><p class="eyebrow">MORE ARTICLES</p><h3>더 많은 기사 학습하기</h3></div><div class="news-library-title-actions"><span>검색과 필터로 원하는 기사를 찾아보세요.</span><button type="button" data-news-import>${icon("news",14)} 개인 원문 가져오기</button></div></div>
       <div class="news-library-controls">
         <label><span class="sr-only">기사 검색</span><input type="search" data-news-search value="${state.newsSearch}" placeholder="제목, 요약, 카테고리 검색"></label>
         <label><span class="sr-only">카테고리 선택</span><select data-news-category><option value="all">전체 카테고리</option>${categories.map(category => `<option value="${category}" ${state.newsCategory === category ? "selected" : ""}>${category}</option>`).join("")}</select></label>
@@ -2865,7 +2893,7 @@ function localNewsReviewPanel(article, sentence, sentenceIndex) {
 }
 
 function saveNewsArticleLearningState() {
-  try { localStorage.setItem(NEWS_ARTICLE_LEARNING_STORAGE_KEY, JSON.stringify(newsArticleLearningState)); } catch {}
+  try { profileStorage.setItem(NEWS_ARTICLE_LEARNING_STORAGE_KEY, JSON.stringify(newsArticleLearningState)); } catch {}
 }
 
 function completeNewsArticleIfEligible(article) {
@@ -2897,7 +2925,7 @@ function buildArticleReviewQuestions(article) {
 
 function featuredArticleView() {
   const article = articleLibrary[state.newsIndex] || articleLibrary[0];
-  if (newsArticleLearningState.articleId !== article.id) newsArticleLearningState = { date: localDateKey(), articleId: article.id, readParagraphs: [], translations: [], expressions: [], difficult: [], savedArticles: newsArticleLearningState.savedArticles || [], quizAnswers: {}, quizSubmitted: false };
+  if (newsArticleLearningState.articleId !== article.id) newsArticleLearningState = { date: localDateKey(), articleId: article.id, readParagraphs: [], translations: [], expressions: [], difficult: article.personalBookmarks || [], notes: article.personalNotes || {}, savedArticles: newsArticleLearningState.savedArticles || [], quizAnswers: {}, quizSubmitted: false };
   const questions = buildArticleReviewQuestions(article);
   const bodyParagraphs = getArticleBodyParagraphs(article);
   const readCount = newsArticleLearningState.readParagraphs.length;
@@ -2910,7 +2938,8 @@ function featuredArticleView() {
   const paragraphs = bodyParagraphs.map((paragraph, index) => {
     const translationOpen = newsArticleLearningState.translations.includes(index);
     const difficult = newsArticleLearningState.difficult.includes(index);
-    return `<section class="news-reader-paragraph ${difficult ? "difficult" : ""}" data-news-reader-paragraph="${index}"><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.text}</p><div class="news-reader-tools">${paragraph.translation ? `<button type="button" data-news-translation="${index}">${translationOpen ? "Hide Meaning" : "Show Meaning"}</button>` : ""}<button class="${difficult ? "active" : ""}" type="button" data-news-difficult="${index}">${icon(difficult ? "check" : "bookmark",11)} ${difficult ? "Difficult saved" : "Mark difficult"}</button></div>${translationOpen && paragraph.translation ? `<div class="news-reader-translation"><b>KOREAN MEANING</b><p>${paragraph.translation}</p></div>` : ""}</section>`;
+    const personalNote = newsArticleLearningState.notes?.[index] || "";
+    return `<section class="news-reader-paragraph ${difficult ? "difficult" : ""}" data-news-reader-paragraph="${index}"><span>PARAGRAPH ${String(index + 1).padStart(2, "0")}</span><p>${paragraph.text}</p><div class="news-reader-tools">${paragraph.translation ? `<button type="button" data-news-translation="${index}">${translationOpen ? "Hide Meaning" : "Show Meaning"}</button>` : ""}<button class="${difficult ? "active" : ""}" type="button" data-news-difficult="${index}">${icon(difficult ? "check" : "bookmark",11)} ${difficult ? "Difficult saved" : "Mark difficult"}</button></div>${translationOpen && paragraph.translation ? `<div class="news-reader-translation"><b>KOREAN MEANING</b><p>${paragraph.translation}</p></div>` : ""}${article.contentStatus === "personal_import" ? `<label class="news-personal-note"><span>MY NOTE</span><textarea data-news-note="${index}" placeholder="이 문단의 해석이나 표현을 메모하세요.">${escapeMarkup(personalNote)}</textarea></label>` : ""}</section>`;
   }).join("");
   const quiz = `<section class="news-reader-quiz"><header><div><span>QUICK REVIEW</span><h2>1분 뉴스 이해 퀴즈</h2><p>표현·단락·기사 전체 내용을 4문제로 확인합니다.</p></div><b>${questions.length} QUESTIONS</b></header><div>${questions.map((question, questionIndex) => { const selected = newsArticleLearningState.quizAnswers[question.id]; return `<fieldset><legend><small>${question.type}</small>${questionIndex + 1}. ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<button class="${selected === choiceIndex ? "selected" : ""} ${newsArticleLearningState.quizSubmitted && choiceIndex === question.answer ? "correct" : ""} ${newsArticleLearningState.quizSubmitted && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : ""}" type="button" data-news-quiz-answer="${question.id}:${choiceIndex}" ${newsArticleLearningState.quizSubmitted ? "disabled" : ""}><i>${String.fromCharCode(65 + choiceIndex)}</i>${choice}</button>`).join("")}${newsArticleLearningState.quizSubmitted ? `<p>${question.explanation}</p>` : ""}</fieldset>`; }).join("")}</div>${newsArticleLearningState.quizSubmitted ? `<section class="news-reader-result ${quizPassed ? "passed" : "retry"}"><strong>${score} / ${questions.length}</strong><div><b>${quizPassed ? "퀴즈 기준을 통과했어요!" : "한 번 더 확인해볼까요?"}</b><p>${learningComplete ? "오늘의 기사 학습이 자동 완료되었습니다." : quizPassed ? "본문을 끝까지 읽으면 학습이 완료됩니다." : "3문제 이상 맞히면 학습 완료 기준을 충족합니다."}</p></div>${!quizPassed ? `<button type="button" data-news-quiz-retry>다시 풀기</button>` : ""}</section>` : `<button class="news-reader-submit" type="button" data-news-quiz-submit>퀴즈 제출하기</button>`}</section>`;
   return `${header("영어 뉴스")}<main class="news-reader-page"><nav class="news-reader-toolbar"><button type="button" data-back-news>← 기사 목록</button><button type="button" data-copy-article-title>${icon("bookmark",14)} 제목 복사</button></nav><article class="news-reader"><figure><img src="${article.image}" alt="${article.title} 기사 대표 이미지"><figcaption>${article.caption}</figcaption></figure><header><span>TODAY'S ARTICLE</span><h1>${article.title}</h1><p>${article.dek}</p><div><b>${article.source}</b><time>${article.date}</time><em>중급</em><em>${bodyParagraphs.length ? `약 ${Math.max(4, bodyParagraphs.length * 2)}분` : "원문 미등록"}</em></div><ul>${keywords.map(keyword => `<li>#${keyword}</li>`).join("")}</ul></header>${bodyParagraphs.length ? `<section class="news-reader-progress"><div><span>${readingComplete ? "본문 읽기 완료" : `읽는 중 · ${readProgress}%`}</span><b>${readCount} / ${bodyParagraphs.length} 단락</b></div><div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${readProgress}"><i style="width:${readProgress}%"></i></div></section><div class="news-reader-body"><p class="news-reader-kicker">FULL ARTICLE</p>${paragraphs}</div>` : `<section class="news-reader-body news-reader-body-missing"><p class="news-reader-kicker">SOURCE DATA REQUIRED</p><h2>기사 원문 본문이 현재 데이터에 없습니다</h2><p>등록된 2개 문장은 원문이 아니라 학습용 재구성 문장이므로 본문으로 표시하지 않았습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">출처에서 원문 확인 ${icon("arrow", 12)}</a></section>`}<section class="news-reader-summary"><span>LEARNING SUMMARY</span><h2>학습용 핵심 정리</h2>${article.summary.map(item => `<p>${item}</p>`).join("")}</section>${quiz}<section class="news-reader-completion ${learningComplete ? "complete" : "pending"}"><span>${learningComplete ? icon("check",19) : icon("spark",19)}</span><div><b>${learningComplete ? "오늘의 기사 완료!" : bodyParagraphs.length ? readingComplete ? "읽기 완료 · 퀴즈가 남았어요" : "기사를 읽고 학습을 마쳐보세요" : "원문 데이터 등록이 필요합니다"}</b><p>${learningComplete ? `퀴즈 ${score}/${questions.length} · 완료 기록 저장됨` : bodyParagraphs.length ? "본문 읽기와 퀴즈 3문제 이상 정답이 완료 기준입니다." : "원문 본문이 등록된 기사만 읽기 완료 처리할 수 있습니다."}</p></div></section><footer><p>제목·날짜·출처 링크는 실제 기사 정보이며, 요약과 학습 문장은 기사 내용을 바탕으로 재구성했습니다.</p><a href="${article.originalUrl}" target="_blank" rel="noopener noreferrer">원문 사이트에서 더 읽기 ${icon("arrow",12)}</a></footer></article></main>`;
@@ -2945,7 +2974,7 @@ function dramaPage() {
 
 function saveDramaShortState() {
   const persisted = { date: localDateKey(), answers: dramaShortState.answers, activeClip: dramaShortState.activeClip || null, subtitleMode: dramaShortState.subtitleMode || "both" };
-  try { localStorage.setItem(DRAMA_SHORT_STORAGE_KEY, JSON.stringify(persisted)); } catch {}
+  try { profileStorage.setItem(DRAMA_SHORT_STORAGE_KEY, JSON.stringify(persisted)); } catch {}
 }
 
 const FAMILY_SHORTS_STORAGE_KEY = "valuetime_family_youtube_shorts_v2";
@@ -2954,7 +2983,7 @@ const familyShortSamples = [
   { id:"scene-2",youtubeUrl:"https://www.youtube.com/shorts/aqz-KE-bpKQ",videoId:"aqz-KE-bpKQ",series:"매일 미드 한문장",title:"상대를 안심시키는 장면",channelName:"가족 등록 클립",sentence:"Take your time.",meaningKo:"천천히 해도 돼.",situation:"상대가 긴장하거나 서두를 때 여유를 주는 말",duration:"00:16",expressionNote:"상대에게 서두르지 않아도 된다고 부드럽게 말하는 표현",difficulty:"easy",tags:["일상 회화","배려"],tip:"명령처럼 들리지 않도록 부드럽게 내려 말하세요.",example:"Take your time. There's no rush.",createdAt:"2026-07-21"},
   { id:"scene-3",youtubeUrl:"https://www.youtube.com/shorts/ysz5S6PUM-U",videoId:"ysz5S6PUM-U",series:"매일 미드 한문장",title:"너무 앞서가지 말자는 장면",channelName:"가족 등록 클립",sentence:"Let's not get ahead of ourselves.",meaningKo:"너무 앞서가지는 말자.",situation:"아직 확정되지 않은 일을 미리 기대할 때",duration:"00:21",expressionNote:"상황이 확정되기 전에 성급하게 판단하지 말자는 표현",difficulty:"hard",tags:["미드 표현","조절"],tip:"get ahead of ourselves를 한 호흡으로 따라 해보세요.",example:"We may win, but let's not get ahead of ourselves.",createdAt:"2026-07-21"}
 ];
-let familyShortState = (()=>{try{const stored=JSON.parse(localStorage.getItem(FAMILY_SHORTS_STORAGE_KEY)||"null");return {items:stored?.items?.length?stored.items:familyShortSamples,saved:stored?.saved||[],view:"home",activeId:null,tag:"전체",unlocked:sessionStorage.getItem("family_shorts_unlocked")==="yes",error:""};}catch{return {items:familyShortSamples,saved:[],view:"home",activeId:null,tag:"전체",unlocked:false,error:""};}})();
+let familyShortState = (()=>{try{const stored=JSON.parse(profileStorage.getItem(FAMILY_SHORTS_STORAGE_KEY)||"null");return {items:stored?.items?.length?stored.items:familyShortSamples,saved:stored?.saved||[],view:"home",activeId:null,tag:"전체",unlocked:sessionStorage.getItem("family_shorts_unlocked")==="yes",error:""};}catch{return {items:familyShortSamples,saved:[],view:"home",activeId:null,tag:"전체",unlocked:false,error:""};}})();
 familyShortState.unlocked = true;
 const youtubeShortsFeed = { status: "idle", items: [], channel: null, message: "" };
 
@@ -3014,7 +3043,7 @@ async function refreshYoutubeShortsFeed() {
   if (state.page === "drama") render();
 }
 
-function saveFamilyShorts(){localStorage.setItem(FAMILY_SHORTS_STORAGE_KEY,JSON.stringify({items:familyShortState.items,saved:familyShortState.saved}));}
+function saveFamilyShorts(){profileStorage.setItem(FAMILY_SHORTS_STORAGE_KEY,JSON.stringify({items:familyShortState.items,saved:familyShortState.saved}));}
 function youtubeIdFrom(value){const text=String(value||"").trim();if(/^[\w-]{11}$/.test(text))return text;const match=text.match(/(?:shorts\/|youtu\.be\/|v=|embed\/)([\w-]{11})/);return match?.[1]||"";}
 function familyShortCard(item,compact=false,featured=false){const saved=familyShortState.saved.includes(item.id);return `<article class="family-short-card ${compact?"compact":""} ${featured?"featured":""}"><button class="family-short-thumb" data-family-open="${item.id}" aria-label="${item.sentence} 학습 쇼츠 보기"><img src="${item.thumbnailUrl||`https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`}" alt="${item.title} 장면 썸네일"><span class="family-short-play">${icon("play",featured?26:21)}</span><div class="family-short-overlay"><small>${item.series||"매일 미드 한문장"}</small><blockquote>${item.sentence}</blockquote><strong>${item.meaningKo}</strong><p>${item.situation||item.expressionNote}</p></div><em>${item.duration||"SHORT"}</em><b class="difficulty ${item.difficulty}">${item.difficulty}</b></button><div class="family-short-meta"><p>${item.title}</p>${item.publishedAt?`<time datetime="${item.publishedAt}">${new Date(item.publishedAt).toLocaleDateString("ko-KR")}</time>`:""}${compact?"":`<nav>${(item.tags||[]).map(tag=>`<i>#${tag}</i>`).join("")}</nav>`}<footer><button class="${saved?"saved":""}" data-family-save="${item.id}">${icon(saved?"check":"bookmark",14)} ${saved?"저장됨":"저장"}</button><button type="button" data-speak="${item.sentence.replaceAll('"','&quot;')}">${icon("mic",14)} 따라 말하기</button><button class="primary" data-family-open="${item.id}">보기 ${icon("arrow",12)}</button></footer></div></article>`;}
 function familyShortsPage(){
@@ -3134,12 +3163,12 @@ function saveDailyTestResult(type, current, selectedIndex, isCorrect) {
   history[today].vocab = { correct: dailyTestState.scores.vocabCorrect, total: dailyTestState.scores.vocabTotal };
   history[today].sentence = { correct: dailyTestState.scores.sentenceCorrect, total: dailyTestState.scores.sentenceTotal };
   history[today].logs.push({ time: new Date().toLocaleTimeString("ko-KR"), type, id: current.id, selected: current.choices[selectedIndex], correct: current.choices[current.answer], isCorrect });
-  try { localStorage.setItem(DAILY_TEST_HISTORY_KEY, JSON.stringify(history)); } catch {}
+  try { profileStorage.setItem(DAILY_TEST_HISTORY_KEY, JSON.stringify(history)); } catch {}
 
   if (!isCorrect) {
     const notes = getWrongNotes();
     if (!notes[type].some(item => item.id === current.id)) notes[type].push(current);
-    try { localStorage.setItem(DAILY_TEST_WRONG_KEY, JSON.stringify(notes)); } catch {}
+    try { profileStorage.setItem(DAILY_TEST_WRONG_KEY, JSON.stringify(notes)); } catch {}
   }
   const totalCorrect = dailyTestState.scores.rcCorrect + dailyTestState.scores.vocabCorrect + dailyTestState.scores.sentenceCorrect;
   const totalSolved = dailyTestState.scores.rcTotal + dailyTestState.scores.vocabTotal + dailyTestState.scores.sentenceTotal;
@@ -3320,11 +3349,11 @@ function sentencePage() {
   const pageSize = 5;
   const pageCount = Math.ceil(sentenceLessons.length / pageSize);
   const todayKey = localDateKey();
-  if (localStorage.getItem("value_time_sentence_page_date") !== todayKey) {
+  if (profileStorage.getItem("value_time_sentence_page_date") !== todayKey) {
     const todaySentenceIndex = Math.abs(dateSeed(todayKey)) % sentenceLessons.length;
     state.sentencePage = Math.floor(todaySentenceIndex / pageSize);
-    localStorage.setItem("value_time_sentence_page_date", todayKey);
-    localStorage.setItem("value_time_sentence_page", String(state.sentencePage));
+    profileStorage.setItem("value_time_sentence_page_date", todayKey);
+    profileStorage.setItem("value_time_sentence_page", String(state.sentencePage));
   }
   state.sentencePage = Math.min(Math.max(state.sentencePage, 0), pageCount - 1);
   const pageSentences = sentenceLessons.slice(state.sentencePage * pageSize, (state.sentencePage + 1) * pageSize);
@@ -3425,13 +3454,13 @@ function syncCsatReviewAnswer(item, correct) {
       ? { ...previous, resolvedAt: now, lastChatbotCorrectAt: now, chatbotCorrectCount: (previous.chatbotCorrectCount || 0) + 1 }
       : { ...previous, resolvedAt: null, lastWrongAt: now, count: (previous.count || 0) + 1 },
   };
-  localStorage.setItem("valuetime_csat_vocab_v1", JSON.stringify(csatProgress));
+  profileStorage.setItem("valuetime_csat_vocab_v1", JSON.stringify(csatProgress));
   window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: csatProgress }));
 }
 
 function getReviewChatbotItems() {
   const items = getUnifiedSavedLearningItems();
-  return audienceMode === "suneung"
+  return isAcademicMode()
     ? items.filter(item => item.sourceType === "csat-vocab" || item.sourceType === "suneung")
     : items.filter(item => item.sourceType !== "csat-vocab" && item.sourceType !== "suneung");
 }
@@ -3460,7 +3489,7 @@ function reviewChatbotUi() {
     : dueEntries.find(entry => entry.item.id === reviewChatState.selected) || dueEntries[0];
   const question = selected ? createReviewQuestion(selected, items) : null;
   const result = reviewChatState.answered !== null && question ? reviewChatState.answered === question.answer : null;
-  const scopeLabel = audienceMode === "suneung" ? "수능 학습 복습" : audienceMode === "kids" ? "초등 학습 복습" : "일반 학습 복습";
+  const scopeLabel = isAcademicMode() ? `${currentModeConfig().shortLabel} 학습 복습` : audienceMode === "kids" ? "초등 학습 복습" : "일반 학습 복습";
   const panel = reviewChatState.open ? `<aside class="review-chat-panel"><header><div><span>AI REVIEW · ${scopeLabel}</span><h2>Review Chatbot</h2></div><button type="button" data-review-close>${icon("x",18)}</button></header><div class="review-chat-progress"><span>${scopeLabel}</span><b>${Math.max(0,dueEntries.length)}개 남음</b></div><div class="review-chat-body">${question?`<div class="chat-bubble">${selected.overdueDays?`${selected.overdueDays}일 밀린 복습이에요. `:""}${scopeLabel}에서 10초만 집중해볼까요?</div><article class="review-quiz-card"><em>${selected.item.sourceType === "csat-vocab" ? "WORD MASTER" : selected.item.sourceType?.toUpperCase() || "SAVED ITEM"}</em><h3>${question.prompt}</h3><div>${question.choices.map((choice,index)=>`<button class="${reviewChatState.answered===index?"selected":""} ${result!==null&&index===question.answer?"correct":""} ${result===false&&reviewChatState.answered===index?"wrong":""}" type="button" data-review-answer="${index}" ${reviewChatState.answered!==null?"disabled":""}>${choice}</button>`).join("")}</div>${result!==null?`<section class="review-result ${result?"success":"error"}"><b>${result?"Excellent! 기억 수명이 연장됐어요.":"괜찮아요. 오답 노트에 담아둘게요."}</b><p>${selected.item.example || selected.item.meaning}</p></section>`:""}</article>${result!==null?`<div class="review-chat-actions"><button type="button" data-review-more>하나 더</button><button type="button" data-review-done>오늘은 완료</button><button type="button" data-review-wrong>오답 노트 ${reviewChatState.wrongNotes.length}</button></div>`:""}`:`<div class="review-empty">${icon("check",28)}<h3>지금 복습할 항목이 없어요.</h3><p>${scopeLabel} 항목이 쌓이면 적절한 시점에 다시 알려드릴게요.</p></div>`}</div></aside>`:"";
   return `<div class="review-chatbot"><div class="review-tooltip ${dueEntries.length?"":"hidden"}">Pop quiz! 저장한 표현을 복습할 시간이에요.<small>10초면 충분해요.</small></div><button class="review-fab" type="button" data-review-open aria-label="복습 챗봇 열기">${icon("message",23)}${dueEntries.length?`<b>${dueEntries.length}</b>`:""}</button>${panel}</div>`;
 }
@@ -4233,7 +4262,7 @@ function kidsPage(page) {
     : kidsHomePage();
 }
 
-function saveSuneungState() { try { localStorage.setItem(SUNEUNG_STORAGE_KEY, JSON.stringify(suneungState)); } catch {} }
+function saveSuneungState() { try { profileStorage.setItem(SUNEUNG_STORAGE_KEY, JSON.stringify(suneungState)); } catch {} }
 
 function openSuneungPassage(index) {
   if (index < 0 || index >= suneungPassages.length) return false;
@@ -4305,7 +4334,7 @@ function compactSuneungPassagePage() {
   const canGoPrevious = suneungState.batchDay > 1 || suneungState.batchPosition > 0;
   const canGoNext = availableIndexes.length > 1;
   const dayButtons = Array.from({ length: totalDays }, (_, index) => index + 1).map(day => `<button class="${day === suneungState.batchDay ? "active" : ""}" type="button" data-csat-batch-day="${day}" aria-current="${day === suneungState.batchDay ? "page" : "false"}">${day}</button>`).join("");
-  return `${header("수능 지문 훈련")}<main class="suneung-page csat-batch-page csat-batch-single"><section class="csat-batch-head"><div><span>DAY ${String(suneungState.batchDay).padStart(2, "0")} · 5 QUESTIONS</span><h2>오늘의 수능 지문</h2><p>하루 5문제를 한 문제씩 풀고 다음 DAY로 이어갑니다.</p></div><div><b>${currentNumber} / ${dayIndexes.length || 5} 문제 · 전체 ${availableIndexes.length}개 남음</b></div></section><section class="csat-batch-grid">${cards}</section><nav class="csat-batch-question-nav" aria-label="오늘의 문제 이동"><button type="button" data-csat-batch-move="-1" ${canGoPrevious ? "" : "disabled"}>이전 문제</button><span><b>DAY ${suneungState.batchDay}</b>${currentNumber} / ${dayIndexes.length}</span><button class="primary" type="button" data-csat-batch-move="1" ${canGoNext ? "" : "disabled"}>다음 문제 ${icon("arrow", 13)}</button></nav><nav class="csat-batch-day-nav" aria-label="수능 지문 DAY 선택">${dayButtons}</nav></main>`;
+  return `${header(`${currentModeConfig().shortLabel} 지문 훈련`)}<main class="suneung-page csat-batch-page csat-batch-single"><section class="csat-batch-head"><div><span>DAY ${String(suneungState.batchDay).padStart(2, "0")} · ${dayIndexes.length} QUESTIONS</span><h2>오늘의 ${currentModeConfig().shortLabel} 지문</h2><p>하루 지문을 한 문제씩 풀고 다음 DAY로 이어갑니다.</p></div><div><b>${currentNumber} / ${dayIndexes.length} 문제 · 전체 ${availableIndexes.length}개 남음</b></div></section><section class="csat-batch-grid">${cards}</section><nav class="csat-batch-question-nav" aria-label="오늘의 문제 이동"><button type="button" data-csat-batch-move="-1" ${canGoPrevious ? "" : "disabled"}>이전 문제</button><span><b>DAY ${suneungState.batchDay}</b>${currentNumber} / ${dayIndexes.length}</span><button class="primary" type="button" data-csat-batch-move="1" ${canGoNext ? "" : "disabled"}>다음 문제 ${icon("arrow", 13)}</button></nav><nav class="csat-batch-day-nav" aria-label="${currentModeConfig().shortLabel} 지문 DAY 선택">${dayButtons}</nav></main>`;
 }
 
 function resetCurrentCsatBatchAttempt() {
@@ -4356,7 +4385,7 @@ function suneungHomePage() {
   return `${header("오늘의 학습")}<main class="home-dashboard-page suneung-today-home">
     <div class="home-dashboard-layout">
       <section class="home-study-section" aria-labelledby="suneung-home-study-title">
-        <div class="home-study-heading"><div><p class="eyebrow">DAILY CSAT ROUTINE</p><h3 id="suneung-home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${suneungHomeStudyItems.length} 완료</span></div>
+        <div class="home-study-heading"><div><p class="eyebrow">${currentModeConfig().eyebrow}</p><h3 id="suneung-home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${suneungHomeStudyItems.length} 완료</span></div>
         <div class="home-study-grid">${suneungHomeStudyItems.map(item => {
           const isDone = Boolean(suneungState.dailyChecks[item.id]);
           return `<article class="home-study-card ${isDone ? "completed" : ""}" data-suneung-home-page="${item.page}" tabindex="0" role="link" aria-label="${item.title} 학습 화면으로 이동">
@@ -4368,10 +4397,10 @@ function suneungHomePage() {
         }).join("")}</div>
       </section>
       <aside class="home-dashboard-side"><section class="home-progress-card" aria-labelledby="suneung-home-progress-title">
-        <p class="eyebrow">TODAY'S PROGRESS</p><div class="home-progress-title"><h3 id="suneung-home-progress-title">오늘의 수능 학습</h3><strong>${completed}<small> / ${suneungHomeStudyItems.length}</small></strong></div>
+        <p class="eyebrow">TODAY'S PROGRESS</p><div class="home-progress-title"><h3 id="suneung-home-progress-title">오늘의 ${currentModeConfig().shortLabel} 학습</h3><strong>${completed}<small> / ${suneungHomeStudyItems.length}</small></strong></div>
         <p class="home-progress-desc">완료한 학습과 남은 항목을 한눈에 확인하세요.</p>
         <div class="home-progress-track" role="progressbar" aria-label="오늘의 수능 학습 진도" aria-valuemin="0" aria-valuemax="${suneungHomeStudyItems.length}" aria-valuenow="${completed}"><i style="width:${progress}%"></i></div><span class="home-progress-percent">${progress}% 완료</span>
-        <div class="home-coach-box"><b>다음 학습</b>${pending.length ? pending.map(item => `<button type="button" data-page="${item.page}">${item.title} ${icon("arrow", 12)}</button>`).join("") : `<span>오늘의 수능 학습을 모두 완료했습니다.</span>`}<b>학습 기준</b><p>단어 학습, 지문 풀이, 오답 복습을 순서대로 점검합니다.</p></div>
+        <div class="home-coach-box"><b>다음 학습</b>${pending.length ? pending.map(item => `<button type="button" data-page="${item.page}">${item.title} ${icon("arrow", 12)}</button>`).join("") : `<span>오늘의 ${currentModeConfig().shortLabel} 학습을 모두 완료했습니다.</span>`}<b>학습 기준</b><p>단어 학습, 지문 풀이, 오답 복습을 순서대로 점검합니다.</p></div>
         <ul>${suneungHomeStudyItems.map(item => `<li class="${suneungState.dailyChecks[item.id] ? "done" : ""}"><i>${suneungState.dailyChecks[item.id] ? icon("check", 12) : ""}</i><span>${item.number}. ${item.title}</span><em>${suneungState.dailyChecks[item.id] ? "완료" : "진행 전"}</em></li>`).join("")}</ul>
         <button class="home-progress-reset" type="button" data-suneung-home-reset>오늘의 체크 초기화</button>
       </section></aside>
@@ -4380,7 +4409,7 @@ function suneungHomePage() {
 }
 
 function suneungWordmasterPage() {
-  return `${header("수능 단어장")}<main class="suneung-page suneung-wordmaster-page"><csat-wordmaster-mode></csat-wordmaster-mode></main>`;
+  return `${header(`${currentModeConfig().shortLabel} 단어장`)}<main class="suneung-page suneung-wordmaster-page"><csat-wordmaster-mode mode="${modeFromAudience(audienceMode)}"></csat-wordmaster-mode></main>`;
 }
 
 function legacySuneungPassagePage() {
@@ -4473,7 +4502,7 @@ function bindSuneungDictionaryTooltips() {
 }
 
 function suneungPassagePage() {
-  if (suneungState.masteredPassages.length >= suneungPassages.length) return `${header("수능 지문 훈련")}<main class="suneung-page"><section class="suneung-verified-empty"><span>${icon("check",24)}</span><h2>등록된 지문을 모두 암기했습니다.</h2><p>암기 완료한 지문은 다시 출제하지 않습니다. 새 지문이 추가되면 자동으로 다음 학습 대상에 포함됩니다.</p><button type="button" data-csat-reset-mastered>암기 완료 기록 초기화</button></section></main>`;
+  if (suneungState.masteredPassages.length >= suneungPassages.length) return `${header(`${currentModeConfig().shortLabel} 지문 훈련`)}<main class="suneung-page"><section class="suneung-verified-empty"><span>${icon("check",24)}</span><h2>등록된 지문을 모두 암기했습니다.</h2><p>암기 완료한 지문은 다시 출제하지 않습니다. 새 지문이 추가되면 자동으로 다음 학습 대상에 포함됩니다.</p><button type="button" data-csat-reset-mastered>암기 완료 기록 초기화</button></section></main>`;
   return compactSuneungPassagePage();
   const tabs = [["questions", "문제 풀이"], ["expressions", "핵심 표현"], ["review", "복습 / 기록"]];
   const activeTab = suneungState.passageTab === "explanation" ? "explanation" : tabs.some(([id]) => id === suneungState.passageTab) ? suneungState.passageTab : "questions";
@@ -4538,7 +4567,7 @@ function csatTypeIdFromLabel(label = "") {
   const value = String(label);
   if (value.includes("제목")) return "title";
   if (value.includes("주제")) return "topic";
-  if (value.includes("요지") || value.includes("주장")) return "main-point";
+  if (value.includes("요지") || value.includes("주장") || value.includes("내용 이해")) return "main-point";
   if (value.includes("빈칸")) return "blank";
   if (value.includes("함축")) return "implicit";
   if (value.includes("어휘")) return "vocabulary";
@@ -4552,7 +4581,8 @@ function csatTypeIdFromLabel(label = "") {
 
 function currentCsatTypeTrainingData() {
   const history = Array.isArray(suneungState.typeTrainingHistory) ? suneungState.typeTrainingHistory : [];
-  return csatTypeTrainingData.map(seed => {
+  const seeds = audienceMode === "middle" ? csatTypeTrainingData.filter(seed => ["topic", "main-point"].includes(seed.id)) : csatTypeTrainingData;
+  return seeds.map(seed => {
     const entries = history.filter(entry => entry.typeId === seed.id).slice(-20);
     if (!entries.length) return { ...seed, previousAccuracy: Math.max(0, seed.accuracy - seed.delta), isPersonal: false };
     const recent = entries.slice(-5);
@@ -4630,7 +4660,7 @@ function passageMatchesCsatType(passage, typeId) {
   const typePatterns = {
     title: ["제목"],
     topic: ["주제"],
-    "main-point": ["요지", "주장"],
+    "main-point": ["요지", "주장", "내용 이해"],
     blank: ["빈칸"],
     implicit: ["함축"],
     vocabulary: ["어휘"],
@@ -4653,6 +4683,7 @@ function suneungSupportPage(view) {
 }
 
 function suneungPolicyPage() {
+  if (audienceMode === "middle") return `${header("출처 정책")}<main class="suneung-page"><section class="suneung-policy-hero"><span>MIDDLE CONTENT POLICY</span><h2>중학교 수준에 맞춘 쉬운 영어 학습 자료</h2><p>짧은 문장, 기본 어휘, 직관적인 해석을 기준으로 학습 콘텐츠를 구성합니다.</p></section><section class="suneung-policy-grid"><article><span>01</span><h3>난이도 기준</h3><p>중학교 교육과정에서 자주 다루는 기본 어휘와 문장 구조를 중심으로 제공합니다.</p></article><article><span>02</span><h3>문장 길이</h3><p>한 문장에 담긴 정보를 줄이고 주어와 동사를 쉽게 찾을 수 있도록 구성합니다.</p></article><article><span>03</span><h3>해석과 설명</h3><p>직역보다 문맥을 이해하기 쉬운 자연스러운 해석과 짧은 문법 설명을 제공합니다.</p></article><article><span>04</span><h3>학습 흐름</h3><p>단어, 지문 읽기, 문제 풀이, 오답 복습을 수능 모드와 동일한 흐름으로 연습합니다.</p></article></section><p class="suneung-policy-note">중등 모드 자료는 ValueTime이 중학교 수준 학습을 위해 자체 구성한 콘텐츠입니다.</p></main>`;
   return `${header("출처 정책")}<main class="suneung-page"><section class="suneung-policy-hero"><span>SOURCE POLICY</span><h2>공식 공개문항 중심 운영 원칙</h2><p>학생과 부모가 모든 문항의 출처와 변형 여부를 즉시 확인할 수 있도록 관리합니다.</p></section><section class="suneung-policy-grid"><article><span>01</span><h3>허용하는 기본 출처</h3><p>한국교육과정평가원 수능·6월·9월 모의평가, 시도교육청 전국연합학력평가, EBS 공식 연계 자료만 기본 학습 목록에 포함합니다.</p></article><article><span>02</span><h3>기본 모드 제외 기준</h3><p>출처가 불명확한 사설 문항, 출처를 검증하지 못한 전재 자료, AI 생성 문항은 공식 기출 기본 모드에서 제외합니다.</p></article><article><span>03</span><h3>문항별 신뢰 정보</h3><p>출처 기관, 시험명, 시행 시기, 문항 번호, 공식성 등급, 원문 여부와 원출처 기준을 함께 표시합니다.</p></article><article><span>04</span><h3>해설과 변형 표기</h3><p>공식 정답과 학습용 자체 해설을 구분하고, 원문 그대로인지 일부 재구성인지 눈에 띄게 표시합니다.</p></article></section><section class="suneung-policy-sources"><h3>공식 확인 경로</h3><a href="https://www.suneung.re.kr/" target="_blank" rel="noopener noreferrer"><b>한국교육과정평가원 수능 홈페이지</b><span>수능 및 모의평가 공식 공개자료 확인</span>${icon("arrow",14)}</a><a href="https://www.ebsi.co.kr/ebs/xip/xipc/previousPaperList.ebs?mainYn=Y" target="_blank" rel="noopener noreferrer"><b>EBSi 기출문제</b><span>수능·모평·학평 기출 및 EBS 자료 확인</span>${icon("arrow",14)}</a></section><p class="suneung-policy-note">운영 원칙: 원출처 확인이 끝나지 않은 문항은 내용 대신 ‘원문 미등록’ 상태로 표시합니다.</p></main>`;
 }
 
@@ -4689,13 +4720,13 @@ function render() {
     if (!robotsMeta) { robotsMeta = document.createElement("meta"); robotsMeta.name = "robots"; document.head.appendChild(robotsMeta); }
     robotsMeta.content = "noindex, nofollow, noarchive";
   }
-  const content=audienceMode==="kids"?kidsPage(state.page):audienceMode==="suneung"?suneungPage(state.page):state.page==="home"?homePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
+  const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
   document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}</div>`;
   enhanceNewsGuidedReader();
   bindEvents();
 }
 
-function saveHistory(){localStorage.setItem("worthy_life_history",JSON.stringify(state.history));}
+function saveHistory(){profileStorage.setItem("worthy_life_history",JSON.stringify(state.history));}
 
 function navigationUrl(page, newsIndex = null) {
   const entryFiles = {
@@ -4846,7 +4877,7 @@ function bindEvents(){
       const analysis = detailedSelectionAnalysis(text);
       const item = { id: `selection:${text.toLowerCase()}`, type: text.trim().includes(" ") ? "sentence" : "word", text, meaning: analysis[0]?.body || "AI 문장 분석", example: text, savedAt: new Date().toISOString(), sourceType: "selection", sourceTitle: "AI 문장 분석", sourceUrl: location.href, sourceSnippet: analysis[2]?.body || "" };
       if (!state.savedBlogItems.some(saved => saved.id === item.id)) state.savedBlogItems.push(item);
-      localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
+      profileStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
       selectionAssistantState.saved = true;
       button.classList.add("saved");
       button.innerHTML = `${icon("check",14)} 학습장에 저장됨`;
@@ -4876,15 +4907,20 @@ function bindEvents(){
   }));
   document.querySelectorAll("[data-audience-mode]").forEach(button => button.addEventListener("click", event => {
     const selectedMode = event.currentTarget.dataset.audienceMode;
+    if (selectedMode === "general" || selectedMode === "suneung") {
+      requestLearningUser(selectedMode === "suneung" ? "suneung" : "normal");
+      return;
+    }
     if (selectedMode === audienceMode) return;
     reviewChatState.open = false;
     reviewChatState.selected = null;
     reviewChatState.answered = null;
     applyAudienceMode(selectedMode);
-    if (audienceMode === "suneung") state.page = "suneung-home";
+    if (isAcademicMode()) state.page = "suneung-home";
     else if (state.page.startsWith("suneung-") || (audienceMode === "kids" && !["home","words","sentence","news","ted","drama","test","calendar"].includes(state.page))) state.page = "home";
     render();
   }));
+  document.querySelectorAll("[data-user-change]").forEach(button => button.addEventListener("click", () => requestLearningUser()));
   document.querySelectorAll("[data-suneung-mode]").forEach(button => button.addEventListener("click", event => { suneungState.mode = event.currentTarget.dataset.suneungMode; saveSuneungState(); render(); }));
   document.querySelector("[data-suneung-official]")?.addEventListener("change", event => { suneungState.officialOnly = event.currentTarget.checked; saveSuneungState(); render(); });
   document.querySelectorAll("[data-suneung-source-tab]").forEach(button => button.addEventListener("click", event => { suneungState.sourceTab = event.currentTarget.dataset.suneungSourceTab; saveSuneungState(); render(); }));
@@ -5113,7 +5149,7 @@ function bindEvents(){
   document.querySelector("[data-kids-intro-complete]")?.addEventListener("click", () => {
     saveChildName(document.querySelector("[data-kids-name-input]")?.value);
     showKidsIntro = false;
-    try { localStorage.setItem(KIDS_INTRO_STORAGE_KEY, "true"); } catch {}
+    try { profileStorage.setItem(KIDS_INTRO_STORAGE_KEY, "true"); } catch {}
     render();
   });
   document.querySelector("[data-kids-edit-name]")?.addEventListener("click", () => {
@@ -5169,7 +5205,7 @@ function bindEvents(){
     reviewProgressMap[selected.item.id] = applyReviewAnswer(selected.progress, correct);
     syncCsatReviewAnswer(selected.item, correct);
     if (!correct && !reviewChatState.wrongNotes.includes(selected.item.id)) reviewChatState.wrongNotes.push(selected.item.id);
-    localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviewProgressMap));
+    profileStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviewProgressMap));
     render();
   }));
   document.querySelector("[data-review-more]")?.addEventListener("click", () => { reviewChatState.selected = null; reviewChatState.answered = null; render(); });
@@ -5201,7 +5237,7 @@ function bindEvents(){
     if (!expression) return;
     const item = toNotebookItem(expression, article);
     if (!state.savedBlogItems.some(saved => saved.id === item.id)) state.savedBlogItems.push(item);
-    localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
+    profileStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
     newsSaveToast = "Saved to your notebook";
     render();
   }));
@@ -5269,7 +5305,7 @@ function bindEvents(){
     const id = `blog:${post.id}:${expression.id}`;
     if (!state.savedBlogItems.some(item => item.id === id)) {
       state.savedBlogItems.push({ id, type: expression.type, text: expression.text, meaning: expression.meaning, example: expression.example, savedAt: new Date().toISOString(), sourceType: "blog", sourceTitle: post.sourceTitle, sourceUrl: post.sourceUrl, sourceSnippet: post.summary[0] });
-      localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
+      profileStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
     }
     blogSaveToast = "나만의 학습장에 저장했어요";
     render();
@@ -5371,6 +5407,7 @@ function bindEvents(){
   document.querySelectorAll("[data-date]").forEach(el=>el.addEventListener("click",()=>{state.selectedDate=el.dataset.date;render();}));
   document.querySelectorAll("[data-month]").forEach(el=>el.addEventListener("click",()=>{state.calendarMonth+=Number(el.dataset.month);if(state.calendarMonth<0){state.calendarMonth=11;state.calendarYear--}if(state.calendarMonth>11){state.calendarMonth=0;state.calendarYear++}render();}));
   document.querySelectorAll("[data-open-news]").forEach(el=>el.addEventListener("click",()=>navigateTo("news", { newsIndex: Number(el.dataset.openNews) })));
+  document.querySelector("[data-news-import]")?.addEventListener("click", () => window.dispatchEvent(new CustomEvent("valuetime:request-article-import")));
   document.querySelector("[data-news-search]")?.addEventListener("input", event => {
     state.newsSearch = event.currentTarget.value;
     const search = state.newsSearch.trim().toLowerCase();
@@ -5407,7 +5444,18 @@ function bindEvents(){
     const index = Number(event.currentTarget.dataset.newsDifficult);
     newsArticleLearningState.difficult = newsArticleLearningState.difficult.includes(index) ? newsArticleLearningState.difficult.filter(item => item !== index) : [...newsArticleLearningState.difficult, index];
     saveNewsArticleLearningState();
+    const article = articleLibrary[state.newsIndex] || articleLibrary[0];
+    if (article.contentStatus === "personal_import") updateArticleLearning(article.id, { bookmarks: newsArticleLearningState.difficult, notes: newsArticleLearningState.notes || {} });
     render();
+  }));
+  document.querySelectorAll("[data-news-note]").forEach(textarea => textarea.addEventListener("change", event => {
+    const article = articleLibrary[state.newsIndex] || articleLibrary[0];
+    if (article.contentStatus !== "personal_import") return;
+    const index = Number(event.currentTarget.dataset.newsNote);
+    newsArticleLearningState.notes ||= {};
+    newsArticleLearningState.notes[index] = event.currentTarget.value.trim();
+    saveNewsArticleLearningState();
+    updateArticleLearning(article.id, { notes: newsArticleLearningState.notes, bookmarks: newsArticleLearningState.difficult || [] });
   }));
   document.querySelector("[data-news-save-article]")?.addEventListener("click", () => {
     const article = articleLibrary[state.newsIndex] || articleLibrary[0];
@@ -5458,7 +5506,9 @@ function bindEvents(){
       observer.disconnect();
       newsArticleLearningState.readParagraphs = [...new Set([...newsArticleLearningState.readParagraphs, ...newlyRead])];
       saveNewsArticleLearningState();
-      completeNewsArticleIfEligible(articleLibrary[state.newsIndex] || articleLibrary[0]);
+      const activeArticle = articleLibrary[state.newsIndex] || articleLibrary[0];
+      if (activeArticle.contentStatus === "personal_import") updateArticleLearning(activeArticle.id, { lastReadIndex: Math.max(...newsArticleLearningState.readParagraphs), notes: newsArticleLearningState.notes || {}, bookmarks: newsArticleLearningState.difficult || [] });
+      completeNewsArticleIfEligible(activeArticle);
       render();
     }, { threshold: .6 });
     document.querySelectorAll("[data-news-reader-paragraph]").forEach(paragraph => observer.observe(paragraph));
@@ -5467,12 +5517,12 @@ function bindEvents(){
     const article = articleLibrary[state.newsIndex] || articleLibrary[0];
     copyArticleText(article.title,"제목이 복사되었습니다.");
   });
-  document.querySelectorAll("[data-save]").forEach(el=>el.addEventListener("click",e=>{const w=e.currentTarget.dataset.save;state.savedWords=state.savedWords.includes(w)?state.savedWords.filter(x=>x!==w):[...state.savedWords,w];localStorage.setItem("worthy_life_words",JSON.stringify(state.savedWords));render();}));
+  document.querySelectorAll("[data-save]").forEach(el=>el.addEventListener("click",e=>{const w=e.currentTarget.dataset.save;state.savedWords=state.savedWords.includes(w)?state.savedWords.filter(x=>x!==w):[...state.savedWords,w];profileStorage.setItem("worthy_life_words",JSON.stringify(state.savedWords));render();}));
   document.querySelectorAll("[data-known-word]").forEach(button => button.addEventListener("click", event => {
     const word = event.currentTarget.dataset.knownWord;
     const known = state.knownWords.includes(word);
     state.knownWords = known ? state.knownWords.filter(item => item !== word) : [...state.knownWords, word];
-    localStorage.setItem("value_time_known_words_v1", JSON.stringify(state.knownWords));
+    profileStorage.setItem("value_time_known_words_v1", JSON.stringify(state.knownWords));
 
     const card = event.currentTarget.closest(".vocab-today-item");
     card?.classList.toggle("known", !known);
@@ -5487,7 +5537,7 @@ function bindEvents(){
     state.clearedWordSentences = cleared
       ? state.clearedWordSentences.filter(item => item !== word)
       : [...state.clearedWordSentences, word];
-    localStorage.setItem("value_time_cleared_word_sentences_v1", JSON.stringify(state.clearedWordSentences));
+    profileStorage.setItem("value_time_cleared_word_sentences_v1", JSON.stringify(state.clearedWordSentences));
 
     const card = event.currentTarget.closest(".vocab-today-item");
     card?.classList.toggle("sentence-cleared", !cleared);
@@ -5515,7 +5565,7 @@ function bindEvents(){
     const key = event.currentTarget.dataset.tedExpressionClear;
     const isDone = speakingExpressionDone.includes(key);
     speakingExpressionDone = isDone ? speakingExpressionDone.filter(item => item !== key) : [...speakingExpressionDone, key];
-    try { localStorage.setItem(SPEAKING_EXPRESSION_STORAGE_KEY, JSON.stringify(speakingExpressionDone)); } catch {}
+    try { profileStorage.setItem(SPEAKING_EXPRESSION_STORAGE_KEY, JSON.stringify(speakingExpressionDone)); } catch {}
     event.currentTarget.classList.toggle("active", !isDone);
     event.currentTarget.setAttribute("aria-pressed", String(!isDone));
     event.currentTarget.innerHTML = `${icon("check",12)} ${!isDone ? "Clear 완료" : "Clear"}`;
@@ -5655,8 +5705,8 @@ function bindEvents(){
   document.querySelectorAll("[data-vocab-target]").forEach(el=>el.addEventListener("click", e => {
     const scrollPosition = window.scrollY;
     state.vocabPage = Number(e.currentTarget.dataset.vocabTarget);
-    localStorage.setItem("value_time_vocab_page", String(state.vocabPage));
-    localStorage.setItem("value_time_vocab_page_date", localDateKey());
+    profileStorage.setItem("value_time_vocab_page", String(state.vocabPage));
+    profileStorage.setItem("value_time_vocab_page_date", localDateKey());
     render();
     window.scrollTo(0, scrollPosition);
   }));
@@ -5721,7 +5771,7 @@ function bindEvents(){
     state.savedSentences = state.savedSentences.includes(id)
       ? state.savedSentences.filter(item => item !== id)
       : [...state.savedSentences, id];
-    localStorage.setItem("value_time_saved_sentences_v1", JSON.stringify(state.savedSentences));
+    profileStorage.setItem("value_time_saved_sentences_v1", JSON.stringify(state.savedSentences));
     render();
   }));
   document.querySelectorAll("[data-understand-sentence]").forEach(button => button.addEventListener("click", event => {
@@ -5729,15 +5779,15 @@ function bindEvents(){
     state.understoodSentences = state.understoodSentences.includes(id)
       ? state.understoodSentences.filter(item => item !== id)
       : [...state.understoodSentences, id];
-    localStorage.setItem("value_time_understood_sentences_v1", JSON.stringify(state.understoodSentences));
+    profileStorage.setItem("value_time_understood_sentences_v1", JSON.stringify(state.understoodSentences));
     completeSentenceStudyIfAllMeaningClear();
     render();
   }));
   document.querySelectorAll("[data-sentence-target]").forEach(button => button.addEventListener("click", event => {
     const scrollPosition = window.scrollY;
     state.sentencePage = Number(event.currentTarget.dataset.sentenceTarget);
-    localStorage.setItem("value_time_sentence_page", String(state.sentencePage));
-    localStorage.setItem("value_time_sentence_page_date", localDateKey());
+    profileStorage.setItem("value_time_sentence_page", String(state.sentencePage));
+    profileStorage.setItem("value_time_sentence_page_date", localDateKey());
     render();
     window.scrollTo(0, scrollPosition);
   }));
@@ -5828,7 +5878,7 @@ function bindEvents(){
     const id = `drama:${card.id}`;
     const saved = state.savedBlogItems.some(item => item.id === id);
     state.savedBlogItems = saved ? state.savedBlogItems.filter(item => item.id !== id) : [...state.savedBlogItems, { id, type: "expression", text: card.expression, meaning: card.meaning, example: card.quote || card.line, sourceType: "drama", sourceTitle: `${card.series} · ${card.season || card.episode}`, sourceUrl: location.href }];
-    localStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
+    profileStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
     render();
   }));
   document.querySelector("[data-drama-undo]")?.addEventListener("click", () => {
@@ -5918,7 +5968,7 @@ function bindEvents(){
     Object.assign(dailyTestState.scores, emptyTestScores());
     const history = getTestHistory();
     history[localDateKey()] = emptyHistoryEntry();
-    try { localStorage.setItem(DAILY_TEST_HISTORY_KEY, JSON.stringify(history)); } catch {}
+    try { profileStorage.setItem(DAILY_TEST_HISTORY_KEY, JSON.stringify(history)); } catch {}
     render();
     const status = document.querySelector("#test-score-status");
     if (status) status.textContent = "점수가 초기화되었습니다.";
@@ -5928,7 +5978,7 @@ function bindEvents(){
     render();
   }));
   document.querySelector("[data-wrong-clear]")?.addEventListener("click", () => {
-    try { localStorage.removeItem(DAILY_TEST_WRONG_KEY); } catch {}
+    try { profileStorage.removeItem(DAILY_TEST_WRONG_KEY); } catch {}
     render();
   });
   document.querySelectorAll("[data-history-filter]").forEach(el => el.addEventListener("click", () => {
@@ -5936,7 +5986,7 @@ function bindEvents(){
     render();
   }));
   document.querySelector("[data-history-clear]")?.addEventListener("click", () => {
-    try { localStorage.removeItem(DAILY_TEST_HISTORY_KEY); } catch {}
+    try { profileStorage.removeItem(DAILY_TEST_HISTORY_KEY); } catch {}
     Object.assign(dailyTestState.scores, emptyTestScores());
     render();
   });
@@ -6088,7 +6138,7 @@ if (initialNavigation?.worthyLife) {
   };
   const entryFile = window.location.pathname.split("/").pop().toLowerCase();
   const hashPage = window.location.hash.replace(/^#/, "").split("/")[0];
-  if (entryFile === "suneung.html") applyAudienceMode("suneung");
+  if (entryFile === "suneung.html" && audienceMode !== "middle") applyAudienceMode("suneung");
   state.page = entryPageMap[entryFile] || (["calendar", "blog", "journal"].includes(hashPage) ? hashPage : "home");
   if (entryFile === "suneung.html" && hashPage.startsWith("suneung-")) state.page = hashPage;
   const articleMatch = state.page === "news" ? window.location.hash.match(/^#article-(\d+)$/) : null;

@@ -342,6 +342,7 @@ html[data-theme="dark"] .ted-transcript-line.clear small{color:#a9cce0}
 .home-quick-links svg{width:12px;transition:transform .18s ease}
 .home-quick-links a:hover,.home-quick-links button:hover{border-color:#bcd3cc;background:#fff;transform:translateY(-1px)}
 .home-quick-links a:hover svg,.home-quick-links button:hover svg{transform:translateX(2px)}
+.home-quick-links .quick-drama em{background:#fce7e7;color:#b4232d}
 .home-quick-links .quick-ted em{background:#e5f0f7;color:#2e668a}
 .home-quick-links .quick-bbc em{background:#f5e6e6;color:#8b3438}
 html[data-theme="dark"] .home-quick-links{border-color:#2c4546;background:#17252d}

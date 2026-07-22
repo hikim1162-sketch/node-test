@@ -67,6 +67,132 @@ html[data-theme="dark"] #app .ted-meaning-toggle {
   color: #9bd0c3;
 }
 
+/* Learning completion buttons: keep the primary action easy to spot */
+#app :is(
+  .vocab-known-toggle,
+  .vocab-sentence-clear,
+  .sentence-understand-toggle,
+  .sentence-speaking-clear,
+  .ted-transcript-clear,
+  .ted-clear-button,
+  .ted-expression-clear-actions > button
+) {
+  border: 1px solid #25aaa7;
+  border-radius: 999px;
+  padding: 12px 24px;
+  background: #fff;
+  color: #078b89;
+  font-weight: 700;
+  box-shadow: 0 2px 5px rgba(23, 143, 140, .16);
+  transition: all .2s ease;
+}
+
+#app :is(
+  .vocab-known-toggle,
+  .vocab-sentence-clear,
+  .sentence-understand-toggle,
+  .sentence-speaking-clear,
+  .ted-transcript-clear,
+  .ted-clear-button,
+  .ted-expression-clear-actions > button
+) svg {
+  flex: 0 0 auto;
+  stroke-width: 3;
+}
+
+@media (hover: hover) {
+  #app :is(
+    .vocab-known-toggle,
+    .vocab-sentence-clear,
+    .sentence-understand-toggle,
+    .sentence-speaking-clear,
+    .ted-transcript-clear,
+    .ted-clear-button,
+    .ted-expression-clear-actions > button
+  ):hover {
+    border-color: #168f8c;
+    background: #f1faf8;
+    filter: none;
+  }
+}
+
+#app :is(
+  .vocab-known-toggle.active,
+  .vocab-sentence-clear.active,
+  .sentence-understand-toggle.active,
+  .sentence-speaking-clear.active,
+  .ted-transcript-clear.active,
+  .ted-clear-button.completed,
+  .ted-expression-clear-actions > button.active
+) {
+  border: 1px solid #3f8f80;
+  background: #3f8f80;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(20, 82, 71, .18);
+  transform: translateY(1px);
+}
+
+html[data-theme="dark"] #app :is(
+  .vocab-known-toggle,
+  .vocab-sentence-clear,
+  .sentence-understand-toggle,
+  .sentence-speaking-clear,
+  .ted-transcript-clear,
+  .ted-clear-button,
+  .ted-expression-clear-actions > button
+) {
+  border: 1px solid #5ba99a;
+  background: #172c29;
+  color: #9ed9ce;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .24);
+}
+
+html[data-theme="dark"] #app :is(
+  .vocab-known-toggle.active,
+  .vocab-sentence-clear.active,
+  .sentence-understand-toggle.active,
+  .sentence-speaking-clear.active,
+  .ted-transcript-clear.active,
+  .ted-clear-button.completed,
+  .ted-expression-clear-actions > button.active
+) {
+  border: 1px solid #3f8f80;
+  background: #3f8f80;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+  transform: translateY(1px);
+}
+
+@media (max-width: 700px) {
+  #app .vocab-known-toggle {
+    width: auto;
+    min-width: 104px;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  #app .vocab-known-toggle span {
+    display: inline;
+  }
+
+  #app :is(
+    .vocab-known-toggle,
+    .vocab-sentence-clear,
+    .sentence-understand-toggle,
+    .sentence-speaking-clear,
+    .ted-transcript-clear,
+    .ted-expression-clear-actions > button
+  ) {
+    min-height: 40px;
+    padding: 9px 12px;
+  }
+
+  #app .ted-clear-button {
+    min-height: 48px;
+    white-space: nowrap;
+  }
+}
+
 /* News landing: full article first, learning support second */
 #app .news-daily-dek {
   margin: 9px 0 20px;
@@ -271,6 +397,44 @@ html[data-theme="dark"] #app .news-daily-focus-grid > article { border-color: #3
   #app .news-daily-sentence-tools details { width: 100%; }
   #app .news-daily-focus-grid { grid-template-columns: 1fr; }
   #app .news-daily-focus-grid > article:last-child { grid-column: auto; }
+}
+
+/* Personal news article import */
+#app .news-library-title-actions { display: flex; align-items: center; gap: 12px; }
+#app .news-library-title-actions > span { color: #788984; font-size: 10px; }
+#app [data-news-import] { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 13px; border: 1px solid #a9cec5; border-radius: 10px; background: #eef7f4; color: #236d5e; font-size: 10px; font-weight: 900; cursor: pointer; }
+#app .news-personal-note { display: block; margin-top: 13px; padding-top: 12px; border-top: 1px dashed #d8e3df; }
+#app .news-personal-note > span { display: block; margin-bottom: 6px; color: #397466; font-size: 8px; font-weight: 900; letter-spacing: .12em; }
+#app .news-personal-note textarea { width: 100%; min-height: 72px; padding: 9px 10px; resize: vertical; border: 1px solid #d5e1dd; border-radius: 9px; background: #fbfdfc; color: #30443f; font: 11px/1.55 inherit; }
+
+.article-import-backdrop { position: fixed; z-index: 1200; inset: 0; display: grid; place-items: center; padding: 18px; overflow-y: auto; background: rgba(13,31,42,.52); backdrop-filter: blur(3px); }
+.article-import-modal { position: relative; width: min(560px,100%); max-height: calc(100vh - 36px); overflow-y: auto; padding: 28px; border: 1px solid #d6e2de; border-radius: 20px; background: #fff; box-shadow: 0 25px 70px rgba(11,35,47,.26); color: #173449; }
+.article-import-close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border: 0; border-radius: 9px; background: #edf3f1; color: #61736f; font-size: 21px; cursor: pointer; }
+.article-import-modal > span { color: #27796a; font-size: 9px; font-weight: 900; letter-spacing: .13em; }
+.article-import-modal h2 { margin: 7px 0 5px; font-size: 24px; }
+.article-import-modal > p { margin: 0 35px 20px 0; color: #6d7e84; font-size: 11px; line-height: 1.65; }
+.article-import-modal form { display: grid; gap: 11px; }
+.article-import-modal label { display: grid; gap: 6px; color: #405a55; font-size: 10px; font-weight: 900; }
+.article-import-modal label small { color: #879590; font-weight: 600; }
+.article-import-modal input,.article-import-modal textarea { box-sizing: border-box; width: 100%; padding: 11px 12px; border: 1px solid #cfddd9; border-radius: 10px; background: #fbfdfc; color: #203b35; font: 12px/1.55 inherit; outline: none; }
+.article-import-modal input:focus,.article-import-modal textarea:focus { border-color: #5da393; box-shadow: 0 0 0 3px rgba(74,146,130,.1); }
+.article-import-primary { min-height: 44px; padding: 0 16px; border: 0; border-radius: 10px; background: #285f55; color: #fff; font-size: 11px; font-weight: 900; cursor: pointer; }
+.article-import-primary:disabled { opacity: .48; cursor: not-allowed; }
+.article-import-message { margin: 13px 0 0; padding: 11px 12px; border-radius: 9px; background: #fff2ef; color: #96473f; font-size: 11px; line-height: 1.55; }
+.article-import-message.success { background: #eaf5f1; color: #216858; }
+.article-manual-form { margin-top: 14px; padding-top: 15px; border-top: 1px solid #e1e9e6; }
+.article-manual-form > b { font-size: 13px; }
+.article-manual-form > p { margin: -4px 0 0; color: #71817d; font-size: 10px; line-height: 1.6; }
+.article-manual-form > small { text-align: right; color: #7a8b86; font-size: 9px; }
+.article-import-success { display: grid; gap: 11px; margin-top: 14px; padding: 14px; border: 1px solid #c5ded7; border-radius: 11px; background: #f1f8f6; }
+.article-import-success > b { color: #285f55; font-size: 12px; }
+
+@media (max-width: 600px) {
+  #app .news-library-title-actions { align-items: stretch; flex-direction: column; gap: 7px; }
+  #app [data-news-import] { justify-content: center; min-height: 44px; }
+  .article-import-backdrop { align-items: end; padding: 0; }
+  .article-import-modal { width: 100%; max-height: 92vh; padding: 25px 17px max(20px,env(safe-area-inset-bottom)); border-radius: 20px 20px 0 0; }
+  .article-import-primary { min-height: 48px; }
 }
 
 /* CSAT passage dictionary hover/tap */
@@ -2055,15 +2219,15 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
 /* Home: one daily drama sentence with resilient external learning links */
 #app .home-drama-sentence {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
-  gap: 24px;
-  margin: 16px 0 24px;
-  padding: 27px 29px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(250px, .6fr);
+  gap: 11px;
+  margin: 9px 0 13px;
+  padding: 10px 15px;
   overflow: hidden;
   border: 1px solid #d9e3eb;
-  border-radius: 18px;
+  border-radius: 15px;
   background: linear-gradient(135deg, #17354f, #285d76);
-  box-shadow: 0 12px 30px rgba(20, 47, 73, .12);
+  box-shadow: 0 7px 18px rgba(20, 47, 73, .1);
   color: #fff;
 }
 
@@ -2074,41 +2238,36 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
   letter-spacing: .14em;
 }
 
-#app .home-drama-copy h2 {
-  margin: 6px 0 17px;
-  font-size: 18px;
-}
-
 #app .home-drama-copy blockquote {
-  margin: 0;
+  margin: 2px 0 0;
   color: #fff;
-  font: 700 clamp(27px, 3vw, 39px)/1.3 Georgia, serif;
+  font: 700 clamp(19px, 2.1vw, 26px)/1.18 Georgia, serif;
 }
 
 #app .home-drama-copy strong {
   display: block;
-  margin-top: 9px;
+  margin-top: 3px;
   color: #dce9ed;
-  font-size: 14px;
+  font-size: 11px;
 }
 
 #app .home-drama-copy > p {
-  margin: 7px 0 0;
+  display: none;
   color: #b9ced6;
   font-size: 11px;
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 #app .home-drama-copy > div {
-  margin-top: 18px;
+  margin-top: 7px;
 }
 
 #app .home-drama-copy button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  min-height: 40px;
-  padding: 0 14px;
+  min-height: 30px;
+  padding: 0 10px;
   border: 1px solid rgba(255, 255, 255, .25);
   border-radius: 10px;
   background: rgba(255, 255, 255, .1);
@@ -2120,9 +2279,9 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
 
 #app .home-drama-sentence > nav {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   align-content: center;
-  gap: 8px;
+  gap: 0;
 }
 
 #app .home-drama-sentence > nav a {
@@ -2130,8 +2289,8 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px;
-  min-height: 52px;
-  padding: 10px 12px;
+  min-height: 42px;
+  padding: 7px 12px;
   border: 1px solid rgba(255, 255, 255, .16);
   border-radius: 11px;
   background: rgba(255, 255, 255, .08);
@@ -2151,33 +2310,126 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
 
 @media (max-width: 820px) {
   #app .home-drama-sentence {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1.2fr) minmax(220px, .8fr);
   }
 }
 
 @media (max-width: 520px) {
   #app .home-drama-sentence {
-    gap: 19px;
-    margin-top: 12px;
-    padding: 22px 18px;
+    grid-template-columns: minmax(0, 1.12fr) minmax(155px, .88fr);
+    gap: 8px;
+    margin: 7px 0 10px;
+    padding: 8px 10px;
   }
 
   #app .home-drama-copy blockquote {
-    font-size: 27px;
+    font-size: 18px;
   }
 
   #app .home-drama-copy button {
     justify-content: center;
-    width: 100%;
-    min-height: 46px;
+    width: auto;
+    min-height: 32px;
+    padding: 0 8px;
+    font-size: 8px;
+  }
+
+  #app .home-drama-sentence > nav {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  #app .home-drama-sentence > nav a {
+    min-height: 38px;
+    padding: 5px 8px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 360px) {
+  #app .home-drama-sentence {
+    grid-template-columns: 1fr;
   }
 
   #app .home-drama-sentence > nav {
     grid-template-columns: 1fr;
   }
+}
 
-  #app .home-drama-sentence > nav a {
-    min-height: 48px;
-    font-size: 11px;
-  }
+/* Shared learner selector for normal and CSAT modes */
+#app .audience-mode-switch {
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+#app .audience-mode-group {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid #d6ddda;
+  border-radius: 11px;
+  background: #f3f6f5;
+}
+
+#app .audience-mode-group.school {
+  border-color: #d9d8e8;
+  background: #f6f5fa;
+}
+
+html[data-theme="dark"] #app .audience-mode-switch { border: 0; background: transparent; }
+html[data-theme="dark"] #app .audience-mode-group { border-color: #435158; background: #253138; }
+html[data-theme="dark"] #app .audience-mode-group.school { border-color: #4d4c61; background: #2c2b3a; }
+
+@media (max-width: 600px) {
+  #app .audience-mode-switch { gap: 6px; }
+  #app .audience-mode-group button { padding: 0 6px; }
+}
+
+.learner-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(12, 31, 43, .48);
+  backdrop-filter: blur(3px);
+}
+
+.learner-modal {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 28px;
+  border: 1px solid #d7e2df;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(13, 37, 50, .24);
+  color: #173449;
+}
+
+.learner-modal > span { color: #27796a; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.learner-modal h2 { margin: 7px 0 5px; font-size: 25px; }
+.learner-modal > p { margin: 0 0 20px; color: #6c7e84; font-size: 12px; line-height: 1.6; }
+.learner-modal-close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border: 0; border-radius: 9px; background: #edf3f1; color: #60736f; font-size: 21px; cursor: pointer; }
+.learner-modal > div { display: grid; gap: 9px; }
+.learner-modal > div > button { display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 11px; min-height: 58px; padding: 9px 13px; border: 1px solid #d7e2df; border-radius: 13px; background: #fff; color: #29443f; text-align: left; cursor: pointer; }
+.learner-modal > div > button:hover,.learner-modal > div > button.active { border-color: #69a99c; background: #f0f7f5; }
+.learner-modal > div i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #dcece8; color: #277568; font-style: normal; font-weight: 900; }
+.learner-modal > div b { font-size: 14px; }
+.learner-modal > div em { color: #477a70; font-size: 9px; font-style: normal; font-weight: 800; }
+
+#app .current-learner-button { display: inline-flex; align-items: center; min-height: 34px; padding: 0 11px; border: 1px solid #cbdcd7; border-radius: 999px; background: #f5faf8; color: #276b5e; font-size: 10px; font-weight: 900; white-space: nowrap; cursor: pointer; }
+
+html[data-theme="dark"] .learner-modal { border-color: #3a504c; background: #172a2d; color: #eef7f5; }
+html[data-theme="dark"] .learner-modal > p { color: #a9b9b5; }
+html[data-theme="dark"] .learner-modal > div > button { border-color: #3b5550; background: #1c3232; color: #e5f2ef; }
+html[data-theme="dark"] .learner-modal > div > button:hover,html[data-theme="dark"] .learner-modal > div > button.active { border-color: #69a99c; background: #25433d; }
+
+@media (max-width: 600px) {
+  .learner-modal-backdrop { align-items: end; padding: 0; }
+  .learner-modal { width: 100%; padding: 25px 18px max(22px, env(safe-area-inset-bottom)); border-radius: 20px 20px 0 0; }
+  .learner-modal > div > button { min-height: 62px; }
+  #app .current-learner-button { min-height: 38px; padding: 0 10px; }
 }
