@@ -8,3 +8,135 @@
 @media(max-width:600px){.csat-review-coach{right:10px;bottom:10px}.csat-review-coach>section{max-height:calc(100vh - 20px);overflow-y:auto}.csat-coach-choices{grid-template-columns:1fr}.csat-coach-toggle{min-height:50px}}
 .csat-day-pagination{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;max-width:860px;margin:18px auto 0;padding:13px 15px;border:1px solid var(--csat-line);border-radius:14px;background:#fff}.csat-day-pagination>button,.csat-day-pagination div button{min-width:44px;min-height:44px;padding:0 12px;border:1px solid var(--csat-line);border-radius:10px;background:#fff;color:#536c78;font-size:11px;font-weight:900;cursor:pointer}.csat-day-pagination>button:disabled{opacity:.4;cursor:not-allowed}.csat-day-pagination>div{display:flex;align-items:center;justify-content:center;gap:6px}.csat-day-pagination>div span{display:flex;align-items:center;gap:6px}.csat-day-pagination>div i{color:#819098;font-style:normal}.csat-day-pagination div button.active{border-color:var(--csat-navy);background:var(--csat-navy);color:#fff}
 @media(max-width:600px){.csat-day-pagination{grid-template-columns:1fr 1fr}.csat-day-pagination>div{grid-column:1/-1;grid-row:1;flex-wrap:wrap}.csat-day-pagination>button{width:100%;padding:0 8px}.csat-day-pagination>button:first-of-type{grid-column:1}.csat-day-pagination>button:last-of-type{grid-column:2}}
+
+/* Keep the embedded wordmaster UI isolated from the legacy page's global
+   header rules. The legacy header has a fixed 98px height, which made the
+   series cards overflow and overlap the Day toolbar on mobile. */
+.csat-vocab-app header {
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+@media (max-width: 600px) {
+  .csat-vocab-app {
+    padding: 16px 10px 48px;
+  }
+
+  .csat-vocab-header {
+    gap: 14px;
+  }
+
+  .csat-vocab-header > div:first-child {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+  }
+
+  .csat-series {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .csat-series button {
+    min-height: 58px;
+    padding: 10px 7px;
+    text-align: center;
+  }
+
+  .csat-series button b {
+    font-size: 12px;
+  }
+
+  .csat-series button small {
+    overflow: hidden;
+    margin-top: 3px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .csat-vocab-toolbar {
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px 12px;
+  }
+
+  .csat-vocab-toolbar label {
+    flex: 0 0 auto;
+  }
+
+  .csat-vocab-toolbar select {
+    min-height: 38px;
+  }
+
+  .csat-vocab-toolbar > span {
+    min-width: 0;
+    text-align: right;
+    line-height: 1.45;
+  }
+
+  .csat-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 8px;
+    padding: 4px;
+  }
+
+  .csat-tabs button {
+    min-height: 42px;
+    padding: 5px 2px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .csat-tabs em {
+    margin-left: 2px;
+    padding-inline: 4px;
+  }
+
+  .csat-workspace {
+    margin-top: 12px;
+    padding: 18px 14px;
+  }
+
+  .csat-progress-track {
+    margin: 14px 0 18px;
+  }
+
+  .csat-word-card {
+    padding: 28px 12px 18px;
+  }
+
+  .csat-word-card h3 {
+    margin-top: 14px;
+    font-size: clamp(36px, 11vw, 48px);
+  }
+
+  .csat-rating-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 26px;
+  }
+
+  .csat-rating-actions button {
+    min-height: 48px;
+    padding-inline: 4px;
+  }
+}
+
+@media (max-width: 380px) {
+  .csat-vocab-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .csat-vocab-toolbar label {
+    justify-content: space-between;
+  }
+
+  .csat-vocab-toolbar > span {
+    text-align: left;
+  }
+}
