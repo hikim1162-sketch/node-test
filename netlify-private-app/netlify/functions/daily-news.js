@@ -1,4 +1,4 @@
-import { json, readCookie, verifyToken } from "./_auth.js";
+import { json } from "./_response.js";
 
 const ARTICLE_SOURCES = [
   { id: "business-10438888", url: "https://www.koreaherald.com/article/10438888" },
@@ -101,7 +101,6 @@ async function loadArticles() {
 
 export default async function handler(request) {
   if (request.method !== "GET") return json(405, { ok: false, message: "GET 요청만 지원합니다." }, { Allow: "GET" });
-  if (!verifyToken(readCookie(request), process.env.AUTH_SECRET)) return json(401, { ok: false, message: "로그인이 필요합니다." });
   if (memoryCache.payload && memoryCache.expiresAt > Date.now()) {
     return json(200, { ...memoryCache.payload, cached: true }, { "Netlify-CDN-Cache-Control": "public, durable, max-age=1800, stale-while-revalidate=3600" });
   }

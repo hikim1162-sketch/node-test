@@ -1,4 +1,4 @@
-import { json, readCookie, verifyToken } from "./_auth.js";
+import { json } from "./_response.js";
 
 const API_ROOT = "https://www.googleapis.com/youtube/v3";
 const TARGET_PHRASE = "매일 미드 한문장";
@@ -110,7 +110,6 @@ async function loadFeed(apiKey) {
 
 export default async function handler(request) {
   if (request.method !== "GET") return json(405, { ok: false, message: "GET 요청만 지원합니다." }, { Allow: "GET" });
-  if (!verifyToken(readCookie(request), process.env.AUTH_SECRET)) return json(401, { ok: false, message: "로그인이 필요합니다." });
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) return json(503, { ok: false, code: "missing_configuration", message: "오늘의 쇼츠를 불러올 준비가 아직 되지 않았습니다." });
 

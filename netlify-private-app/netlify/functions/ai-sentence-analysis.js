@@ -1,8 +1,7 @@
-import { json, readCookie, verifyToken } from "./_auth.js";
+import { json } from "./_response.js";
 
 export default async function handler(request) {
   if (request.method !== "POST") return json(405, { ai: false, message: "POST 요청만 허용됩니다." }, { Allow: "POST" });
-  if (!verifyToken(readCookie(request), process.env.AUTH_SECRET)) return json(401, { ai: false, message: "로그인이 필요합니다." });
 
   const auth = process.env.POSCO_PGPT_AUTH_BASE64;
   const endpoint = process.env.POSCO_PGPT_ENDPOINT || "http://aigpt.posco.net/gpgpta01-gpt/gptApi/personalApi";
