@@ -39,7 +39,7 @@ function useNaverWordExample(word) {
     if (!term || fallback.sentence || fetchedExampleCache.has(term)) return;
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/naver-dictionary?word=${encodeURIComponent(term)}`)
+    fetch(`/api/naver-dictionary?word=${encodeURIComponent(term)}&v=2`, { cache: "no-store" })
       .then((response) => {
         if (!response.ok) throw new Error(`Dictionary request failed: ${response.status}`);
         return response.json();

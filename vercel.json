@@ -4,8 +4,10 @@
   "installCommand": "npm --prefix netlify-private-app install",
   "buildCommand": "npm --prefix netlify-private-app run build",
   "outputDirectory": "netlify-private-app/dist",
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "functions": {
+    "api/*.js": { "maxDuration": 30 }
+  },
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

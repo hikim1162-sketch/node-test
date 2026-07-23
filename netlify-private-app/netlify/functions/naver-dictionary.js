@@ -50,7 +50,7 @@ export default async function handler(request) {
 
   const word = (new URL(request.url).searchParams.get("word") || "").trim().toLowerCase();
   if (!/^[a-z][a-z'-]{0,48}$/.test(word)) return json(400, { ok: false, message: "조회할 영단어를 확인해 주세요." });
-  if (cache.has(word)) return json(200, cache.get(word), { "Cache-Control": "public, max-age=86400" });
+  if (cache.has(word)) return json(200, cache.get(word), { "Cache-Control": "no-store" });
 
   try {
     const url = `${endpoint}?query=${encodeURIComponent(word)}&m=pc&range=all`;
@@ -90,7 +90,7 @@ export default async function handler(request) {
       sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`,
     };
     cache.set(word, result);
-    return json(200, result, { "Cache-Control": "public, max-age=86400" });
+    return json(200, result, { "Cache-Control": "no-store" });
   } catch (error) {
     console.error("[naver-dictionary]", error);
     return json(502, { ok: false, word, message: "네이버 영어사전 조회에 실패했습니다." });
