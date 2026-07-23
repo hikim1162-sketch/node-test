@@ -13,63 +13,34 @@ const TABS = [
   ["progress", "⑤ 진도/기록"],
 ];
 
+const bundledNaverExamples = {
+  emotion: ["He lost control of his emotions.", "그는 감정을 억제하지 못했다."],
+  decrease: ["The number of new students decreased from 210 to 160 this year.", "올해는 신입생 수가 210명에서 160명으로 줄었다."],
+  recycle: ["Denmark recycles nearly 85% of its paper.", "덴마크는 종이의 약 85%를 재활용한다."],
+  desire: ["She had a strong desire to succeed.", "그녀는 성공하고자 하는 강한 열망이 있었다."],
+  negative: ["The crisis had a negative effect on trade.", "그 위기가 무역에 부정적인 영향을 미쳤다."],
+  follow: ["He followed her into the house.", "그는 그녀의 뒤를 따라 집 안으로 들어왔다."],
+};
+
 function getNaverWordExample(word) {
   const term = String(word?.word_display || "").trim().toLowerCase();
   const entry = vocabularyExamples[term];
   const examples = Array.isArray(entry?.examples) ? entry.examples.filter((item) => item?.exampleSentence) : [];
   const selected = examples.length ? examples[Math.abs(Number(word?.index) || 0) % examples.length] : null;
-  const originalSentence = selected?.exampleSentence || word?.example || "";
+  const bundled = bundledNaverExamples[term];
+  const originalSentence = selected?.exampleSentence || bundled?.[0] || word?.example || "";
   const generated = !originalSentence && Boolean(term);
   return {
     sentence: originalSentence || `The meaning of "${term}" becomes clear from the context.`,
-    translation: selected?.exampleTranslation || word?.exampleMeaning || (generated ? `문맥을 통해 "${term}"의 의미를 분명하게 이해할 수 있습니다.` : ""),
-    source: selected ? "네이버 영어사전" : word?.example ? "단어장 기본 예문" : generated ? "수능 단어장 보조 예문" : "",
+    translation: selected?.exampleTranslation || bundled?.[1] || word?.exampleMeaning || (generated ? `문맥을 통해 "${term}"의 의미를 분명하게 이해할 수 있습니다.` : ""),
+    source: selected || bundled ? "네이버 영어사전" : word?.example ? "단어장 기본 예문" : generated ? "수능 단어장 보조 예문" : "",
     sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(term)}`,
     generated,
   };
 }
 
-const fetchedExampleCache = new Map();
-
 function useNaverWordExample(word) {
-  const fallback = getNaverWordExample(word);
-  const term = String(word?.word_display || "").trim().toLowerCase();
-  const [fetched, setFetched] = useState(() => fetchedExampleCache.get(term) || null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setFetched(fetchedExampleCache.get(term) || null);
-    if (!term || (!fallback.generated && fallback.sentence) || fetchedExampleCache.has(term)) return;
-    let cancelled = false;
-    setLoading(true);
-    fetch(`/api/naver-dictionary?word=${encodeURIComponent(term)}&v=2`, { cache: "no-store" })
-      .then((response) => {
-        if (!response.ok) throw new Error(`Dictionary request failed: ${response.status}`);
-        return response.json();
-      })
-      .then((data) => {
-        const item = Array.isArray(data?.examples) ? data.examples.find((example) => example?.exampleSentence) : null;
-        const resolved = item ? {
-          sentence: item.exampleSentence,
-          translation: item.exampleTranslation || "",
-          source: "네이버 영어사전",
-          sourceUrl: data.sourceUrl || fallback.sourceUrl,
-        } : { ...fallback, unavailable: true };
-        fetchedExampleCache.set(term, resolved);
-        if (!cancelled) setFetched(resolved);
-      })
-      .catch(() => {
-        const resolved = { ...fallback, unavailable: true };
-        fetchedExampleCache.set(term, resolved);
-        if (!cancelled) setFetched(resolved);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [term, fallback.sentence]);
-
-  return { ...(fetched || fallback), loading };
+  return { ...getNaverWordExample(word), loading: false };
 }
 
 export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
