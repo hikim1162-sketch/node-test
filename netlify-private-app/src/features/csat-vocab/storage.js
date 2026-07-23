@@ -7,6 +7,7 @@ export const EMPTY_PROGRESS = {
   statuses: {},
   wrong: {},
   tests: [],
+  savedWords: [],
 };
 
 export function loadProgress(mode = "suneung") {
@@ -16,6 +17,7 @@ export function loadProgress(mode = "suneung") {
       statuses: saved?.statuses || {},
       wrong: saved?.wrong || {},
       tests: Array.isArray(saved?.tests) ? saved.tests : [],
+      savedWords: Array.isArray(saved?.savedWords) ? saved.savedWords : [],
     };
   } catch {
     return EMPTY_PROGRESS;
@@ -30,7 +32,7 @@ export function saveProgress(progress, mode = "suneung") {
 export function resetLearningData(mode = "suneung") {
   removeProfileItem(mode, STORAGE_KEY);
   removeProfileItem(mode, DAILY_DAY_STORAGE_KEY);
-  const empty = { statuses: {}, wrong: {}, tests: [] };
+  const empty = { statuses: {}, wrong: {}, tests: [], savedWords: [] };
   queueMicrotask(() => window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: empty })));
   return empty;
 }

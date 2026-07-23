@@ -60,15 +60,24 @@ export default async function handler(request) {
     if (!entry) return json(404, { ok: false, word, message: "네이버 영어사전에서 뜻을 찾지 못했습니다." });
 
     const meanings = [];
+    const examples = [];
     for (const group of entry.meansCollector || []) {
       const partOfSpeech = first(group.partOfSpeech2, group.partOfSpeech, group.partOfSpeechCode);
       for (const meaning of group.means || []) {
         const value = clean(meaning.value);
-        if (!value || meanings.some(item => item.value === value)) continue;
-        meanings.push({ partOfSpeech, value });
-        if (meanings.length >= 4) break;
+        if (value && !meanings.some(item => item.value === value) && meanings.length < 4) {
+          meanings.push({ partOfSpeech, value });
+        }
+        const exampleSentence = clean(meaning.exampleOri);
+        if (exampleSentence && !examples.some(item => item.exampleSentence === exampleSentence)) {
+          examples.push({
+            partOfSpeech,
+            meaning: value,
+            exampleSentence,
+            exampleTranslation: clean(meaning.exampleTrans),
+          });
+        }
       }
-      if (meanings.length >= 4) break;
     }
 
     const result = {
@@ -76,6 +85,7 @@ export default async function handler(request) {
       word,
       entry: first(entry.handleEntry, entry.expEntry) || word,
       meanings,
+      examples,
       source: "NAVER English Dictionary",
       sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`,
     };

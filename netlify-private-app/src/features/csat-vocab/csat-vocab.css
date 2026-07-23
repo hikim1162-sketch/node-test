@@ -83,7 +83,7 @@
   }
 
   .csat-tabs {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-top: 8px;
     padding: 4px;
   }
@@ -144,3 +144,67 @@
     text-align: left;
   }
 }
+.csat-monthly-test-backdrop{position:fixed;inset:0;z-index:1400;display:grid;place-items:center;padding:20px;background:rgba(8,20,29,.7);backdrop-filter:blur(7px)}
+.csat-monthly-test{position:relative;width:min(640px,100%);max-height:calc(100vh - 40px);overflow:auto;padding:30px;border:1px solid #d8e3df;border-radius:22px;background:#fff;box-shadow:0 30px 90px rgba(0,0,0,.3)}
+.csat-monthly-test>.close{position:absolute;top:14px;right:16px;z-index:2;width:34px;height:34px;border:0;border-radius:50%;background:#edf2f0;font-size:20px;cursor:pointer}
+.csat-monthly-test>header{display:flex;align-items:center;justify-content:space-between;height:auto;padding:0;border:0;background:none}
+.csat-monthly-test>header span,.csat-monthly-test.result>span{color:#357a6b;font-size:9px;font-weight:800;letter-spacing:1.4px}
+.csat-monthly-test h2{margin:5px 0 0;font-size:24px}
+.csat-monthly-test>header>b{margin-right:38px;color:#357a6b;font-size:14px}
+.csat-monthly-test>.progress{height:6px;margin:22px 0 9px;overflow:hidden;border-radius:8px;background:#e9efed}
+.csat-monthly-test>.progress i{display:block;height:100%;border-radius:inherit;background:#357a6b}
+.csat-monthly-test>.range{margin:0;color:#75827f;font-size:11px}
+.csat-monthly-test>article{margin:25px 0 18px;padding:27px;border-radius:16px;background:linear-gradient(145deg,#edf7f3,#f8fbfa);text-align:center}
+.csat-monthly-test>article small{color:#4a8d7e;font-size:10px}
+.csat-monthly-test>article h3{margin:11px 0 0;font:700 34px Georgia,serif}
+.csat-monthly-test>.choices{display:grid;gap:9px}
+.csat-monthly-test>.choices button{display:flex;align-items:center;gap:12px;min-height:49px;padding:10px 14px;border:1px solid #dbe5e1;border-radius:11px;background:#fff;text-align:left;cursor:pointer}
+.csat-monthly-test>.choices button:hover,.csat-monthly-test>.choices button.selected{border-color:#6cac9b;background:#eef7f4;color:#236b5d}
+.csat-monthly-test>.choices button.correct{border-color:#4a9a72;background:#e7f6ed;color:#226b48}
+.csat-monthly-test>.choices button.wrong{border-color:#d47a70;background:#fff0ee;color:#9f4037}
+.csat-monthly-test>.choices i{display:grid;place-items:center;flex:none;width:25px;height:25px;border-radius:50%;background:#edf2f0;font-size:10px;font-style:normal}
+.csat-monthly-test>.feedback{padding:10px 12px;border-radius:9px;font-size:11px;font-weight:700}
+.csat-monthly-test>.feedback.correct{background:#e7f6ed;color:#226b48}.csat-monthly-test>.feedback.wrong{background:#fff0ee;color:#9f4037}
+.csat-monthly-test>footer{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:20px}
+.csat-monthly-test>footer span{color:#7d8986;font-size:10px}
+.csat-monthly-test button.primary,.csat-monthly-test.result button{min-height:42px;padding:0 18px;border:1px solid #d5e0dc;border-radius:10px;background:#fff;cursor:pointer}
+.csat-monthly-test button.primary{border-color:#216b5d;background:#216b5d;color:#fff}.csat-monthly-test button:disabled{opacity:.45;cursor:default}
+.csat-monthly-test.result{text-align:center}.csat-monthly-test.result h2{margin-top:10px}.csat-monthly-test.result>strong{display:block;margin:25px 0 10px;color:#216b5d;font:700 64px Georgia,serif}.csat-monthly-test.result>strong small{font-size:24px}.csat-monthly-test.result>p{margin-bottom:25px;color:#71807c}.csat-monthly-test.result>div{display:flex;justify-content:center;gap:8px}
+@media(max-width:600px){.csat-monthly-test-backdrop{padding:10px}.csat-monthly-test{padding:24px 18px;border-radius:17px}.csat-monthly-test>article h3{font-size:29px}.csat-monthly-test>footer{align-items:stretch;flex-direction:column}.csat-monthly-test>footer button{width:100%}}
+.csat-instant-answer-guide{margin:14px 0 0;padding:11px;border-radius:9px;background:#f1f6f4;color:#647772;font-size:11px;text-align:center}
+.csat-answer-example{margin-top:12px;padding:15px 17px;border:1px solid #dce7e3;border-left:4px solid #4a8d7e;border-radius:10px;background:#f6faf8;text-align:left}
+.csat-answer-example>span{display:block;margin-bottom:7px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:1.2px}
+.csat-answer-example>b{display:block;color:#263b36;font:600 14px/1.65 Georgia,serif}
+.csat-answer-example>p{margin:7px 0 0;color:#687974;font-size:11px;line-height:1.6}
+.csat-answer-example.empty>p{margin:0;color:#8b9794}
+.csat-word-card-top{display:flex;align-items:center;justify-content:space-between}
+.csat-save-word{padding:7px 10px;border:1px solid #d6e2de;border-radius:9px;background:#fff;color:#6b7b77;font-size:9px;font-weight:700;cursor:pointer}
+.csat-save-word.saved{border-color:#83b6a8;background:#eaf6f1;color:#216b5d}
+.csat-quick-example{margin:17px 0 0;padding:15px 17px;border:1px solid #dce7e3;border-left:4px solid #4a8d7e;border-radius:10px;background:#f7faf9;text-align:left}
+.csat-quick-example>span{display:block;margin-bottom:7px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:1.2px}
+.csat-quick-example>b{display:block;font:600 14px/1.65 Georgia,serif}
+.csat-quick-example>button{margin-top:9px;padding:6px 9px;border:1px solid #d4e2dd;border-radius:8px;background:#fff;color:#286d5b;font-size:9px;font-weight:700;cursor:pointer}
+.csat-quick-example>p{margin:9px 0 0;padding-top:9px;border-top:1px solid #e0e9e6;color:#667873;font-size:11px;line-height:1.6}
+.csat-quick-example>a,.csat-answer-example>a,.csat-saved-word-list blockquote>a{display:inline-block;margin-top:9px;color:#286d5b;font-size:9px;font-weight:800;text-decoration:none}
+.csat-example-empty{margin-top:15px;color:#8a9693;font-size:10px}
+.csat-saved-word-list{display:grid;gap:12px}
+.csat-saved-word-list>article{padding:18px;border:1px solid #dce5e2;border-radius:13px;background:#fff}
+.csat-saved-word-list>article>header{display:flex;align-items:flex-start;justify-content:space-between;height:auto;padding:0;border:0;background:none}
+.csat-saved-word-list header span{color:#71817d;font-size:9px}.csat-saved-word-list h3{margin:5px 0 0;font:700 22px Georgia,serif}
+.csat-saved-word-list header button,.csat-saved-word-list .meaning,.csat-saved-word-list blockquote button{padding:7px 10px;border:1px solid #d6e2de;border-radius:8px;background:#f6f9f8;color:#286d5b;font-size:9px;cursor:pointer}
+.csat-saved-word-list .meaning{width:100%;margin-top:12px;text-align:left}
+.csat-saved-word-list blockquote{margin:12px 0 0;padding:13px 15px;border-left:3px solid #4a8d7e;background:#f7faf9}
+.csat-saved-word-list blockquote b{display:block;font:600 13px/1.65 Georgia,serif}.csat-saved-word-list blockquote p{margin:8px 0 0;color:#687974;font-size:10px}
+.csat-saved-word-list blockquote>small{display:block;margin-bottom:6px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:.8px}
+.csat-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:600px){.csat-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.csat-tabs{gap:7px;padding:7px;border-color:#cfdcda;background:#eef3f1}
+.csat-tabs button{position:relative;min-height:48px;padding:7px 9px;border:1px solid #d5e0dd;border-radius:10px;background:#fff;box-shadow:0 2px 7px rgba(24,58,49,.04);transition:border-color .16s ease,background .16s ease,color .16s ease,box-shadow .16s ease,transform .16s ease}
+.csat-tabs button:hover{transform:translateY(-1px);border-color:#91b8ae;background:#f7fbf9;color:#286d5b;box-shadow:0 5px 12px rgba(24,58,49,.08)}
+.csat-tabs button.active{border-color:#397968;background:#dceee8;color:#174f43;box-shadow:inset 0 0 0 1px rgba(33,107,93,.08),0 5px 13px rgba(33,107,93,.1)}
+.csat-tabs button.active:after{position:absolute;right:10px;bottom:5px;left:10px;height:1px;border-radius:99px;background:#397968;content:""}
+@media(max-width:600px){.csat-tabs{gap:6px;padding:6px}.csat-tabs button{min-height:50px;padding-inline:5px;font-size:10px}}
+.csat-saved-complete{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding:17px;border:1px solid #cfe0da;border-radius:13px;background:#edf7f3}
+.csat-saved-complete b{display:block;font-size:12px}.csat-saved-complete p{margin:5px 0 0;color:#6b7c77;font-size:10px}
+.csat-saved-complete button{flex:none;min-height:43px;padding:0 16px;border-radius:10px;font-size:10px;font-weight:900;cursor:pointer}
+@media(max-width:600px){.csat-saved-complete{align-items:stretch;flex-direction:column}.csat-saved-complete button{width:100%}}
