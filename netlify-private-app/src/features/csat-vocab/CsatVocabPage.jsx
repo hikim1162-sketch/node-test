@@ -18,11 +18,14 @@ function getNaverWordExample(word) {
   const entry = vocabularyExamples[term];
   const examples = Array.isArray(entry?.examples) ? entry.examples.filter((item) => item?.exampleSentence) : [];
   const selected = examples.length ? examples[Math.abs(Number(word?.index) || 0) % examples.length] : null;
+  const originalSentence = selected?.exampleSentence || word?.example || "";
+  const generated = !originalSentence && Boolean(term);
   return {
-    sentence: selected?.exampleSentence || word?.example || "",
-    translation: selected?.exampleTranslation || word?.exampleMeaning || "",
-    source: selected ? "네이버 영어사전" : word?.example ? "단어장 기본 예문" : "",
+    sentence: originalSentence || `The meaning of "${term}" becomes clear from the context.`,
+    translation: selected?.exampleTranslation || word?.exampleMeaning || (generated ? `문맥을 통해 "${term}"의 의미를 분명하게 이해할 수 있습니다.` : ""),
+    source: selected ? "네이버 영어사전" : word?.example ? "단어장 기본 예문" : generated ? "수능 단어장 보조 예문" : "",
     sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(term)}`,
+    generated,
   };
 }
 
@@ -36,7 +39,7 @@ function useNaverWordExample(word) {
 
   useEffect(() => {
     setFetched(fetchedExampleCache.get(term) || null);
-    if (!term || fallback.sentence || fetchedExampleCache.has(term)) return;
+    if (!term || (!fallback.generated && fallback.sentence) || fetchedExampleCache.has(term)) return;
     let cancelled = false;
     setLoading(true);
     fetch(`/api/naver-dictionary?word=${encodeURIComponent(term)}&v=2`, { cache: "no-store" })
