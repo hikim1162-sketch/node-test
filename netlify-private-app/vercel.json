@@ -1,24 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    {
-      "src": "api/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/naver-dictionary/index.js",
-      "use": "@vercel/node"
-    }
-  ],
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "routes": [
-    { "src": "^/api/naver-dictionary/?$", "dest": "/api/naver-dictionary/index.js" },
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "^/(?!api(?:/|$)).*$", "dest": "/index.html" }
   ]
 }

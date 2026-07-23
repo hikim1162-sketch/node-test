@@ -1,24 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "version": 2,
-  "builds": [
-    {
-      "src": "netlify-private-app/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    {
-      "src": "api/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/naver-dictionary/index.js",
-      "use": "@vercel/node"
-    }
-  ],
+  "installCommand": "cd netlify-private-app && npm ci",
+  "buildCommand": "cd netlify-private-app && npm run build",
+  "outputDirectory": "netlify-private-app/dist",
   "routes": [
-    { "src": "^/api/naver-dictionary/?$", "dest": "/api/naver-dictionary/index.js" },
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "^/(?!api(?:/|$)).*$", "dest": "/index.html" }
   ]
 }
