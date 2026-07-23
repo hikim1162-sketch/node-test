@@ -8,11 +8,16 @@
       "config": { "distDir": "dist" }
     },
     {
-      "src": "api/**/*.js",
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/naver-dictionary/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
+    { "src": "^/api/naver-dictionary/?$", "dest": "/api/naver-dictionary/index.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
