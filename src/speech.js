@@ -74,7 +74,10 @@ function stopCurrentPlayback() {
     activeAudio = null;
   }
   const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
-  if (synth && (synth.speaking || synth.pending || activeUtterances.size)) synth.cancel();
+  if (synth && (synth.speaking || synth.pending || activeUtterances.size)) {
+    trace("cancel-before-new-playback", { activeUtteranceCount: activeUtterances.size });
+    synth.cancel();
+  }
   activeUtterances.clear();
 }
 
@@ -207,12 +210,12 @@ export function getSpeechDiagnostics() {
   };
 }
 
-export function runWebSpeechDiagnostic({ text = "test", useUsVoice = false, timeoutMs = 5000 } = {}) {
+export function runWebSpeechDiagnostic({ text = "test", voiceMode = "lang-only", timeoutMs = 5000 } = {}) {
   return new Promise(resolve => {
     const startedAt = performance.now();
     const report = {
       text,
-      useUsVoice,
+      voiceMode,
       voicesAtClick: refreshVoices("diagnostic-voices-at-click").map(voice => ({
         name: voice.name,
         lang: voice.lang,
@@ -242,9 +245,16 @@ export function runWebSpeechDiagnostic({ text = "test", useUsVoice = false, time
     stopCurrentPlayback();
     const synth = window.speechSynthesis;
     const utterance = new window.SpeechSynthesisUtterance(String(text || "test"));
-    utterance.lang = "en-US";
-    if (useUsVoice) {
+    if (voiceMode !== "none") utterance.lang = "en-US";
+    if (voiceMode === "en-us") {
       const voice = findUsEnglishVoice();
+      if (voice) {
+        utterance.voice = voice;
+        report.selectedVoice = { name: voice.name, lang: voice.lang, localService: voice.localService };
+      }
+    } else if (voiceMode === "default") {
+      const voices = refreshVoices("diagnostic-default-voice");
+      const voice = voices.find(item => item.default) || voices[0] || null;
       if (voice) {
         utterance.voice = voice;
         report.selectedVoice = { name: voice.name, lang: voice.lang, localService: voice.localService };
@@ -278,7 +288,53 @@ export function runWebSpeechDiagnostic({ text = "test", useUsVoice = false, time
 if (typeof window !== "undefined") {
   window.valueTimeSpeechDiagnostics = {
     getReport: getSpeechDiagnostics,
-    testDefaultVoice: options => runWebSpeechDiagnostic({ ...options, useUsVoice: false }),
-    testUsVoice: options => runWebSpeechDiagnostic({ ...options, useUsVoice: true }),
+    testNoVoiceNoLang: options => runWebSpeechDiagnostic({ ...options, voiceMode: "none" }),
+    testLangOnly: options => runWebSpeechDiagnostic({ ...options, voiceMode: "lang-only" }),
+    testUsVoice: options => runWebSpeechDiagnostic({ ...options, voiceMode: "en-us" }),
+    testDefaultVoice: options => runWebSpeechDiagnostic({ ...options, voiceMode: "default" }),
   };
+}
+
+function installSpeechDiagnosticPanel() {
+  if (typeof document === "undefined"
+    || !new URLSearchParams(window.location.search).has("speech-diagnostics")
+    || document.querySelector("[data-speech-diagnostic-panel]")) return;
+
+  const panel = document.createElement("section");
+  panel.dataset.speechDiagnosticPanel = "true";
+  panel.style.cssText = "position:fixed;z-index:2147483647;inset:12px;overflow:auto;padding:18px;border:2px solid #236b83;border-radius:14px;background:#fff;color:#172b34;font:14px/1.5 system-ui;box-shadow:0 12px 50px #0005";
+  panel.innerHTML = `
+    <header style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+      <div><b style="font-size:18px">Web Speech 기기 진단</b><p style="margin:4px 0">각 버튼을 한 번씩 누르고 실제 소리가 들렸는지 확인하세요.</p></div>
+      <button type="button" data-speech-close style="font-size:20px">×</button>
+    </header>
+    <div data-speech-tests style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:14px 0">
+      <button type="button" data-voice-mode="none">1. voice/lang 미지정</button>
+      <button type="button" data-voice-mode="lang-only">2. lang=en-US만</button>
+      <button type="button" data-voice-mode="en-us">3. en-US voice 지정</button>
+      <button type="button" data-voice-mode="default">4. 기본 voice 지정</button>
+    </div>
+    <p data-speech-status role="status">테스트 대기 중</p>
+    <pre data-speech-output style="padding:12px;overflow:auto;border-radius:8px;background:#eef4f6;white-space:pre-wrap;font-size:11px"></pre>
+  `;
+  document.body.appendChild(panel);
+  panel.querySelector("[data-speech-close]").addEventListener("click", () => panel.remove());
+  const status = panel.querySelector("[data-speech-status]");
+  const output = panel.querySelector("[data-speech-output]");
+  output.textContent = JSON.stringify(getSpeechDiagnostics(), null, 2);
+  panel.querySelectorAll("[data-voice-mode]").forEach(button => button.addEventListener("click", async event => {
+    const voiceMode = event.currentTarget.dataset.voiceMode;
+    status.textContent = `${event.currentTarget.textContent} 실행 중…`;
+    const result = await runWebSpeechDiagnostic({ voiceMode });
+    status.textContent = `${event.currentTarget.textContent}: ${result.outcome}`;
+    output.textContent = JSON.stringify({ result, environment: getSpeechDiagnostics() }, null, 2);
+  }));
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installSpeechDiagnosticPanel, { once: true });
+  } else {
+    installSpeechDiagnosticPanel();
+  }
 }
