@@ -79,7 +79,9 @@ function PronounceableWord({ text, as: Tag = "h3" }) {
             mode: document.body.dataset.audience === "middle" ? "middle" : "csat",
             word: text,
           });
-          speakEnglishDebug(text);
+          speakEnglishDebug(text, {
+            mode: document.body.dataset.audience === "middle" ? "middle" : "csat",
+          });
         }} aria-label={`${text} 미국 영어 발음 듣기`}>
           <span aria-hidden="true">🔊</span>
         </button>

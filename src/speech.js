@@ -9,8 +9,19 @@ const activeUtterances = new Set();
 let cachedVoices = [];
 let initialVoiceCount = null;
 const diagnosticEvents = [];
+const diagnosticSubscribers = new Set();
 let voicesPromise = null;
 let speakSequence = 0;
+let lastRequest = {
+  mode: null,
+  word: null,
+  seq: null,
+  requestedAt: null,
+  attempt: null,
+  lastEvent: null,
+  error: null,
+  result: null,
+};
 
 function synthSnapshot() {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
@@ -30,7 +41,22 @@ function trace(event, detail = {}) {
   };
   diagnosticEvents.push(record);
   if (diagnosticEvents.length > 200) diagnosticEvents.shift();
+  if (detail.seq === lastRequest.seq || event === "speech-request") {
+    lastRequest = {
+      ...lastRequest,
+      mode: detail.mode ?? lastRequest.mode,
+      word: detail.text ?? lastRequest.word,
+      seq: detail.seq ?? lastRequest.seq,
+      attempt: detail.attempt ?? lastRequest.attempt,
+      lastEvent: event,
+      error: detail.error ?? (event === "speech-request" ? null : lastRequest.error),
+      result: event === "speech-success"
+        ? "success"
+        : event === "speech-failed" ? "failed" : lastRequest.result,
+    };
+  }
   console.debug("[speech]", record);
+  diagnosticSubscribers.forEach(listener => listener());
 }
 
 function refreshVoices(event = "voices-read") {
@@ -110,7 +136,7 @@ function utteranceState() {
   };
 }
 
-function runSpeechAttempt(text, config, seq, timeoutMs = 2500) {
+function runSpeechAttempt(text, config, seq, mode, timeoutMs = 2500) {
   return new Promise(resolve => {
     const synth = window.speechSynthesis;
     const utterance = new window.SpeechSynthesisUtterance(text);
@@ -121,6 +147,7 @@ function runSpeechAttempt(text, config, seq, timeoutMs = 2500) {
     if (typeof config.volume === "number") utterance.volume = config.volume;
     const meta = {
       seq,
+      mode,
       text,
       attempt: config.label,
       voiceName: config.voice?.name || null,
@@ -131,9 +158,11 @@ function runSpeechAttempt(text, config, seq, timeoutMs = 2500) {
       volume: utterance.volume,
     };
     let settled = false;
+    const timers = [];
     const finish = result => {
       if (settled) return;
       settled = true;
+      timers.forEach(timer => clearTimeout(timer));
       activeUtterances.delete(utterance);
       resolve(result);
     };
@@ -152,16 +181,17 @@ function runSpeechAttempt(text, config, seq, timeoutMs = 2500) {
     trace("before-speak", { ...meta, ...utteranceState() });
     synth.speak(utterance);
     trace("after-speak", { ...meta, ...utteranceState() });
-    setTimeout(() => trace("after-300ms", { ...meta, ...utteranceState() }), 300);
-    setTimeout(() => trace("after-1500ms", { ...meta, ...utteranceState() }), 1500);
-    setTimeout(() => {
+    timers.push(setTimeout(() => trace("after-300ms", { ...meta, ...utteranceState() }), 300));
+    timers.push(setTimeout(() => trace("after-1500ms", { ...meta, ...utteranceState() }), 1500));
+    timers.push(setTimeout(() => {
+      if (settled) return;
       trace("utterance-timeout", { ...meta, ...utteranceState() });
       finish({ ok: false, attempt: config.label, error: "timeout" });
-    }, timeoutMs);
+    }, timeoutMs));
   });
 }
 
-export async function speakEnglishDebug(text) {
+export async function speakEnglishDebug(text, context = {}) {
   const value = String(text || "").trim();
   if (!value) {
     console.warn("[speech] skip empty text");
@@ -173,11 +203,24 @@ export async function speakEnglishDebug(text) {
   }
 
   const seq = ++speakSequence;
+  const mode = context.mode || "unknown";
+  lastRequest = {
+    mode,
+    word: value,
+    seq,
+    requestedAt: new Date().toISOString(),
+    attempt: null,
+    lastEvent: "request-created",
+    error: null,
+    result: null,
+  };
+  diagnosticSubscribers.forEach(listener => listener());
   const synth = window.speechSynthesis;
   const voices = await waitForVoices(1500);
   const enVoice = findUsEnglishVoice();
   trace("speech-request", {
     seq,
+    mode,
     text: value,
     voiceCount: voices.length,
     enUsVoiceCount: voices.filter(voice => /^en[-_]US$/i.test(voice.lang)).length,
@@ -202,19 +245,20 @@ export async function speakEnglishDebug(text) {
 
   for (const attempt of attempts) {
     if (seq !== speakSequence) return false;
-    trace("attempt-start", { seq, text: value, attempt: attempt.label });
-    const result = await runSpeechAttempt(value, attempt, seq);
+    trace("attempt-start", { seq, mode, text: value, attempt: attempt.label });
+    const result = await runSpeechAttempt(value, attempt, seq, mode);
     if (result.ok) {
-      trace("speech-success", { seq, text: value, ...result });
+      trace("speech-success", { seq, mode, text: value, ...result });
       return true;
     }
-    trace("attempt-failed", { seq, text: value, ...result });
+    trace("attempt-failed", { seq, mode, text: value, ...result });
     if (synth.speaking || synth.pending || activeUtterances.size) {
       trace("cancel-after-failed-attempt", { seq, attempt: attempt.label });
       synth.cancel();
       activeUtterances.clear();
     }
   }
+  trace("speech-failed", { seq, mode, text: value, error: lastRequest.error || "all-attempts-failed" });
   console.error("[speech] all attempts failed", { seq, text: value });
   return false;
 }
@@ -247,6 +291,8 @@ export function getSpeechDiagnostics() {
     enUsVoiceCount: cachedVoices.filter(voice => /^en[-_]US$/i.test(voice.lang)).length,
     voices: cachedVoices.map(voice => ({ name: voice.name, lang: voice.lang, localService: voice.localService })),
     activeUtteranceCount: activeUtterances.size,
+    lastRequest: { ...lastRequest },
+    recentEvents: diagnosticEvents.slice(-20),
     events: diagnosticEvents.slice(),
     ...synthSnapshot(),
   };
@@ -346,32 +392,91 @@ function installSpeechDiagnosticPanel() {
 
   const panel = document.createElement("section");
   panel.dataset.speechDiagnosticPanel = "true";
-  panel.style.cssText = "position:fixed;z-index:2147483647;inset:12px;overflow:auto;padding:18px;border:2px solid #236b83;border-radius:14px;background:#fff;color:#172b34;font:14px/1.5 system-ui;box-shadow:0 12px 50px #0005";
+  panel.style.cssText = "position:fixed;z-index:2147483647;inset:8px;overflow:auto;padding:16px;border:2px solid #236b83;border-radius:14px;background:#fff;color:#172b34;font:13px/1.45 system-ui;box-shadow:0 12px 50px #0005";
   panel.innerHTML = `
     <header style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-      <div><b style="font-size:18px">Web Speech 기기 진단</b><p style="margin:4px 0">각 버튼을 한 번씩 누르고 실제 소리가 들렸는지 확인하세요.</p></div>
-      <button type="button" data-speech-close style="font-size:20px">×</button>
+      <div><b style="font-size:18px">Web Speech 휴대폰 진단</b><p style="margin:4px 0">버튼과 실제 단어장 스피커를 누른 뒤 이 화면을 캡처하세요.</p></div>
+      <button type="button" data-speech-close style="min-width:52px;min-height:40px;font-size:12px">접기</button>
     </header>
-    <div data-speech-tests style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:14px 0">
-      <button type="button" data-voice-mode="none">1. voice/lang 미지정</button>
-      <button type="button" data-voice-mode="lang-only">2. lang=en-US만</button>
-      <button type="button" data-voice-mode="en-us">3. en-US voice 지정</button>
-      <button type="button" data-voice-mode="default">4. 기본 voice 지정</button>
+    <div style="padding:9px;border-radius:8px;background:#eef4f6"><b>Build</b> <span data-speech-build></span></div>
+    <div data-speech-tests style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0">
+      <button type="button" data-speech-test="test" style="min-height:46px">Test: "test"</button>
+      <button type="button" data-speech-test="apple" style="min-height:46px">Test: "apple"</button>
+      <button type="button" data-speech-test="안녕" style="min-height:46px">Test: "안녕"</button>
     </div>
-    <p data-speech-status role="status">테스트 대기 중</p>
-    <pre data-speech-output style="padding:12px;overflow:auto;border-radius:8px;background:#eef4f6;white-space:pre-wrap;font-size:11px"></pre>
+    <p data-speech-status role="status" style="padding:9px;border-radius:8px;background:#fff5cc;font-weight:700">테스트 대기 중</p>
+    <div data-speech-summary></div>
+    <h3 style="margin:16px 0 7px">최근 로그 20개</h3>
+    <div data-speech-log style="overflow:auto"></div>
   `;
   document.body.appendChild(panel);
-  panel.querySelector("[data-speech-close]").addEventListener("click", () => panel.remove());
+  const launcher = document.createElement("button");
+  launcher.type = "button";
+  launcher.dataset.speechDiagnosticLauncher = "true";
+  launcher.textContent = "음성 진단";
+  launcher.style.cssText = "position:fixed;z-index:2147483646;right:10px;bottom:10px;display:none;min-width:82px;min-height:44px;border:0;border-radius:999px;background:#236b83;color:#fff;font:700 13px system-ui;box-shadow:0 5px 18px #0004";
+  document.body.appendChild(launcher);
+  panel.querySelector("[data-speech-build]").textContent =
+    new URLSearchParams(window.location.search).get("build") || "query build 값 없음";
   const status = panel.querySelector("[data-speech-status]");
-  const output = panel.querySelector("[data-speech-output]");
-  output.textContent = JSON.stringify(getSpeechDiagnostics(), null, 2);
-  panel.querySelectorAll("[data-voice-mode]").forEach(button => button.addEventListener("click", async event => {
-    const voiceMode = event.currentTarget.dataset.voiceMode;
-    status.textContent = `${event.currentTarget.textContent} 실행 중…`;
-    const result = await runWebSpeechDiagnostic({ voiceMode });
-    status.textContent = `${event.currentTarget.textContent}: ${result.outcome}`;
-    output.textContent = JSON.stringify({ result, environment: getSpeechDiagnostics() }, null, 2);
+  const summary = panel.querySelector("[data-speech-summary]");
+  const log = panel.querySelector("[data-speech-log]");
+  const value = input => input === null || input === undefined || input === "" ? "—" : String(input);
+  const render = () => {
+    const state = getSpeechDiagnostics();
+    const request = state.lastRequest;
+    summary.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px">
+        ${[
+          ["supported", state.webSpeechSupported],
+          ["voiceCount", state.voiceCount],
+          ["en-US voice", state.enUsVoiceCount > 0],
+          ["speaking", state.speaking],
+          ["pending", state.pending],
+          ["paused", state.paused],
+        ].map(([label, item]) => `<div style="padding:8px;border:1px solid #d5e1e5;border-radius:8px"><b>${label}</b><br>${value(item)}</div>`).join("")}
+      </div>
+      <h3 style="margin:16px 0 7px">마지막 요청</h3>
+      <div style="padding:10px;border:1px solid #d5e1e5;border-radius:8px">
+        mode: <b>${value(request.mode)}</b><br>
+        word: <b>${value(request.word)}</b><br>
+        request seq: <b>${value(request.seq)}</b><br>
+        실행 시각: <b>${value(request.requestedAt)}</b><br>
+        마지막 시도 단계: <b>${value(request.attempt)}</b><br>
+        마지막 이벤트: <b>${value(request.lastEvent)}</b><br>
+        마지막 error: <b>${value(request.error)}</b><br>
+        최종 결과: <b>${value(request.result)}</b>
+      </div>
+      <p style="margin:8px 0 0;color:#50656d">fallback: enVoice+lang → lang-only → default</p>
+    `;
+    const rows = state.recentEvents.slice().reverse().map(item => `
+      <tr>
+        <td style="padding:5px;border-bottom:1px solid #dce6e9;white-space:nowrap">${new Date(item.at).toLocaleTimeString()}</td>
+        <td style="padding:5px;border-bottom:1px solid #dce6e9">${value(item.event)}</td>
+        <td style="padding:5px;border-bottom:1px solid #dce6e9">${value(item.text)}</td>
+        <td style="padding:5px;border-bottom:1px solid #dce6e9">${value(item.attempt)}</td>
+        <td style="padding:5px;border-bottom:1px solid #dce6e9">${value(item.error)}</td>
+      </tr>
+    `).join("");
+    log.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr><th>시간</th><th>이벤트</th><th>단어</th><th>단계</th><th>error</th></tr></thead><tbody>${rows || "<tr><td colspan='5'>로그 없음</td></tr>"}</tbody></table>`;
+    status.textContent = request.result
+      ? `${request.word}: ${request.result}`
+      : request.word ? `${request.word}: ${request.lastEvent}` : "테스트 대기 중";
+  };
+  diagnosticSubscribers.add(render);
+  render();
+  panel.querySelector("[data-speech-close]").addEventListener("click", () => {
+    panel.style.display = "none";
+    launcher.style.display = "block";
+  });
+  launcher.addEventListener("click", () => {
+    launcher.style.display = "none";
+    panel.style.display = "block";
+    render();
+  });
+  panel.querySelectorAll("[data-speech-test]").forEach(button => button.addEventListener("click", event => {
+    const text = event.currentTarget.dataset.speechTest;
+    speakEnglishDebug(text, { mode: "diagnostic-test" });
   }));
 }
 

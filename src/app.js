@@ -1867,7 +1867,10 @@ function saveSpeakingSpeed(speed) {
 }
 
 function speakText(text, repeat = 1) {
-  return speakEnglishDebug(text, { repeat });
+  return speakEnglishDebug(text, {
+    repeat,
+    mode: isAcademicMode() ? "csat" : "general",
+  });
 }
 
 applyLearningMode(learningMode);
