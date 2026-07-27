@@ -5,6 +5,8 @@ const preferredUsVoiceNames = [
   "Samantha",
 ];
 
+let activeUtterance = null;
+
 function findUsEnglishVoice() {
   const voices = window.speechSynthesis?.getVoices?.() || [];
   const usVoices = voices.filter((voice) => /^en[-_]US$/i.test(voice.lang));
@@ -20,13 +22,22 @@ function findUsEnglishVoice() {
 export function speakUsEnglish(text) {
   const value = String(text || "").trim();
   if (!value || !("speechSynthesis" in window)) return false;
-  window.speechSynthesis.cancel();
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  synth.resume();
   const utterance = new SpeechSynthesisUtterance(value);
   utterance.lang = "en-US";
   utterance.rate = 0.9;
   utterance.pitch = 1;
   const voice = findUsEnglishVoice();
   if (voice) utterance.voice = voice;
-  window.speechSynthesis.speak(utterance);
+  utterance.onend = () => {
+    if (activeUtterance === utterance) activeUtterance = null;
+  };
+  utterance.onerror = () => {
+    if (activeUtterance === utterance) activeUtterance = null;
+  };
+  activeUtterance = utterance;
+  synth.speak(utterance);
   return true;
 }

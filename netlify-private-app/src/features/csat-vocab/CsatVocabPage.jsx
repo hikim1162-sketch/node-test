@@ -48,6 +48,7 @@ function useNaverWordExample(word) {
 
 function PronounceableWord({ text, as: Tag = "h3" }) {
   const [phonetic, setPhonetic] = useState(() => phoneticCache.get(String(text).toLowerCase()) || "");
+  const naverUrl = `https://en.dict.naver.com/#/search?query=${encodeURIComponent(String(text || "").trim())}`;
 
   useEffect(() => {
     const word = String(text || "").trim().toLowerCase();
@@ -69,9 +70,14 @@ function PronounceableWord({ text, as: Tag = "h3" }) {
 
   return (
     <Tag className="csat-pronounceable-word">
-      <button type="button" onClick={() => speakUsEnglish(text)} aria-label={`${text} 미국 영어 발음 듣기`}>
-        <span>{text}</span><span className="csat-word-speaker" aria-hidden="true">🔊</span>
-      </button>
+      <span className="csat-word-actions">
+        <a className="csat-word-link" href={naverUrl} target="_blank" rel="noopener noreferrer" aria-label={`${text} 네이버 영어사전에서 찾기`}>
+          {text}
+        </a>
+        <button className="csat-word-speaker" type="button" onClick={() => speakUsEnglish(text)} aria-label={`${text} 미국 영어 발음 듣기`}>
+          <span aria-hidden="true">🔊</span>
+        </button>
+      </span>
       {phonetic ? <small className="csat-phonetic" aria-label="미국식 발음기호">/{phonetic}/</small> : null}
     </Tag>
   );
