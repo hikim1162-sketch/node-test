@@ -48,9 +48,15 @@ function fetchDictionary(url) {
 export default async function handler(request) {
   if (request.method !== "GET") return json(405, { ok: false, message: "GET 요청만 허용됩니다." }, { Allow: "GET" });
 
-  const word = (new URL(request.url).searchParams.get("word") || "").trim().toLowerCase();
+  const requestUrl = new URL(request.url);
+  const word = (requestUrl.searchParams.get("word") || "").trim().toLowerCase();
+  const audioOnly = requestUrl.searchParams.get("audio") === "1";
   if (!/^[a-z][a-z'-]{0,48}$/.test(word)) return json(400, { ok: false, message: "조회할 영단어를 확인해 주세요." });
-  if (cache.has(word)) return json(200, cache.get(word), { "Cache-Control": "no-store" });
+  if (cache.has(word)) {
+    const cached = cache.get(word);
+    if (audioOnly && cached.pronunciationAudioUrl) return Response.redirect(cached.pronunciationAudioUrl, 302);
+    return json(audioOnly ? 404 : 200, audioOnly ? { ok: false, word, message: "Pronunciation audio not found." } : cached, { "Cache-Control": "no-store" });
+  }
 
   try {
     const url = `${endpoint}?query=${encodeURIComponent(word)}&m=pc&range=all`;
@@ -80,21 +86,27 @@ export default async function handler(request) {
       }
     }
 
+    const phonetics = entry.searchPhoneticSymbolList || [];
+    const pronunciation = phonetics.find(item => /US/.test(item.symbolTypeCode) && item.symbolFile)
+      || phonetics.find(item => item.symbolFile);
     const result = {
       ok: true,
       word,
       entry: first(entry.handleEntry, entry.expEntry) || word,
       phonetic: first(
-        entry.searchPhoneticSymbolList?.find(item => item.symbolTypeCode === "US")?.symbolValue,
-        entry.searchPhoneticSymbolList?.[0]?.symbolValue,
+        phonetics.find(item => /US/.test(item.symbolTypeCode))?.symbolValue,
+        phonetics[0]?.symbolValue,
         entry.phoneticSymbol,
       ),
+      pronunciationAudioUrl: pronunciation?.symbolFile || "",
       meanings,
       examples,
       source: "NAVER English Dictionary",
       sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`,
     };
     cache.set(word, result);
+    if (audioOnly && result.pronunciationAudioUrl) return Response.redirect(result.pronunciationAudioUrl, 302);
+    if (audioOnly) return json(404, { ok: false, word, message: "Pronunciation audio not found." });
     return json(200, result, { "Cache-Control": "no-store" });
   } catch (error) {
     console.error("[naver-dictionary]", error);
