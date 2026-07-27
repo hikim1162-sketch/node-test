@@ -195,7 +195,7 @@ function runSpeechAttempt(text, config, seq, mode, timeoutMs = 2500) {
 function runAudioAttempt(text, seq, mode, timeoutMs = 5000) {
   return new Promise(resolve => {
     const audio = new Audio(
-      `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en&q=${encodeURIComponent(text)}`,
+      `/api/tts?text=${encodeURIComponent(text)}`,
     );
     const meta = { seq, mode, text, attempt: "network-audio" };
     let settled = false;
