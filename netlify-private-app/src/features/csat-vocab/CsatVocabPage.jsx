@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
 import { loadProgress, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
-import { speakUsEnglish } from "./speech.js";
+import { speakEnglishDebug } from "./speech.js";
 import "./csat-vocab.css";
 
 const TABS = [
@@ -74,7 +74,13 @@ function PronounceableWord({ text, as: Tag = "h3" }) {
         <a className="csat-word-link" href={naverUrl} target="_blank" rel="noopener noreferrer" aria-label={`${text} 네이버 영어사전에서 찾기`}>
           {text}
         </a>
-        <button className="csat-word-speaker" type="button" onClick={() => speakUsEnglish(text)} aria-label={`${text} 미국 영어 발음 듣기`}>
+        <button className="csat-word-speaker" type="button" onClick={() => {
+          console.log("[vocab] speaker click", {
+            mode: document.body.dataset.audience === "middle" ? "middle" : "csat",
+            word: text,
+          });
+          speakEnglishDebug(text);
+        }} aria-label={`${text} 미국 영어 발음 듣기`}>
           <span aria-hidden="true">🔊</span>
         </button>
       </span>

@@ -6,10 +6,11 @@ const preferredUsVoiceNames = [
 ];
 
 const activeUtterances = new Set();
-let activeAudio = null;
 let cachedVoices = [];
 let initialVoiceCount = null;
 const diagnosticEvents = [];
+let voicesPromise = null;
+let speakSequence = 0;
 
 function synthSnapshot() {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
@@ -44,15 +45,51 @@ function refreshVoices(event = "voices-read") {
   return cachedVoices;
 }
 
-if (typeof window !== "undefined" && window.speechSynthesis) {
-  refreshVoices("voices-initial");
-  window.speechSynthesis.addEventListener?.("voiceschanged", () => refreshVoices("voiceschanged"));
+export function canUseSpeech() {
+  return typeof window !== "undefined"
+    && Boolean(window.speechSynthesis)
+    && typeof window.SpeechSynthesisUtterance === "function";
 }
 
-function reportSpeechError(message, error, onError) {
-  console.error(`[speech] ${message}`, error || "");
-  if (typeof onError === "function") onError(message, error);
+export function initSpeechDebug() {
+  if (!canUseSpeech()) {
+    console.error("[speech] Web Speech API not supported");
+    return false;
+  }
+  refreshVoices("voices-initial");
+  if (!voicesPromise) {
+    voicesPromise = new Promise(resolve => {
+      if (cachedVoices.length) {
+        resolve(cachedVoices);
+        return;
+      }
+      let settled = false;
+      const finish = event => {
+        if (settled) return;
+        settled = true;
+        resolve(refreshVoices(event));
+      };
+      const timer = setTimeout(() => finish("voices-timeout"), 1500);
+      window.speechSynthesis.addEventListener?.("voiceschanged", () => {
+        clearTimeout(timer);
+        finish("voiceschanged");
+      }, { once: true });
+    });
+  }
+  return true;
 }
+
+export async function waitForVoices(timeout = 1500) {
+  if (!initSpeechDebug()) return [];
+  const voices = refreshVoices("voices-before-wait");
+  if (voices.length) return voices;
+  return Promise.race([
+    voicesPromise,
+    new Promise(resolve => setTimeout(() => resolve(refreshVoices("voices-wait-timeout")), timeout)),
+  ]);
+}
+
+if (canUseSpeech()) initSpeechDebug();
 
 function findUsEnglishVoice() {
   const voices = refreshVoices("voices-at-click");
@@ -66,121 +103,133 @@ function findUsEnglishVoice() {
     || null;
 }
 
-function stopCurrentPlayback() {
-  if (activeAudio) {
-    activeAudio.pause();
-    activeAudio.removeAttribute("src");
-    activeAudio.load();
-    activeAudio = null;
+function utteranceState() {
+  return {
+    at: new Date().toISOString(),
+    ...synthSnapshot(),
+  };
+}
+
+function runSpeechAttempt(text, config, seq, timeoutMs = 2500) {
+  return new Promise(resolve => {
+    const synth = window.speechSynthesis;
+    const utterance = new window.SpeechSynthesisUtterance(text);
+    if (config.lang) utterance.lang = config.lang;
+    if (config.voice) utterance.voice = config.voice;
+    if (typeof config.rate === "number") utterance.rate = config.rate;
+    if (typeof config.pitch === "number") utterance.pitch = config.pitch;
+    if (typeof config.volume === "number") utterance.volume = config.volume;
+    const meta = {
+      seq,
+      text,
+      attempt: config.label,
+      voiceName: config.voice?.name || null,
+      voiceLang: config.voice?.lang || null,
+      lang: config.lang || null,
+      rate: utterance.rate,
+      pitch: utterance.pitch,
+      volume: utterance.volume,
+    };
+    let settled = false;
+    const finish = result => {
+      if (settled) return;
+      settled = true;
+      activeUtterances.delete(utterance);
+      resolve(result);
+    };
+    utterance.onstart = () => trace("utterance-start", { ...meta, ...utteranceState() });
+    utterance.onpause = () => trace("utterance-pause", { ...meta, ...utteranceState() });
+    utterance.onresume = () => trace("utterance-resume", { ...meta, ...utteranceState() });
+    utterance.onend = () => {
+      trace("utterance-end", { ...meta, ...utteranceState() });
+      finish({ ok: true, attempt: config.label });
+    };
+    utterance.onerror = event => {
+      trace("utterance-error", { ...meta, error: event.error, ...utteranceState() });
+      finish({ ok: false, attempt: config.label, error: event.error || "unknown" });
+    };
+    activeUtterances.add(utterance);
+    trace("before-speak", { ...meta, ...utteranceState() });
+    synth.speak(utterance);
+    trace("after-speak", { ...meta, ...utteranceState() });
+    setTimeout(() => trace("after-300ms", { ...meta, ...utteranceState() }), 300);
+    setTimeout(() => trace("after-1500ms", { ...meta, ...utteranceState() }), 1500);
+    setTimeout(() => {
+      trace("utterance-timeout", { ...meta, ...utteranceState() });
+      finish({ ok: false, attempt: config.label, error: "timeout" });
+    }, timeoutMs);
+  });
+}
+
+export async function speakEnglishDebug(text) {
+  const value = String(text || "").trim();
+  if (!value) {
+    console.warn("[speech] skip empty text");
+    return false;
   }
+  if (!canUseSpeech()) {
+    console.error("[speech] Web Speech API unavailable");
+    return false;
+  }
+
+  const seq = ++speakSequence;
+  const synth = window.speechSynthesis;
+  const voices = await waitForVoices(1500);
+  const enVoice = findUsEnglishVoice();
+  trace("speech-request", {
+    seq,
+    text: value,
+    voiceCount: voices.length,
+    enUsVoiceCount: voices.filter(voice => /^en[-_]US$/i.test(voice.lang)).length,
+    selectedVoice: enVoice ? { name: enVoice.name, lang: enVoice.lang } : null,
+  });
+
+  if (synth.paused) {
+    trace("resume-before-speak", { seq });
+    synth.resume();
+  }
+  if (synth.speaking || synth.pending || activeUtterances.size) {
+    trace("cancel-before-request", { seq, activeUtteranceCount: activeUtterances.size });
+    synth.cancel();
+    activeUtterances.clear();
+  }
+
+  const attempts = [
+    enVoice ? { label: "enVoice+lang", voice: enVoice, lang: "en-US", rate: 0.95, pitch: 1, volume: 1 } : null,
+    { label: "lang-only", lang: "en-US", rate: 0.95, pitch: 1, volume: 1 },
+    { label: "default", rate: 1, pitch: 1, volume: 1 },
+  ].filter(Boolean);
+
+  for (const attempt of attempts) {
+    if (seq !== speakSequence) return false;
+    trace("attempt-start", { seq, text: value, attempt: attempt.label });
+    const result = await runSpeechAttempt(value, attempt, seq);
+    if (result.ok) {
+      trace("speech-success", { seq, text: value, ...result });
+      return true;
+    }
+    trace("attempt-failed", { seq, text: value, ...result });
+    if (synth.speaking || synth.pending || activeUtterances.size) {
+      trace("cancel-after-failed-attempt", { seq, attempt: attempt.label });
+      synth.cancel();
+      activeUtterances.clear();
+    }
+  }
+  console.error("[speech] all attempts failed", { seq, text: value });
+  return false;
+}
+
+export function getSpeechDebugState() {
+  return getSpeechDiagnostics();
+}
+
+function stopCurrentPlayback() {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
   if (synth && (synth.speaking || synth.pending || activeUtterances.size)) {
     trace("cancel-before-new-playback", { activeUtteranceCount: activeUtterances.size });
     synth.cancel();
   }
   activeUtterances.clear();
-}
-
-function speakWithWebSpeech(value, { rate, repeat, onError }) {
-  const synth = window.speechSynthesis;
-  try {
-    if (synth.paused) synth.resume();
-    const voice = findUsEnglishVoice();
-    const voiceName = voice?.name || null;
-    const count = Math.max(1, Math.min(10, Math.trunc(Number(repeat)) || 1));
-
-    for (let index = 0; index < count; index += 1) {
-      const utterance = new window.SpeechSynthesisUtterance(value);
-      utterance.lang = "en-US";
-      utterance.rate = Number.isFinite(Number(rate)) ? Number(rate) : 0.9;
-      utterance.pitch = 1;
-      if (voice) utterance.voice = voice;
-
-      const detail = { text: value, voiceName, lang: utterance.lang };
-      const release = () => activeUtterances.delete(utterance);
-      utterance.onstart = () => trace("utterance-start", detail);
-      utterance.onend = () => {
-        trace("utterance-end", detail);
-        release();
-      };
-      utterance.onpause = () => trace("utterance-pause", detail);
-      utterance.onresume = () => trace("utterance-resume", detail);
-      utterance.onerror = event => {
-        trace("utterance-error", { ...detail, error: event.error });
-        release();
-        if (event.error !== "canceled" && event.error !== "interrupted") {
-          reportSpeechError(`"${value}" 음성 재생에 실패했습니다.`, event.error, onError);
-        }
-      };
-      activeUtterances.add(utterance);
-      synth.speak(utterance);
-      trace("utterance-queued", detail);
-    }
-    return true;
-  } catch (error) {
-    activeUtterances.clear();
-    reportSpeechError(`"${value}" 음성 재생을 시작하지 못했습니다.`, error, onError);
-    return false;
-  }
-}
-
-function playDictionaryAudio(value, options) {
-  const audio = new window.Audio();
-  const detail = { text: value, source: "NAVER pronunciation MP3" };
-  audio.preload = "auto";
-  audio.src = `/api/naver-dictionary?word=${encodeURIComponent(value.toLowerCase())}&audio=1`;
-  audio.onloadstart = () => trace("audio-loadstart", detail);
-  audio.onplaying = () => trace("audio-playing", { ...detail, currentTime: audio.currentTime, readyState: audio.readyState });
-  audio.onended = () => {
-    trace("audio-ended", { ...detail, duration: audio.duration });
-    if (activeAudio === audio) activeAudio = null;
-  };
-  audio.onpause = () => trace("audio-pause", { ...detail, currentTime: audio.currentTime });
-  audio.onerror = () => {
-    const error = audio.error;
-    trace("audio-error", { ...detail, code: error?.code, message: error?.message });
-    if (activeAudio !== audio) return;
-    activeAudio = null;
-    speakWithWebSpeech(value, options);
-  };
-  activeAudio = audio;
-
-  // This stays in the original click task, preserving mobile playback permission.
-  const playPromise = audio.play();
-  playPromise?.then(() => trace("audio-play-promise-resolved", { ...detail, readyState: audio.readyState }))
-    .catch(error => {
-      trace("audio-play-promise-rejected", { ...detail, error: error?.name, message: error?.message });
-      if (activeAudio !== audio) return;
-      activeAudio = null;
-      speakWithWebSpeech(value, options);
-    });
-  return true;
-}
-
-export function speakUsEnglish(text, options = {}) {
-  const value = String(text || "").trim();
-  const { rate = 0.9, repeat = 1, onError } = options;
-
-  if (!value) {
-    console.warn("[speech] 발음할 영어 텍스트가 비어 있습니다.");
-    return false;
-  }
-  if (typeof window === "undefined") {
-    reportSpeechError("브라우저 밖에서는 음성을 재생할 수 없습니다.", null, onError);
-    return false;
-  }
-
-  stopCurrentPlayback();
-  trace("request", { text: value });
-
-  if (typeof window.Audio === "function" && /^[a-z][a-z'-]{0,48}$/i.test(value)) {
-    return playDictionaryAudio(value, { rate, repeat, onError });
-  }
-  if (window.speechSynthesis && typeof window.SpeechSynthesisUtterance === "function") {
-    return speakWithWebSpeech(value, { rate, repeat, onError });
-  }
-  reportSpeechError("이 브라우저에서는 음성 재생을 지원하지 않습니다.", null, onError);
-  return false;
 }
 
 export function getSpeechDiagnostics() {
@@ -197,13 +246,6 @@ export function getSpeechDiagnostics() {
     voiceCount: cachedVoices.length,
     enUsVoiceCount: cachedVoices.filter(voice => /^en[-_]US$/i.test(voice.lang)).length,
     voices: cachedVoices.map(voice => ({ name: voice.name, lang: voice.lang, localService: voice.localService })),
-    activeAudio: activeAudio ? {
-      src: activeAudio.currentSrc || activeAudio.src,
-      currentTime: activeAudio.currentTime,
-      duration: activeAudio.duration,
-      paused: activeAudio.paused,
-      readyState: activeAudio.readyState,
-    } : null,
     activeUtteranceCount: activeUtterances.size,
     events: diagnosticEvents.slice(),
     ...synthSnapshot(),
@@ -296,8 +338,10 @@ if (typeof window !== "undefined") {
 }
 
 function installSpeechDiagnosticPanel() {
+  const enabled = import.meta.env.DEV
+    || new URLSearchParams(window.location.search).has("speech-diagnostics");
   if (typeof document === "undefined"
-    || !new URLSearchParams(window.location.search).has("speech-diagnostics")
+    || !enabled
     || document.querySelector("[data-speech-diagnostic-panel]")) return;
 
   const panel = document.createElement("section");

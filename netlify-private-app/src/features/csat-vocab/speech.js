@@ -1,1 +1,1 @@
-export { speakUsEnglish } from "../../../../src/speech.js";
+export { initSpeechDebug, getSpeechDebugState, speakEnglishDebug } from "../../../../src/speech.js";

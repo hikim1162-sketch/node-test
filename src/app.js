@@ -6,7 +6,7 @@ import { toeicSentences } from "../data/toeic-sentences.js";
 import { favoriteBlogArticles } from "../data/favorite-blogs.js";
 import { normalizeSavedLearningItems, generateCustomTestFromSavedItems } from "./custom-learning.js";
 import { REVIEW_STORAGE_KEY, createReviewProgress, selectDueReviewItems, createReviewQuestion, applyReviewAnswer, detectUsedWords, evaluateEmailReply, toNotebookItem } from "./connected-learning.js";
-import { speakUsEnglish } from "./speech.js";
+import { initSpeechDebug, speakEnglishDebug } from "./speech.js";
 import csatEnglishArchive from "../netlify-private-app/data/imported/csat-english-2021-2026.json";
 import { getCurrentUser, modeFromAudience, profileStorage } from "../netlify-private-app/src/profiles/profileStorage.js";
 import { getModeConfig } from "../netlify-private-app/src/profiles/learningModes.js";
@@ -946,6 +946,8 @@ const QUIZ_KOREAN_EXPLANATIONS = {
   "reading-notice-safety": { summary: "코팅 구역 안에서는 모든 방문객이 보안경을 착용해야 합니다.", detail: "지문의 핵심 문장은 ‘all visitors must wear safety glasses inside the coating area’입니다. must는 선택이나 권장이 아니라 반드시 지켜야 하는 의무를 나타냅니다. 따라서 질문의 required에 해당하는 것은 Safety glasses입니다.", wrong: ["방문증이 필요할 수는 있지만 이 공지에서 요구한 물품은 아닙니다.", "생산 보고서는 방문객의 안전 장비와 관계가 없습니다.", "공급업체 송장은 회계 문서이며 코팅 구역의 보호 장비가 아닙니다."] },
 };
 
+initSpeechDebug();
+
 function normalizeQuizQuestion(question = {}) {
   const choices = Array.isArray(question.choices) ? question.choices : [];
   const answer = Number(question.answer) || 0;
@@ -1865,10 +1867,7 @@ function saveSpeakingSpeed(speed) {
 }
 
 function speakText(text, repeat = 1) {
-  return speakUsEnglish(text, {
-    repeat,
-    rate: learningMode === "speaking" ? speakingSpeed : 0.9,
-  });
+  return speakEnglishDebug(text, { repeat });
 }
 
 applyLearningMode(learningMode);
@@ -6179,6 +6178,10 @@ function bindEvents(){
     updateVocabClearCard(card);
   }));
   document.querySelectorAll("[data-speak]").forEach(el=>el.addEventListener("click",e=>{
+    console.log("[vocab] speaker click", {
+      mode: isAcademicMode() ? "csat" : "general",
+      word: e.currentTarget.dataset.speak,
+    });
     document.querySelectorAll(".speaking-active").forEach(item => item.classList.remove("speaking-active"));
     e.currentTarget.closest(".ted-transcript-line,.ted-focus-sentence,.ted-expression-panel article")?.classList.add("speaking-active");
     speakText(e.currentTarget.dataset.speak);
