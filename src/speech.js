@@ -9,6 +9,7 @@ const activeUtterances = new Set();
 let activeAudio = null;
 let cachedVoices = [];
 let initialVoiceCount = null;
+const diagnosticEvents = [];
 
 function synthSnapshot() {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
@@ -20,12 +21,15 @@ function synthSnapshot() {
 }
 
 function trace(event, detail = {}) {
-  console.debug("[speech]", {
+  const record = {
     event,
     at: new Date().toISOString(),
     ...detail,
     ...synthSnapshot(),
-  });
+  };
+  diagnosticEvents.push(record);
+  if (diagnosticEvents.length > 200) diagnosticEvents.shift();
+  console.debug("[speech]", record);
 }
 
 function refreshVoices(event = "voices-read") {
@@ -178,9 +182,18 @@ export function speakUsEnglish(text, options = {}) {
 
 export function getSpeechDiagnostics() {
   return {
+    userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    platform: typeof navigator !== "undefined" ? navigator.platform : null,
+    visibilityState: typeof document !== "undefined" ? document.visibilityState : null,
+    secureContext: typeof window !== "undefined" ? window.isSecureContext : null,
+    webSpeechSupported: typeof window !== "undefined"
+      && Boolean(window.speechSynthesis)
+      && typeof window.SpeechSynthesisUtterance === "function",
+    htmlAudioSupported: typeof window !== "undefined" && typeof window.Audio === "function",
     initialVoiceCount,
     voiceCount: cachedVoices.length,
     enUsVoiceCount: cachedVoices.filter(voice => /^en[-_]US$/i.test(voice.lang)).length,
+    voices: cachedVoices.map(voice => ({ name: voice.name, lang: voice.lang, localService: voice.localService })),
     activeAudio: activeAudio ? {
       src: activeAudio.currentSrc || activeAudio.src,
       currentTime: activeAudio.currentTime,
@@ -189,6 +202,83 @@ export function getSpeechDiagnostics() {
       readyState: activeAudio.readyState,
     } : null,
     activeUtteranceCount: activeUtterances.size,
+    events: diagnosticEvents.slice(),
     ...synthSnapshot(),
+  };
+}
+
+export function runWebSpeechDiagnostic({ text = "test", useUsVoice = false, timeoutMs = 5000 } = {}) {
+  return new Promise(resolve => {
+    const startedAt = performance.now();
+    const report = {
+      text,
+      useUsVoice,
+      voicesAtClick: refreshVoices("diagnostic-voices-at-click").map(voice => ({
+        name: voice.name,
+        lang: voice.lang,
+        localService: voice.localService,
+      })),
+      selectedVoice: null,
+      events: [],
+      stateBefore: synthSnapshot(),
+      stateAfterSpeak: null,
+      stateAtFinish: null,
+    };
+    const finish = outcome => {
+      if (report.outcome) return;
+      report.outcome = outcome;
+      report.elapsedMs = Math.round(performance.now() - startedAt);
+      report.stateAtFinish = synthSnapshot();
+      resolve(report);
+    };
+
+    if (typeof window === "undefined"
+      || !window.speechSynthesis
+      || typeof window.SpeechSynthesisUtterance !== "function") {
+      finish("unsupported");
+      return;
+    }
+
+    stopCurrentPlayback();
+    const synth = window.speechSynthesis;
+    const utterance = new window.SpeechSynthesisUtterance(String(text || "test"));
+    utterance.lang = "en-US";
+    if (useUsVoice) {
+      const voice = findUsEnglishVoice();
+      if (voice) {
+        utterance.voice = voice;
+        report.selectedVoice = { name: voice.name, lang: voice.lang, localService: voice.localService };
+      }
+    }
+    const capture = (event, error = null) => {
+      report.events.push({
+        event,
+        error,
+        atMs: Math.round(performance.now() - startedAt),
+        ...synthSnapshot(),
+      });
+    };
+    utterance.onstart = () => capture("start");
+    utterance.onpause = () => capture("pause");
+    utterance.onresume = () => capture("resume");
+    utterance.onerror = event => {
+      capture("error", event.error);
+      finish(`error:${event.error}`);
+    };
+    utterance.onend = () => {
+      capture("end");
+      finish("ended");
+    };
+    synth.speak(utterance);
+    report.stateAfterSpeak = synthSnapshot();
+    setTimeout(() => finish("timeout:no-end-event"), Math.max(1000, Number(timeoutMs) || 5000));
+  });
+}
+
+if (typeof window !== "undefined") {
+  window.valueTimeSpeechDiagnostics = {
+    getReport: getSpeechDiagnostics,
+    testDefaultVoice: options => runWebSpeechDiagnostic({ ...options, useUsVoice: false }),
+    testUsVoice: options => runWebSpeechDiagnostic({ ...options, useUsVoice: true }),
   };
 }
