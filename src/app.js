@@ -6,6 +6,7 @@ import { toeicSentences } from "../data/toeic-sentences.js";
 import { favoriteBlogArticles } from "../data/favorite-blogs.js";
 import { normalizeSavedLearningItems, generateCustomTestFromSavedItems } from "./custom-learning.js";
 import { REVIEW_STORAGE_KEY, createReviewProgress, selectDueReviewItems, createReviewQuestion, applyReviewAnswer, detectUsedWords, evaluateEmailReply, toNotebookItem } from "./connected-learning.js";
+import { speakUsEnglish } from "./speech.js";
 import csatEnglishArchive from "../netlify-private-app/data/imported/csat-english-2021-2026.json";
 import { getCurrentUser, modeFromAudience, profileStorage } from "../netlify-private-app/src/profiles/profileStorage.js";
 import { getModeConfig } from "../netlify-private-app/src/profiles/learningModes.js";
@@ -1864,21 +1865,10 @@ function saveSpeakingSpeed(speed) {
 }
 
 function speakText(text, repeat = 1) {
-  if (!text || !("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
-  const voices = speechSynthesis.getVoices();
-  const usVoices = voices.filter(voice => /^en[-_]US$/i.test(voice.lang));
-  const preferredVoice = usVoices.find(voice => /Aria|Jenny|Samantha|Google US English|Natural/i.test(voice.name))
-    || usVoices[0]
-    || voices.find(voice => /^en/i.test(voice.lang));
-  for (let index = 0; index < repeat; index++) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = learningMode === "speaking" ? speakingSpeed : 0.9;
-    utterance.pitch = 1;
-    if (preferredVoice) utterance.voice = preferredVoice;
-    speechSynthesis.speak(utterance);
-  }
+  return speakUsEnglish(text, {
+    repeat,
+    rate: learningMode === "speaking" ? speakingSpeed : 0.9,
+  });
 }
 
 applyLearningMode(learningMode);
