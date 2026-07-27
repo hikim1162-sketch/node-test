@@ -216,7 +216,10 @@ export async function speakEnglishDebug(text, context = {}) {
   };
   diagnosticSubscribers.forEach(listener => listener());
   const synth = window.speechSynthesis;
-  const voices = await waitForVoices(1500);
+  // Mobile browsers may only start speech while the original click gesture is
+  // still active. Do not await voiceschanged (or any timer) before the first
+  // speak() call. A voice can be selected for later fallback attempts.
+  const voices = refreshVoices("voices-at-request");
   const enVoice = findUsEnglishVoice();
   trace("speech-request", {
     seq,
@@ -238,9 +241,12 @@ export async function speakEnglishDebug(text, context = {}) {
   }
 
   const attempts = [
-    enVoice ? { label: "enVoice+lang", voice: enVoice, lang: "en-US", rate: 0.95, pitch: 1, volume: 1 } : null,
-    { label: "lang-only", lang: "en-US", rate: 0.95, pitch: 1, volume: 1 },
-    { label: "default", rate: 1, pitch: 1, volume: 1 },
+    // The system default is the most portable option and begins synchronously
+    // inside the user's click. Pronunciation quality is secondary to audible
+    // playback; language/voice-specific attempts remain as fallbacks.
+    { label: "default-immediate", rate: 1, pitch: 1, volume: 1 },
+    { label: "lang-only", lang: "en-US", rate: 1, pitch: 1, volume: 1 },
+    enVoice ? { label: "enVoice+lang", voice: enVoice, lang: "en-US", rate: 1, pitch: 1, volume: 1 } : null,
   ].filter(Boolean);
 
   for (const attempt of attempts) {
