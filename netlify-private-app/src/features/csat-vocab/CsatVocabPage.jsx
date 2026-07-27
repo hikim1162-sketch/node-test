@@ -91,6 +91,24 @@ function PronounceableWord({ text, as: Tag = "h3" }) {
   );
 }
 
+function ExampleSpeaker({ text }) {
+  if (!String(text || "").trim()) return null;
+  return (
+    <button
+      className="csat-example-speaker"
+      type="button"
+      onClick={() => speakEnglishDebug(text, {
+        mode: document.body.dataset.audience === "middle" ? "middle-example" : "csat-example",
+      })}
+      aria-label="영어 예문 음성 듣기"
+      title="예문 듣기"
+    >
+      <span aria-hidden="true">🔊</span>
+      <span>예문 듣기</span>
+    </button>
+  );
+}
+
 export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
   const isMiddle = mode === "middle";
   const modeLabel = isMiddle ? "중등" : "수능";
@@ -380,7 +398,7 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
           {meaningVisible ? "뜻 숨기기" : "뜻 보기"}
         </button>
         {meaningVisible ? <p>{word.meaning_display}</p> : <p className="csat-meaning-covered">먼저 단어의 뜻을 떠올려 보세요.</p>}
-        {example.sentence ? <blockquote className="csat-quick-example"><span>EXAMPLE · {example.source}</span><b>{example.sentence}</b>{example.translation ? <button type="button" onClick={() => setExampleMeaningVisible((visible) => !visible)} aria-expanded={exampleMeaningVisible}>{exampleMeaningVisible ? "해석 숨기기" : "해석 보기"}</button> : null}{exampleMeaningVisible && example.translation ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : <p className="csat-example-empty">네이버 사전에 등록된 예문이 없습니다.</p>}
+        {example.sentence ? <blockquote className="csat-quick-example"><span>EXAMPLE · {example.source}</span><div className="csat-example-sentence"><b>{example.sentence}</b><ExampleSpeaker text={example.sentence} /></div>{example.translation ? <button type="button" onClick={() => setExampleMeaningVisible((visible) => !visible)} aria-expanded={exampleMeaningVisible}>{exampleMeaningVisible ? "해석 숨기기" : "해석 보기"}</button> : null}{exampleMeaningVisible && example.translation ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : <p className="csat-example-empty">네이버 사전에 등록된 예문이 없습니다.</p>}
         <div className="csat-rating-actions">
           <button type="button" onClick={() => rate("known")}>암기함</button>
           <button type="button" onClick={() => rate("confused")}>헷갈림</button>
@@ -612,7 +630,7 @@ function WordAnswerExample({ word }) {
   return (
     <section className="csat-answer-example">
       <span>EXAMPLE · {example.source}</span>
-      <b>{example.sentence}</b>
+      <div className="csat-example-sentence"><b>{example.sentence}</b><ExampleSpeaker text={example.sentence} /></div>
       {example.translation ? <p>{example.translation}</p> : null}
       <a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a>
     </section>
@@ -655,7 +673,7 @@ function SavedWordCard({ word, updateProgress, openMeanings, openExamples, toggl
       <header><div><span>{SERIES[word.series]?.label} · Day {word.day}</span><PronounceableWord text={word.word_display} /></div><button type="button" onClick={() => updateProgress((current) => ({ ...current, savedWords: current.savedWords.filter((id) => id !== word.id) }))}>저장 해제</button></header>
       <button type="button" className="meaning" onClick={() => toggleSet(setOpenMeanings, word.id)}>{openMeanings.has(word.id) ? word.meaning_display : "뜻 보기"}</button>
       {example.loading ? <blockquote><small>네이버 예문을 불러오는 중...</small></blockquote> : null}
-      {example.sentence ? <blockquote><small>{example.source}</small><b>{example.sentence}</b>{example.translation ? <button type="button" onClick={() => toggleSet(setOpenExamples, word.id)}>{openExamples.has(word.id) ? "해석 숨기기" : "해석 보기"}</button> : null}{openExamples.has(word.id) ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : null}
+      {example.sentence ? <blockquote><small>{example.source}</small><div className="csat-example-sentence"><b>{example.sentence}</b><ExampleSpeaker text={example.sentence} /></div>{example.translation ? <button type="button" onClick={() => toggleSet(setOpenExamples, word.id)}>{openExamples.has(word.id) ? "해석 숨기기" : "해석 보기"}</button> : null}{openExamples.has(word.id) ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : null}
       {!example.loading && !example.sentence ? <blockquote><small>등록된 네이버 예문이 없습니다.</small><a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 검색하기</a></blockquote> : null}
     </article>
   );

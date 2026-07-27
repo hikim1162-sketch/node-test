@@ -190,7 +190,10 @@
 .csat-save-word.saved{border-color:#83b6a8;background:#eaf6f1;color:#216b5d}
 .csat-quick-example{margin:17px 0 0;padding:15px 17px;border:1px solid #dce7e3;border-left:4px solid #4a8d7e;border-radius:10px;background:#f7faf9;text-align:left}
 .csat-quick-example>span{display:block;margin-bottom:7px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:1.2px}
-.csat-quick-example>b{display:block;font:600 20px/1.65 Georgia,serif}
+.csat-example-sentence{display:flex;align-items:flex-start;gap:12px}
+.csat-example-sentence>b{display:block;flex:1;min-width:0;font:600 20px/1.65 Georgia,serif}
+.csat-example-speaker{display:inline-flex;flex:0 0 auto;align-items:center;gap:5px;min-height:36px;margin:2px 0 0!important;padding:7px 9px!important;border:1px solid #bdd6cf!important;border-radius:9px!important;background:#edf7f4!important;color:#216b5d!important;font:700 10px/1 system-ui!important;cursor:pointer}
+.csat-example-speaker:hover,.csat-example-speaker:focus-visible{background:#dff1eb!important;outline:2px solid #8fc5b7;outline-offset:2px}
 .csat-quick-example>button{margin-top:9px;padding:6px 9px;border:1px solid #d4e2dd;border-radius:8px;background:#fff;color:#286d5b;font-size:9px;font-weight:700;cursor:pointer}
 .csat-quick-example>p{margin:9px 0 0;padding-top:9px;border-top:1px solid #e0e9e6;color:#667873;font-size:11px;line-height:1.6}
 .csat-quick-example>a,.csat-answer-example>a,.csat-saved-word-list blockquote>a{display:inline-block;margin-top:9px;color:#286d5b;font-size:9px;font-weight:800;text-decoration:none}
@@ -204,6 +207,7 @@
 .csat-saved-word-list blockquote{margin:12px 0 0;padding:13px 15px;border-left:3px solid #4a8d7e;background:#f7faf9}
 .csat-saved-word-list blockquote b{display:block;font:600 19px/1.65 Georgia,serif}.csat-saved-word-list blockquote p{margin:8px 0 0;color:#687974;font-size:10px}
 .csat-saved-word-list blockquote>small{display:block;margin-bottom:6px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:.8px}
+@media(max-width:480px){.csat-example-sentence{align-items:stretch;flex-direction:column;gap:8px}.csat-example-speaker{align-self:flex-start}}
 .csat-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:600px){.csat-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .csat-tabs{gap:7px;padding:7px;border-color:#cfdcda;background:#eef3f1}
