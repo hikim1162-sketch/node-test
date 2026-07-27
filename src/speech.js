@@ -6,6 +6,7 @@ const preferredUsVoiceNames = [
 ];
 
 const activeUtterances = new Set();
+let activeAudio = null;
 let cachedVoices = [];
 let initialVoiceCount = null;
 const diagnosticEvents = [];
@@ -191,14 +192,64 @@ function runSpeechAttempt(text, config, seq, mode, timeoutMs = 2500) {
   });
 }
 
+function runAudioAttempt(text, seq, mode, timeoutMs = 5000) {
+  return new Promise(resolve => {
+    const audio = new Audio(
+      `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en&q=${encodeURIComponent(text)}`,
+    );
+    const meta = { seq, mode, text, attempt: "network-audio" };
+    let settled = false;
+    let timer;
+    const finish = result => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(result);
+    };
+    audio.preload = "auto";
+    audio.onplaying = () => {
+      trace("audio-playing", meta);
+      finish({ ok: true, attempt: "network-audio" });
+    };
+    audio.onended = () => {
+      trace("audio-ended", meta);
+      if (activeAudio === audio) activeAudio = null;
+    };
+    audio.onerror = () => {
+      const error = audio.error?.message || `media-error-${audio.error?.code || "unknown"}`;
+      trace("audio-error", { ...meta, error });
+      if (activeAudio === audio) activeAudio = null;
+      finish({ ok: false, attempt: "network-audio", error });
+    };
+    activeAudio = audio;
+    trace("audio-before-play", meta);
+    const playPromise = audio.play();
+    trace("audio-after-play", meta);
+    playPromise?.catch(error => {
+      trace("audio-play-rejected", { ...meta, error: error?.name || error?.message || "play-rejected" });
+      if (activeAudio === audio) activeAudio = null;
+      finish({
+        ok: false,
+        attempt: "network-audio",
+        error: error?.name || error?.message || "play-rejected",
+      });
+    });
+    timer = setTimeout(() => {
+      trace("audio-timeout", meta);
+      if (activeAudio === audio) activeAudio = null;
+      finish({ ok: false, attempt: "network-audio", error: "timeout" });
+    }, timeoutMs);
+  });
+}
+
 export async function speakEnglishDebug(text, context = {}) {
   const value = String(text || "").trim();
   if (!value) {
     console.warn("[speech] skip empty text");
     return false;
   }
-  if (!canUseSpeech()) {
-    console.error("[speech] Web Speech API unavailable");
+  if (typeof window === "undefined" || typeof window.Audio !== "function") {
+    console.error("[speech] Audio playback unavailable");
     return false;
   }
 
@@ -215,6 +266,22 @@ export async function speakEnglishDebug(text, context = {}) {
     result: null,
   };
   diagnosticSubscribers.forEach(listener => listener());
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio = null;
+  }
+  const audioResult = await runAudioAttempt(value, seq, mode);
+  if (audioResult.ok) {
+    trace("speech-success", { seq, mode, text: value, ...audioResult });
+    return true;
+  }
+  trace("attempt-failed", { seq, mode, text: value, ...audioResult });
+  if (!canUseSpeech()) {
+    trace("speech-failed", { seq, mode, text: value, error: "web-speech-unavailable" });
+    return false;
+  }
+
   const synth = window.speechSynthesis;
   // Mobile browsers may only start speech while the original click gesture is
   // still active. Do not await voiceschanged (or any timer) before the first
