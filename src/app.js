@@ -1865,16 +1865,18 @@ function saveSpeakingSpeed(speed) {
 
 function speakText(text, repeat = 1) {
   if (!text || !("speechSynthesis" in window)) return;
-  // Preserve the original Silent-mode playback behavior exactly.
-  if (learningMode !== "speaking") {
-    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-    return;
-  }
   speechSynthesis.cancel();
+  const voices = speechSynthesis.getVoices();
+  const usVoices = voices.filter(voice => /^en[-_]US$/i.test(voice.lang));
+  const preferredVoice = usVoices.find(voice => /Aria|Jenny|Samantha|Google US English|Natural/i.test(voice.name))
+    || usVoices[0]
+    || voices.find(voice => /^en/i.test(voice.lang));
   for (let index = 0; index < repeat; index++) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "en-US";
-    utterance.rate = speakingSpeed;
+    utterance.rate = learningMode === "speaking" ? speakingSpeed : 0.9;
+    utterance.pitch = 1;
+    if (preferredVoice) utterance.voice = preferredVoice;
     speechSynthesis.speak(utterance);
   }
 }
@@ -4726,7 +4728,7 @@ function resetCurrentCsatBatchAttempt() {
 function legacySuneungHomePage() {
   const status = suneungState.completed ? "완료" : suneungState.submitted ? "진행 중" : "오늘 학습 전";
   const quick = [["suneung-passage","오늘의 지문","book-open"],["suneung-wordmaster","수능 단어장","book"],["suneung-types","유형별 훈련","clipboard"],["suneung-vocab","어휘 / 구문","book"],["suneung-parent","부모 점검","calendar"]];
-  return `${header("수능 영어")}<main class="suneung-page"><section class="suneung-home-hero"><div><span>TOP-TIER CSAT ENGLISH</span><h2>오늘도 1지문,<br>꾸준히 고득점 루틴</h2><p>실전 독해부터 정답 근거, 오답 원인까지 한 흐름으로 정리합니다.</p></div><div><article><b>${status}</b><span>오늘 상태</span></article><article><b>5일</b><span>연속 학습</span></article><article><b>5 / 7</b><span>주간 목표</span></article></div></section><section class="suneung-daily-card"><div><span>${suneungPassage.number} · TODAY'S PASSAGE</span><em>${suneungState.completed ? "완료" : "학습 대기"}</em></div><h2>${suneungPassage.topic}</h2><p>생산적인 어려움이 학습 효과를 높이는 이유</p><ul><li>${suneungPassage.type}</li><li>난이도 ${suneungPassage.difficulty}</li><li>약 ${suneungPassage.minutes}분</li><li>권장 ${suneungPassage.limit}</li></ul><button type="button" data-page="suneung-passage">${suneungState.completed ? "복습하기" : suneungState.selected !== null ? "이어서 학습" : "오늘 지문 시작하기"} ${icon("arrow",14)}</button></section><div class="suneung-home-grid"><section><header><div><span>WEAK POINTS</span><h3>최근 취약 유형 TOP 3</h3></div><button data-page="suneung-types">전체 유형</button></header>${[["빈칸 추론","58%","취약"],["문장 삽입","64%","복습 필요"],["순서 배열","71%","점검"]].map((item,index)=>`<article><i>${index+1}</i><b>${item[0]}</b><span>${item[1]}</span><em>${item[2]}</em></article>`).join("")}</section><section><header><div><span>TODAY'S VOCAB</span><h3>오늘의 핵심 단어</h3></div><button data-page="suneung-vocab">학습하기</button></header><div class="suneung-word-preview">${suneungPassage.vocab.slice(0,6).map(item=>`<b>${item.word}<small>${item.meaning}</small></b>`).join("")}</div></section></div><section class="suneung-performance"><article><span>최근 7일 학습</span><b>5일</b></article><article><span>평균 정답률</span><b>74%</b></article><article><span>복습 필요</span><b>6문제</b></article><article><span>가장 약한 유형</span><b>빈칸</b></article></section><nav class="suneung-quick-menu">${quick.map(item=>`<button data-page="${item[0]}">${icon(item[2],17)}<span>${item[1]}</span>${icon("chevron",13)}</button>`).join("")}</nav></main>`;
+  return `${header("수능 영어")}<main class="suneung-page"><section class="suneung-home-hero"><div><span>TOP-TIER CSAT ENGLISH</span><h2>오늘도 1지문,<br>꾸준히 고득점 루틴</h2><p>실전 독해부터 정답 근거, 오답 원인까지 한 흐름으로 정리합니다.</p></div><div><article><b>${status}</b><span>오늘 상태</span></article><article><b>5일</b><span>연속 학습</span></article><article><b>5 / 7</b><span>주간 목표</span></article></div></section><section class="suneung-daily-card"><div><span>${suneungPassage.number} · TODAY'S PASSAGE</span><em>${suneungState.completed ? "완료" : "학습 대기"}</em></div><h2>${suneungPassage.topic}</h2><p>생산적인 어려움이 학습 효과를 높이는 이유</p><ul><li>${suneungPassage.type}</li><li>난이도 ${suneungPassage.difficulty}</li><li>약 ${suneungPassage.minutes}분</li><li>권장 ${suneungPassage.limit}</li></ul><button type="button" data-page="suneung-passage">${suneungState.completed ? "복습하기" : suneungState.selected !== null ? "이어서 학습" : "오늘 지문 시작하기"} ${icon("arrow",14)}</button></section><div class="suneung-home-grid"><section><header><div><span>WEAK POINTS</span><h3>최근 취약 유형 TOP 3</h3></div><button data-page="suneung-types">전체 유형</button></header>${[["빈칸 추론","58%","취약"],["문장 삽입","64%","복습 필요"],["순서 배열","71%","점검"]].map((item,index)=>`<article><i>${index+1}</i><b>${item[0]}</b><span>${item[1]}</span><em>${item[2]}</em></article>`).join("")}</section><section><header><div><span>TODAY'S VOCAB</span><h3>오늘의 핵심 단어</h3></div><button data-page="suneung-vocab">학습하기</button></header><div class="suneung-word-preview">${suneungPassage.vocab.slice(0,6).map(item=>`<button type="button" data-speak="${escapeMarkup(item.word)}" aria-label="${escapeMarkup(item.word)} 미국 영어 발음 듣기"><b>${item.word}<small>${item.meaning}</small></b>${icon("volume",12)}</button>`).join("")}</div></section></div><section class="suneung-performance"><article><span>최근 7일 학습</span><b>5일</b></article><article><span>평균 정답률</span><b>74%</b></article><article><span>복습 필요</span><b>6문제</b></article><article><span>가장 약한 유형</span><b>빈칸</b></article></section><nav class="suneung-quick-menu">${quick.map(item=>`<button data-page="${item[0]}">${icon(item[2],17)}<span>${item[1]}</span>${icon("chevron",13)}</button>`).join("")}</nav></main>`;
 }
 
 function suneungSourceHomePage() {
@@ -4866,7 +4868,41 @@ function bindSuneungDictionaryTooltips() {
     word.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
+      speakText(word.dataset.dictionaryWord || word.textContent);
       showDictionaryTooltip(word);
+    });
+  });
+}
+
+function bindSuneungPronunciation() {
+  if (!isAcademicMode()) return;
+  const selectors = [
+    ".suneung-word-preview b",
+    ".suneung-vocab-grid h3",
+    ".suneung-expression-grid h3",
+    ".suneung-expression-grid blockquote",
+    ".suneung-syntax h3",
+    ".suneung-journal-word h3",
+    ".suneung-journal-word blockquote b",
+    ".suneung-journal-sentence blockquote",
+    ".suneung-study-side article b",
+    ".suneung-study-side article small",
+  ];
+  document.querySelectorAll(selectors.join(",")).forEach(element => {
+    const text = (element.childNodes[0]?.textContent || element.textContent || "").trim();
+    if (!/[A-Za-z]/.test(text)) return;
+    element.classList.add("suneung-pronounce-target");
+    element.tabIndex = 0;
+    element.setAttribute("role", "button");
+    element.setAttribute("aria-label", `${text} 미국 영어 발음 듣기`);
+    const pronounce = event => {
+      event.preventDefault();
+      event.stopPropagation();
+      speakText(text);
+    };
+    element.addEventListener("click", pronounce);
+    element.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") pronounce(event);
     });
   });
 }
@@ -5332,6 +5368,7 @@ function updateVocabClearCard(card) {
 
 function bindEvents(){
   bindSuneungDictionaryTooltips();
+  bindSuneungPronunciation();
   decorateEnglishSentences();
   document.querySelectorAll("[data-vocab-test-close]").forEach(button => button.addEventListener("click", () => {
     vocabMonthlyTestState.open = false;

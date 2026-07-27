@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
 import { loadProgress, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
+import { speakUsEnglish } from "./speech.js";
 import "./csat-vocab.css";
 
 const TABS = [
@@ -21,6 +22,8 @@ const bundledNaverExamples = {
   negative: ["The crisis had a negative effect on trade.", "그 위기가 무역에 부정적인 영향을 미쳤다."],
   follow: ["He followed her into the house.", "그는 그녀의 뒤를 따라 집 안으로 들어왔다."],
 };
+
+const phoneticCache = new Map();
 
 function getNaverWordExample(word) {
   const term = String(word?.word_display || "").trim().toLowerCase();
@@ -41,6 +44,37 @@ function getNaverWordExample(word) {
 
 function useNaverWordExample(word) {
   return { ...getNaverWordExample(word), loading: false };
+}
+
+function PronounceableWord({ text, as: Tag = "h3" }) {
+  const [phonetic, setPhonetic] = useState(() => phoneticCache.get(String(text).toLowerCase()) || "");
+
+  useEffect(() => {
+    const word = String(text || "").trim().toLowerCase();
+    setPhonetic(phoneticCache.get(word) || "");
+    if (!/^[a-z][a-z'-]*$/i.test(word) || phoneticCache.has(word)) return undefined;
+    const controller = new AbortController();
+    fetch(`/api/naver-dictionary?word=${encodeURIComponent(word)}`, { signal: controller.signal })
+      .then(response => response.ok ? response.json() : null)
+      .then(result => {
+        const value = result?.phonetic || "";
+        phoneticCache.set(word, value);
+        setPhonetic(value);
+      })
+      .catch(error => {
+        if (error.name !== "AbortError") phoneticCache.set(word, "");
+      });
+    return () => controller.abort();
+  }, [text]);
+
+  return (
+    <Tag className="csat-pronounceable-word">
+      <button type="button" onClick={() => speakUsEnglish(text)} aria-label={`${text} 미국 영어 발음 듣기`}>
+        <span>{text}</span><span className="csat-word-speaker" aria-hidden="true">🔊</span>
+      </button>
+      {phonetic ? <small className="csat-phonetic" aria-label="미국식 발음기호">/{phonetic}/</small> : null}
+    </Tag>
+  );
 }
 
 export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
@@ -325,7 +359,7 @@ function QuickStudy({ words, progress, updateProgress, startTest, onDayComplete 
       <div className="csat-progress-track"><i style={{ width: `${words.length ? (completed / words.length) * 100 : 0}%` }} /></div>
       <article className="csat-word-card">
         <div className="csat-word-card-top"><small>{index + 1} / {words.length}</small><button type="button" className={`csat-save-word ${saved ? "saved" : ""}`} onClick={toggleSaved} aria-pressed={saved}>{saved ? "✓ 저장됨" : "＋ 저장"}</button></div>
-        <h3>{word.word_display}</h3>
+        <PronounceableWord text={word.word_display} />
         {word.is_corrected ? <p className="csat-correction">원본 표기: {word.word_raw} · 교정 표시</p> : null}
         <button type="button" className="csat-meaning-toggle" onClick={() => setMeaningVisible((visible) => !visible)} aria-expanded={meaningVisible}>
           {meaningVisible ? "뜻 숨기기" : "뜻 보기"}
@@ -416,7 +450,7 @@ function MonthlyVocabularyTest({ test, setTest, progress, updateProgress, series
         <header><div><span>MONTHLY WORD TEST</span><h2 id="csat-monthly-test-title">수능 누적 단어 시험</h2></div><b>{test.index + 1} / {test.questions.length}</b></header>
         <div className="progress"><i style={{ width: `${((test.index + 1) / test.questions.length) * 100}%` }} /></div>
         <p className="range">{new Date().getMonth() + 1}월 1일–오늘 · 암기 완료 제외 · 오답 우선</p>
-        <article><small>{question.label}</small><h3>{question.prompt}</h3></article>
+        <article><small>{question.label}</small><PronounceableWord text={question.prompt} /></article>
         <div className="choices">{question.choices.map((choice, choiceIndex) => {
           const className = [
             test.selected === choiceIndex ? "selected" : "",
@@ -530,7 +564,7 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
     return (
       <section className="csat-workspace csat-result">
         <span>TEST COMPLETE</span><h2>{score} / {questions.length}</h2><p>총 {questions.length}문제 · 정답 {score}개 · 오답 {questions.length - score}개</p>
-        {wrongAnswers.length ? <section className="csat-result-wrong"><h3>틀린 단어</h3>{wrongAnswers.map((word) => <article key={word.id}><b>{word.word_display}</b><span>{word.meaning_display}</span></article>)}</section> : <p className="csat-perfect">모든 문제를 맞혔습니다.</p>}
+        {wrongAnswers.length ? <section className="csat-result-wrong"><h3>틀린 단어</h3>{wrongAnswers.map((word) => <article key={word.id}><PronounceableWord text={word.word_display} as="b" /><span>{word.meaning_display}</span></article>)}</section> : <p className="csat-perfect">모든 문제를 맞혔습니다.</p>}
         <div><button type="button" onClick={() => reset()}>다시 풀기</button><button type="button" className="primary" onClick={openReview}>오답 다시 보기</button></div>
       </section>
     );
@@ -541,7 +575,7 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
       <TestModeSwitch mode={mode} reset={reset} hasWrong={reviewWords.length > 0} />
       <div className="csat-question-meta"><span>{question.label}</span><b>{index + 1} / {questions.length}</b></div>
       <article className="csat-question">
-        <h2>{question.prompt}</h2>
+        <PronounceableWord text={question.prompt} as="h2" />
         <div>{question.choices.map((choice, choiceIndex) => {
           const isCorrectChoice = revealed?.correct && choiceIndex === question.answerIndex;
           const isWrongChoice = revealed && choiceIndex === revealed.selected && !revealed.correct;
@@ -603,7 +637,7 @@ function SavedWordCard({ word, updateProgress, openMeanings, openExamples, toggl
   const example = useNaverWordExample(word);
   return (
     <article>
-      <header><div><span>{SERIES[word.series]?.label} · Day {word.day}</span><h3>{word.word_display}</h3></div><button type="button" onClick={() => updateProgress((current) => ({ ...current, savedWords: current.savedWords.filter((id) => id !== word.id) }))}>저장 해제</button></header>
+      <header><div><span>{SERIES[word.series]?.label} · Day {word.day}</span><PronounceableWord text={word.word_display} /></div><button type="button" onClick={() => updateProgress((current) => ({ ...current, savedWords: current.savedWords.filter((id) => id !== word.id) }))}>저장 해제</button></header>
       <button type="button" className="meaning" onClick={() => toggleSet(setOpenMeanings, word.id)}>{openMeanings.has(word.id) ? word.meaning_display : "뜻 보기"}</button>
       {example.loading ? <blockquote><small>네이버 예문을 불러오는 중...</small></blockquote> : null}
       {example.sentence ? <blockquote><small>{example.source}</small><b>{example.sentence}</b>{example.translation ? <button type="button" onClick={() => toggleSet(setOpenExamples, word.id)}>{openExamples.has(word.id) ? "해석 숨기기" : "해석 보기"}</button> : null}{openExamples.has(word.id) ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : null}
@@ -651,7 +685,7 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, fo
     <section className="csat-workspace">
       <div className="csat-section-head"><div><span>WEAK WORDS</span><h2>오답과 헷갈린 단어</h2></div><b>{combined.length}개</b></div>
       <div className="csat-review-list">{combined.map((word) => (
-        <article className={`${progress.wrong[word.id]?.reviewedAt ? "reviewed" : ""} ${progress.wrong[word.id]?.resolvedAt ? "resolved" : ""}`} key={word.id}><div><span>{SERIES[word.series].label} · Day {word.day}</span><h3>{word.word_display}</h3><div className="csat-review-meaning"><p className={visibleMeanings.has(word.id) ? "" : "covered"}>{visibleMeanings.has(word.id) ? word.meaning_display : "뜻을 먼저 떠올려 보세요."}</p><button type="button" onClick={() => toggleMeaning(word.id)} aria-expanded={visibleMeanings.has(word.id)}>{visibleMeanings.has(word.id) ? "뜻 숨기기" : "뜻 보기"}</button></div></div><em>{progress.wrong[word.id]?.resolvedAt ? `해결됨 · 오답 ${progress.wrong[word.id].count}회` : progress.wrong[word.id] ? `오답 ${progress.wrong[word.id].count}회` : progress.statuses[word.id]?.status === "unknown" ? "모름" : "헷갈림"}</em><button type="button" aria-pressed={Boolean(progress.wrong[word.id]?.reviewedAt)} onClick={() => toggleReviewed(word)}>{progress.wrong[word.id]?.reviewedAt ? "복습 확인됨" : "복습 완료"}</button></article>
+        <article className={`${progress.wrong[word.id]?.reviewedAt ? "reviewed" : ""} ${progress.wrong[word.id]?.resolvedAt ? "resolved" : ""}`} key={word.id}><div><span>{SERIES[word.series].label} · Day {word.day}</span><PronounceableWord text={word.word_display} /><div className="csat-review-meaning"><p className={visibleMeanings.has(word.id) ? "" : "covered"}>{visibleMeanings.has(word.id) ? word.meaning_display : "뜻을 먼저 떠올려 보세요."}</p><button type="button" onClick={() => toggleMeaning(word.id)} aria-expanded={visibleMeanings.has(word.id)}>{visibleMeanings.has(word.id) ? "뜻 숨기기" : "뜻 보기"}</button></div></div><em>{progress.wrong[word.id]?.resolvedAt ? `해결됨 · 오답 ${progress.wrong[word.id].count}회` : progress.wrong[word.id] ? `오답 ${progress.wrong[word.id].count}회` : progress.statuses[word.id]?.status === "unknown" ? "모름" : "헷갈림"}</em><button type="button" aria-pressed={Boolean(progress.wrong[word.id]?.reviewedAt)} onClick={() => toggleReviewed(word)}>{progress.wrong[word.id]?.reviewedAt ? "복습 확인됨" : "복습 완료"}</button></article>
       ))}</div>
     </section>
   );
@@ -743,7 +777,7 @@ function CsatReviewCoach({ progress, updateProgress }) {
       {open ? <section>
         <header><div><small>REVIEW COACH</small><b>잠깐, 오답 한 문제 풀어볼까요?</b></div><button type="button" onClick={() => setOpen(false)} aria-label="오답 코치 닫기">×</button></header>
         <p>{question.label}</p>
-        <h3>{question.prompt}</h3>
+        <PronounceableWord text={question.prompt} />
         <div className="csat-coach-choices">{question.choices.map((choice, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => { setSelected(index); setFeedback(""); }} key={`${choice}-${index}`}>{index + 1}. {choice}</button>)}</div>
         {feedback ? <p className={selected === question.answerIndex ? "success" : "retry"} role="status">{feedback}</p> : null}
         <footer><button type="button" onClick={answer} disabled={selected === null}>확인</button>{feedback.startsWith("정답") ? <button type="button" onClick={nextQuestion}>다음 오답</button> : null}</footer>

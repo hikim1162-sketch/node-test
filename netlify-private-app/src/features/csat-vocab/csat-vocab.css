@@ -113,7 +113,7 @@
     padding: 28px 12px 18px;
   }
 
-  .csat-word-card h3 {
+.csat-word-card h3 {
     margin-top: 14px;
     font-size: clamp(36px, 11vw, 48px);
   }
@@ -129,6 +129,13 @@
     padding-inline: 4px;
   }
 }
+
+.csat-pronounceable-word{display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+.csat-pronounceable-word button{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:2px 6px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.csat-pronounceable-word button:hover,.csat-pronounceable-word button:focus-visible{color:#236b83;outline:2px solid #9bc6d4;outline-offset:4px;border-radius:8px}
+.csat-word-speaker{font:16px/1 system-ui;opacity:.68;transition:transform .15s,opacity .15s}
+.csat-pronounceable-word button:hover .csat-word-speaker{transform:scale(1.12);opacity:1}
+.csat-pronounceable-word .csat-phonetic{flex-basis:100%;margin-top:5px;color:#69818c;font:500 14px/1.4 "Segoe UI",Arial,sans-serif;letter-spacing:.02em;text-align:center}
 
 @media (max-width: 380px) {
   .csat-vocab-toolbar {
@@ -174,7 +181,7 @@
 .csat-instant-answer-guide{margin:14px 0 0;padding:11px;border-radius:9px;background:#f1f6f4;color:#647772;font-size:11px;text-align:center}
 .csat-answer-example{margin-top:12px;padding:15px 17px;border:1px solid #dce7e3;border-left:4px solid #4a8d7e;border-radius:10px;background:#f6faf8;text-align:left}
 .csat-answer-example>span{display:block;margin-bottom:7px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:1.2px}
-.csat-answer-example>b{display:block;color:#263b36;font:600 14px/1.65 Georgia,serif}
+.csat-answer-example>b{display:block;color:#263b36;font:600 20px/1.65 Georgia,serif}
 .csat-answer-example>p{margin:7px 0 0;color:#687974;font-size:11px;line-height:1.6}
 .csat-answer-example.empty>p{margin:0;color:#8b9794}
 .csat-word-card-top{display:flex;align-items:center;justify-content:space-between}
@@ -182,7 +189,7 @@
 .csat-save-word.saved{border-color:#83b6a8;background:#eaf6f1;color:#216b5d}
 .csat-quick-example{margin:17px 0 0;padding:15px 17px;border:1px solid #dce7e3;border-left:4px solid #4a8d7e;border-radius:10px;background:#f7faf9;text-align:left}
 .csat-quick-example>span{display:block;margin-bottom:7px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:1.2px}
-.csat-quick-example>b{display:block;font:600 14px/1.65 Georgia,serif}
+.csat-quick-example>b{display:block;font:600 20px/1.65 Georgia,serif}
 .csat-quick-example>button{margin-top:9px;padding:6px 9px;border:1px solid #d4e2dd;border-radius:8px;background:#fff;color:#286d5b;font-size:9px;font-weight:700;cursor:pointer}
 .csat-quick-example>p{margin:9px 0 0;padding-top:9px;border-top:1px solid #e0e9e6;color:#667873;font-size:11px;line-height:1.6}
 .csat-quick-example>a,.csat-answer-example>a,.csat-saved-word-list blockquote>a{display:inline-block;margin-top:9px;color:#286d5b;font-size:9px;font-weight:800;text-decoration:none}
@@ -194,7 +201,7 @@
 .csat-saved-word-list header button,.csat-saved-word-list .meaning,.csat-saved-word-list blockquote button{padding:7px 10px;border:1px solid #d6e2de;border-radius:8px;background:#f6f9f8;color:#286d5b;font-size:9px;cursor:pointer}
 .csat-saved-word-list .meaning{width:100%;margin-top:12px;text-align:left}
 .csat-saved-word-list blockquote{margin:12px 0 0;padding:13px 15px;border-left:3px solid #4a8d7e;background:#f7faf9}
-.csat-saved-word-list blockquote b{display:block;font:600 13px/1.65 Georgia,serif}.csat-saved-word-list blockquote p{margin:8px 0 0;color:#687974;font-size:10px}
+.csat-saved-word-list blockquote b{display:block;font:600 19px/1.65 Georgia,serif}.csat-saved-word-list blockquote p{margin:8px 0 0;color:#687974;font-size:10px}
 .csat-saved-word-list blockquote>small{display:block;margin-bottom:6px;color:#357a6b;font-size:8px;font-weight:800;letter-spacing:.8px}
 .csat-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:600px){.csat-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -84,6 +84,11 @@ export default async function handler(request) {
       ok: true,
       word,
       entry: first(entry.handleEntry, entry.expEntry) || word,
+      phonetic: first(
+        entry.searchPhoneticSymbolList?.find(item => item.symbolTypeCode === "US")?.symbolValue,
+        entry.searchPhoneticSymbolList?.[0]?.symbolValue,
+        entry.phoneticSymbol,
+      ),
       meanings,
       examples,
       source: "NAVER English Dictionary",

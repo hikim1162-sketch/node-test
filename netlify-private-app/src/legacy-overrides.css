@@ -1079,6 +1079,12 @@ html[data-theme="dark"] #app .news-daily-focus-grid > article { border-color: #3
   text-decoration-color: #315f91;
 }
 
+#app .suneung-pronounce-target{cursor:pointer}
+#app .suneung-pronounce-target::after{display:inline-block;margin-left:7px;content:"🔊";font:12px/1 system-ui;opacity:.62;transition:transform .15s,opacity .15s}
+#app .suneung-pronounce-target:hover::after,#app .suneung-pronounce-target:focus-visible::after{transform:scale(1.14);opacity:1}
+#app .suneung-pronounce-target:focus-visible{outline:2px solid #6aa895;outline-offset:4px;border-radius:5px}
+#app .suneung-word-preview>button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+
 .suneung-word-tooltip {
   position: fixed;
   z-index: 200;
