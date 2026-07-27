@@ -1,4 +1,5 @@
 import { getProfileItem, removeProfileItem, setProfileItem } from "../../profiles/profileStorage.js";
+import { getDayWords, getDays, SERIES } from "./vocabData.js";
 
 const STORAGE_KEY = "valuetime_csat_vocab_v1";
 const DAILY_DAY_STORAGE_KEY = "valuetime_csat_vocab_daily_day_v1";
@@ -8,19 +9,81 @@ export const EMPTY_PROGRESS = {
   wrong: {},
   tests: [],
   savedWords: [],
+  completedDays: {},
 };
+
+export function dayCompletionKey(seriesKey, day) {
+  return `${seriesKey}:${Number(day)}`;
+}
+
+function normalizeCompletedDays(value) {
+  if (Array.isArray(value)) {
+    return Object.fromEntries(value.map((item) => {
+      if (typeof item === "string") return [item, { completedAt: null, migrated: true }];
+      const key = dayCompletionKey(item?.series || item?.seriesKey, item?.day);
+      return [key, { ...item, series: item?.series || item?.seriesKey, day: Number(item?.day), migrated: true }];
+    }).filter(([key]) => !key.includes("undefined") && !key.endsWith(":NaN")));
+  }
+  return value && typeof value === "object" ? value : {};
+}
+
+export function deriveCompletedDays(statuses = {}) {
+  const completedDays = {};
+  Object.values(SERIES).forEach((series) => {
+    getDays(series.key).forEach((day) => {
+      const targetWords = getDayWords(series.key, day).slice(0, 10);
+      if (!targetWords.length || !targetWords.every((word) => statuses[word.id])) return;
+      completedDays[dayCompletionKey(series.key, day)] = {
+        series: series.key,
+        day: Number(day),
+        completedAt: targetWords
+          .map((word) => statuses[word.id]?.updatedAt || statuses[word.id]?.date)
+          .filter(Boolean)
+          .sort()
+          .at(-1) || null,
+        migrated: true,
+      };
+    });
+  });
+  return completedDays;
+}
+
+export function markDayComplete(progress, seriesKey, day) {
+  const key = dayCompletionKey(seriesKey, day);
+  if (progress.completedDays?.[key]) return progress;
+  return {
+    ...progress,
+    completedDays: {
+      ...(progress.completedDays || {}),
+      [key]: {
+        series: seriesKey,
+        day: Number(day),
+        completedAt: new Date().toISOString(),
+      },
+    },
+  };
+}
 
 export function loadProgress(mode = "suneung") {
   try {
-    const saved = JSON.parse(getProfileItem(mode, STORAGE_KEY));
-    return {
+    const raw = getProfileItem(mode, STORAGE_KEY);
+    const saved = JSON.parse(raw);
+    const statuses = saved?.statuses || {};
+    const storedCompletedDays = normalizeCompletedDays(saved?.completedDays);
+    const completedDays = { ...deriveCompletedDays(statuses), ...storedCompletedDays };
+    const progress = {
       statuses: saved?.statuses || {},
       wrong: saved?.wrong || {},
       tests: Array.isArray(saved?.tests) ? saved.tests : [],
       savedWords: Array.isArray(saved?.savedWords) ? saved.savedWords : [],
+      completedDays,
     };
+    if (raw && JSON.stringify(storedCompletedDays) !== JSON.stringify(completedDays)) {
+      setProfileItem(mode, STORAGE_KEY, JSON.stringify(progress));
+    }
+    return progress;
   } catch {
-    return EMPTY_PROGRESS;
+    return { ...EMPTY_PROGRESS, statuses: {}, wrong: {}, tests: [], savedWords: [], completedDays: {} };
   }
 }
 
@@ -32,7 +95,7 @@ export function saveProgress(progress, mode = "suneung") {
 export function resetLearningData(mode = "suneung") {
   removeProfileItem(mode, STORAGE_KEY);
   removeProfileItem(mode, DAILY_DAY_STORAGE_KEY);
-  const empty = { statuses: {}, wrong: {}, tests: [], savedWords: [] };
+  const empty = { statuses: {}, wrong: {}, tests: [], savedWords: [], completedDays: {} };
   queueMicrotask(() => window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: empty })));
   return empty;
 }

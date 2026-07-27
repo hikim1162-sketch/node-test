@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
-import { loadProgress, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
+import { dayCompletionKey, loadProgress, markDayComplete, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
 import { speakEnglishDebug } from "./speech.js";
 import "./csat-vocab.css";
@@ -268,11 +268,11 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
         ))}
       </nav>
 
-      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords.slice(0, 10)} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} />}
+      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords.slice(0, 10)} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} />}
       {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords.slice(0, 10)} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
       {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} />}
       {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} />}
-      {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} />}
+      {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} mode={mode} currentSeriesKey={seriesKey} currentDay={day} />}
       <DayPagination days={days} day={day} onChange={changeDay} />
       {resetConfirmOpen ? (
         <div className="csat-reset-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setResetConfirmOpen(false)}>
@@ -320,7 +320,7 @@ function DayPagination({ days, day, onChange }) {
   );
 }
 
-function QuickStudy({ words, progress, updateProgress, startTest, onDayComplete }) {
+function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest, onDayComplete }) {
   const [index, setIndex] = useState(0);
   const [meaningVisible, setMeaningVisible] = useState(false);
   const [exampleMeaningVisible, setExampleMeaningVisible] = useState(false);
@@ -338,7 +338,7 @@ function QuickStudy({ words, progress, updateProgress, startTest, onDayComplete 
   if (!word) return <EmptyState title="이 Day에는 표시할 단어가 없습니다." />;
 
   function rate(status) {
-    const nextProgress = {
+    let nextProgress = {
       ...progress,
       statuses: { ...progress.statuses, [word.id]: { status, date: todayKey(), updatedAt: new Date().toISOString() } },
       savedWords: status === "known" || progress.savedWords.includes(word.id)
@@ -346,6 +346,7 @@ function QuickStudy({ words, progress, updateProgress, startTest, onDayComplete 
         : [...progress.savedWords, word.id],
     };
     const completesDay = !progress.statuses[word.id] && completed + 1 >= words.length;
+    if (completesDay) nextProgress = markDayComplete(nextProgress, seriesKey, day);
     updateProgress(() => nextProgress);
     if (completesDay) onDayComplete(nextProgress);
     if (index < words.length - 1) {
@@ -705,18 +706,51 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, fo
   );
 }
 
-function ProgressPanel({ progress, seriesList = Object.values(SERIES) }) {
+function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "suneung", currentSeriesKey, currentDay }) {
   const today = todayKey();
   const learnedToday = Object.values(progress.statuses).filter((item) => item.date === today || item.updatedAt?.startsWith(today)).length;
   const testsToday = progress.tests.filter((test) => test.date === today);
   const latest = testsToday.at(-1);
+  const seriesProgress = seriesList.map((series) => {
+    const days = getDays(series.key);
+    const completedDays = days.filter((day) => progress.completedDays?.[dayCompletionKey(series.key, day)]).length;
+    return {
+      series,
+      completedDays,
+      totalDays: days.length,
+      percent: days.length ? Math.round((completedDays / days.length) * 100) : 0,
+    };
+  });
+  const completedDayCount = seriesProgress.reduce((sum, item) => sum + item.completedDays, 0);
+  const totalDayCount = seriesProgress.reduce((sum, item) => sum + item.totalDays, 0);
+  const overallPercent = totalDayCount ? Math.round((completedDayCount / totalDayCount) * 100) : 0;
+
+  useEffect(() => {
+    console.debug("[csat-progress]", {
+      mode,
+      currentSeriesKey,
+      currentDay,
+      currentDayKey: dayCompletionKey(currentSeriesKey, currentDay),
+      storageKey: "valuetime_csat_vocab_v1",
+      completedDaysRaw: progress.completedDays || {},
+      completedDayCount,
+      totalDayCount,
+      overallPercent,
+      series: seriesProgress.map((item) => ({
+        series: item.series.key,
+        completedDays: item.completedDays,
+        totalDays: item.totalDays,
+        percent: item.percent,
+      })),
+    });
+  }, [mode, currentSeriesKey, currentDay, progress.completedDays, completedDayCount, totalDayCount, overallPercent]);
 
   return (
     <section className="csat-workspace">
       <div className="csat-section-head"><div><span>MY PROGRESS</span><h2>오늘의 훈련 기록</h2></div></div>
       <div className="csat-stats"><article><span>오늘 학습</span><b>{learnedToday}</b><small>단어</small></article><article><span>최근 점수</span><b>{latest ? `${latest.score}/${latest.total}` : "-"}</b><small>오늘 테스트</small></article><article><span>오답</span><b>{Object.values(progress.wrong).filter((history) => !history.resolvedAt).length}</b><small>복습 대기</small></article></div>
-      <h3 className="csat-progress-title">시리즈별 진행률</h3>
-      <div className="csat-series-progress">{seriesList.map((series) => { const learned = series.words.filter((word) => progress.statuses[word.id]).length; const percent = Math.round((learned / series.words.length) * 100); return <article key={series.key}><div><b>{series.label}</b><span>{learned} / {series.words.length}</span></div><i><b style={{ width: `${percent}%` }} /></i><small>{percent}%</small></article>; })}</div>
+      <h3 className="csat-progress-title">전체 Day 진행률 · {completedDayCount} / {totalDayCount} Day · {overallPercent}%</h3>
+      <div className="csat-series-progress">{seriesProgress.map(({ series, completedDays, totalDays, percent }) => <article key={series.key}><div><b>{series.label}</b><span>{completedDays} / {totalDays} Day</span></div><i><b style={{ width: `${percent}%` }} /></i><small>{percent}%</small></article>)}</div>
       <h3 className="csat-progress-title">최근 테스트</h3>
       {progress.tests.length ? <ul className="csat-history">{[...progress.tests].reverse().slice(0, 8).map((test, index) => <li key={`${test.date}-${index}`}><span>{test.date}</span><b>{SERIES[test.series]?.label || test.series} · Day {test.day}</b><em>{test.score} / {test.total}</em></li>)}</ul> : <EmptyState title="아직 테스트 기록이 없습니다." />}
     </section>
