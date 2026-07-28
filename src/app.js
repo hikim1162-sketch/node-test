@@ -1988,6 +1988,12 @@ async function syncGeneralProgress() {
     setGeneralProgressSyncStatus(message === "storage_not_configured" ? "서버 저장소 연결 필요" : "동기화 실패");
     throw new Error(message);
   }
+  const validRecords = payload.records
+    && Object.keys(generalProgressFields).every((field) => payload.records[field] && typeof payload.records[field] === "object");
+  if (!validRecords) {
+    setGeneralProgressSyncStatus("동기화 실패");
+    throw new Error("invalid_general_progress_response");
+  }
   applyGeneralCloudRecords(payload.records);
   setGeneralProgressSyncStatus("동기화 완료");
 }
