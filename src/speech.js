@@ -457,8 +457,7 @@ if (typeof window !== "undefined") {
 }
 
 function installSpeechDiagnosticPanel() {
-  const enabled = import.meta.env.DEV
-    || new URLSearchParams(window.location.search).has("speech-diagnostics");
+  const enabled = new URLSearchParams(window.location.search).get("speech-diagnostics") === "1";
   if (typeof document === "undefined"
     || !enabled
     || document.querySelector("[data-speech-diagnostic-panel]")) return;
