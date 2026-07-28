@@ -61,6 +61,37 @@ function normalizeSummary(body, identity) {
   };
 }
 
+function mergeSummaries(current, incoming) {
+  if (!current) return incoming;
+  const seriesKeys = new Set([
+    ...Object.keys(current.series || {}),
+    ...Object.keys(incoming.series || {}),
+  ]);
+  const series = Object.fromEntries([...seriesKeys].map((key) => {
+    const previous = current.series?.[key];
+    const next = incoming.series?.[key];
+    const total = Math.max(Number(previous?.total) || 0, Number(next?.total) || 0);
+    const mastered = Math.min(total, Math.max(Number(previous?.mastered) || 0, Number(next?.mastered) || 0));
+    return [key, {
+      mastered,
+      total,
+      percent: total ? Math.round((mastered / total) * 1000) / 10 : 0,
+    }];
+  }));
+  const mastered = Object.values(series).reduce((sum, item) => sum + item.mastered, 0);
+  const total = Object.values(series).reduce((sum, item) => sum + item.total, 0);
+  return {
+    ...incoming,
+    series,
+    overall: {
+      mastered,
+      total,
+      percent: total ? Math.round((mastered / total) * 1000) / 10 : 0,
+    },
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 export default async function handler(request, response) {
   response.setHeader("Cache-Control", "private, no-store");
   const identity = validIdentity(request);
@@ -73,7 +104,10 @@ export default async function handler(request, response) {
       return response.status(200).json({ summary: raw ? JSON.parse(raw) : null });
     }
     if (request.method === "PUT") {
-      const summary = normalizeSummary(request.body, identity);
+      const incoming = normalizeSummary(request.body, identity);
+      const existingRaw = await redis(["GET", key]);
+      const existing = existingRaw ? JSON.parse(existingRaw) : null;
+      const summary = mergeSummaries(existing, incoming);
       await redis(["SET", key, JSON.stringify(summary)]);
       return response.status(200).json({ summary });
     }

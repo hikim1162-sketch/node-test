@@ -4,7 +4,7 @@ import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./voc
 import { dayCompletionKey, loadProgress, markDayComplete, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
 import { speakEnglishDebug } from "./speech.js";
-import { createProgressSummary, loadCloudProgress, queueCloudProgressSave, saveCloudProgress } from "./cloudProgress.js";
+import { createProgressSummary, queueCloudProgressSave, saveCloudProgress } from "./cloudProgress.js";
 import "./csat-vocab.css";
 
 const TABS = [
@@ -147,8 +147,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
   useEffect(() => {
     let active = true;
     setCloudProgress({ status: "loading", summary: null, error: null });
-    loadCloudProgress(mode)
-      .then((summary) => summary || saveCloudProgress(progress, mode))
+    saveCloudProgress(progress, mode)
       .then((summary) => {
         if (active) setCloudProgress({ status: "ready", summary, error: null });
       })
@@ -776,9 +775,8 @@ function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "s
   const testsToday = progress.tests.filter((test) => test.date === today);
   const latest = testsToday.at(-1);
   const localSummary = createProgressSummary(progress, mode);
-  const remoteIsNewer = cloudProgress?.summary?.updatedAt
-    && (!progress.updatedAt || cloudProgress.summary.updatedAt > progress.updatedAt);
-  const displayedSummary = remoteIsNewer ? cloudProgress.summary : localSummary;
+  const hasCloudSummary = cloudProgress?.status === "ready" && Boolean(cloudProgress.summary);
+  const displayedSummary = hasCloudSummary ? cloudProgress.summary : localSummary;
   const seriesProgress = seriesList.map((series) => {
     const remoteSeries = displayedSummary.series?.[series.key];
     const masteredCount = series.words.filter((word) => masteredWords[word.id]).length;
@@ -817,7 +815,7 @@ function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "s
       <div className="csat-section-head"><div><span>MY PROGRESS</span><h2>오늘의 훈련 기록</h2></div></div>
       <section className={`csat-cloud-progress ${cloudProgress?.status || "loading"}`}>
         <div>
-          <b>{remoteIsNewer ? "가족 공유 진도" : "이 기기 진도"}</b>
+          <b>{hasCloudSummary ? "가족 공유 진도" : "이 기기 진도"}</b>
           <span>{cloudProgress?.status === "ready" ? `자동 동기화됨${cloudProgress.summary?.updatedAt ? ` · ${new Date(cloudProgress.summary.updatedAt).toLocaleString("ko-KR")}` : ""}` : cloudProgress?.status === "not-configured" ? "서버 저장소 연결이 필요합니다." : cloudProgress?.status === "error" ? "서버 연결 실패 · 로컬 진도는 안전하게 유지됩니다." : "동기화 확인 중..."}</span>
         </div>
       </section>
