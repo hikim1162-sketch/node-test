@@ -229,5 +229,7 @@
 .csat-question-next:hover,.csat-question-next:focus-visible{background:#214765;outline:2px solid #9ebdcb;outline-offset:2px}
 @media(max-width:480px){.csat-question-meta>div{gap:8px}.csat-question-next{min-height:40px;padding:0 13px;font-size:10px}}
 .csat-review-list .csat-pronounceable-word{margin:7px 0 4px;font:700 clamp(32px,5vw,42px)/1.15 Georgia,serif}
+.csat-review-list .csat-word-link{font:700 clamp(32px,5vw,42px)/1.15 Georgia,serif}
 .csat-review-coach .csat-pronounceable-word{margin:4px 0 14px;font:700 clamp(34px,7vw,44px)/1.15 Georgia,serif}
-@media(max-width:600px){.csat-review-list .csat-pronounceable-word{font-size:34px}.csat-review-coach .csat-pronounceable-word{font-size:38px}}
+.csat-review-coach .csat-word-link{font:700 clamp(34px,7vw,44px)/1.15 Georgia,serif}
+@media(max-width:600px){.csat-review-list .csat-pronounceable-word,.csat-review-list .csat-word-link{font-size:34px}.csat-review-coach .csat-pronounceable-word,.csat-review-coach .csat-word-link{font-size:38px}}
