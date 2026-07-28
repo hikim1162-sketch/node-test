@@ -233,3 +233,6 @@
 .csat-review-coach .csat-pronounceable-word{margin:4px 0 14px;font:700 clamp(34px,7vw,44px)/1.15 Georgia,serif}
 .csat-review-coach .csat-word-link{font:700 clamp(34px,7vw,44px)/1.15 Georgia,serif}
 @media(max-width:600px){.csat-review-list .csat-pronounceable-word,.csat-review-list .csat-word-link{font-size:34px}.csat-review-coach .csat-pronounceable-word,.csat-review-coach .csat-word-link{font-size:38px}}
+.csat-coach-choices button.correct{border-color:#4e9b76;background:#e8f6ef;color:#176553;font-weight:900}
+.csat-coach-choices button.wrong{border-color:#d4837d;background:#fff0ef;color:#9a413e;font-weight:900}
+.csat-coach-choices button:disabled{cursor:default;opacity:1}

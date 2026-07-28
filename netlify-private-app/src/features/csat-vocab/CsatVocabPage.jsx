@@ -844,10 +844,10 @@ function CsatReviewCoach({ progress, updateProgress }) {
     .filter((item) => item.word)
     .sort((a, b) => new Date(b.history.lastWrongAt || 0) - new Date(a.history.lastWrongAt || 0));
   const [open, setOpen] = useState(false);
-  const [queueIndex, setQueueIndex] = useState(0);
+  const [currentWordId, setCurrentWordId] = useState(null);
   const [selected, setSelected] = useState(null);
   const [feedback, setFeedback] = useState("");
-  const current = wrongEntries[queueIndex % Math.max(1, wrongEntries.length)];
+  const current = wrongEntries.find((item) => item.word.id === currentWordId) || wrongEntries[0];
   const question = useMemo(() => current ? buildQuestions([current.word], SERIES[current.word.series].words)[0] : null, [current?.word.id]);
 
   useEffect(() => {
@@ -856,11 +856,16 @@ function CsatReviewCoach({ progress, updateProgress }) {
     return () => window.clearInterval(timer);
   }, [wrongEntries.length]);
 
-  function answer() {
-    if (selected === null || !question) return;
-    const correct = selected === question.answerIndex;
+  useEffect(() => {
+    if (current?.word.id && current.word.id !== currentWordId) setCurrentWordId(current.word.id);
+  }, [current?.word.id, currentWordId]);
+
+  function answer(choiceIndex) {
+    if (feedback || !question) return;
+    setSelected(choiceIndex);
+    const correct = choiceIndex === question.answerIndex;
     if (!correct) {
-      setFeedback("아직 아니에요. 다시 풀어보세요.");
+      setFeedback("오답입니다. 다시 풀어보세요.");
       updateProgress((currentProgress) => ({
         ...currentProgress,
         wrong: {
@@ -872,11 +877,10 @@ function CsatReviewCoach({ progress, updateProgress }) {
           },
         },
       }));
-      setSelected(null);
       return;
     }
 
-    setFeedback("정답이에요. 오답 이력은 다음 반복 학습을 위해 보관할게요.");
+    setFeedback("정답입니다.");
     updateProgress((currentProgress) => ({
       ...currentProgress,
       wrong: {
@@ -891,7 +895,14 @@ function CsatReviewCoach({ progress, updateProgress }) {
   }
 
   function nextQuestion() {
-    setQueueIndex((index) => (index + 1) % wrongEntries.length);
+    const currentIndex = wrongEntries.findIndex((item) => item.word.id === current?.word.id);
+    const next = wrongEntries[(Math.max(0, currentIndex) + 1) % wrongEntries.length];
+    setCurrentWordId(next?.word.id || null);
+    setSelected(null);
+    setFeedback("");
+  }
+
+  function retryQuestion() {
     setSelected(null);
     setFeedback("");
   }
@@ -907,9 +918,14 @@ function CsatReviewCoach({ progress, updateProgress }) {
         <header><div><small>REVIEW COACH</small><b>잠깐, 오답 한 문제 풀어볼까요?</b></div><button type="button" onClick={() => setOpen(false)} aria-label="오답 코치 닫기">×</button></header>
         <p>{question.label}</p>
         <PronounceableWord text={question.prompt} />
-        <div className="csat-coach-choices">{question.choices.map((choice, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => { setSelected(index); setFeedback(""); }} key={`${choice}-${index}`}>{index + 1}. {choice}</button>)}</div>
-        {feedback ? <p className={selected === question.answerIndex ? "success" : "retry"} role="status">{feedback}</p> : null}
-        <footer><button type="button" onClick={answer} disabled={selected === null}>확인</button>{feedback.startsWith("정답") ? <button type="button" onClick={nextQuestion}>다음 오답</button> : null}</footer>
+        <div className="csat-coach-choices">{question.choices.map((choice, index) => {
+          const correct = Boolean(feedback) && index === question.answerIndex;
+          const wrong = feedback.startsWith("오답") && selected === index;
+          const className = [selected === index ? "selected" : "", correct ? "correct" : "", wrong ? "wrong" : ""].filter(Boolean).join(" ");
+          return <button type="button" className={className} onClick={() => answer(index)} disabled={Boolean(feedback)} key={`${choice}-${index}`}>{index + 1}. {choice}</button>;
+        })}</div>
+        {feedback ? <p className={feedback.startsWith("정답") ? "success" : "retry"} role="status">{feedback}</p> : null}
+        {feedback ? <footer>{feedback.startsWith("정답") ? <button type="button" onClick={nextQuestion}>다음 문제</button> : <button type="button" onClick={retryQuestion}>다시 풀기</button>}</footer> : null}
       </section> : null}
     </aside>
   );
