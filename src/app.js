@@ -1910,6 +1910,81 @@ let state = {
   wordIndex: 0, vocabPage: Number(profileStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(profileStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, newsLibraryOpen: false, translatedSentence: null,
   newsSearch: "", newsCategory: "all", newsSort: "latest", tedLessonId: null, tedSentenceIndex: 0, tedMeaningOpen: false,
 };
+const GENERAL_PROGRESS_META_KEY = "value_time_general_progress_sync_v1";
+const generalProgressFields = {
+  savedWords: "worthy_life_words",
+  knownWords: "value_time_known_words_v1",
+  clearedWordSentences: "value_time_cleared_word_sentences_v1",
+  masteredSavedWords: "value_time_mastered_saved_words_v1",
+};
+let generalProgressSyncTimer = null;
+let generalProgressRecords = (() => {
+  try { return JSON.parse(profileStorage.getItem(GENERAL_PROGRESS_META_KEY) || "{}") || {}; }
+  catch { return {}; }
+})();
+
+Object.keys(generalProgressFields).forEach((field) => {
+  generalProgressRecords[field] = generalProgressRecords[field] || {};
+  state[field].forEach((word) => {
+    if (!generalProgressRecords[field][word]) {
+      generalProgressRecords[field][word] = { value: true, updatedAt: 1 };
+    }
+  });
+});
+
+function persistGeneralProgressRecords() {
+  profileStorage.setItem(GENERAL_PROGRESS_META_KEY, JSON.stringify(generalProgressRecords));
+}
+
+function recordGeneralProgressChange(field, word, value) {
+  if (!generalProgressFields[field] || !word) return;
+  generalProgressRecords[field] = generalProgressRecords[field] || {};
+  generalProgressRecords[field][word] = { value: Boolean(value), updatedAt: Date.now() };
+  persistGeneralProgressRecords();
+  queueGeneralProgressSync();
+}
+
+function generalProgressEndpoint() {
+  return import.meta.env.DEV
+    ? "https://vt-1114.vercel.app/api/general-progress"
+    : "/api/general-progress";
+}
+
+function applyGeneralCloudRecords(records) {
+  let changed = false;
+  Object.keys(generalProgressFields).forEach((field) => {
+    generalProgressRecords[field] = records?.[field] || {};
+    const next = Object.entries(generalProgressRecords[field])
+      .filter(([, entry]) => entry?.value)
+      .map(([word]) => word);
+    if (JSON.stringify(next.slice().sort()) !== JSON.stringify(state[field].slice().sort())) changed = true;
+    state[field] = next;
+    profileStorage.setItem(generalProgressFields[field], JSON.stringify(next));
+  });
+  persistGeneralProgressRecords();
+  if (changed) render();
+}
+
+async function syncGeneralProgress() {
+  if (audienceMode !== "general") return;
+  const user = getCurrentUser("normal");
+  if (user !== "kai" && user !== "rachel") return;
+  const response = await fetch(generalProgressEndpoint(), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user, records: generalProgressRecords }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || `general_progress_${response.status}`);
+  applyGeneralCloudRecords(payload.records);
+}
+
+function queueGeneralProgressSync() {
+  window.clearTimeout(generalProgressSyncTimer);
+  generalProgressSyncTimer = window.setTimeout(() => {
+    syncGeneralProgress().catch((error) => console.error("[general-progress] sync failed", error));
+  }, 500);
+}
 let vocabMonthlyTestState = { open: false, questions: [], index: 0, answers: [], submitted: false };
 
 function openMonthlyVocabularyTest() {
@@ -6176,7 +6251,13 @@ function bindEvents(){
     const article = articleLibrary[state.newsIndex] || articleLibrary[0];
     copyArticleText(article.title,"제목이 복사되었습니다.");
   });
-  document.querySelectorAll("[data-save]").forEach(el=>el.addEventListener("click",e=>{const w=e.currentTarget.dataset.save;state.savedWords=state.savedWords.includes(w)?state.savedWords.filter(x=>x!==w):[...state.savedWords,w];profileStorage.setItem("worthy_life_words",JSON.stringify(state.savedWords));render();}));
+  document.querySelectorAll("[data-save]").forEach(el=>el.addEventListener("click",e=>{
+    const w=e.currentTarget.dataset.save;
+    state.savedWords=state.savedWords.includes(w)?state.savedWords.filter(x=>x!==w):[...state.savedWords,w];
+    profileStorage.setItem("worthy_life_words",JSON.stringify(state.savedWords));
+    recordGeneralProgressChange("savedWords", w, state.savedWords.includes(w));
+    render();
+  }));
   document.querySelectorAll("[data-master-saved-word]").forEach(button => button.addEventListener("click", event => {
     const word = event.currentTarget.dataset.masterSavedWord;
     const mastered = state.masteredSavedWords.includes(word);
@@ -6184,6 +6265,7 @@ function bindEvents(){
       ? state.masteredSavedWords.filter(item => item !== word)
       : [...state.masteredSavedWords, word];
     profileStorage.setItem("value_time_mastered_saved_words_v1", JSON.stringify(state.masteredSavedWords));
+    recordGeneralProgressChange("masteredSavedWords", word, !mastered);
     render();
   }));
   document.querySelectorAll("[data-known-word]").forEach(button => button.addEventListener("click", event => {
@@ -6191,6 +6273,7 @@ function bindEvents(){
     const known = state.knownWords.includes(word);
     state.knownWords = known ? state.knownWords.filter(item => item !== word) : [...state.knownWords, word];
     profileStorage.setItem("value_time_known_words_v1", JSON.stringify(state.knownWords));
+    recordGeneralProgressChange("knownWords", word, !known);
 
     const card = event.currentTarget.closest(".vocab-today-item");
     card?.classList.toggle("known", !known);
@@ -6206,6 +6289,7 @@ function bindEvents(){
       ? state.clearedWordSentences.filter(item => item !== word)
       : [...state.clearedWordSentences, word];
     profileStorage.setItem("value_time_cleared_word_sentences_v1", JSON.stringify(state.clearedWordSentences));
+    recordGeneralProgressChange("clearedWordSentences", word, !cleared);
 
     const card = event.currentTarget.closest(".vocab-today-item");
     card?.classList.toggle("sentence-cleared", !cleared);
@@ -6851,5 +6935,8 @@ if (initialNavigation?.worthyLife) {
 }
 
 render();
+if (audienceMode === "general") {
+  syncGeneralProgress().catch((error) => console.error("[general-progress] initial sync failed", error));
+}
 refreshDailyNewsLibrary();
 
