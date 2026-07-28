@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "cd netlify-private-app && npm ci",
   "buildCommand": "cd netlify-private-app && npm run build",
-  "ignoreCommand": "node -e \"process.exit(process.env.VERCEL_GIT_COMMIT_REF === 'progress-data' ? 0 : 1)\"",
   "outputDirectory": "netlify-private-app/dist",
   "routes": [
     { "handle": "filesystem" },
