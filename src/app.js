@@ -1902,6 +1902,7 @@ let state = {
   savedWords: JSON.parse(profileStorage.getItem("worthy_life_words") || "[]"),
   knownWords: JSON.parse(profileStorage.getItem("value_time_known_words_v1") || "[]"),
   clearedWordSentences: JSON.parse(profileStorage.getItem("value_time_cleared_word_sentences_v1") || "[]"),
+  masteredSavedWords: JSON.parse(profileStorage.getItem("value_time_mastered_saved_words_v1") || "[]"),
   savedSentences: JSON.parse(profileStorage.getItem("value_time_saved_sentences_v1") || "[]"),
   savedBlogItems: JSON.parse(profileStorage.getItem("value_time_saved_blog_items_v1") || "[]"),
   understoodSentences: JSON.parse(profileStorage.getItem("value_time_understood_sentences_v1") || "[]"),
@@ -2724,7 +2725,10 @@ function vocabularyPage() {
   state.vocabPage = Math.min(Math.max(state.vocabPage, 0), vocabPageCount - 1);
   const todayWords = orderedWords.slice(state.vocabPage * vocabPageSize, (state.vocabPage + 1) * vocabPageSize);
   const todayAllClearCount = todayWords.filter(word => state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word)).length;
-  const masteredWordCount = words.filter(word => state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word)).length;
+  const masteredWordCount = words.filter(word => (
+    (state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word))
+    || state.masteredSavedWords.includes(word.word)
+  )).length;
   const vocabularyProgressPercent = words.length ? Math.round((masteredWordCount / words.length) * 1000) / 10 : 0;
   const isDone = Boolean(homeStudyState.checked.words);
   const vocabMeta = syncHomeAppState().items.vocab || {};
@@ -2738,7 +2742,7 @@ function vocabularyPage() {
 
   return `${header("단어장")}<main class="vocab-dashboard-page">
     <section class="vocab-mastery-progress" aria-label="일반 단어장 전체 암기 진도">
-      <div><span>VOCABULARY MASTERY</span><h2>전체 암기 진도율</h2><p>Word Clear와 Sentence Clear를 모두 완료한 단어를 기준으로 계산합니다.</p></div>
+      <div><span>VOCABULARY MASTERY</span><h2>전체 암기 진도율</h2><p>ALL CLEAR 단어와 나만의 학습장에서 ‘암기함’으로 표시한 단어를 합산합니다.</p></div>
       <div><strong data-vocab-progress-percent>${vocabularyProgressPercent}%</strong><small><b data-vocab-progress-count>${masteredWordCount}</b> / ${words.length} 단어</small></div>
       <i role="progressbar" aria-label="전체 암기 진도율" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${vocabularyProgressPercent}"><b data-vocab-progress-fill style="width:${vocabularyProgressPercent}%"></b></i>
     </section>
@@ -4202,7 +4206,8 @@ function journalPage() {
   const savedSentenceEntries = getSavedSentenceEntries();
   const renderSavedWord = word => {
     const example = vocabNaturalExample(word, 0);
-    return `<article class="journal-review-card word-review"><div><h3>${word.word}</h3><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",15)}</button><button class="save saved" type="button" data-save="${word.word}" aria-pressed="true" title="저장 해제" aria-label="${word.word} 저장 해제">${icon("bookmark",16)}</button></div><span>${vocabPhonetic(word)}</span><strong>${example.meaning}</strong><p>${word.definition || "저장한 단어를 다시 확인하세요."}</p><blockquote><b>${example.en}</b><small>${example.ko}</small></blockquote></article>`;
+    const mastered = state.masteredSavedWords.includes(word.word);
+    return `<article class="journal-review-card word-review ${mastered ? "mastered" : ""}"><div><h3>${word.word}</h3><button type="button" data-speak="${word.word}" aria-label="${word.word} 발음 듣기">${icon("volume",15)}</button><button class="journal-word-mastered ${mastered ? "active" : ""}" type="button" data-master-saved-word="${word.word}" aria-pressed="${mastered}" aria-label="${word.word} 암기함 ${mastered ? "해제" : "표시"}">${icon("check",14)} 암기함</button><button class="save saved" type="button" data-save="${word.word}" aria-pressed="true" title="저장 해제" aria-label="${word.word} 저장 해제">${icon("bookmark",16)}</button></div><span>${vocabPhonetic(word)}</span><strong>${example.meaning}</strong><p>${word.definition || "저장한 단어를 다시 확인하세요."}</p><blockquote><b>${example.en}</b><small>${example.ko}</small></blockquote></article>`;
   };
   const renderSavedSentence = lesson => `<article class="journal-review-card sentence-review"><div><h3>문장 ${lesson.index + 1}</h3><button type="button" data-speak="${lesson.en.replaceAll('"', '&quot;')}" aria-label="저장 문장 듣기">${icon("volume",15)}</button><button class="sentence-save-toggle active" type="button" data-save-sentence="${lesson.id}" aria-pressed="true" title="문장 저장 해제" aria-label="문장 저장 취소">${icon("bookmark",16)}</button></div><b>${lesson.en}</b><p>${lesson.ko}</p><small>${lesson.pattern || lesson.meaning || "저장한 문장을 다시 소리 내어 읽어보세요."}</small></article>`;
 
@@ -5357,7 +5362,10 @@ function updateVocabClearCard(card) {
   const count = document.querySelectorAll(".vocab-today-item.all-clear").length;
   const countLabel = document.querySelector("[data-vocab-clear-count]");
   if (countLabel) countLabel.textContent = String(count);
-  const masteredWordCount = words.filter(word => state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word)).length;
+  const masteredWordCount = words.filter(word => (
+    (state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word))
+    || state.masteredSavedWords.includes(word.word)
+  )).length;
   const progressPercent = words.length ? Math.round((masteredWordCount / words.length) * 1000) / 10 : 0;
   const progressCount = document.querySelector("[data-vocab-progress-count]");
   const progressLabel = document.querySelector("[data-vocab-progress-percent]");
@@ -6169,6 +6177,15 @@ function bindEvents(){
     copyArticleText(article.title,"제목이 복사되었습니다.");
   });
   document.querySelectorAll("[data-save]").forEach(el=>el.addEventListener("click",e=>{const w=e.currentTarget.dataset.save;state.savedWords=state.savedWords.includes(w)?state.savedWords.filter(x=>x!==w):[...state.savedWords,w];profileStorage.setItem("worthy_life_words",JSON.stringify(state.savedWords));render();}));
+  document.querySelectorAll("[data-master-saved-word]").forEach(button => button.addEventListener("click", event => {
+    const word = event.currentTarget.dataset.masterSavedWord;
+    const mastered = state.masteredSavedWords.includes(word);
+    state.masteredSavedWords = mastered
+      ? state.masteredSavedWords.filter(item => item !== word)
+      : [...state.masteredSavedWords, word];
+    profileStorage.setItem("value_time_mastered_saved_words_v1", JSON.stringify(state.masteredSavedWords));
+    render();
+  }));
   document.querySelectorAll("[data-known-word]").forEach(button => button.addEventListener("click", event => {
     const word = event.currentTarget.dataset.knownWord;
     const known = state.knownWords.includes(word);
