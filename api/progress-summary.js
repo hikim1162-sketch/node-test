@@ -1,24 +1,5 @@
-import crypto from "node:crypto";
-
 const USERS = new Set(["kai", "rachel", "hyuk"]);
 const MODES = new Set(["normal", "middle", "suneung"]);
-const COOKIE_NAME = "vt_progress_session";
-
-function sessionToken(secret) {
-  return crypto.createHmac("sha256", secret).update("progress-sync-v1").digest("hex");
-}
-
-function authorized(request) {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) return false;
-  const cookies = Object.fromEntries(String(request.headers.cookie || "").split(";").map((part) => {
-    const [key, ...rest] = part.trim().split("=");
-    return [key, rest.join("=")];
-  }));
-  const actual = Buffer.from(String(cookies[COOKIE_NAME] || ""));
-  const expected = Buffer.from(sessionToken(secret));
-  return actual.length === expected.length && crypto.timingSafeEqual(actual, expected);
-}
 
 function redisConfig() {
   return {
@@ -82,7 +63,6 @@ function normalizeSummary(body, identity) {
 
 export default async function handler(request, response) {
   response.setHeader("Cache-Control", "private, no-store");
-  if (!authorized(request)) return response.status(401).json({ error: "unauthorized" });
   const identity = validIdentity(request);
   if (!identity) return response.status(400).json({ error: "invalid_identity" });
   const key = `valuetime:progress:${identity.mode}:${identity.user}`;
@@ -106,4 +86,3 @@ export default async function handler(request, response) {
     });
   }
 }
-

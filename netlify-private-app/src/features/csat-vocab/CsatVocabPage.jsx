@@ -4,7 +4,7 @@ import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./voc
 import { dayCompletionKey, loadProgress, markDayComplete, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
 import { speakEnglishDebug } from "./speech.js";
-import { authenticateProgressSync, createProgressSummary, loadCloudProgress, queueCloudProgressSave, saveCloudProgress } from "./cloudProgress.js";
+import { createProgressSummary, loadCloudProgress, queueCloudProgressSave, saveCloudProgress } from "./cloudProgress.js";
 import "./csat-vocab.css";
 
 const TABS = [
@@ -148,13 +148,14 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
     let active = true;
     setCloudProgress({ status: "loading", summary: null, error: null });
     loadCloudProgress(mode)
+      .then((summary) => summary || saveCloudProgress(progress, mode))
       .then((summary) => {
         if (active) setCloudProgress({ status: "ready", summary, error: null });
       })
       .catch((error) => {
         if (!active) return;
         setCloudProgress({
-          status: error.status === 401 ? "auth-required" : error.message === "storage_not_configured" ? "not-configured" : "error",
+          status: error.message === "storage_not_configured" ? "not-configured" : "error",
           summary: null,
           error: error.message,
         });
@@ -179,28 +180,6 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
       queueCloudProgressSave(next, mode, setCloudProgress);
       return next;
     });
-  }
-
-  async function connectProgressSync(password) {
-    setCloudProgress((current) => ({ ...current, status: "loading", error: null }));
-    try {
-      await authenticateProgressSync(password);
-      const remote = await loadCloudProgress(mode);
-      if (remote) {
-        setCloudProgress({ status: "ready", summary: remote, error: null });
-      } else {
-        const summary = await saveCloudProgress(progress, mode);
-        setCloudProgress({ status: "ready", summary, error: null });
-      }
-      return true;
-    } catch (error) {
-      setCloudProgress({
-        status: error.status === 401 ? "auth-required" : error.message === "storage_not_configured" ? "not-configured" : "error",
-        summary: null,
-        error: error.message,
-      });
-      return false;
-    }
   }
 
   function changeSeries(nextSeries) {
@@ -333,7 +312,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
       {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords.slice(0, 10)} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
       {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} />}
       {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} />}
-      {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} mode={mode} currentSeriesKey={seriesKey} currentDay={day} cloudProgress={cloudProgress} connectProgressSync={connectProgressSync} />}
+      {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} mode={mode} currentSeriesKey={seriesKey} currentDay={day} cloudProgress={cloudProgress} />}
       <DayPagination days={days} day={day} onChange={changeDay} />
       {resetConfirmOpen ? (
         <div className="csat-reset-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setResetConfirmOpen(false)}>
@@ -790,10 +769,8 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, fo
   );
 }
 
-function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "suneung", currentSeriesKey, currentDay, cloudProgress, connectProgressSync }) {
+function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "suneung", currentSeriesKey, currentDay, cloudProgress }) {
   const today = todayKey();
-  const [syncPassword, setSyncPassword] = useState("");
-  const [syncMessage, setSyncMessage] = useState("");
   const masteredWords = progress.masteredWords || {};
   const learnedToday = Object.values(masteredWords).filter((item) => item.masteredAt?.startsWith(today)).length;
   const testsToday = progress.tests.filter((test) => test.date === today);
@@ -841,20 +818,8 @@ function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "s
       <section className={`csat-cloud-progress ${cloudProgress?.status || "loading"}`}>
         <div>
           <b>{remoteIsNewer ? "가족 공유 진도" : "이 기기 진도"}</b>
-          <span>{cloudProgress?.status === "ready" ? `동기화됨${cloudProgress.summary?.updatedAt ? ` · ${new Date(cloudProgress.summary.updatedAt).toLocaleString("ko-KR")}` : ""}` : cloudProgress?.status === "auth-required" ? "가족 비밀번호를 한 번 입력하면 기기 간 진도가 연결됩니다." : cloudProgress?.status === "not-configured" ? "서버 저장소 연결이 필요합니다." : cloudProgress?.status === "error" ? "서버 연결 실패 · 로컬 진도는 안전하게 유지됩니다." : "동기화 확인 중..."}</span>
+          <span>{cloudProgress?.status === "ready" ? `자동 동기화됨${cloudProgress.summary?.updatedAt ? ` · ${new Date(cloudProgress.summary.updatedAt).toLocaleString("ko-KR")}` : ""}` : cloudProgress?.status === "not-configured" ? "서버 저장소 연결이 필요합니다." : cloudProgress?.status === "error" ? "서버 연결 실패 · 로컬 진도는 안전하게 유지됩니다." : "동기화 확인 중..."}</span>
         </div>
-        {cloudProgress?.status === "auth-required" ? (
-          <form onSubmit={async (event) => {
-            event.preventDefault();
-            const connected = await connectProgressSync(syncPassword);
-            setSyncMessage(connected ? "연결되었습니다." : "비밀번호 또는 서버 설정을 확인해 주세요.");
-            if (connected) setSyncPassword("");
-          }}>
-            <input type="password" value={syncPassword} onChange={(event) => setSyncPassword(event.target.value)} placeholder="가족 비밀번호" autoComplete="current-password" required />
-            <button type="submit">진도 연결</button>
-          </form>
-        ) : null}
-        {syncMessage ? <small role="status">{syncMessage}</small> : null}
       </section>
       <div className="csat-stats"><article><span>오늘 학습</span><b>{learnedToday}</b><small>단어</small></article><article><span>최근 점수</span><b>{latest ? `${latest.score}/${latest.total}` : "-"}</b><small>오늘 테스트</small></article><article><span>오답</span><b>{Object.values(progress.wrong).filter((history) => !history.resolvedAt).length}</b><small>복습 대기</small></article></div>
       <h3 className="csat-progress-title">전체 암기 진도율 · {masteredCount} / {totalWordCount} 단어 · {overallPercent}%</h3>

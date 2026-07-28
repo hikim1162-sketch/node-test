@@ -31,14 +31,6 @@ async function request(url, options) {
   return payload;
 }
 
-export async function authenticateProgressSync(password) {
-  return request("/api/progress-auth", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password }),
-  });
-}
-
 export async function loadCloudProgress(mode, user = getCurrentUser(mode)) {
   const query = new URLSearchParams({ mode, user });
   const payload = await request(`/api/progress-summary?${query}`);
@@ -61,9 +53,8 @@ export function queueCloudProgressSave(progress, mode, onResult) {
     saveCloudProgress(progress, mode, user)
       .then((summary) => onResult?.({ status: "ready", summary }))
       .catch((error) => onResult?.({
-        status: error.status === 401 ? "auth-required" : error.message === "storage_not_configured" ? "not-configured" : "error",
+        status: error.message === "storage_not_configured" ? "not-configured" : "error",
         error: error.message,
       }));
   }, 1200);
 }
-
