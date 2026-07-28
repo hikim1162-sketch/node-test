@@ -99,6 +99,7 @@ export function loadProgress(mode = "suneung") {
       savedWords: Array.isArray(saved?.savedWords) ? saved.savedWords : [],
       completedDays,
       masteredWords,
+      updatedAt: saved?.updatedAt || null,
     };
     if (
       raw
@@ -116,8 +117,9 @@ export function loadProgress(mode = "suneung") {
 }
 
 export function saveProgress(progress, mode = "suneung") {
-  setProfileItem(mode, STORAGE_KEY, JSON.stringify(progress));
-  queueMicrotask(() => window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: progress })));
+  const storedProgress = { ...progress, updatedAt: progress.updatedAt || new Date().toISOString() };
+  setProfileItem(mode, STORAGE_KEY, JSON.stringify(storedProgress));
+  queueMicrotask(() => window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: storedProgress })));
 }
 
 export function resetLearningData(mode = "suneung") {

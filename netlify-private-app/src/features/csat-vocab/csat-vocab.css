@@ -185,6 +185,10 @@
 .csat-answer-example>b{display:block;color:#263b36;font:600 20px/1.65 Georgia,serif}
 .csat-answer-example>p{margin:7px 0 0;color:#687974;font-size:11px;line-height:1.6}
 .csat-answer-example.empty>p{margin:0;color:#8b9794}
+.csat-cloud-progress{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:16px 0;padding:13px 15px;border:1px solid #d6e5e0;border-radius:11px;background:#f4faf7}
+.csat-cloud-progress>div{display:grid;gap:4px}.csat-cloud-progress b{color:#245f53;font-size:12px}.csat-cloud-progress span{color:#6c807a;font-size:10px}
+.csat-cloud-progress form{display:flex;gap:6px}.csat-cloud-progress input{width:150px;padding:8px;border:1px solid #c9d9d4;border-radius:8px}.csat-cloud-progress button{padding:8px 10px;border:0;border-radius:8px;background:#245f53;color:#fff;font-size:10px;font-weight:800}.csat-cloud-progress>small{color:#8b5147;font-size:9px}
+@media(max-width:600px){.csat-cloud-progress{align-items:stretch;flex-direction:column}.csat-cloud-progress form{display:grid;grid-template-columns:1fr auto}.csat-cloud-progress input{width:100%}}
 .csat-word-card-top{display:flex;align-items:center;justify-content:space-between}
 .csat-save-word{padding:7px 10px;border:1px solid #d6e2de;border-radius:9px;background:#fff;color:#6b7b77;font-size:9px;font-weight:700;cursor:pointer}
 .csat-save-word.saved{border-color:#83b6a8;background:#eaf6f1;color:#216b5d}
