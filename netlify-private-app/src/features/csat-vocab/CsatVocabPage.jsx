@@ -642,7 +642,17 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
   return (
     <section className="csat-workspace">
       <TestModeSwitch mode={mode} reset={reset} hasWrong={reviewWords.length > 0} />
-      <div className="csat-question-meta"><span>{question.label}</span><b>{index + 1} / {questions.length}</b></div>
+      <div className="csat-question-meta">
+        <span>{question.label}</span>
+        <div>
+          <b>{index + 1} / {questions.length}</b>
+          {revealed ? (
+            <button type="button" className="csat-question-next" onClick={() => confirmAnswer()}>
+              {!revealed.correct ? "다시 풀기" : answers.length === questions.length ? "결과 보기" : "다음 문제"}
+            </button>
+          ) : null}
+        </div>
+      </div>
       <article className="csat-question">
         <PronounceableWord text={question.prompt} as="h2" />
         <div>{question.choices.map((choice, choiceIndex) => {
@@ -653,7 +663,7 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
         })}</div>
         {revealed ? <div className={`csat-answer-feedback ${revealed.correct ? "correct" : "wrong"}`} role="status"><b>{revealed.correct ? "정답입니다." : "오답입니다."}</b><span>{revealed.correct ? `정답: ${question.answerIndex + 1}번 · ${question.choices[question.answerIndex]}` : "다시 풀어보세요."}</span></div> : null}
         {revealed ? <WordAnswerExample word={question.word} /> : null}
-        {revealed ? <button type="button" className="csat-submit" onClick={() => confirmAnswer()}>{!revealed.correct ? "다시 풀기" : answers.length === questions.length ? "결과 보기" : "다음 문제"}</button> : <p className="csat-instant-answer-guide">보기를 누르면 바로 정답이 표시됩니다.</p>}
+        {!revealed ? <p className="csat-instant-answer-guide">보기를 누르면 바로 정답이 표시됩니다.</p> : null}
       </article>
     </section>
   );
