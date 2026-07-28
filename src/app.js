@@ -2724,6 +2724,8 @@ function vocabularyPage() {
   state.vocabPage = Math.min(Math.max(state.vocabPage, 0), vocabPageCount - 1);
   const todayWords = orderedWords.slice(state.vocabPage * vocabPageSize, (state.vocabPage + 1) * vocabPageSize);
   const todayAllClearCount = todayWords.filter(word => state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word)).length;
+  const masteredWordCount = words.filter(word => state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word)).length;
+  const vocabularyProgressPercent = words.length ? Math.round((masteredWordCount / words.length) * 1000) / 10 : 0;
   const isDone = Boolean(homeStudyState.checked.words);
   const vocabMeta = syncHomeAppState().items.vocab || {};
   const typeLabel = type => ({ verb: "동사", adjective: "형용사", "verb / noun": "동사 / 명사" }[type] || type);
@@ -2735,6 +2737,11 @@ function vocabularyPage() {
   );
 
   return `${header("단어장")}<main class="vocab-dashboard-page">
+    <section class="vocab-mastery-progress" aria-label="일반 단어장 전체 암기 진도">
+      <div><span>VOCABULARY MASTERY</span><h2>전체 암기 진도율</h2><p>Word Clear와 Sentence Clear를 모두 완료한 단어를 기준으로 계산합니다.</p></div>
+      <div><strong data-vocab-progress-percent>${vocabularyProgressPercent}%</strong><small><b data-vocab-progress-count>${masteredWordCount}</b> / ${words.length} 단어</small></div>
+      <i role="progressbar" aria-label="전체 암기 진도율" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${vocabularyProgressPercent}"><b data-vocab-progress-fill style="width:${vocabularyProgressPercent}%"></b></i>
+    </section>
     <section class="vocab-test-launch-bar"><div><span>MONTHLY WORD TEST</span><b>이번 달 누적 단어를 바로 점검해보세요.</b><small>${new Date().getMonth() + 1}월 1일–오늘 · 저장 단어 우선 · 20문제</small></div><button type="button" data-open-vocab-monthly-test>단어 테스트 시작</button></section>
     <div class="vocab-dashboard-layout">
       <section class="vocab-today-panel"><div class="vocab-panel-head"><div><h3>오늘의 단어</h3><p>단어와 예문을 각각 Clear하고 ALL CLEAR를 완성해보세요.</p></div><b>${todayWords.length} WORDS · <span data-vocab-clear-count>${todayAllClearCount}</span> ALL CLEAR</b></div>
@@ -5350,6 +5357,16 @@ function updateVocabClearCard(card) {
   const count = document.querySelectorAll(".vocab-today-item.all-clear").length;
   const countLabel = document.querySelector("[data-vocab-clear-count]");
   if (countLabel) countLabel.textContent = String(count);
+  const masteredWordCount = words.filter(word => state.knownWords.includes(word.word) && state.clearedWordSentences.includes(word.word)).length;
+  const progressPercent = words.length ? Math.round((masteredWordCount / words.length) * 1000) / 10 : 0;
+  const progressCount = document.querySelector("[data-vocab-progress-count]");
+  const progressLabel = document.querySelector("[data-vocab-progress-percent]");
+  const progressFill = document.querySelector("[data-vocab-progress-fill]");
+  const progressBar = progressFill?.closest('[role="progressbar"]');
+  if (progressCount) progressCount.textContent = String(masteredWordCount);
+  if (progressLabel) progressLabel.textContent = `${progressPercent}%`;
+  if (progressFill) progressFill.style.width = `${progressPercent}%`;
+  if (progressBar) progressBar.setAttribute("aria-valuenow", String(progressPercent));
   if (count >= 10 && !homeStudyState.checked.words) {
     homeStudyState.checked.words = true;
     saveHomeStudyState("words");
