@@ -10,6 +10,7 @@ export const EMPTY_PROGRESS = {
   tests: [],
   savedWords: [],
   completedDays: {},
+  masteredWords: {},
 };
 
 export function dayCompletionKey(seriesKey, day) {
@@ -64,26 +65,53 @@ export function markDayComplete(progress, seriesKey, day) {
   };
 }
 
+function deriveMasteredWords(statuses = {}, wrong = {}) {
+  return Object.fromEntries(Object.entries(statuses).flatMap(([wordId, status]) => {
+    const learnedDirectly = status?.status === "known";
+    const reviewedAt = wrong[wordId]?.reviewedAt;
+    if (!learnedDirectly && !reviewedAt) return [];
+    return [[wordId, {
+      source: learnedDirectly ? "known" : "review",
+      masteredAt: learnedDirectly
+        ? status.updatedAt || status.date || null
+        : reviewedAt,
+      migrated: true,
+    }]];
+  }));
+}
+
 export function loadProgress(mode = "suneung") {
   try {
     const raw = getProfileItem(mode, STORAGE_KEY);
     const saved = JSON.parse(raw);
     const statuses = saved?.statuses || {};
+    const wrong = saved?.wrong || {};
     const storedCompletedDays = normalizeCompletedDays(saved?.completedDays);
     const completedDays = { ...deriveCompletedDays(statuses), ...storedCompletedDays };
+    const storedMasteredWords = saved?.masteredWords && typeof saved.masteredWords === "object"
+      ? saved.masteredWords
+      : {};
+    const masteredWords = { ...deriveMasteredWords(statuses, wrong), ...storedMasteredWords };
     const progress = {
-      statuses: saved?.statuses || {},
-      wrong: saved?.wrong || {},
+      statuses,
+      wrong,
       tests: Array.isArray(saved?.tests) ? saved.tests : [],
       savedWords: Array.isArray(saved?.savedWords) ? saved.savedWords : [],
       completedDays,
+      masteredWords,
     };
-    if (raw && JSON.stringify(storedCompletedDays) !== JSON.stringify(completedDays)) {
+    if (
+      raw
+      && (
+        JSON.stringify(storedCompletedDays) !== JSON.stringify(completedDays)
+        || JSON.stringify(storedMasteredWords) !== JSON.stringify(masteredWords)
+      )
+    ) {
       setProfileItem(mode, STORAGE_KEY, JSON.stringify(progress));
     }
     return progress;
   } catch {
-    return { ...EMPTY_PROGRESS, statuses: {}, wrong: {}, tests: [], savedWords: [], completedDays: {} };
+    return { ...EMPTY_PROGRESS, statuses: {}, wrong: {}, tests: [], savedWords: [], completedDays: {}, masteredWords: {} };
   }
 }
 
@@ -95,7 +123,7 @@ export function saveProgress(progress, mode = "suneung") {
 export function resetLearningData(mode = "suneung") {
   removeProfileItem(mode, STORAGE_KEY);
   removeProfileItem(mode, DAILY_DAY_STORAGE_KEY);
-  const empty = { statuses: {}, wrong: {}, tests: [], savedWords: [], completedDays: {} };
+  const empty = { statuses: {}, wrong: {}, tests: [], savedWords: [], completedDays: {}, masteredWords: {} };
   queueMicrotask(() => window.dispatchEvent(new CustomEvent("valuetime-csat-progress", { detail: empty })));
   return empty;
 }

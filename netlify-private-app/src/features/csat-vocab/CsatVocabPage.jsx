@@ -356,9 +356,24 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
   if (!word) return <EmptyState title="이 Day에는 표시할 단어가 없습니다." />;
 
   function rate(status) {
+    const masteredWords = { ...(progress.masteredWords || {}) };
+    const wrong = { ...progress.wrong };
+    if (status === "known") {
+      masteredWords[word.id] = {
+        source: "known",
+        masteredAt: new Date().toISOString(),
+      };
+    } else {
+      delete masteredWords[word.id];
+      if (wrong[word.id]?.reviewedAt) {
+        wrong[word.id] = { ...wrong[word.id], reviewedAt: null };
+      }
+    }
     let nextProgress = {
       ...progress,
       statuses: { ...progress.statuses, [word.id]: { status, date: todayKey(), updatedAt: new Date().toISOString() } },
+      wrong,
+      masteredWords,
       savedWords: status === "known" || progress.savedWords.includes(word.id)
         ? progress.savedWords
         : [...progress.savedWords, word.id],
@@ -698,17 +713,25 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, fo
   function toggleReviewed(word) {
     updateProgress((current) => {
       const wrong = { ...current.wrong };
+      const masteredWords = { ...(current.masteredWords || {}) };
       const previous = wrong[word.id] || { count: 0, word: word.word_display, meaning: word.meaning_display, series: word.series, day: word.day };
-      wrong[word.id] = previous.reviewedAt
-        ? { ...previous, reviewedAt: null }
-        : { ...previous, reviewedAt: new Date().toISOString(), reviewCount: (previous.reviewCount || 0) + 1 };
+      if (previous.reviewedAt) {
+        wrong[word.id] = { ...previous, reviewedAt: null };
+        if (current.statuses[word.id]?.status !== "known") delete masteredWords[word.id];
+      } else {
+        const reviewedAt = new Date().toISOString();
+        wrong[word.id] = { ...previous, reviewedAt, reviewCount: (previous.reviewCount || 0) + 1 };
+        if (["confused", "unknown"].includes(current.statuses[word.id]?.status)) {
+          masteredWords[word.id] = { source: "review", masteredAt: reviewedAt };
+        }
+      }
       if (
         focusIds.length
         && focusIds.every((id) => id === word.id ? Boolean(wrong[id]?.reviewedAt) : Boolean(current.wrong[id]?.reviewedAt))
       ) {
         queueMicrotask(() => onReviewComplete?.());
       }
-      return { ...current, wrong };
+      return { ...current, wrong, masteredWords };
     });
   }
 
@@ -726,49 +749,48 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, fo
 
 function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "suneung", currentSeriesKey, currentDay }) {
   const today = todayKey();
-  const learnedToday = Object.values(progress.statuses).filter((item) => item.date === today || item.updatedAt?.startsWith(today)).length;
+  const masteredWords = progress.masteredWords || {};
+  const learnedToday = Object.values(masteredWords).filter((item) => item.masteredAt?.startsWith(today)).length;
   const testsToday = progress.tests.filter((test) => test.date === today);
   const latest = testsToday.at(-1);
   const seriesProgress = seriesList.map((series) => {
-    const days = getDays(series.key);
-    const completedDays = days.filter((day) => progress.completedDays?.[dayCompletionKey(series.key, day)]).length;
+    const masteredCount = series.words.filter((word) => masteredWords[word.id]).length;
     return {
       series,
-      completedDays,
-      totalDays: days.length,
-      percent: days.length ? Math.round((completedDays / days.length) * 100) : 0,
+      masteredCount,
+      totalWords: series.words.length,
+      percent: series.words.length ? Math.round((masteredCount / series.words.length) * 1000) / 10 : 0,
     };
   });
-  const completedDayCount = seriesProgress.reduce((sum, item) => sum + item.completedDays, 0);
-  const totalDayCount = seriesProgress.reduce((sum, item) => sum + item.totalDays, 0);
-  const overallPercent = totalDayCount ? Math.round((completedDayCount / totalDayCount) * 100) : 0;
+  const masteredCount = seriesProgress.reduce((sum, item) => sum + item.masteredCount, 0);
+  const totalWordCount = seriesProgress.reduce((sum, item) => sum + item.totalWords, 0);
+  const overallPercent = totalWordCount ? Math.round((masteredCount / totalWordCount) * 1000) / 10 : 0;
 
   useEffect(() => {
     console.debug("[csat-progress]", {
       mode,
       currentSeriesKey,
       currentDay,
-      currentDayKey: dayCompletionKey(currentSeriesKey, currentDay),
       storageKey: "valuetime_csat_vocab_v1",
-      completedDaysRaw: progress.completedDays || {},
-      completedDayCount,
-      totalDayCount,
+      masteredWordsRaw: masteredWords,
+      masteredCount,
+      totalWordCount,
       overallPercent,
       series: seriesProgress.map((item) => ({
         series: item.series.key,
-        completedDays: item.completedDays,
-        totalDays: item.totalDays,
+        masteredCount: item.masteredCount,
+        totalWords: item.totalWords,
         percent: item.percent,
       })),
     });
-  }, [mode, currentSeriesKey, currentDay, progress.completedDays, completedDayCount, totalDayCount, overallPercent]);
+  }, [mode, currentSeriesKey, currentDay, masteredWords, masteredCount, totalWordCount, overallPercent]);
 
   return (
     <section className="csat-workspace">
       <div className="csat-section-head"><div><span>MY PROGRESS</span><h2>오늘의 훈련 기록</h2></div></div>
       <div className="csat-stats"><article><span>오늘 학습</span><b>{learnedToday}</b><small>단어</small></article><article><span>최근 점수</span><b>{latest ? `${latest.score}/${latest.total}` : "-"}</b><small>오늘 테스트</small></article><article><span>오답</span><b>{Object.values(progress.wrong).filter((history) => !history.resolvedAt).length}</b><small>복습 대기</small></article></div>
-      <h3 className="csat-progress-title">전체 Day 진행률 · {completedDayCount} / {totalDayCount} Day · {overallPercent}%</h3>
-      <div className="csat-series-progress">{seriesProgress.map(({ series, completedDays, totalDays, percent }) => <article key={series.key}><div><b>{series.label}</b><span>{completedDays} / {totalDays} Day</span></div><i><b style={{ width: `${percent}%` }} /></i><small>{percent}%</small></article>)}</div>
+      <h3 className="csat-progress-title">전체 암기 진도율 · {masteredCount} / {totalWordCount} 단어 · {overallPercent}%</h3>
+      <div className="csat-series-progress">{seriesProgress.map(({ series, masteredCount: seriesMasteredCount, totalWords, percent }) => <article key={series.key}><div><b>{series.label}</b><span>{seriesMasteredCount} / {totalWords} 단어</span></div><i><b style={{ width: `${percent}%` }} /></i><small>{percent}%</small></article>)}</div>
       <h3 className="csat-progress-title">최근 테스트</h3>
       {progress.tests.length ? <ul className="csat-history">{[...progress.tests].reverse().slice(0, 8).map((test, index) => <li key={`${test.date}-${index}`}><span>{test.date}</span><b>{SERIES[test.series]?.label || test.series} · Day {test.day}</b><em>{test.score} / {test.total}</em></li>)}</ul> : <EmptyState title="아직 테스트 기록이 없습니다." />}
     </section>
