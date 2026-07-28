@@ -1946,9 +1946,7 @@ function recordGeneralProgressChange(field, word, value) {
 }
 
 function generalProgressEndpoint() {
-  return import.meta.env.DEV
-    ? "https://vt-1114.vercel.app/api/general-progress"
-    : "/api/general-progress";
+  return "/api/general-progress";
 }
 
 function setGeneralProgressSyncStatus(status) {
@@ -1985,7 +1983,9 @@ async function syncGeneralProgress() {
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     const message = payload.error || `general_progress_${response.status}`;
-    setGeneralProgressSyncStatus(message === "storage_not_configured" ? "서버 저장소 연결 필요" : "동기화 실패");
+    setGeneralProgressSyncStatus(
+      message === "github_not_configured" ? "GitHub 연결 필요" : "동기화 실패"
+    );
     throw new Error(message);
   }
   const validRecords = payload.records
