@@ -1918,6 +1918,7 @@ const generalProgressFields = {
   masteredSavedWords: "value_time_mastered_saved_words_v1",
 };
 let generalProgressSyncTimer = null;
+let generalProgressSyncStatus = "동기화 확인 중";
 let generalProgressRecords = (() => {
   try { return JSON.parse(profileStorage.getItem(GENERAL_PROGRESS_META_KEY) || "{}") || {}; }
   catch { return {}; }
@@ -1950,6 +1951,12 @@ function generalProgressEndpoint() {
     : "/api/general-progress";
 }
 
+function setGeneralProgressSyncStatus(status) {
+  generalProgressSyncStatus = status;
+  const label = document.querySelector("[data-general-progress-sync]");
+  if (label) label.textContent = status;
+}
+
 function applyGeneralCloudRecords(records) {
   let changed = false;
   Object.keys(generalProgressFields).forEach((field) => {
@@ -1969,14 +1976,20 @@ async function syncGeneralProgress() {
   if (audienceMode !== "general") return;
   const user = getCurrentUser("normal");
   if (user !== "kai" && user !== "rachel") return;
+  setGeneralProgressSyncStatus("동기화 중");
   const response = await fetch(generalProgressEndpoint(), {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user, records: generalProgressRecords }),
   });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error || `general_progress_${response.status}`);
+  if (!response.ok) {
+    const message = payload.error || `general_progress_${response.status}`;
+    setGeneralProgressSyncStatus(message === "storage_not_configured" ? "서버 저장소 연결 필요" : "동기화 실패");
+    throw new Error(message);
+  }
   applyGeneralCloudRecords(payload.records);
+  setGeneralProgressSyncStatus("동기화 완료");
 }
 
 function queueGeneralProgressSync() {
@@ -2817,7 +2830,7 @@ function vocabularyPage() {
 
   return `${header("단어장")}<main class="vocab-dashboard-page">
     <section class="vocab-mastery-progress" aria-label="일반 단어장 전체 암기 진도">
-      <div><span>VOCABULARY MASTERY</span><h2>전체 암기 진도율</h2><p>ALL CLEAR 단어와 나만의 학습장에서 ‘암기함’으로 표시한 단어를 합산합니다.</p></div>
+      <div><span>VOCABULARY MASTERY</span><h2>전체 암기 진도율</h2><p>ALL CLEAR 단어와 나만의 학습장에서 ‘암기함’으로 표시한 단어를 합산합니다. · <b data-general-progress-sync>${generalProgressSyncStatus}</b></p></div>
       <div><strong data-vocab-progress-percent>${vocabularyProgressPercent}%</strong><small><b data-vocab-progress-count>${masteredWordCount}</b> / ${words.length} 단어</small></div>
       <i role="progressbar" aria-label="전체 암기 진도율" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${vocabularyProgressPercent}"><b data-vocab-progress-fill style="width:${vocabularyProgressPercent}%"></b></i>
     </section>
