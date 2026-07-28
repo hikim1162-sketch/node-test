@@ -15,11 +15,73 @@ export function selectDueReviewItems(items, progressMap, now = new Date()) {
   }).filter(entry => entry.due).sort((a, b) => b.priority - a.priority || new Date(a.progress.nextReviewAt) - new Date(b.progress.nextReviewAt));
 }
 
+function stableHash(value) {
+  return [...String(value)].reduce((hash, char) => ((hash * 31) + char.charCodeAt(0)) >>> 0, 2166136261);
+}
+
+function sentenceNearMisses(answer) {
+  const value = String(answer || "").trim();
+  const candidates = [];
+  const add = (candidate) => {
+    const normalized = String(candidate || "").trim();
+    if (normalized && normalized !== value && !candidates.includes(normalized)) candidates.push(normalized);
+  };
+  const actorPattern = /^(.+?(?:에게|에))\s+(.+?기 전에)\s+(.+?(?:에게|에))\s+(.+)$/;
+  const actors = value.match(actorPattern);
+  if (actors) add(`${actors[3]} ${actors[2]} ${actors[1]} ${actors[4]}`);
+  if (/(\S+)하기 전에/.test(value)) add(value.replace(/(\S+)하기 전에/, "$1한 후에"));
+  else if (/(\S+) 전에/.test(value)) add(value.replace(/(\S+) 전에/, "$1 후에"));
+  if (/(\S+)한 후에/.test(value)) add(value.replace(/(\S+)한 후에/, "$1하기 전에"));
+  else if (/(\S+) 후에/.test(value)) add(value.replace(/(\S+) 후에/, "$1 전에"));
+
+  [
+    [" 먼저", " 나중에"],
+    [" 증가", " 감소"],
+    [" 감소", " 증가"],
+    [" 동의", " 반대"],
+    [" 가능", " 불가능"],
+    [" 검토", " 승인"],
+    [" 승인", " 검토"],
+    [" 요청해 주세요", " 직접 처리해 주세요"],
+    [" 확인해 주세요", " 확인하지 않아도 됩니다"],
+    [" 해야 합니다", " 하지 않아도 됩니다"],
+    [" 할 수 있습니다", " 할 수 없습니다"],
+  ].forEach(([from, to]) => {
+    if (value.includes(from)) add(value.replace(from, to));
+  });
+  return candidates;
+}
+
+function reviewDistractors(entry, allItems, answer) {
+  const type = entry.item.type || "sentence";
+  const sameType = allItems
+    .filter((item) => (item.type || "sentence") === type && item.id !== entry.item.id)
+    .map((item) => String(item.meaning || "").trim())
+    .filter((value) => value && value !== answer)
+    .filter((value) => type !== "sentence" || (
+      value.length >= answer.length * 0.6 && value.length <= answer.length * 1.5
+    ))
+    .sort((a, b) => (
+      Math.abs(a.length - answer.length) - Math.abs(b.length - answer.length)
+      || stableHash(`${entry.item.id}:${a}`) - stableHash(`${entry.item.id}:${b}`)
+    ));
+  const generated = type === "sentence" ? sentenceNearMisses(answer) : [];
+  const wordFallbacks = ["유지하다", "확인하다", "변경하다", "요청하다"];
+  const sentenceFallbacks = [
+    "관련 부서에 내용을 먼저 확인한 뒤 담당자에게 전달해 주세요.",
+    "담당자에게 연락하기 전에 변경된 일정을 다시 검토해 주세요.",
+    "운영팀의 확인 없이 제안서를 바로 승인해 주세요.",
+  ];
+  return [...new Set([
+    ...generated,
+    ...sameType,
+    ...(type === "word" ? wordFallbacks : sentenceFallbacks),
+  ])].filter((value) => value !== answer).slice(0, 2);
+}
+
 export function createReviewQuestion(entry, allItems) {
-  const answer = entry.item.meaning;
-  const distractors = [...new Set(allItems.map(item => item.meaning).filter(value => value && value !== answer))].slice(0, 2);
-  const defaults = ["문맥에 따라 달라지는 표현", "일정을 앞당기다", "상대방에게 확인하다"];
-  while (distractors.length < 2) distractors.push(defaults[distractors.length]);
+  const answer = String(entry.item.meaning || "").trim();
+  const distractors = reviewDistractors(entry, allItems, answer);
   const choices = [answer, ...distractors].sort((a, b) => `${entry.item.id}:${a}`.localeCompare(`${entry.item.id}:${b}`));
   return { id: `review:${entry.item.id}`, itemId: entry.item.id, prompt: `“${entry.item.text}”의 의미는 무엇일까요?`, choices, answer: choices.indexOf(answer), example: entry.item.example };
 }
