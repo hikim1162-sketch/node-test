@@ -5,7 +5,7 @@ import { tedLessons, tedSettings } from "../data/ted-lessons.js";
 import { toeicSentences } from "../data/toeic-sentences.js";
 import { favoriteBlogArticles } from "../data/favorite-blogs.js";
 import { normalizeSavedLearningItems, generateCustomTestFromSavedItems } from "./custom-learning.js";
-import { REVIEW_STORAGE_KEY, createReviewProgress, selectDueReviewItems, createReviewQuestion, applyReviewAnswer, detectUsedWords, evaluateEmailReply, toNotebookItem } from "./connected-learning.js";
+import { REVIEW_STORAGE_KEY, createReviewProgress, selectDueReviewItems, createReviewQuestion, gradeReviewQuestion, applyReviewAnswer, detectUsedWords, evaluateEmailReply, toNotebookItem } from "./connected-learning.js";
 import { initSpeechDebug, speakEnglishDebug } from "./speech.js";
 import csatEnglishArchive from "../netlify-private-app/data/imported/csat-english-2021-2026.json";
 import { getCurrentUser, modeFromAudience, profileStorage } from "../netlify-private-app/src/profiles/profileStorage.js";
@@ -2012,7 +2012,7 @@ let activeBlogPostId = null;
 let blogSaveToast = "";
 let journalTestState = { view: "closed", scope: "all", count: 5, difficulty: "normal", test: null, answers: {}, submitted: false, wrongOnly: false, wrongQuestionIds: [] };
 let reviewProgressMap = JSON.parse(profileStorage.getItem(REVIEW_STORAGE_KEY) || "{}");
-let reviewChatState = { open: false, selected: null, answered: null, completed: false, wrongNotes: [] };
+let reviewChatState = { open: false, selected: null, question: null, answered: null, completed: false, wrongNotes: [] };
 let selectionAssistantState = { open: false, text: "", range: null, busy: false, saved: false, origin: "selection", web: null };
 let selectionAssistantDocumentBound = false;
 let emailRoleplayState = { active: false, replyText: "", submitted: false, evaluation: null, sending: false, error: "" };
@@ -3955,11 +3955,18 @@ function reviewChatbotUi() {
     }
   });
   const dueEntries = selectDueReviewItems(items, reviewProgressMap);
-  const retainedItem = items.find(item => item.id === reviewChatState.selected);
-  const selected = reviewChatState.answered !== null && retainedItem
+  let retainedItem = items.find(item => item.id === reviewChatState.selected);
+  let selected = retainedItem
     ? { item: retainedItem, progress: reviewProgressMap[retainedItem.id], overdueDays: 0 }
-    : dueEntries.find(entry => entry.item.id === reviewChatState.selected) || dueEntries[0];
-  const question = selected ? createReviewQuestion(selected, items) : null;
+    : dueEntries[0];
+  if (reviewChatState.open && selected && !reviewChatState.selected) {
+    reviewChatState.selected = selected.item.id;
+    retainedItem = selected.item;
+  }
+  if (selected && reviewChatState.question?.itemId !== selected.item.id) {
+    reviewChatState.question = createReviewQuestion(selected, items);
+  }
+  const question = selected ? reviewChatState.question : null;
   const result = reviewChatState.answered !== null && question ? reviewChatState.answered === question.answer : null;
   const scopeLabel = isAcademicMode() ? `${currentModeConfig().shortLabel} 학습 복습` : audienceMode === "kids" ? "초등 학습 복습" : "일반 학습 복습";
   const panel = reviewChatState.open ? `<aside class="review-chat-panel"><header><div><span>AI REVIEW · ${scopeLabel}</span><h2>Review Chatbot</h2></div><button type="button" data-review-close>${icon("x",18)}</button></header><div class="review-chat-progress"><span>${scopeLabel}</span><b>${Math.max(0,dueEntries.length)}개 남음</b></div><div class="review-chat-body">${question?`<div class="chat-bubble">${selected.overdueDays?`${selected.overdueDays}일 밀린 복습이에요. `:""}${scopeLabel}에서 10초만 집중해볼까요?</div><article class="review-quiz-card"><em>${selected.item.sourceType === "csat-vocab" ? "WORD MASTER" : selected.item.sourceType?.toUpperCase() || "SAVED ITEM"}</em><h3>${question.prompt}</h3><div>${question.choices.map((choice,index)=>`<button class="${reviewChatState.answered===index?"selected":""} ${result!==null&&index===question.answer?"correct":""} ${result===false&&reviewChatState.answered===index?"wrong":""}" type="button" data-review-answer="${index}" ${reviewChatState.answered!==null?"disabled":""}>${choice}</button>`).join("")}</div>${result!==null?`<section class="review-result ${result?"success":"error"}"><b>${result?"Excellent! 기억 수명이 연장됐어요.":"괜찮아요. 오답 노트에 담아둘게요."}</b><p>${selected.item.example || selected.item.meaning}</p></section>`:""}</article>${result!==null?`<div class="review-chat-actions"><button type="button" data-review-more>하나 더</button><button type="button" data-review-done>오늘은 완료</button><button type="button" data-review-wrong>오답 노트 ${reviewChatState.wrongNotes.length}</button></div>`:""}`:`<div class="review-empty">${icon("check",28)}<h3>지금 복습할 항목이 없어요.</h3><p>${scopeLabel} 항목이 쌓이면 적절한 시점에 다시 알려드릴게요.</p></div>`}</div></aside>`:"";
@@ -5748,6 +5755,7 @@ function bindEvents(){
     if (selectedMode === audienceMode) return;
     reviewChatState.open = false;
     reviewChatState.selected = null;
+    reviewChatState.question = null;
     reviewChatState.answered = null;
     applyAudienceMode(selectedMode);
     if (isAcademicMode()) state.page = "suneung-home";
@@ -6110,17 +6118,24 @@ function bindEvents(){
     }
     navigateTo(el.dataset.page);
   }));
-  document.querySelector("[data-review-open]")?.addEventListener("click", () => { reviewChatState.open = true; render(); });
+  document.querySelector("[data-review-open]")?.addEventListener("click", () => {
+    reviewChatState.open = true;
+    reviewChatState.selected = null;
+    reviewChatState.question = null;
+    reviewChatState.answered = null;
+    render();
+  });
   document.querySelector("[data-review-close]")?.addEventListener("click", () => { reviewChatState.open = false; render(); });
   document.querySelectorAll("[data-review-answer]").forEach(button => button.addEventListener("click", event => {
     const items = getReviewChatbotItems();
-    const dueEntries = selectDueReviewItems(items, reviewProgressMap);
-    const selected = dueEntries.find(entry => entry.item.id === reviewChatState.selected) || dueEntries[0];
-    if (!selected) return;
-    const question = createReviewQuestion(selected, items);
+    const item = items.find(candidate => candidate.id === reviewChatState.selected);
+    const question = reviewChatState.question;
+    if (!item || !question || question.itemId !== item.id || reviewChatState.answered !== null) return;
+    const selected = { item, progress: reviewProgressMap[item.id] || createReviewProgress(item), overdueDays: 0 };
     const answer = Number(event.currentTarget.dataset.reviewAnswer);
-    const correct = answer === question.answer;
-    reviewChatState.selected = selected.item.id;
+    const grading = gradeReviewQuestion(question, item.id, answer);
+    if (!grading.accepted) return;
+    const correct = grading.correct;
     reviewChatState.answered = answer;
     reviewProgressMap[selected.item.id] = applyReviewAnswer(selected.progress, correct);
     syncCsatReviewAnswer(selected.item, correct);
@@ -6128,8 +6143,20 @@ function bindEvents(){
     profileStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviewProgressMap));
     render();
   }));
-  document.querySelector("[data-review-more]")?.addEventListener("click", () => { reviewChatState.selected = null; reviewChatState.answered = null; render(); });
-  document.querySelector("[data-review-done]")?.addEventListener("click", () => { reviewChatState.open = false; reviewChatState.completed = true; reviewChatState.answered = null; render(); });
+  document.querySelector("[data-review-more]")?.addEventListener("click", () => {
+    reviewChatState.selected = null;
+    reviewChatState.question = null;
+    reviewChatState.answered = null;
+    render();
+  });
+  document.querySelector("[data-review-done]")?.addEventListener("click", () => {
+    reviewChatState.open = false;
+    reviewChatState.completed = true;
+    reviewChatState.selected = null;
+    reviewChatState.question = null;
+    reviewChatState.answered = null;
+    render();
+  });
   document.querySelector("[data-review-wrong]")?.addEventListener("click", () => { navigateTo("journal"); });
   document.querySelector("[data-open-email-roleplay]")?.addEventListener("click", () => { emailRoleplayState.active = true; render(); });
   document.querySelector("[data-close-email-roleplay]")?.addEventListener("click", () => { emailRoleplayState.active = false; render(); });

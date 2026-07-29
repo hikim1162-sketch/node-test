@@ -86,6 +86,21 @@ export function createReviewQuestion(entry, allItems) {
   return { id: `review:${entry.item.id}`, itemId: entry.item.id, prompt: `“${entry.item.text}”의 의미는 무엇일까요?`, choices, answer: choices.indexOf(answer), example: entry.item.example };
 }
 
+export function gradeReviewQuestion(question, itemId, selectedIndex) {
+  if (!question || question.itemId !== itemId) {
+    return { accepted: false, correct: false, reason: "QUESTION_ITEM_MISMATCH" };
+  }
+  if (!Number.isInteger(selectedIndex) || selectedIndex < 0 || selectedIndex >= question.choices.length) {
+    return { accepted: false, correct: false, reason: "INVALID_CHOICE" };
+  }
+  return {
+    accepted: true,
+    correct: selectedIndex === question.answer,
+    selectedAnswer: question.choices[selectedIndex],
+    correctAnswer: question.choices[question.answer],
+  };
+}
+
 export function applyReviewAnswer(progress, correct, now = new Date()) {
   const nextStage = correct ? Math.min(4, progress.reviewStage + 1) : 1;
   const intervalDays = [0, 1, 3, 7, 14][nextStage];
