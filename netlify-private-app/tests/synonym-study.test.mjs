@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   synonymStudySets,
   synonymContentSources,
@@ -88,4 +89,14 @@ test("today theme advances daily and cycles after day thirty", () => {
   assert.equal(first.day, 1);
   assert.equal(second.day, 2);
   assert.equal(cycle.day, 1);
+});
+
+test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", () => {
+  const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+  const tabs = appSource.match(/const tabs = `<nav class="synonym-tabs"[\s\S]*?<\/nav>`;/)?.[0] || "";
+  assert.match(tabs, />유의어 어휘<\/button>/);
+  assert.match(tabs, />테스트<\/button>/);
+  assert.match(tabs, />오답 복습 /);
+  assert.doesNotMatch(tabs, /학습 세트|학습·문제/);
+  assert.match(appSource, /const vocabulary = synonymStudySets\.flatMap/);
 });

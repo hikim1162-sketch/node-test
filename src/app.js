@@ -3057,10 +3057,10 @@ function expressionUpgradePage() {
 
 function synonymStudyPage() {
   const set = getActiveSynonymSet();
-  const view = synonymStudyState.view;
-  const todayTheme = getTodaySynonymTheme();
-  const dailyAnswer = synonymStudyState.dailyThemeAnswers[todayTheme.id];
-  const tabs = `<nav class="synonym-tabs" aria-label="유의어 공부 단계"><button class="${view === "sets" ? "active" : ""}" type="button" data-synonym-view="sets">유의어 어휘</button><button class="${["learn", "quiz", "result"].includes(view) ? "active" : ""}" type="button" data-synonym-view="learn">문제 풀기</button><button class="${view === "review" ? "active" : ""}" type="button" data-synonym-view="review">오답 복습 <b>${synonymStudyState.wrongWordIds.length}</b></button></nav>`;
+  const view = ["sets", "quiz", "result", "review"].includes(synonymStudyState.view)
+    ? synonymStudyState.view
+    : "sets";
+  const tabs = `<nav class="synonym-tabs" aria-label="유의어 공부 메뉴"><button class="${view === "sets" ? "active" : ""}" type="button" data-synonym-view="sets">유의어 어휘</button><button class="${["quiz", "result"].includes(view) ? "active" : ""}" type="button" data-synonym-view="quiz">테스트</button><button class="${view === "review" ? "active" : ""}" type="button" data-synonym-view="review">오답 복습 <b>${synonymStudyState.wrongWordIds.length}</b></button></nav>`;
   let content = "";
   if (view === "learn") {
     const index = Math.min(synonymStudyState.cardIndex, set.words.length - 1);
@@ -3079,20 +3079,13 @@ function synonymStudyPage() {
     }).join("")}</div>${answer ? `<section class="synonym-answer ${answer.isCorrect ? "success" : "error"}"><b>${answer.isCorrect ? "정답입니다." : "오답입니다."}</b><p>${escapeMarkup(question.explanation)}</p></section>` : ""}</article>${answer ? `<footer><button class="primary" type="button" data-synonym-quiz-next>${index === set.quiz.length - 1 ? "결과 확인" : "다음 문제"} ${icon("arrow", 14)}</button></footer>` : ""}</section>`;
   } else if (view === "result") {
     const score = synonymStudyState.answers.filter(item => item.isCorrect).length;
-    content = `<section class="synonym-result"><span>LEARNING COMPLETE</span><h2>${score}<small> / ${set.quiz.length}</small></h2><h3>${escapeMarkup(set.title)} 학습 완료</h3><p>${synonymStudyState.wrongWordIds.length ? "틀린 어휘는 오답 복습에 자동으로 저장했습니다." : "핵심 어휘를 모두 정확히 구별했습니다."}</p><div><button type="button" data-synonym-view="sets">다른 어휘 보기</button><button class="primary" type="button" data-synonym-view="review">오답 복습</button></div></section>`;
+    content = `<section class="synonym-result"><span>TEST COMPLETE</span><h2>${score}<small> / ${set.quiz.length}</small></h2><h3>유의어 테스트 완료</h3><p>${synonymStudyState.wrongWordIds.length ? "틀린 어휘는 오답 복습에 자동으로 저장했습니다." : "문제를 모두 정확히 풀었습니다."}</p><div><button type="button" data-synonym-view="sets">유의어 어휘</button><button class="primary" type="button" data-synonym-view="review">오답 복습</button></div></section>`;
   } else if (view === "review") {
     const wrongWords = synonymStudyState.wrongWordIds.map(findSynonymWord).filter(Boolean);
     content = `<section class="synonym-review"><header><span>WRONG ANSWER REVIEW</span><h2>다시 구별할 어휘</h2><p>정답만 외우지 말고 쉬운 표현과 뉘앙스를 함께 확인하세요.</p></header>${wrongWords.length ? `<div>${wrongWords.map(({ set: sourceSet, word }) => `<article><small>${escapeMarkup(sourceSet.category)} · ${escapeMarkup(word.level)} · ${escapeMarkup(word.examFrequency)}</small><div><s>${escapeMarkup(word.baseExpression)}</s>${icon("arrow", 14)}<h3>${escapeMarkup(word.targetWord)}</h3><button type="button" data-speak="${escapeMarkup(word.targetWord)}">${icon("volume", 15)}</button></div><strong>${escapeMarkup(word.meaningKo)}</strong><p>${escapeMarkup(word.nuance)}</p><button type="button" data-synonym-review-complete="${word.id}">${icon("check", 13)} 복습 완료</button></article>`).join("")}</div>` : `<div class="synonym-empty"><h3>복습할 오답이 없습니다.</h3><p>문제를 틀리면 해당 어휘가 이곳에 자동으로 모입니다.</p><button class="primary" type="button" data-synonym-view="sets">유의어 어휘 보기</button></div>`}</section>`;
   } else {
-    content = `<section class="synonym-home"><header><div><span>CSAT SYNONYM LAB</span><h2>쉬운 단어에서<br>정확한 고급 어휘로</h2></div></header><section class="synonym-daily-theme"><header><div><span>DAY ${String(todayTheme.day).padStart(2, "0")} · TODAY'S THEME</span><h3>${escapeMarkup(todayTheme.title)}</h3><p>${escapeMarkup(todayTheme.description)}</p></div><em>${escapeMarkup(todayTheme.level)}</em></header><div class="synonym-daily-items">${todayTheme.items.map(item => `<article><s>${escapeMarkup(item.base)}</s>${icon("arrow", 13)}<b>${escapeMarkup(item.target)}</b><span>${escapeMarkup(item.meaningKo)}</span></article>`).join("")}</div><section class="synonym-daily-quiz"><b>MINI QUIZ</b><p>${escapeMarkup(todayTheme.quiz.question)}</p><div>${todayTheme.quiz.options.map((option, optionIndex) => {
-      const selected = dailyAnswer?.selectedAnswer === option;
-      const correct = Boolean(dailyAnswer) && option === todayTheme.quiz.answer;
-      const wrong = Boolean(dailyAnswer) && selected && !dailyAnswer.isCorrect;
-      return `<button class="${correct ? "correct" : ""} ${wrong ? "wrong" : ""}" type="button" data-synonym-daily-answer="${optionIndex}" ${dailyAnswer ? "disabled" : ""}>${escapeMarkup(option)}</button>`;
-    }).join("")}</div>${dailyAnswer ? `<aside class="${dailyAnswer.isCorrect ? "success" : "error"}"><b>${dailyAnswer.isCorrect ? "정답입니다." : `정답은 ${escapeMarkup(todayTheme.quiz.answer)}입니다.`}</b><span>내일은 새로운 테마가 자동으로 표시됩니다.</span></aside>` : ""}</section><footer><span>${escapeMarkup(todayTheme.subtitle)}</span><a href="${todayTheme.source.url}" target="_blank" rel="noopener noreferrer">원문 참고 · ${escapeMarkup(todayTheme.source.name)} ${icon("arrow", 11)}</a></footer></section><div class="synonym-set-grid">${synonymStudySets.map(item => {
-      const complete = synonymStudyState.completedSetIds.includes(item.id);
-      return `<button type="button" data-synonym-set="${item.id}"><span>${escapeMarkup(item.category)}${complete ? `<em>${icon("check", 11)} 완료</em>` : ""}</span><h3>${escapeMarkup(item.title)}</h3><p>${escapeMarkup(item.description)}</p><small>5 WORDS · 3 QUESTIONS</small>${icon("arrow", 15)}</button>`;
-    }).join("")}</div><footer><p>현재 검수 샘플 <b>${synonymStudySets.reduce((sum, item) => sum + item.words.length, 0)}개</b> · 동일 데이터 포맷으로 500개 이상 확장</p></footer></section>`;
+    const vocabulary = synonymStudySets.flatMap(sourceSet => sourceSet.words.map(word => ({ sourceSet, word })));
+    content = `<section class="synonym-review synonym-vocabulary"><header><span>SYNONYM VOCABULARY</span><h2>유의어 어휘</h2><b>${vocabulary.length}개</b></header><div>${vocabulary.map(({ sourceSet, word }) => `<article><small>${escapeMarkup(sourceSet.category)} · ${escapeMarkup(word.level)}</small><div><s>${escapeMarkup(word.baseExpression)}</s>${icon("arrow", 14)}<h3>${escapeMarkup(word.targetWord)}</h3><button type="button" data-speak="${escapeMarkup(word.targetWord)}" aria-label="${escapeMarkup(word.targetWord)} 발음 듣기">${icon("volume", 15)}</button></div><strong>${escapeMarkup(word.meaningKo)}</strong><p>${escapeMarkup(word.nuance)}</p><aside>${word.additionalSynonyms.map(item => `<em>${escapeMarkup(item)}</em>`).join("")}</aside></article>`).join("")}</div></section>`;
   }
   return `${header("유의어 공부")}<main class="synonym-page">${tabs}${content}</main>`;
 }
@@ -5612,7 +5605,12 @@ function bindEvents(){
     render();
   }));
   document.querySelectorAll("[data-synonym-view]").forEach(button => button.addEventListener("click", event => {
-    synonymStudyState.view = event.currentTarget.dataset.synonymView;
+    const nextView = event.currentTarget.dataset.synonymView;
+    if (nextView === "quiz" && !["quiz", "result"].includes(synonymStudyState.view)) {
+      synonymStudyState.quizIndex = 0;
+      synonymStudyState.answers = [];
+    }
+    synonymStudyState.view = nextView;
     saveSynonymStudyState();
     render();
   }));

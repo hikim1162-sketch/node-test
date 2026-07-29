@@ -684,6 +684,12 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-review article p{color:#697c83;font-size:10px}
 .synonym-review article>button{float:right;padding:8px 11px;border:1px solid #bcd3cc;border-radius:8px;background:#edf6f3;color:#22695e;font-size:9px;font-weight:850}
 .synonym-review article:after{display:block;clear:both;content:""}
+.synonym-vocabulary>header{display:flex;align-items:center;gap:12px}
+.synonym-vocabulary>header h2{margin-right:auto}
+.synonym-vocabulary>header>b{padding:6px 9px;border-radius:20px;background:#e8f2ef;color:#26766b;font-size:10px}
+.synonym-vocabulary>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+.synonym-vocabulary article aside{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.synonym-vocabulary article aside em{padding:5px 8px;border-radius:20px;background:#e8f2ef;color:#26766b;font-size:8px;font-style:normal}
 .synonym-empty{padding:45px;text-align:center}
 
 @media (max-width:700px){
@@ -720,6 +726,8 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
   .synonym-daily-quiz>aside,.synonym-daily-theme>footer{align-items:flex-start;flex-direction:column}
   .synonym-set-grid{grid-template-columns:1fr;padding:15px}
   .synonym-learning,.synonym-quiz,.synonym-review{padding:15px}
+  .synonym-vocabulary>header{align-items:flex-start;flex-wrap:wrap}
+  .synonym-vocabulary>div{grid-template-columns:1fr}
   .synonym-word-card{padding:22px 14px}
   .synonym-upgrade-line{grid-template-columns:1fr 26px 1fr;gap:5px}
   .synonym-upgrade-line h2{font-size:34px}
