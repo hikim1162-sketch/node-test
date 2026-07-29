@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ExpressionStatus {
+  draft
+  active
+  hidden
+}
+
+enum SetStatus {
+  draft
+  published
+  archived
+}
+
+enum ReviewStatus {
+  pending
+  completed
+}
+
+enum ReviewSourceType {
+  saved
+  quiz_wrong
+}
+
+model Expression {
+  id               String                 @id @default(cuid())
+  slug             String                 @unique
+  expressionText   String                 @map("expression_text")
+  difficultyLevel  Int                    @map("difficulty_level")
+  shortDescription String                 @map("short_description") @db.VarChar(60)
+  usageNote        String                 @map("usage_note") @db.VarChar(80)
+  status           ExpressionStatus       @default(draft)
+  createdAt        DateTime               @default(now()) @map("created_at")
+  updatedAt        DateTime               @updatedAt @map("updated_at")
+  examples         ExpressionExample[]
+  setItems         ExpressionSetItem[]
+  quizItems        QuizItem[]
+  logs             LearningLog[]
+  saves            SavedExpression[]
+  reviews          ReviewQueueItem[]
+  contentReviews   ContentReview[]
+
+  @@map("expressions")
+}
+
+model ExpressionExample {
+  id           String     @id @default(cuid())
+  expressionId String     @map("expression_id")
+  exampleText  String     @map("example_text")
+  meaningText  String     @map("meaning_text")
+  sortOrder    Int        @default(1) @map("sort_order")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  expression   Expression @relation(fields: [expressionId], references: [id], onDelete: Cascade)
+
+  @@unique([expressionId, sortOrder])
+  @@map("expression_examples")
+}
+
+model ExpressionCandidate {
+  id           String   @id @default(cuid())
+  source       String
+  candidateText String  @map("candidate_text")
+  reviewStatus String   @default("pending") @map("review_status")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("expression_candidates")
+}
+
+model ExpressionSet {
+  id               String              @id @default(cuid())
+  setDate          DateTime            @unique @db.Date @map("set_date")
+  title            String
+  description      String
+  estimatedMinutes Int                 @default(4) @map("estimated_minutes")
+  status           SetStatus           @default(draft)
+  createdAt        DateTime            @default(now()) @map("created_at")
+  items            ExpressionSetItem[]
+  quiz             Quiz?
+  logs             LearningLog[]
+
+  @@index([status, setDate])
+  @@map("expression_sets")
+}
+
+model ExpressionSetItem {
+  id           String        @id @default(cuid())
+  setId        String        @map("set_id")
+  expressionId String        @map("expression_id")
+  beforeText   String        @map("before_text")
+  afterText    String        @map("after_text")
+  sortOrder    Int           @map("sort_order")
+  set          ExpressionSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+  expression   Expression    @relation(fields: [expressionId], references: [id])
+
+  @@unique([setId, expressionId])
+  @@unique([setId, sortOrder])
+  @@map("expression_set_items")
+}
+
+model Quiz {
+  id        String        @id @default(cuid())
+  setId     String        @unique @map("set_id")
+  title     String
+  createdAt DateTime      @default(now()) @map("created_at")
+  set       ExpressionSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+  items     QuizItem[]
+  submissions QuizSubmission[]
+  logs      LearningLog[]
+
+  @@map("quizzes")
+}
+
+model QuizItem {
+  id             String     @id @default(cuid())
+  quizId         String     @map("quiz_id")
+  expressionId   String     @map("expression_id")
+  questionType   String     @map("question_type")
+  questionText   String     @map("question_text")
+  correctAnswer  String     @map("correct_answer")
+  choice1        String     @map("choice_1")
+  choice2        String     @map("choice_2")
+  choice3        String     @map("choice_3")
+  explanation    String
+  sortOrder      Int        @map("sort_order")
+  quiz           Quiz       @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  expression     Expression @relation(fields: [expressionId], references: [id])
+  submissionItems QuizSubmissionItem[]
+  logs           LearningLog[]
+
+  @@unique([quizId, sortOrder])
+  @@map("quiz_items")
+}
+
+model QuizSubmission {
+  id          String               @id @default(cuid())
+  userId      String               @map("user_id")
+  quizId      String               @map("quiz_id")
+  score       Int
+  submittedAt DateTime             @default(now()) @map("submitted_at")
+  quiz        Quiz                 @relation(fields: [quizId], references: [id])
+  items       QuizSubmissionItem[]
+
+  @@index([userId, submittedAt])
+  @@map("quiz_submissions")
+}
+
+model QuizSubmissionItem {
+  id             String         @id @default(cuid())
+  submissionId   String         @map("submission_id")
+  quizItemId     String         @map("quiz_item_id")
+  selectedAnswer String         @map("selected_answer")
+  isCorrect      Boolean        @map("is_correct")
+  submission     QuizSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  quizItem       QuizItem       @relation(fields: [quizItemId], references: [id])
+
+  @@unique([submissionId, quizItemId])
+  @@map("quiz_submission_items")
+}
+
+model LearningLog {
+  id           String      @id @default(cuid())
+  userId       String      @map("user_id")
+  eventName    String      @map("event_name")
+  setId        String?     @map("set_id")
+  expressionId String?     @map("expression_id")
+  quizId       String?     @map("quiz_id")
+  quizItemId   String?     @map("quiz_item_id")
+  metadataJson Json?       @map("metadata_json")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  set          ExpressionSet? @relation(fields: [setId], references: [id])
+  expression   Expression? @relation(fields: [expressionId], references: [id])
+  quiz         Quiz?       @relation(fields: [quizId], references: [id])
+  quizItem     QuizItem?   @relation(fields: [quizItemId], references: [id])
+
+  @@index([userId, eventName, createdAt])
+  @@map("learning_logs")
+}
+
+model SavedExpression {
+  id           String     @id @default(cuid())
+  userId       String     @map("user_id")
+  expressionId String     @map("expression_id")
+  savedAt      DateTime   @default(now()) @map("saved_at")
+  expression   Expression @relation(fields: [expressionId], references: [id])
+
+  @@unique([userId, expressionId])
+  @@map("saved_expressions")
+}
+
+model ReviewQueueItem {
+  id           String           @id @default(cuid())
+  userId       String           @map("user_id")
+  expressionId String           @map("expression_id")
+  sourceType   ReviewSourceType @map("source_type")
+  sourceRefId  String?          @map("source_ref_id")
+  status       ReviewStatus     @default(pending)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  completedAt  DateTime?        @map("completed_at")
+  expression   Expression       @relation(fields: [expressionId], references: [id])
+
+  // Pending-entry idempotency is enforced transactionally in the service layer.
+  // A partial unique index can be added in SQL: WHERE status = 'pending'.
+  @@index([userId, expressionId, sourceType, status])
+  @@index([userId, status, createdAt])
+  @@map("review_queue")
+}
+
+model ContentReview {
+  id           String     @id @default(cuid())
+  expressionId String     @map("expression_id")
+  reviewStatus String     @map("review_status")
+  reviewer     String?
+  comment      String?
+  reviewedAt   DateTime?  @map("reviewed_at")
+  expression   Expression @relation(fields: [expressionId], references: [id])
+
+  @@map("content_reviews")
+}

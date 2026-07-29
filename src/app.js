@@ -13,6 +13,7 @@ import { getModeConfig } from "../netlify-private-app/src/profiles/learningModes
 import { middleEnglishPassages } from "../netlify-private-app/src/data/middleEnglish.js";
 import { loadArticles, toNewsArticle, updateArticleLearning } from "../netlify-private-app/src/articles/articleStorage.js";
 import { getWordById as getCsatWordById } from "../netlify-private-app/src/features/csat-vocab/vocabData.js";
+import { EXPRESSION_UPGRADE_STORAGE_KEY, expressionUpgradeSets, getTodayExpressionUpgradeSet, normalizeExpressionUpgradeState, addExpressionUpgradeReview } from "./expression-upgrade.js";
 
 const CATEGORIES = {
   word: { label: "단어", short: "단", icon: "book-open" },
@@ -1502,6 +1503,7 @@ const homeStudyItems = [
   { id: "ted", number: "04", title: "TED 학습", description: "오늘의 TED 문장 5개를 듣고 따라 말하며 핵심 표현을 익혀보세요.", page: "ted", link: "ted.html", icon: "mic", color: "rose", tag: "강연 표현", cta: "TED 보기" },
   { id: "test", number: "05", title: "Daily Test", description: "짧은 테스트로 오늘 학습한 내용을 가볍게 점검해보세요.", page: "test", link: "dailytest.html", icon: "clipboard", color: "mint", tag: "빠른 점검", cta: "테스트 풀기" },
   { id: "quiz", number: "06", title: "매일 토익 풀기", description: "문제를 풀고 오답을 확인하면서 실력을 정리해보세요.", page: "quiz", link: "quiz.html", icon: "pencil", color: "navy", tag: "오답 복습", cta: "문제 풀기" },
+  { id: "upgrade", number: "07", title: "표현 업그레이드", description: "쉬운 표현 5개를 더 자연스럽고 정확한 영어로 바꿔 익혀보세요.", page: "upgrade", link: "index.html#upgrade", icon: "spark", color: "sage", tag: "오늘의 5개", cta: "표현 업그레이드" },
 ];
 function homeAppItemId(id) {
   return id === "words" ? "vocab" : id === "test" ? "dailytest" : id;
@@ -1910,6 +1912,60 @@ let state = {
   wordIndex: 0, vocabPage: Number(profileStorage.getItem("value_time_vocab_page") || 0), sentencePage: Number(profileStorage.getItem("value_time_sentence_page") || 0), newsIndex: null, newsLibraryOpen: false, translatedSentence: null,
   newsSearch: "", newsCategory: "all", newsSort: "latest", tedLessonId: null, tedSentenceIndex: 0, tedMeaningOpen: false,
 };
+let expressionUpgradeState = (() => {
+  try {
+    return normalizeExpressionUpgradeState(JSON.parse(profileStorage.getItem(EXPRESSION_UPGRADE_STORAGE_KEY) || "null"));
+  } catch {
+    return normalizeExpressionUpgradeState(null);
+  }
+})();
+
+function saveExpressionUpgradeState() {
+  profileStorage.setItem(EXPRESSION_UPGRADE_STORAGE_KEY, JSON.stringify(expressionUpgradeState));
+}
+
+function logExpressionUpgradeEvent(eventName, details = {}) {
+  expressionUpgradeState.logs = [...expressionUpgradeState.logs, {
+    id: `upgrade-log-${Date.now()}-${expressionUpgradeState.logs.length}`,
+    userId: getCurrentUser("normal"),
+    eventName,
+    setId: details.setId || expressionUpgradeState.activeSetId || null,
+    expressionId: details.expressionId || null,
+    quizId: details.quizId || null,
+    quizItemId: details.quizItemId || null,
+    metadata: details.metadata || null,
+    createdAt: new Date().toISOString(),
+  }].slice(-1000);
+  saveExpressionUpgradeState();
+}
+
+function getActiveExpressionUpgradeSet() {
+  const todaySet = getTodayExpressionUpgradeSet();
+  return expressionUpgradeSets.find((set) => set.id === expressionUpgradeState.activeSetId) || todaySet;
+}
+
+function findExpressionUpgradeItem(expressionId) {
+  for (const set of expressionUpgradeSets) {
+    const expression = set.expressions.find((item) => item.id === expressionId);
+    if (expression) return { expression, set };
+  }
+  return null;
+}
+
+function ensureTodayExpressionUpgradeSet() {
+  const todaySet = getTodayExpressionUpgradeSet();
+  const todayKey = localDateKey();
+  if (expressionUpgradeState.activeSetDate !== todayKey) {
+    expressionUpgradeState.activeSetId = todaySet.id;
+    expressionUpgradeState.activeSetDate = todayKey;
+    expressionUpgradeState.view = "intro";
+    expressionUpgradeState.cardIndex = 0;
+    expressionUpgradeState.quizIndex = 0;
+    expressionUpgradeState.quizAnswers = [];
+    saveExpressionUpgradeState();
+  }
+  return getActiveExpressionUpgradeSet();
+}
 let vocabMonthlyTestState = { open: false, questions: [], index: 0, answers: [], submitted: false };
 
 function openMonthlyVocabularyTest() {
@@ -2348,7 +2404,7 @@ function navItem(id, label, ico) {
 function sidebar() {
   const todayDone = (state.history["2026-07-13"] || []).length;
   const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}<p class="nav-label space">MY SPACE</p>${navItem("calendar", "학습 캘린더", "calendar")}`;
-  const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
+  const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("upgrade", "표현 업그레이드", "spark")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
   const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", `${currentModeConfig().shortLabel} 단어장`, "book")}${navItem("suneung-passage", `오늘의 ${currentModeConfig().shortLabel} 지문`, "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">MY SPACE</p>${navItem("suneung-journal", "나만의 학습장", "bookmark")}${navItem("suneung-calendar", "학습 캘린더", "calendar")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
   return `<aside class="sidebar">
     <button class="brand" type="button" data-page="${isAcademicMode() ? "suneung-home" : "home"}" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
@@ -2892,6 +2948,77 @@ function dailyDramaSentenceCard() {
   const shortsUrl = "https://www.youtube.com/@Englishlamp2024/shorts";
   const links = [[shortsUrl, "play", "쇼츠 바로가기"]];
   return `<section class="home-drama-sentence" aria-label="오늘의 영어 한 문장"><div class="home-drama-copy"><span>DAILY SCENE ENGLISH</span><blockquote>“${escapeMarkup(sentence)}”</blockquote><strong>${escapeMarkup(item.meaningKo)}</strong><p>${escapeMarkup(item.situation)}</p><div><button type="button" data-speak="${escapeMarkup(sentence)}">${icon("mic", 15)} 문장 듣고 따라 말하기</button></div></div><nav aria-label="오늘의 미드 문장 관련 학습 링크">${links.map(([href, linkIcon, label]) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${icon(linkIcon, 14)} <span>${label}</span>${icon("arrow", 12)}</a>`).join("")}</nav></section>`;
+}
+
+function expressionUpgradePage() {
+  const set = ensureTodayExpressionUpgradeSet();
+  const view = expressionUpgradeState.view || "intro";
+  const savedCount = expressionUpgradeState.savedExpressionIds.length;
+  const pendingReviews = expressionUpgradeState.reviewQueue.filter((item) => item.status === "pending");
+  const nav = `<nav class="upgrade-tabs" aria-label="표현 업그레이드 메뉴">
+    <button class="${["intro", "learn", "quiz", "result"].includes(view) ? "active" : ""}" type="button" data-upgrade-view="intro">오늘의 5개</button>
+    <button class="${view === "saved" ? "active" : ""}" type="button" data-upgrade-view="saved">암기함 <b>${savedCount}</b></button>
+    <button class="${view === "review" ? "active" : ""}" type="button" data-upgrade-view="review">복습 <b>${pendingReviews.length}</b></button>
+  </nav>`;
+  let content = "";
+
+  if (view === "learn") {
+    const index = Math.min(expressionUpgradeState.cardIndex, set.expressions.length - 1);
+    const expression = set.expressions[index];
+    const completed = expressionUpgradeState.completedExpressionIds.includes(expression.id);
+    const saved = expressionUpgradeState.savedExpressionIds.includes(expression.id);
+    const feedbackSent = expressionUpgradeState.feedbackExpressionIds.includes(expression.id);
+    content = `<section class="upgrade-learning" aria-labelledby="upgrade-card-title">
+      <div class="upgrade-progress-head"><span>${set.title}</span><b>${index + 1} / ${set.expressions.length}</b></div>
+      <div class="upgrade-progress-track"><i style="width:${((index + 1) / set.expressions.length) * 100}%"></i></div>
+      <article class="upgrade-card">
+        <span class="upgrade-card-label">BEFORE</span><p class="upgrade-before">${escapeMarkup(expression.beforeText)}</p>
+        <span class="upgrade-arrow">${icon("arrow", 18)}</span>
+        <span class="upgrade-card-label after">UPGRADE</span>
+        <div class="upgrade-after"><h2 id="upgrade-card-title">${escapeMarkup(expression.afterText)}</h2><button type="button" data-speak="${escapeMarkup(expression.afterText)}" aria-label="${escapeMarkup(expression.afterText)} 발음 듣기">${icon("volume", 19)}</button></div>
+        <p class="upgrade-description">${escapeMarkup(expression.shortDescription)}</p>
+        <aside><b>사용할 때</b><p>${escapeMarkup(expression.usageNote)}</p></aside>
+        <blockquote><b>${escapeMarkup(expression.example.exampleText)}</b><span>${escapeMarkup(expression.example.meaningText)}</span></blockquote>
+        <div class="upgrade-card-actions">
+          <button class="${saved ? "saved" : ""}" type="button" data-upgrade-save="${expression.id}" ${saved ? "disabled" : ""}>${icon(saved ? "check" : "bookmark", 15)} ${saved ? "저장됨" : "암기함에 저장"}</button>
+          <button class="${feedbackSent ? "reported" : ""}" type="button" data-upgrade-feedback="${expression.id}" ${feedbackSent ? "disabled" : ""}>${feedbackSent ? "의견 전달됨" : "추천이 어색해요"}</button>
+        </div>
+      </article>
+      <footer class="upgrade-learning-actions">
+        ${index > 0 ? `<button type="button" data-upgrade-card="-1">이전</button>` : "<span></span>"}
+        ${completed ? `<button class="primary" type="button" data-upgrade-next>${index === set.expressions.length - 1 ? "퀴즈 시작" : "다음 표현"} ${icon("arrow", 14)}</button>` : `<button class="primary" type="button" data-upgrade-complete="${expression.id}">${icon("check", 14)} 이해했어요</button>`}
+      </footer>
+    </section>`;
+  } else if (view === "quiz") {
+    const index = Math.min(expressionUpgradeState.quizIndex, set.quiz.items.length - 1);
+    const question = set.quiz.items[index];
+    const answer = expressionUpgradeState.quizAnswers.find((item) => item.quizItemId === question.id);
+    content = `<section class="upgrade-quiz" aria-labelledby="upgrade-quiz-title">
+      <header><div><span>QUICK CHECK</span><h2 id="upgrade-quiz-title">${set.quiz.title}</h2></div><b>${index + 1} / ${set.quiz.items.length}</b></header>
+      <div class="upgrade-progress-track"><i style="width:${((index + 1) / set.quiz.items.length) * 100}%"></i></div>
+      <article><p>${escapeMarkup(question.questionText)}</p><div>${question.choices.map((choice, choiceIndex) => {
+        const selected = answer?.selectedAnswer === choice;
+        const correct = Boolean(answer) && choice === question.correctAnswer;
+        const wrong = Boolean(answer) && selected && !answer.isCorrect;
+        return `<button class="${selected ? "selected" : ""} ${correct ? "correct" : ""} ${wrong ? "wrong" : ""}" type="button" data-upgrade-answer="${choiceIndex}" ${answer ? "disabled" : ""}><i>${choiceIndex + 1}</i>${escapeMarkup(choice)}</button>`;
+      }).join("")}</div>${answer ? `<section class="upgrade-quiz-feedback ${answer.isCorrect ? "success" : "error"}"><b>${answer.isCorrect ? "정답입니다." : "오답입니다."}</b><p>${escapeMarkup(question.explanation)}</p></section>` : ""}</article>
+      ${answer ? `<footer><button class="primary" type="button" data-upgrade-quiz-next>${index === set.quiz.items.length - 1 ? "결과 보기" : "다음 문제"} ${icon("arrow", 14)}</button></footer>` : `<small>가장 알맞은 표현을 선택하세요.</small>`}
+    </section>`;
+  } else if (view === "result") {
+    const score = expressionUpgradeState.quizAnswers.filter((item) => item.isCorrect).length;
+    content = `<section class="upgrade-result"><span>DAILY SET COMPLETE</span><h2>${score}<small> / ${set.quiz.items.length}</small></h2><h3>오늘의 표현 5개를 완료했어요.</h3><p>${score === set.quiz.items.length ? "모든 표현을 정확히 구별했어요." : "틀린 표현은 복습 목록에 자동으로 담았습니다."}</p><div><button type="button" data-upgrade-view="saved">암기함 보기</button><button class="primary" type="button" data-upgrade-view="review">복습 확인</button></div><button class="upgrade-home-link" type="button" data-page="home">일반모드 홈으로</button></section>`;
+  } else if (view === "saved") {
+    const savedItems = expressionUpgradeState.savedExpressionIds.map(findExpressionUpgradeItem).filter(Boolean);
+    content = `<section class="upgrade-library"><header><span>MEMORIZATION BOX</span><h2>저장한 표현</h2><p>저장한 표현은 암기해도 사라지지 않아요.</p></header>${savedItems.length ? `<div>${savedItems.map(({ expression, set: sourceSet }) => `<article><small>${escapeMarkup(sourceSet.title)}</small><div><span>${escapeMarkup(expression.beforeText)}</span>${icon("arrow", 14)}<h3>${escapeMarkup(expression.afterText)}</h3><button type="button" data-speak="${escapeMarkup(expression.afterText)}">${icon("volume", 16)}</button></div><p>${escapeMarkup(expression.shortDescription)}</p><blockquote>${escapeMarkup(expression.example.exampleText)}</blockquote><button type="button" data-upgrade-review-expression="${expression.id}">복습 목록에 담기</button></article>`).join("")}</div>` : `<div class="upgrade-empty"><h3>아직 저장한 표현이 없어요.</h3><p>오늘의 카드에서 다시 보고 싶은 표현을 저장해보세요.</p><button class="primary" type="button" data-upgrade-view="intro">오늘의 5개 보기</button></div>`}</section>`;
+  } else if (view === "review") {
+    const reviewItems = pendingReviews.map((review) => ({ review, found: findExpressionUpgradeItem(review.expressionId) })).filter((item) => item.found);
+    content = `<section class="upgrade-library review"><header><span>REVIEW QUEUE</span><h2>복습할 표현</h2><p>저장했거나 퀴즈에서 틀린 표현을 다시 확인하세요.</p></header>${reviewItems.length ? `<div>${reviewItems.map(({ review, found: { expression } }) => `<article><small>${review.sourceType === "quiz_wrong" ? "퀴즈 오답" : "저장한 표현"}</small><div><span>${escapeMarkup(expression.beforeText)}</span>${icon("arrow", 14)}<h3>${escapeMarkup(expression.afterText)}</h3><button type="button" data-speak="${escapeMarkup(expression.afterText)}">${icon("volume", 16)}</button></div><p>${escapeMarkup(expression.shortDescription)}</p><blockquote><b>${escapeMarkup(expression.example.exampleText)}</b><span>${escapeMarkup(expression.example.meaningText)}</span></blockquote><button class="primary" type="button" data-upgrade-review-complete="${review.id}">${icon("check", 14)} 복습 완료</button></article>`).join("")}</div>` : `<div class="upgrade-empty"><h3>지금 복습할 표현이 없어요.</h3><p>표현을 저장하거나 퀴즈 오답이 생기면 이곳에 모입니다.</p><button class="primary" type="button" data-upgrade-view="intro">오늘의 5개 보기</button></div>`}</section>`;
+  } else {
+    const completed = expressionUpgradeState.completedSetIds.includes(set.id);
+    content = `<section class="upgrade-intro"><div><span>TODAY'S EXPRESSION UPGRADE</span><h2>${escapeMarkup(set.title)}</h2><p>${escapeMarkup(set.description)}</p><ul><li>5 expressions</li><li>약 ${set.estimatedMinutes}분</li><li>난이도 ${set.difficulty}</li></ul><button class="primary" type="button" data-upgrade-start>${completed ? "오늘 학습 다시 보기" : expressionUpgradeState.cardIndex > 0 ? "이어서 학습" : "오늘의 5개 시작"} ${icon("arrow", 15)}</button></div><aside><b>오늘 바꿔볼 표현</b>${set.expressions.map((expression, index) => `<p><i>${index + 1}</i><span>${escapeMarkup(expression.beforeText)}</span><em>UPGRADE</em></p>`).join("")}</aside></section>`;
+  }
+
+  return `${header("표현 업그레이드")}<main class="upgrade-page">${nav}${content}</main>`;
 }
 
 function homePage() {
@@ -5236,7 +5363,7 @@ function render() {
     if (!robotsMeta) { robotsMeta = document.createElement("meta"); robotsMeta.name = "robots"; document.head.appendChild(robotsMeta); }
     robotsMeta.content = "noindex, nofollow, noarchive";
   }
-  const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
+  const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="upgrade"?expressionUpgradePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
   document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}${vocabMonthlyTestModal()}</div>`;
   enhanceNewsEditorialReader();
   bindEvents();
@@ -5387,6 +5514,158 @@ function bindEvents(){
   bindSuneungDictionaryTooltips();
   bindSuneungPronunciation();
   decorateEnglishSentences();
+  document.querySelectorAll("[data-upgrade-view]").forEach(button => button.addEventListener("click", event => {
+    const view = event.currentTarget.dataset.upgradeView;
+    expressionUpgradeState.view = view;
+    if (view === "saved") logExpressionUpgradeEvent("saved_list_view");
+    if (view === "review") logExpressionUpgradeEvent("review_queue_view");
+    if (view === "intro") logExpressionUpgradeEvent("daily_set_view", { setId: getActiveExpressionUpgradeSet().id });
+    saveExpressionUpgradeState();
+    render();
+  }));
+  document.querySelector("[data-upgrade-start]")?.addEventListener("click", () => {
+    const set = ensureTodayExpressionUpgradeSet();
+    const hasFinished = expressionUpgradeState.completedSetIds.includes(set.id);
+    if (hasFinished) {
+      expressionUpgradeState.cardIndex = 0;
+      expressionUpgradeState.quizIndex = 0;
+      expressionUpgradeState.completedExpressionIds = [];
+      expressionUpgradeState.quizAnswers = [];
+    }
+    expressionUpgradeState.view = "learn";
+    logExpressionUpgradeEvent("learning_start", { setId: set.id });
+    logExpressionUpgradeEvent("expression_card_view", {
+      setId: set.id,
+      expressionId: set.expressions[expressionUpgradeState.cardIndex]?.id,
+      metadata: { cardIndex: expressionUpgradeState.cardIndex },
+    });
+    saveExpressionUpgradeState();
+    render();
+  });
+  document.querySelectorAll("[data-upgrade-complete]").forEach(button => button.addEventListener("click", event => {
+    const expressionId = event.currentTarget.dataset.upgradeComplete;
+    if (!expressionUpgradeState.completedExpressionIds.includes(expressionId)) {
+      expressionUpgradeState.completedExpressionIds.push(expressionId);
+      logExpressionUpgradeEvent("expression_card_complete", {
+        setId: getActiveExpressionUpgradeSet().id,
+        expressionId,
+      });
+    }
+    saveExpressionUpgradeState();
+    render();
+  }));
+  document.querySelector("[data-upgrade-next]")?.addEventListener("click", () => {
+    const set = getActiveExpressionUpgradeSet();
+    if (expressionUpgradeState.cardIndex >= set.expressions.length - 1) {
+      expressionUpgradeState.view = "quiz";
+      expressionUpgradeState.quizIndex = 0;
+      logExpressionUpgradeEvent("quiz_start", { setId: set.id, quizId: set.quiz.id });
+    } else {
+      expressionUpgradeState.cardIndex += 1;
+      const expression = set.expressions[expressionUpgradeState.cardIndex];
+      logExpressionUpgradeEvent("expression_card_view", {
+        setId: set.id,
+        expressionId: expression.id,
+        metadata: { cardIndex: expressionUpgradeState.cardIndex },
+      });
+    }
+    saveExpressionUpgradeState();
+    render();
+  });
+  document.querySelectorAll("[data-upgrade-card]").forEach(button => button.addEventListener("click", event => {
+    const set = getActiveExpressionUpgradeSet();
+    expressionUpgradeState.cardIndex = Math.max(0, Math.min(set.expressions.length - 1, expressionUpgradeState.cardIndex + Number(event.currentTarget.dataset.upgradeCard)));
+    logExpressionUpgradeEvent("expression_card_view", {
+      setId: set.id,
+      expressionId: set.expressions[expressionUpgradeState.cardIndex].id,
+      metadata: { cardIndex: expressionUpgradeState.cardIndex },
+    });
+    saveExpressionUpgradeState();
+    render();
+  }));
+  document.querySelectorAll("[data-upgrade-save]").forEach(button => button.addEventListener("click", event => {
+    const expressionId = event.currentTarget.dataset.upgradeSave;
+    if (!expressionUpgradeState.savedExpressionIds.includes(expressionId)) {
+      expressionUpgradeState.savedExpressionIds.push(expressionId);
+      expressionUpgradeState = addExpressionUpgradeReview(expressionUpgradeState, expressionId, "saved", expressionId);
+      logExpressionUpgradeEvent("expression_save", {
+        setId: getActiveExpressionUpgradeSet().id,
+        expressionId,
+      });
+      saveExpressionUpgradeState();
+      render();
+    }
+  }));
+  document.querySelectorAll("[data-upgrade-feedback]").forEach(button => button.addEventListener("click", event => {
+    const expressionId = event.currentTarget.dataset.upgradeFeedback;
+    if (!expressionUpgradeState.feedbackExpressionIds.includes(expressionId)) {
+      expressionUpgradeState.feedbackExpressionIds.push(expressionId);
+      logExpressionUpgradeEvent("quality_feedback", {
+        setId: getActiveExpressionUpgradeSet().id,
+        expressionId,
+        metadata: { reason: "awkward" },
+      });
+      saveExpressionUpgradeState();
+      render();
+    }
+  }));
+  document.querySelectorAll("[data-upgrade-answer]").forEach(button => button.addEventListener("click", event => {
+    const set = getActiveExpressionUpgradeSet();
+    const quizItem = set.quiz.items[expressionUpgradeState.quizIndex];
+    if (!quizItem || expressionUpgradeState.quizAnswers.some(answer => answer.quizItemId === quizItem.id)) return;
+    const selectedIndex = Number(event.currentTarget.dataset.upgradeAnswer);
+    const selectedAnswer = quizItem.choices[selectedIndex];
+    const isCorrect = selectedAnswer === quizItem.correctAnswer;
+    expressionUpgradeState.quizAnswers.push({
+      quizItemId: quizItem.id,
+      expressionId: quizItem.expressionId,
+      selectedAnswer,
+      isCorrect,
+    });
+    if (!isCorrect) expressionUpgradeState = addExpressionUpgradeReview(expressionUpgradeState, quizItem.expressionId, "quiz_wrong", quizItem.id);
+    logExpressionUpgradeEvent("quiz_answer", {
+      setId: set.id,
+      expressionId: quizItem.expressionId,
+      quizId: set.quiz.id,
+      quizItemId: quizItem.id,
+      metadata: { selectedAnswer, selectedIndex, isCorrect },
+    });
+    saveExpressionUpgradeState();
+    render();
+  }));
+  document.querySelector("[data-upgrade-quiz-next]")?.addEventListener("click", () => {
+    const set = getActiveExpressionUpgradeSet();
+    if (expressionUpgradeState.quizIndex >= set.quiz.items.length - 1) {
+      expressionUpgradeState.view = "result";
+      if (!expressionUpgradeState.completedSetIds.includes(set.id)) expressionUpgradeState.completedSetIds.push(set.id);
+      homeStudyState.checked.upgrade = true;
+      saveHomeStudyState("upgrade");
+      const score = expressionUpgradeState.quizAnswers.filter(answer => answer.isCorrect).length;
+      logExpressionUpgradeEvent("quiz_complete", { setId: set.id, quizId: set.quiz.id, metadata: { score, total: set.quiz.items.length } });
+      logExpressionUpgradeEvent("result_view", { setId: set.id, quizId: set.quiz.id, metadata: { score, total: set.quiz.items.length } });
+    } else {
+      expressionUpgradeState.quizIndex += 1;
+    }
+    saveExpressionUpgradeState();
+    render();
+  });
+  document.querySelectorAll("[data-upgrade-review-expression]").forEach(button => button.addEventListener("click", event => {
+    const expressionId = event.currentTarget.dataset.upgradeReviewExpression;
+    expressionUpgradeState = addExpressionUpgradeReview(expressionUpgradeState, expressionId, "saved", expressionId);
+    logExpressionUpgradeEvent("review_start", { expressionId, metadata: { sourceType: "saved" } });
+    expressionUpgradeState.view = "review";
+    saveExpressionUpgradeState();
+    render();
+  }));
+  document.querySelectorAll("[data-upgrade-review-complete]").forEach(button => button.addEventListener("click", event => {
+    const review = expressionUpgradeState.reviewQueue.find(item => item.id === event.currentTarget.dataset.upgradeReviewComplete);
+    if (!review || review.status === "completed") return;
+    review.status = "completed";
+    review.completedAt = new Date().toISOString();
+    logExpressionUpgradeEvent("review_complete", { expressionId: review.expressionId, metadata: { reviewId: review.id, sourceType: review.sourceType } });
+    saveExpressionUpgradeState();
+    render();
+  }));
   document.querySelectorAll("[data-vocab-test-close]").forEach(button => button.addEventListener("click", () => {
     vocabMonthlyTestState.open = false;
     render();
@@ -5823,7 +6102,14 @@ function bindEvents(){
     saveSuneungState();
     render();
   });
-  document.querySelectorAll("[data-page]").forEach(el=>el.addEventListener("click",()=>navigateTo(el.dataset.page)));
+  document.querySelectorAll("[data-page]").forEach(el=>el.addEventListener("click",()=>{
+    if (el.dataset.page === "upgrade") {
+      const set = ensureTodayExpressionUpgradeSet();
+      logExpressionUpgradeEvent("home_view", { setId: set.id, metadata: { source: "general_home" } });
+      logExpressionUpgradeEvent("daily_set_view", { setId: set.id });
+    }
+    navigateTo(el.dataset.page);
+  }));
   document.querySelector("[data-review-open]")?.addEventListener("click", () => { reviewChatState.open = true; render(); });
   document.querySelector("[data-review-close]")?.addEventListener("click", () => { reviewChatState.open = false; render(); });
   document.querySelectorAll("[data-review-answer]").forEach(button => button.addEventListener("click", event => {
@@ -6840,7 +7126,7 @@ if (initialNavigation?.worthyLife) {
   const entryFile = window.location.pathname.split("/").pop().toLowerCase();
   const hashPage = window.location.hash.replace(/^#/, "").split("/")[0];
   if (entryFile === "suneung.html" && audienceMode !== "middle") applyAudienceMode("suneung");
-  state.page = entryPageMap[entryFile] || (["calendar", "blog", "journal"].includes(hashPage) ? hashPage : "home");
+  state.page = entryPageMap[entryFile] || (["calendar", "blog", "journal", "upgrade"].includes(hashPage) ? hashPage : "home");
   if (entryFile === "suneung.html" && hashPage.startsWith("suneung-")) state.page = hashPage;
   const articleMatch = state.page === "news" ? window.location.hash.match(/^#article-(\d+)$/) : null;
   state.newsIndex = articleMatch ? Number(articleMatch[1]) : null;

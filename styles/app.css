@@ -476,3 +476,98 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .short-drama-page{max-width:720px}.short-drama-hero{display:grid;grid-template-columns:1fr auto;gap:16px;padding:25px;border-radius:22px;background:linear-gradient(135deg,#163d37,#2d7163);color:#fff;box-shadow:0 14px 32px rgba(24,73,62,.18)}.short-drama-hero .eyebrow{margin:0 0 6px;color:#aee0d2}.short-drama-hero h2{margin:0;font-size:27px}.short-drama-hero>div>p:last-child{margin:7px 0 0;color:#d4ebe5;font-size:11px}.short-drama-hero>div:nth-child(2){display:flex;align-items:flex-end;flex-direction:column}.short-drama-hero strong{font:800 30px Georgia}.short-drama-hero strong small{font-size:13px}.short-drama-hero>div:nth-child(2)>span{font-size:8px}.short-drama-progress{grid-column:1/-1;height:7px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.2)}.short-drama-progress i{display:block;height:100%;border-radius:inherit;background:#b8eadc;transition:width .25s}.short-drama-feed{display:grid;gap:16px;margin-top:17px}.short-drama-card{padding:20px;border:1px solid #dce6e2;border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(29,68,59,.07)}.short-drama-card.complete{border-color:#7eb7a8;background:linear-gradient(180deg,#f7fcfa,#eef8f4)}.short-drama-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.short-drama-card-head span{display:flex;align-items:center;gap:4px;color:#27806c;font-size:8px;font-weight:900;letter-spacing:.08em}.short-drama-card-head h3{margin:5px 0 2px;font-size:15px}.short-drama-card-head p{margin:0;color:#87938f;font-size:8px}.short-drama-card-head>button{display:grid;place-items:center;width:34px;height:34px;border:1px solid #d8e4e0;border-radius:50%;background:#f8fbfa;color:#66807a}.short-drama-card-head>button.saved{border-color:#76ad9e;background:#dff2eb;color:#26735f}.short-drama-situation{margin:13px 0 0;padding:9px 11px;border-radius:9px;background:#f2f6f5;color:#657772;font-size:9px}.short-drama-line{display:flex;align-items:center;gap:12px;padding:22px 2px 16px}.short-drama-line blockquote{flex:1;margin:0;color:#17304d;font:700 25px/1.45 Georgia}.short-drama-line>button{display:grid;place-items:center;flex:none;width:38px;height:38px;border:0;border-radius:50%;background:#e3f1ec;color:#23735f}.short-drama-reveal,.short-drama-expression-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px;border:1px dashed #cbd9d5;border-radius:11px;background:#f9fbfa;color:#397463;font-size:9px;font-weight:900}.short-drama-reveal.open,.short-drama-expression-toggle.open{border-style:solid;background:#edf7f3}.short-drama-reveal.open svg,.short-drama-expression-toggle.open svg{transform:rotate(180deg)}.short-drama-translation{margin:8px 0 0;padding:11px;border-radius:10px;background:#edf7f3;color:#4b655e;font-size:11px}.short-drama-expression-toggle{margin-top:9px;text-align:left}.short-drama-expression-toggle span small,.short-drama-expression-toggle span b{display:block}.short-drama-expression-toggle small{color:#749087;font-size:7px}.short-drama-expression-toggle b{margin-top:3px;color:#214f44;font:700 14px Georgia}.short-drama-expression{margin-top:7px;padding:12px;border-left:3px solid #56a18d;border-radius:8px;background:#f3f8f6}.short-drama-expression strong{color:#315c51;font-size:10px}.short-drama-expression p{margin:5px 0 0;color:#71827d;font-size:9px;line-height:1.55}.short-drama-actions{display:grid;grid-template-columns:1.15fr 1fr;gap:7px;margin-top:12px}.short-drama-actions button{display:flex;align-items:center;justify-content:center;gap:5px;padding:11px;border:1px solid #cbdcd6;border-radius:10px;background:#fff;color:#356c5e;font-size:9px;font-weight:900}.short-drama-actions button.primary{border-color:#246f5e;background:#246f5e;color:#fff}.short-drama-quiz{margin-top:12px;padding:14px;border:1px solid #c9ddd7;border-radius:14px;background:#f7fbfa}.short-drama-quiz>header{display:flex;justify-content:space-between}.short-drama-quiz>header span{color:#27806c;font-size:8px;font-weight:900}.short-drama-quiz>header button{border:0;background:none}.short-drama-quiz h4{margin:12px 0;font-size:13px;line-height:1.55}.short-drama-quiz>div{display:grid;gap:7px}.short-drama-quiz>div>button{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #d7e2df;border-radius:9px;background:#fff;color:#40544f;text-align:left;font-size:9px}.short-drama-quiz>div>button i{display:grid;place-items:center;flex:none;width:21px;height:21px;border-radius:50%;background:#edf3f1;font-style:normal;font-weight:900}.short-drama-quiz>div>button.correct{border-color:#5ba67b;background:#e8f6ed}.short-drama-quiz>div>button.wrong{border-color:#d17474;background:#fff0f0}.short-drama-quiz>small{display:block;margin-top:9px;color:#82908c;font-size:8px}.short-drama-quiz>p{margin:9px 0 0;padding:10px;border-radius:9px;font-size:9px;line-height:1.55}.short-drama-quiz>p b{display:block;margin-bottom:3px}.short-drama-quiz>p.success{background:#e5f5eb;color:#277148}.short-drama-quiz>p.error{background:#fff0f0;color:#9c4545}.short-drama-next{width:100%;margin-top:8px;padding:10px;border:0;border-radius:9px;background:#173e37;color:#fff;font-size:9px;font-weight:900}.short-drama-status{display:flex;align-items:center;gap:11px;margin-top:16px;padding:16px;border:1px solid #d8e4e0;border-radius:16px;background:#fff}.short-drama-status>span{display:grid;place-items:center;width:35px;height:35px;border-radius:11px;background:#e4f2ed;color:#23735f}.short-drama-status>div{flex:1}.short-drama-status b{font-size:11px}.short-drama-status p{margin:4px 0 0;color:#788783;font-size:8px}.short-drama-status>button{padding:8px 10px;border:1px solid #d7dfdc;border-radius:8px;background:#fff;color:#6f7e7a;font-size:8px}.short-drama-status>button:disabled{opacity:.4}html[data-theme="dark"] .short-drama-card,html[data-theme="dark"] .short-drama-status{border-color:#30443f;background:#1a2926}html[data-theme="dark"] .short-drama-card.complete{background:#203a34}html[data-theme="dark"] .short-drama-line blockquote{color:#e5efec}html[data-theme="dark"] .short-drama-situation,html[data-theme="dark"] .short-drama-quiz,html[data-theme="dark"] .short-drama-expression{background:#21332f}html[data-theme="dark"] .short-drama-reveal,html[data-theme="dark"] .short-drama-expression-toggle,html[data-theme="dark"] .short-drama-actions button,html[data-theme="dark"] .short-drama-quiz>div>button{border-color:#3b504a;background:#20302d;color:#bcd0ca}@media(max-width:600px){.short-drama-page{padding-left:12px;padding-right:12px}.short-drama-hero{padding:20px}.short-drama-hero h2{font-size:23px}.short-drama-card{padding:16px}.short-drama-line blockquote{font-size:21px}.short-drama-actions{grid-template-columns:1fr}.short-drama-status{align-items:flex-start}.short-drama-status>button{flex:none}}
 .suneung-expression-section{margin-top:18px;padding:22px;border:1px solid #ccd9e3;border-radius:16px;background:#f5f8fa}.suneung-expression-section>header span{color:#387363;font-size:8px;font-weight:900;letter-spacing:.14em}.suneung-expression-section>header h2{margin:7px 0 4px;color:#18384c;font-size:18px}.suneung-expression-section>header p{margin:0;color:#6c7d88;font-size:9px}.suneung-expression-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.suneung-expression-grid article{padding:18px;border:1px solid #cfe0dc;border-radius:13px;background:#fff}.suneung-expression-grid article>span{color:#347564;font-size:7px;font-weight:900}.suneung-expression-grid h3{margin:8px 0;color:#173f36;font:700 17px Georgia}.suneung-expression-grid b{font-size:10px}.suneung-expression-grid blockquote{margin:12px 0 7px;padding:9px 11px;border-left:3px solid #72a99b;background:#edf6f3;color:#405d56;font:10px/1.6 Georgia}.suneung-expression-grid p{min-height:30px;color:#71827d;font-size:8px;line-height:1.6}.suneung-expression-grid button{width:100%;margin-top:8px;padding:8px;border:0;border-radius:7px;background:#dfeeea;color:#286756;font-size:8px}.suneung-expression-grid button.saved{background:#286756;color:#fff}@media(max-width:800px){.suneung-expression-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.suneung-expression-grid{grid-template-columns:1fr}}
 .suneung-vocab-grid article>button,.suneung-expression-grid article>button{min-height:42px;padding:10px 12px;font-size:11px;font-weight:900;transition:background-color .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease}.suneung-vocab-grid article>button.saved,.suneung-expression-grid article>button.saved{border-color:#27745f;background:#27745f;color:#fff;box-shadow:0 5px 12px rgba(39,116,95,.2)}.suneung-vocab-grid article>button.saved::before,.suneung-expression-grid article>button.saved::before{margin-right:5px;content:"✓"}
+/* Expression upgrade · general mode MVP */
+.upgrade-page{max-width:1040px;margin:0 auto;padding:28px 24px 80px;color:#173047}
+.upgrade-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:7px;margin-bottom:18px;border:1px solid #d6e3e2;border-radius:16px;background:#edf5f3}
+.upgrade-tabs button{min-height:46px;border:0;border-radius:11px;background:transparent;color:#58706f;font-weight:800;cursor:pointer}
+.upgrade-tabs button.active{background:#fff;color:#0d655a;box-shadow:0 2px 9px #17304712}
+.upgrade-tabs b{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:5px;border-radius:99px;background:#dceee9;font-size:11px}
+.upgrade-intro,.upgrade-learning,.upgrade-quiz,.upgrade-result,.upgrade-library{border:1px solid #d8e4e8;border-radius:24px;background:#fff;box-shadow:0 18px 48px #1730470d}
+.upgrade-intro{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;padding:44px}
+.upgrade-intro>div>span,.upgrade-library>header>span,.upgrade-result>span,.upgrade-quiz header span{color:#148274;font-size:11px;font-weight:900;letter-spacing:.14em}
+.upgrade-intro h2{margin:12px 0 9px;font-family:Georgia,serif;font-size:clamp(32px,5vw,52px);line-height:1.08}
+.upgrade-intro>div>p{color:#607580;line-height:1.7}
+.upgrade-intro ul{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0;padding:0;list-style:none}
+.upgrade-intro li{padding:7px 11px;border-radius:99px;background:#edf6f3;color:#286b63;font-size:12px;font-weight:800}
+.upgrade-page .primary{border-color:#123b56!important;background:#123b56!important;color:#fff!important}
+.upgrade-intro button,.upgrade-learning-actions button,.upgrade-quiz footer button,.upgrade-result button,.upgrade-empty button{min-height:48px;padding:0 20px;border:1px solid #bfd1d6;border-radius:11px;font-weight:850;cursor:pointer}
+.upgrade-intro aside{padding:24px;border-radius:18px;background:#f3f7f7}
+.upgrade-intro aside>b{display:block;margin-bottom:14px}
+.upgrade-intro aside p{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;margin:7px 0;padding:10px;border-radius:10px;background:#fff}
+.upgrade-intro aside i{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#e3f1ee;color:#217469;font-style:normal;font-size:11px}
+.upgrade-intro aside span{text-decoration:line-through;color:#718184}
+.upgrade-intro aside em{color:#148274;font-size:9px;font-style:normal;font-weight:900;letter-spacing:.08em}
+.upgrade-learning,.upgrade-quiz{padding:30px}
+.upgrade-progress-head,.upgrade-quiz>header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.upgrade-progress-track{height:6px;margin:12px 0 24px;overflow:hidden;border-radius:99px;background:#e8efef}
+.upgrade-progress-track i{display:block;height:100%;border-radius:inherit;background:#159482;transition:width .2s}
+.upgrade-card{padding:clamp(24px,5vw,50px);border-radius:20px;background:#f4f8f7;text-align:center}
+.upgrade-card-label{display:block;color:#9a6c56;font-size:10px;font-weight:900;letter-spacing:.17em}
+.upgrade-card-label.after{color:#168173}
+.upgrade-before{margin:7px 0 12px;color:#768487;font-size:22px;text-decoration:line-through}
+.upgrade-arrow{display:block;margin:4px;color:#9fb2b3}
+.upgrade-after{display:flex;align-items:center;justify-content:center;gap:12px}
+.upgrade-after h2{margin:7px 0;font-family:Georgia,serif;font-size:clamp(34px,6vw,54px)}
+.upgrade-after button,.upgrade-library article div>button{display:grid;place-items:center;width:42px;height:42px;border:1px solid #c6dbd7;border-radius:50%;background:#fff;color:#187a6f;cursor:pointer}
+.upgrade-description{margin:12px auto;color:#254a4b;font-size:17px;font-weight:800}
+.upgrade-card blockquote{max-width:700px;margin:22px auto 0;padding:18px;border-left:4px solid #209582;border-radius:4px 12px 12px 4px;background:#fff;text-align:left}
+.upgrade-card blockquote b,.upgrade-card blockquote span{display:block}
+.upgrade-card blockquote span{margin-top:7px;color:#788788;font-size:13px}
+.upgrade-card-actions{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.upgrade-card-actions button,.upgrade-library article>button{min-height:38px;padding:0 13px;border:1px solid #c6d8d8;border-radius:9px;background:#fff;color:#496262;font-weight:750;cursor:pointer}
+.upgrade-card-actions button.saved,.upgrade-card-actions button.reported{background:#e7f3f0;color:#177566}
+.upgrade-learning-actions{display:flex;align-items:center;justify-content:space-between;margin-top:18px}
+.upgrade-quiz>header h2{margin:5px 0 0;font-size:24px}
+.upgrade-quiz>article{padding:24px;border-radius:18px;background:#f6f8f9}
+.upgrade-quiz>article>p{margin:0 0 20px;font-size:20px;font-weight:850}
+.upgrade-quiz>article>div{display:grid;gap:9px}
+.upgrade-quiz>article>div>button{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 14px;border:1px solid #ccdade;border-radius:11px;background:#fff;text-align:left;cursor:pointer}
+.upgrade-quiz>article>div>button i{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#edf2f3;font-style:normal;font-size:12px}
+.upgrade-quiz>article>div>button.correct{border-color:#50a38e;background:#e7f5f0;color:#126c5d}
+.upgrade-quiz>article>div>button.wrong{border-color:#dc8d7d;background:#fff0ec;color:#9b3a2d}
+.upgrade-quiz-feedback{margin-top:14px;padding:14px;border-radius:10px;background:#e8f5f0;color:#176b5d}
+.upgrade-quiz-feedback.error{background:#fff0ec;color:#943d31}
+.upgrade-quiz-feedback p{margin:5px 0 0;font-size:13px}
+.upgrade-quiz footer{display:flex;justify-content:flex-end;margin-top:16px}
+.upgrade-quiz>small{display:block;margin-top:14px;color:#738588}
+.upgrade-result{padding:52px 24px;text-align:center}
+.upgrade-result h2{margin:14px 0 4px;color:#148274;font-family:Georgia,serif;font-size:70px}
+.upgrade-result h2 small{font-size:25px}
+.upgrade-result h3{font-size:25px}
+.upgrade-result p{color:#677c80}
+.upgrade-result>div{display:flex;justify-content:center;gap:8px;margin-top:24px}
+.upgrade-home-link{display:block!important;margin:12px auto 0!important;border:0!important;background:transparent!important;color:#5c7376!important}
+.upgrade-library{padding:30px}
+.upgrade-library>header{margin-bottom:20px}
+.upgrade-library>header h2{margin:7px 0;font-size:30px}
+.upgrade-library>header p{margin:0;color:#718487}
+.upgrade-library>div{display:grid;gap:10px}
+.upgrade-library article{padding:18px;border:1px solid #d5e1e2;border-radius:15px;background:#f8fbfa}
+.upgrade-library article small{color:#6a7f82}
+.upgrade-library article>div{display:flex;align-items:center;gap:10px;margin:9px 0}
+.upgrade-library article>div>span{color:#7b898b;text-decoration:line-through}
+.upgrade-library article h3{margin:0;font-family:Georgia,serif;font-size:25px}
+.upgrade-library article p{color:#496467}
+.upgrade-library article blockquote{display:flex;flex-direction:column;gap:5px;margin:12px 0;padding:12px;border-left:3px solid #69a99e;background:#fff}
+.upgrade-library article blockquote span{color:#778689;font-size:13px}
+.upgrade-library article>button{float:right}
+.upgrade-library article::after{display:block;clear:both;content:""}
+.upgrade-empty{padding:50px 20px!important;text-align:center}
+
+@media (max-width:700px){
+  .upgrade-page{padding:16px 12px 60px}
+  .upgrade-tabs{position:sticky;top:8px;z-index:5}
+  .upgrade-tabs button{font-size:12px}
+  .upgrade-intro{grid-template-columns:1fr;padding:26px 20px}
+  .upgrade-intro aside{padding:15px}
+  .upgrade-learning,.upgrade-quiz,.upgrade-library{padding:16px;border-radius:18px}
+  .upgrade-card{padding:28px 15px}
+  .upgrade-after h2{font-size:36px}
+  .upgrade-card-actions{display:grid;grid-template-columns:1fr 1fr}
+  .upgrade-learning-actions button,.upgrade-quiz footer button{width:100%}
+  .upgrade-learning-actions{gap:8px}
+  .upgrade-learning-actions>span{display:none}
+  .upgrade-quiz>article{padding:16px}
+  .upgrade-result>div{display:grid}
+  .upgrade-library article>div{flex-wrap:wrap}
+}
