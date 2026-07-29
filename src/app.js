@@ -14,6 +14,7 @@ import { middleEnglishPassages } from "../netlify-private-app/src/data/middleEng
 import { loadArticles, toNewsArticle, updateArticleLearning } from "../netlify-private-app/src/articles/articleStorage.js";
 import { getWordById as getCsatWordById } from "../netlify-private-app/src/features/csat-vocab/vocabData.js";
 import { EXPRESSION_UPGRADE_STORAGE_KEY, expressionUpgradeSets, getTodayExpressionUpgradeSet, normalizeExpressionUpgradeState, addExpressionUpgradeReview } from "./expression-upgrade.js";
+import { SYNONYM_STUDY_STORAGE_KEY, synonymStudySets, synonymContentSources, normalizeSynonymStudyState } from "../data/synonym-study.js";
 
 const CATEGORIES = {
   word: { label: "단어", short: "단", icon: "book-open" },
@@ -1504,6 +1505,7 @@ const homeStudyItems = [
   { id: "test", number: "05", title: "Daily Test", description: "짧은 테스트로 오늘 학습한 내용을 가볍게 점검해보세요.", page: "test", link: "dailytest.html", icon: "clipboard", color: "mint", tag: "빠른 점검", cta: "테스트 풀기" },
   { id: "quiz", number: "06", title: "매일 토익 풀기", description: "문제를 풀고 오답을 확인하면서 실력을 정리해보세요.", page: "quiz", link: "quiz.html", icon: "pencil", color: "navy", tag: "오답 복습", cta: "문제 풀기" },
   { id: "upgrade", number: "07", title: "표현 업그레이드", description: "쉬운 표현 5개를 더 자연스럽고 정확한 영어로 바꿔 익혀보세요.", page: "upgrade", link: "index.html#upgrade", icon: "spark", color: "sage", tag: "오늘의 5개", cta: "표현 업그레이드" },
+  { id: "synonyms", number: "08", title: "유의어 공부", description: "수능에 자주 나오는 쉬운 표현을 정확한 고급 어휘와 연결해보세요.", page: "synonyms", link: "index.html#synonyms", icon: "book", color: "blue", tag: "수능형 어휘", cta: "유의어 학습" },
 ];
 function homeAppItemId(id) {
   return id === "words" ? "vocab" : id === "test" ? "dailytest" : id;
@@ -1919,6 +1921,29 @@ let expressionUpgradeState = (() => {
     return normalizeExpressionUpgradeState(null);
   }
 })();
+let synonymStudyState = (() => {
+  try {
+    return normalizeSynonymStudyState(JSON.parse(profileStorage.getItem(SYNONYM_STUDY_STORAGE_KEY) || "null"));
+  } catch {
+    return normalizeSynonymStudyState(null);
+  }
+})();
+
+function saveSynonymStudyState() {
+  profileStorage.setItem(SYNONYM_STUDY_STORAGE_KEY, JSON.stringify(synonymStudyState));
+}
+
+function getActiveSynonymSet() {
+  return synonymStudySets.find((set) => set.id === synonymStudyState.activeSetId) || synonymStudySets[0];
+}
+
+function findSynonymWord(wordId) {
+  for (const set of synonymStudySets) {
+    const word = set.words.find((item) => item.id === wordId);
+    if (word) return { set, word };
+  }
+  return null;
+}
 
 function saveExpressionUpgradeState() {
   profileStorage.setItem(EXPRESSION_UPGRADE_STORAGE_KEY, JSON.stringify(expressionUpgradeState));
@@ -2404,7 +2429,7 @@ function navItem(id, label, ico) {
 function sidebar() {
   const todayDone = (state.history["2026-07-13"] || []).length;
   const kidsNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "초등용 읽기", "news")}${navItem("ted", "영어동화", "book")}${navItem("drama", "영어 동요", "play")}${navItem("test", "Daily Test", "check")}<p class="nav-label space">MY SPACE</p>${navItem("calendar", "학습 캘린더", "calendar")}`;
-  const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("upgrade", "표현 업그레이드", "spark")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
+  const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${navItem("upgrade", "표현 업그레이드", "spark")}${navItem("synonyms", "유의어 공부", "book")}${navItem("words", "단어장", "book")}${navItem("sentence", "매일 1문장", "spark")}${navItem("news", "영어 뉴스", "news")}${navItem("ted", "TED 학습", "mic")}${navItem("test", "Daily Test", "check")}${navItem("quiz", "매일 토익 풀기", "message")}<p class="nav-label space">MY SPACE</p>${navItem("journal", "나만의 학습장", "check")}${navItem("calendar", "학습 캘린더", "calendar")}${navItem("blog", "최애 블로그", "heart")}`;
   const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", `${currentModeConfig().shortLabel} 단어장`, "book")}${navItem("suneung-passage", `오늘의 ${currentModeConfig().shortLabel} 지문`, "book-open")}${navItem("suneung-types", "유형별 훈련", "clipboard")}${navItem("suneung-vocab", "어휘 / 구문", "book")}<p class="nav-label space">MY SPACE</p>${navItem("suneung-journal", "나만의 학습장", "bookmark")}${navItem("suneung-calendar", "학습 캘린더", "calendar")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}<p class="nav-label space">FAMILY</p>${navItem("suneung-parent", "부모 점검", "calendar")}`;
   return `<aside class="sidebar">
     <button class="brand" type="button" data-page="${isAcademicMode() ? "suneung-home" : "home"}" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
@@ -3019,6 +3044,41 @@ function expressionUpgradePage() {
   }
 
   return `${header("표현 업그레이드")}<main class="upgrade-page">${nav}${content}</main>`;
+}
+
+function synonymStudyPage() {
+  const set = getActiveSynonymSet();
+  const view = synonymStudyState.view;
+  const tabs = `<nav class="synonym-tabs" aria-label="유의어 공부 단계"><button class="${view === "sets" ? "active" : ""}" type="button" data-synonym-view="sets">학습 세트</button><button class="${["learn", "quiz", "result"].includes(view) ? "active" : ""}" type="button" data-synonym-view="learn">학습·문제</button><button class="${view === "review" ? "active" : ""}" type="button" data-synonym-view="review">오답 복습 <b>${synonymStudyState.wrongWordIds.length}</b></button></nav>`;
+  let content = "";
+  if (view === "learn") {
+    const index = Math.min(synonymStudyState.cardIndex, set.words.length - 1);
+    const word = set.words[index];
+    const learned = synonymStudyState.learnedWordIds.includes(word.id);
+    content = `<section class="synonym-learning"><header><div><span>${escapeMarkup(set.category)} · ${escapeMarkup(set.title)}</span><b>WORD ${index + 1} / ${set.words.length}</b></div><i><em style="width:${((index + 1) / set.words.length) * 100}%"></em></i></header><article class="synonym-word-card"><div class="synonym-upgrade-line"><section><small>BASE</small><s>${escapeMarkup(word.base)}</s></section>${icon("arrow", 22)}<section><small>TARGET</small><div><h2>${escapeMarkup(word.target)}</h2><button type="button" data-speak="${escapeMarkup(word.target)}" aria-label="${escapeMarkup(word.target)} 발음 듣기">${icon("volume", 18)}</button></div><strong>${escapeMarkup(word.meaning)}</strong></section></div><blockquote><b>${escapeMarkup(word.example)}</b><button type="button" data-speak="${escapeMarkup(word.example)}">${icon("volume", 15)} 예문 듣기</button></blockquote><section class="synonym-related"><span>ADDITIONAL SYNONYMS</span><div>${word.synonyms.map(item => `<em>${escapeMarkup(item)}</em>`).join("")}</div></section><section class="synonym-nuance"><b>뉘앙스 차이</b><p>${escapeMarkup(word.nuance)}</p></section></article><footer><button type="button" data-synonym-prev ${index === 0 ? "disabled" : ""}>이전 단어</button>${learned ? `<button class="primary" type="button" data-synonym-next>${index === set.words.length - 1 ? "수능형 문제 시작" : "다음 단어"} ${icon("arrow", 14)}</button>` : `<button class="primary" type="button" data-synonym-learned="${word.id}">${icon("check", 14)} 학습 완료</button>`}</footer></section>`;
+  } else if (view === "quiz") {
+    const index = Math.min(synonymStudyState.quizIndex, set.quiz.length - 1);
+    const question = set.quiz[index];
+    const answer = synonymStudyState.answers.find(item => item.quizId === question.id);
+    content = `<section class="synonym-quiz"><header><div><span>CSAT VOCABULARY CHECK</span><h2>${escapeMarkup(set.title)}</h2></div><b>${index + 1} / ${set.quiz.length}</b></header><div class="synonym-quiz-type">${question.type === "context_synonym" ? "문맥상 유의어" : question.type === "underlined_synonym" ? "유사 의미" : "고급 어휘 매칭"}</div><article><p>${escapeMarkup(question.prompt)}</p><blockquote>${escapeMarkup(question.context)}</blockquote><div>${question.choices.map((choice, choiceIndex) => {
+      const selected = answer?.selectedAnswer === choice;
+      const correct = Boolean(answer) && choice === question.answer;
+      const wrong = Boolean(answer) && selected && !answer.isCorrect;
+      return `<button class="${correct ? "correct" : ""} ${wrong ? "wrong" : ""}" type="button" data-synonym-answer="${choiceIndex}" ${answer ? "disabled" : ""}><i>${choiceIndex + 1}</i>${escapeMarkup(choice)}</button>`;
+    }).join("")}</div>${answer ? `<section class="synonym-answer ${answer.isCorrect ? "success" : "error"}"><b>${answer.isCorrect ? "정답입니다." : "오답입니다."}</b><p>${escapeMarkup(question.explanation)}</p></section>` : ""}</article>${answer ? `<footer><button class="primary" type="button" data-synonym-quiz-next>${index === set.quiz.length - 1 ? "결과 확인" : "다음 문제"} ${icon("arrow", 14)}</button></footer>` : ""}</section>`;
+  } else if (view === "result") {
+    const score = synonymStudyState.answers.filter(item => item.isCorrect).length;
+    content = `<section class="synonym-result"><span>SET COMPLETE</span><h2>${score}<small> / ${set.quiz.length}</small></h2><h3>${escapeMarkup(set.title)} 학습 완료</h3><p>${synonymStudyState.wrongWordIds.length ? "틀린 어휘는 오답 복습에 자동으로 저장했습니다." : "이번 세트의 핵심 어휘를 모두 정확히 구별했습니다."}</p><div><button type="button" data-synonym-view="sets">다른 세트 선택</button><button class="primary" type="button" data-synonym-view="review">오답 복습</button></div></section>`;
+  } else if (view === "review") {
+    const wrongWords = synonymStudyState.wrongWordIds.map(findSynonymWord).filter(Boolean);
+    content = `<section class="synonym-review"><header><span>WRONG ANSWER REVIEW</span><h2>다시 구별할 어휘</h2><p>정답만 외우지 말고 쉬운 표현과 뉘앙스를 함께 확인하세요.</p></header>${wrongWords.length ? `<div>${wrongWords.map(({ set: sourceSet, word }) => `<article><small>${escapeMarkup(sourceSet.category)}</small><div><s>${escapeMarkup(word.base)}</s>${icon("arrow", 14)}<h3>${escapeMarkup(word.target)}</h3><button type="button" data-speak="${escapeMarkup(word.target)}">${icon("volume", 15)}</button></div><strong>${escapeMarkup(word.meaning)}</strong><p>${escapeMarkup(word.nuance)}</p><button type="button" data-synonym-review-complete="${word.id}">${icon("check", 13)} 복습 완료</button></article>`).join("")}</div>` : `<div class="synonym-empty"><h3>복습할 오답이 없습니다.</h3><p>문제를 틀리면 해당 어휘가 이곳에 자동으로 모입니다.</p><button class="primary" type="button" data-synonym-view="sets">학습 세트 보기</button></div>`}</section>`;
+  } else {
+    content = `<section class="synonym-home"><header><div><span>CSAT SYNONYM LAB</span><h2>쉬운 단어에서<br>정확한 고급 어휘로</h2><p>회화 표현이 아니라 수능 독해에 필요한 의미·강도·문맥 차이를 학습합니다.</p></div><aside><b>콘텐츠 기준</b><ol><li><i>1</i><span>${escapeMarkup(synonymContentSources.internal.label)}</span></li><li><i>2</i><span>${escapeMarkup(synonymContentSources.espresso.label)}</span></li><li><i>3</i><span>${escapeMarkup(synonymContentSources.naver.label)}</span></li></ol><a href="${synonymContentSources.espresso.url}" target="_blank" rel="noopener noreferrer">우선 참고 블로그 ${icon("arrow", 12)}</a></aside></header><div class="synonym-set-grid">${synonymStudySets.map(item => {
+      const complete = synonymStudyState.completedSetIds.includes(item.id);
+      return `<button type="button" data-synonym-set="${item.id}"><span>${escapeMarkup(item.category)}${complete ? `<em>${icon("check", 11)} 완료</em>` : ""}</span><h3>${escapeMarkup(item.title)}</h3><p>${escapeMarkup(item.description)}</p><small>5 WORDS · 3 QUESTIONS</small>${icon("arrow", 15)}</button>`;
+    }).join("")}</div><footer><p>현재 검수 샘플 <b>${synonymStudySets.reduce((sum, item) => sum + item.words.length, 0)}개</b> · 동일 데이터 포맷으로 500개 이상 확장</p></footer></section>`;
+  }
+  return `${header("유의어 공부")}<main class="synonym-page">${tabs}${content}</main>`;
 }
 
 function homePage() {
@@ -5372,7 +5432,7 @@ function render() {
     if (!robotsMeta) { robotsMeta = document.createElement("meta"); robotsMeta.name = "robots"; document.head.appendChild(robotsMeta); }
     robotsMeta.content = "noindex, nofollow, noarchive";
   }
-  const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="upgrade"?expressionUpgradePage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
+  const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="upgrade"?expressionUpgradePage():state.page==="synonyms"?synonymStudyPage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
   document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}${vocabMonthlyTestModal()}</div>`;
   enhanceNewsEditorialReader();
   bindEvents();
@@ -5523,6 +5583,73 @@ function bindEvents(){
   bindSuneungDictionaryTooltips();
   bindSuneungPronunciation();
   decorateEnglishSentences();
+  document.querySelectorAll("[data-synonym-view]").forEach(button => button.addEventListener("click", event => {
+    synonymStudyState.view = event.currentTarget.dataset.synonymView;
+    saveSynonymStudyState();
+    render();
+  }));
+  document.querySelectorAll("[data-synonym-set]").forEach(button => button.addEventListener("click", event => {
+    synonymStudyState.activeSetId = event.currentTarget.dataset.synonymSet;
+    synonymStudyState.view = "learn";
+    synonymStudyState.cardIndex = 0;
+    synonymStudyState.quizIndex = 0;
+    synonymStudyState.learnedWordIds = [];
+    synonymStudyState.answers = [];
+    saveSynonymStudyState();
+    render();
+  }));
+  document.querySelectorAll("[data-synonym-learned]").forEach(button => button.addEventListener("click", event => {
+    const wordId = event.currentTarget.dataset.synonymLearned;
+    if (!synonymStudyState.learnedWordIds.includes(wordId)) synonymStudyState.learnedWordIds.push(wordId);
+    saveSynonymStudyState();
+    render();
+  }));
+  document.querySelector("[data-synonym-prev]")?.addEventListener("click", () => {
+    synonymStudyState.cardIndex = Math.max(0, synonymStudyState.cardIndex - 1);
+    saveSynonymStudyState();
+    render();
+  });
+  document.querySelector("[data-synonym-next]")?.addEventListener("click", () => {
+    const set = getActiveSynonymSet();
+    if (synonymStudyState.cardIndex >= set.words.length - 1) {
+      synonymStudyState.view = "quiz";
+      synonymStudyState.quizIndex = 0;
+      synonymStudyState.answers = [];
+    } else {
+      synonymStudyState.cardIndex += 1;
+    }
+    saveSynonymStudyState();
+    render();
+  });
+  document.querySelectorAll("[data-synonym-answer]").forEach(button => button.addEventListener("click", event => {
+    const set = getActiveSynonymSet();
+    const question = set.quiz[synonymStudyState.quizIndex];
+    if (!question || synonymStudyState.answers.some(item => item.quizId === question.id)) return;
+    const selectedAnswer = question.choices[Number(event.currentTarget.dataset.synonymAnswer)];
+    const isCorrect = selectedAnswer === question.answer;
+    synonymStudyState.answers.push({ quizId: question.id, wordId: question.wordId, selectedAnswer, isCorrect });
+    if (!isCorrect && !synonymStudyState.wrongWordIds.includes(question.wordId)) synonymStudyState.wrongWordIds.push(question.wordId);
+    saveSynonymStudyState();
+    render();
+  }));
+  document.querySelector("[data-synonym-quiz-next]")?.addEventListener("click", () => {
+    const set = getActiveSynonymSet();
+    if (synonymStudyState.quizIndex >= set.quiz.length - 1) {
+      synonymStudyState.view = "result";
+      if (!synonymStudyState.completedSetIds.includes(set.id)) synonymStudyState.completedSetIds.push(set.id);
+      homeStudyState.checked.synonyms = true;
+      saveHomeStudyState("synonyms");
+    } else {
+      synonymStudyState.quizIndex += 1;
+    }
+    saveSynonymStudyState();
+    render();
+  });
+  document.querySelectorAll("[data-synonym-review-complete]").forEach(button => button.addEventListener("click", event => {
+    synonymStudyState.wrongWordIds = synonymStudyState.wrongWordIds.filter(id => id !== event.currentTarget.dataset.synonymReviewComplete);
+    saveSynonymStudyState();
+    render();
+  }));
   document.querySelectorAll("[data-upgrade-view]").forEach(button => button.addEventListener("click", event => {
     const view = event.currentTarget.dataset.upgradeView;
     expressionUpgradeState.view = view;
@@ -7155,7 +7282,7 @@ if (initialNavigation?.worthyLife) {
   const entryFile = window.location.pathname.split("/").pop().toLowerCase();
   const hashPage = window.location.hash.replace(/^#/, "").split("/")[0];
   if (entryFile === "suneung.html" && audienceMode !== "middle") applyAudienceMode("suneung");
-  state.page = entryPageMap[entryFile] || (["calendar", "blog", "journal", "upgrade"].includes(hashPage) ? hashPage : "home");
+  state.page = entryPageMap[entryFile] || (["calendar", "blog", "journal", "upgrade", "synonyms"].includes(hashPage) ? hashPage : "home");
   if (entryFile === "suneung.html" && hashPage.startsWith("suneung-")) state.page = hashPage;
   const articleMatch = state.page === "news" ? window.location.hash.match(/^#article-(\d+)$/) : null;
   state.newsIndex = articleMatch ? Number(articleMatch[1]) : null;
