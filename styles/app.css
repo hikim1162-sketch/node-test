@@ -709,7 +709,7 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
   .synonym-tabs button{font-size:11px}
   .synonym-home>header{grid-template-columns:1fr;gap:14px;padding:18px 16px}
   .synonym-home h2{font-size:28px}
-  .synonym-home aside{padding:11px 13px}
+  .synonym-home>header aside{display:none}
   .synonym-daily-theme{margin:15px;padding:16px}
   .synonym-daily-theme>header{display:block}
   .synonym-daily-theme>header>em{display:inline-block;margin-top:10px}
