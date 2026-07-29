@@ -6,6 +6,7 @@ import { buildSetQuiz } from "./quiz-templates.js";
 
 export { synonymContentSources } from "./sources.js";
 export { synonymStudyCategories, synonymExpansionPlan, synonymExpansionTotal } from "./categories.js";
+export { dailySynonymThemes30, getTodaySynonymTheme } from "./daily-themes-30.js";
 
 export const SYNONYM_STUDY_STORAGE_KEY = "value_time_synonym_study_v1";
 
@@ -28,7 +29,7 @@ export const synonymStudySets = setDefinitions.map(([id, category, title, descri
 }));
 
 export function getSynonymStudyInitialState() {
-  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, learnedWordIds: [], quizIndex: 0, answers: [], wrongWordIds: [], completedSetIds: [] };
+  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, learnedWordIds: [], quizIndex: 0, answers: [], wrongWordIds: [], completedSetIds: [], dailyThemeAnswers: {} };
 }
 
 export function normalizeSynonymStudyState(value) {
@@ -37,5 +38,6 @@ export function normalizeSynonymStudyState(value) {
   ["learnedWordIds", "answers", "wrongWordIds", "completedSetIds"].forEach((key) => {
     if (!Array.isArray(state[key])) state[key] = [];
   });
+  if (!state.dailyThemeAnswers || typeof state.dailyThemeAnswers !== "object" || Array.isArray(state.dailyThemeAnswers)) state.dailyThemeAnswers = {};
   return state;
 }

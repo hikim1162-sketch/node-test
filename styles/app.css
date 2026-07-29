@@ -594,6 +594,28 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-home aside li{display:flex;align-items:center;gap:9px}
 .synonym-home aside i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;color:#173d59;font-style:normal;font-size:10px;font-weight:900}
 .synonym-home aside a{display:inline-flex;align-items:center;gap:5px;color:#a9e6dc;font-size:10px;font-weight:800}
+.synonym-daily-theme{margin:24px;padding:24px;border:1px solid #b8d6ce;border-radius:17px;background:linear-gradient(135deg,#f0faf6,#fff)}
+.synonym-daily-theme>header{display:flex;align-items:start;justify-content:space-between;gap:18px}
+.synonym-daily-theme>header span{color:#1e7769;font-size:9px;font-weight:900;letter-spacing:.13em}
+.synonym-daily-theme>header h3{margin:7px 0;font:700 25px Georgia,"Noto Sans KR",serif}
+.synonym-daily-theme>header p{margin:0;color:#687c7c;font-size:10px}
+.synonym-daily-theme>header>em{padding:6px 9px;border-radius:20px;background:#173d59;color:#fff;font-size:9px;font-style:normal;font-weight:800}
+.synonym-daily-items{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.synonym-daily-items article{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:7px;padding:13px;border:1px solid #d7e5e1;border-radius:11px;background:#fff}
+.synonym-daily-items article s{color:#7d8d8d;font-size:11px}
+.synonym-daily-items article b{font:700 17px Georgia}
+.synonym-daily-items article span{grid-column:1/-1;color:#277468;font-size:9px}
+.synonym-daily-quiz{padding:17px;border-radius:13px;background:#173d59;color:#fff}
+.synonym-daily-quiz>b{color:#8ed6ca;font-size:9px;letter-spacing:.12em}
+.synonym-daily-quiz>p{font-size:14px;font-weight:800}
+.synonym-daily-quiz>div{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.synonym-daily-quiz>div button{min-height:40px;border:1px solid #ffffff45;border-radius:8px;background:#ffffff12;color:#fff;font-weight:800}
+.synonym-daily-quiz>div button.correct{border-color:#70d2a4;background:#dff7e9;color:#155a3d}
+.synonym-daily-quiz>div button.wrong{border-color:#ef8c8c;background:#ffe4e4;color:#8c3030}
+.synonym-daily-quiz>aside{display:flex;justify-content:space-between;gap:12px;margin-top:10px;padding:10px;border-radius:8px;background:#dff7e9;color:#155a3d;font-size:9px}
+.synonym-daily-quiz>aside.error{background:#ffe4e4;color:#8c3030}
+.synonym-daily-theme>footer{display:flex;justify-content:space-between;gap:10px;margin-top:13px;color:#6d807d;font-size:9px}
+.synonym-daily-theme>footer a{color:#1d7165;font-weight:800}
 .synonym-set-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;padding:24px}
 .synonym-set-grid>button{position:relative;min-height:175px;padding:21px;border:1px solid #d8e2e8;border-radius:15px;background:#f8fafb;color:#173047;text-align:left;cursor:pointer;transition:.18s}
 .synonym-set-grid>button:hover{border-color:#5086a0;transform:translateY(-2px);box-shadow:0 10px 25px #17304712}
@@ -685,6 +707,12 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
   .synonym-tabs{position:sticky;top:8px;z-index:5}
   .synonym-tabs button{font-size:11px}
   .synonym-home>header{grid-template-columns:1fr;padding:25px 20px}
+  .synonym-daily-theme{margin:15px;padding:16px}
+  .synonym-daily-theme>header{display:block}
+  .synonym-daily-theme>header>em{display:inline-block;margin-top:10px}
+  .synonym-daily-items{grid-template-columns:1fr}
+  .synonym-daily-quiz>div{grid-template-columns:1fr 1fr}
+  .synonym-daily-quiz>aside,.synonym-daily-theme>footer{align-items:flex-start;flex-direction:column}
   .synonym-set-grid{grid-template-columns:1fr;padding:15px}
   .synonym-learning,.synonym-quiz,.synonym-review{padding:15px}
   .synonym-word-card{padding:22px 14px}

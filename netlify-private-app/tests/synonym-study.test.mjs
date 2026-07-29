@@ -7,6 +7,8 @@ import {
   normalizeSynonymStudyState,
   synonymStudyData,
   synonymExpansionTotal,
+  dailySynonymThemes30,
+  getTodaySynonymTheme,
 } from "../../data/synonym-study/index.js";
 
 test("MVP contains four published sets and twenty curated words", () => {
@@ -64,4 +66,26 @@ test("canonical dataset has unique targets and a 500-entry expansion plan", () =
 test("stored state normalization preserves scalable arrays", () => {
   const state = normalizeSynonymStudyState({ ...getSynonymStudyInitialState(), wrongWordIds: null });
   assert.deepEqual(state.wrongWordIds, []);
+  assert.deepEqual(state.dailyThemeAnswers, {});
+});
+
+test("daily theme calendar has thirty valid days", () => {
+  assert.equal(dailySynonymThemes30.length, 30);
+  assert.deepEqual(dailySynonymThemes30.map((theme) => theme.day), Array.from({ length: 30 }, (_, index) => index + 1));
+  for (const theme of dailySynonymThemes30) {
+    assert.equal(theme.items.length, 3);
+    assert.equal(theme.quiz.options.length, 4);
+    assert.equal(new Set(theme.quiz.options).size, 4);
+    assert.equal(theme.quiz.options.filter((option) => option === theme.quiz.answer).length, 1);
+    assert.match(theme.source.url, /^https:\/\/www\.espressoenglish\.net\//);
+  }
+});
+
+test("today theme advances daily and cycles after day thirty", () => {
+  const first = getTodaySynonymTheme(new Date(2026, 0, 1));
+  const second = getTodaySynonymTheme(new Date(2026, 0, 2));
+  const cycle = getTodaySynonymTheme(new Date(2026, 0, 31));
+  assert.equal(first.day, 1);
+  assert.equal(second.day, 2);
+  assert.equal(cycle.day, 1);
 });
