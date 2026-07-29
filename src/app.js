@@ -7291,7 +7291,19 @@ window.addEventListener("popstate", event => {
 });
 
 const initialNavigation = window.history.state;
-if (initialNavigation?.worthyLife) {
+const initialHashPage = window.location.hash.replace(/^#/, "").split("/")[0];
+const initialQueryPage = new URLSearchParams(window.location.search).get("page") || "";
+const directPageCandidate = initialQueryPage || initialHashPage;
+const directHashPage = ["calendar", "blog", "journal", "upgrade", "synonyms"].includes(directPageCandidate) ? directPageCandidate : "";
+if (directHashPage) {
+  state.page = directHashPage;
+  state.newsIndex = null;
+  state.tedLessonId = null;
+  window.history.replaceState(
+    { worthyLife: true, page: state.page, newsIndex: null, tedLessonId: null },
+    ""
+  );
+} else if (initialNavigation?.worthyLife) {
   state.page = initialNavigation.page || "home";
   state.newsIndex = initialNavigation.newsIndex ?? null;
   state.tedLessonId = initialNavigation.tedLessonId ?? null;
@@ -7308,7 +7320,7 @@ if (initialNavigation?.worthyLife) {
     "suneung.html": "suneung-home",
   };
   const entryFile = window.location.pathname.split("/").pop().toLowerCase();
-  const hashPage = window.location.hash.replace(/^#/, "").split("/")[0];
+  const hashPage = initialHashPage;
   if (entryFile === "suneung.html" && audienceMode !== "middle") applyAudienceMode("suneung");
   state.page = entryPageMap[entryFile] || (["calendar", "blog", "journal", "upgrade", "synonyms"].includes(hashPage) ? hashPage : "home");
   if (entryFile === "suneung.html" && hashPage.startsWith("suneung-")) state.page = hashPage;

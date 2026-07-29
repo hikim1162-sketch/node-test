@@ -16,8 +16,12 @@ export default function ValueTimeApp({ page }) {
     stylesheet.dataset.valueTimeStyles = "true";
     document.head.appendChild(stylesheet);
 
+    const hashPage = window.location.hash.replace(/^#/, "").split("/")[0];
+    const queryPage = new URLSearchParams(window.location.search).get("page") || "";
+    const directCandidate = queryPage || hashPage;
+    const directPage = ["calendar", "blog", "journal", "upgrade", "synonyms"].includes(directCandidate) ? directCandidate : page;
     window.history.replaceState(
-      { ...(window.history.state || {}), worthyLife: true, page, newsIndex: null },
+      { ...(window.history.state || {}), worthyLife: true, page: directPage, newsIndex: null },
       "",
     );
 

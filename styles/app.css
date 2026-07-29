@@ -585,17 +585,17 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-tabs button.active{background:#173d59;color:#fff;box-shadow:0 4px 12px #173d5924}
 .synonym-tabs b{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:5px;border-radius:50%;background:#cc4c4c;color:#fff;font-size:10px}
 .synonym-home,.synonym-learning,.synonym-quiz,.synonym-result,.synonym-review{border:1px solid #d8e2e8;border-radius:22px;background:#fff;box-shadow:0 16px 44px #1730470c}
-.synonym-home>header{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;padding:38px;background:linear-gradient(130deg,#173d59,#245b76);color:#fff;border-radius:21px 21px 0 0}
+.synonym-home>header{display:grid;grid-template-columns:1.15fr .85fr;align-items:stretch;gap:28px;height:auto;min-height:255px;padding:38px;border:0;background:linear-gradient(130deg,#173d59,#245b76);color:#fff;border-radius:21px 21px 0 0}
 .synonym-home>header>div>span,.synonym-review>header>span,.synonym-result>span,.synonym-quiz>header span{color:#85d6c9;font-size:10px;font-weight:900;letter-spacing:.14em}
 .synonym-home h2{margin:10px 0;font:700 clamp(33px,5vw,49px)/1.15 Georgia,"Noto Sans KR",serif}
-.synonym-home header p{color:#d4e2e8;line-height:1.7}
+.synonym-home>header p{color:#d4e2e8;line-height:1.7}
 .synonym-home aside{padding:19px;border:1px solid #ffffff30;border-radius:15px;background:#ffffff10}
 .synonym-home aside ol{display:grid;gap:9px;margin:14px 0;padding:0;list-style:none}
 .synonym-home aside li{display:flex;align-items:center;gap:9px}
 .synonym-home aside i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;color:#173d59;font-style:normal;font-size:10px;font-weight:900}
 .synonym-home aside a{display:inline-flex;align-items:center;gap:5px;color:#a9e6dc;font-size:10px;font-weight:800}
 .synonym-daily-theme{margin:24px;padding:24px;border:1px solid #b8d6ce;border-radius:17px;background:linear-gradient(135deg,#f0faf6,#fff)}
-.synonym-daily-theme>header{display:flex;align-items:start;justify-content:space-between;gap:18px}
+.synonym-daily-theme>header{display:flex;align-items:start;justify-content:space-between;gap:18px;height:auto;padding:0;border:0;background:transparent}
 .synonym-daily-theme>header span{color:#1e7769;font-size:9px;font-weight:900;letter-spacing:.13em}
 .synonym-daily-theme>header h3{margin:7px 0;font:700 25px Georgia,"Noto Sans KR",serif}
 .synonym-daily-theme>header p{margin:0;color:#687c7c;font-size:10px}
@@ -627,6 +627,7 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-set-grid>button>svg{position:absolute;right:19px;bottom:19px;color:#4e7c91}
 .synonym-home>footer{padding:0 24px 24px;color:#71838a;font-size:10px;text-align:right}
 .synonym-learning,.synonym-quiz{padding:27px}
+.synonym-learning>header,.synonym-quiz>header,.synonym-review>header{height:auto;padding:0;border:0;background:transparent}
 .synonym-learning>header>div,.synonym-quiz>header{display:flex;align-items:center;justify-content:space-between}
 .synonym-learning>header span{font-weight:850}
 .synonym-learning>header i{display:block;height:6px;margin:12px 0 20px;border-radius:20px;background:#e8eef1;overflow:hidden}
