@@ -7,3 +7,5 @@ dist/
 *.log
 .chrome-valuetime-migration-test/
 imports/wordmaster/
+.tmp-*/
+tmp-*.png
