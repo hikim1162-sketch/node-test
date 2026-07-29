@@ -1,3 +1,60 @@
+export const favoriteBlogSources = [
+  {
+    id: "espresso-english",
+    name: "Espresso English",
+    url: "https://www.espressoenglish.net/category/vocabulary/",
+    description: "유의어·반의어·고급 어휘와 문맥별 단어 차이를 우선 참고해요.",
+    recommended: true,
+    focus: "수능형 어휘 확장 우선 참고",
+  },
+  {
+    id: "speak-english-with-vanessa",
+    name: "Speak English With Vanessa",
+    url: "https://speakenglishwithvanessa.com/",
+    description: "자연스러운 영어 표현과 실제 사용 맥락을 확인해요.",
+    focus: "실전 표현",
+  },
+  {
+    id: "fluentu-english",
+    name: "FluentU English Blog",
+    url: "https://www.fluentu.com/blog/english/",
+    description: "영상과 실제 문맥을 활용한 영어 어휘·표현 자료를 살펴봐요.",
+    focus: "문맥 학습",
+  },
+  {
+    id: "ellii",
+    name: "Ellii Blog",
+    url: "https://ellii.com/blog",
+    description: "영어 교육 자료와 어휘·문법 교수 아이디어를 참고해요.",
+    focus: "영어 교육",
+  },
+  {
+    id: "oxford-house-barcelona",
+    name: "Oxford House Barcelona Blog",
+    url: "https://oxfordhousebcn.com/en/blog/",
+    description: "학습자용 영어 문법과 어휘 콘텐츠를 확인해요.",
+    focus: "학습 자료",
+  },
+];
+
+// 유의어/어휘 확장 기능에서 사용하는 고정 참고 순서입니다.
+// 외부 자료는 후보 발굴용이며, 최종 학습 내용은 현재 사이트 데이터와 검수를 우선합니다.
+export const vocabularyExpansionSourcePriority = [
+  {
+    priority: 1,
+    id: "internal-content",
+    name: "ValueTime 기존 단어·표현 콘텐츠",
+    usage: "정답·뜻·예문·수능 적합성의 최우선 기준",
+  },
+  {
+    priority: 2,
+    id: "espresso-english",
+    name: "Espresso English",
+    url: "https://www.espressoenglish.net/category/vocabulary/",
+    usage: "유의어 후보, 강도 차이, 반의어와 고급 어휘 확장 참고",
+  },
+];
+
 export const favoriteBlogArticles = [
   {
     id: "blog-small-talk", color: "sage", category: "CONVERSATION", date: "JUL 13", title: "Small talk that opens a conversation", phrase: "How have you been?", meaning: "그동안 어떻게 지냈어요?", sourceTitle: "렛츠링글리쉬어학원", sourceUrl: "https://blog.naver.com/letsleenglish",

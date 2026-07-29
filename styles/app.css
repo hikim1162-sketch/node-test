@@ -554,6 +554,30 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .upgrade-library article::after{display:block;clear:both;content:""}
 .upgrade-empty{padding:50px 20px!important;text-align:center}
 
+.blog-directory{margin-top:26px;padding:25px;border:1px solid #d8e5e1;border-radius:18px;background:linear-gradient(135deg,#f7fbf9,#edf6f2)}
+.blog-directory>header{display:grid;grid-template-columns:1fr minmax(300px,.8fr);align-items:start;gap:24px;margin-bottom:18px}
+.blog-directory h2{margin:7px 0;font:700 25px Georgia,"Noto Sans KR",serif}
+.blog-directory>header>div>p:last-child{margin:0;color:#74827f;font-size:10px}
+.blog-directory aside{padding:15px;border-radius:13px;background:#fff}
+.blog-directory aside>b{font-size:11px;color:#1d6558}
+.blog-directory aside ol{display:grid;gap:8px;margin:11px 0 0;padding:0;list-style:none}
+.blog-directory aside li{display:flex;align-items:center;gap:9px}
+.blog-directory aside li>i{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:#1f6659;color:#fff;font-size:9px;font-style:normal;font-weight:800}
+.blog-directory aside li div{display:grid;gap:2px}
+.blog-directory aside li b{font-size:10px}
+.blog-directory aside li span{color:#75837f;font-size:8px;line-height:1.4}
+.blog-directory-list{display:grid;gap:8px}
+.blog-directory-list>a{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:14px;min-height:75px;padding:13px 16px;border:1px solid #dce6e3;border-radius:12px;background:#fff;color:var(--ink);text-decoration:none;transition:.18s}
+.blog-directory-list>a:hover{border-color:#7fb4a6;transform:translateX(3px);box-shadow:0 8px 20px rgba(25,72,61,.08)}
+.blog-directory-list>a>i{color:#9aaba6;font:14px Georgia;font-style:normal}
+.blog-directory-list>a>div{display:grid;gap:3px}
+.blog-directory-list>a span{display:flex;align-items:center;gap:7px;color:#47786d;font-size:8px;font-weight:800;letter-spacing:.07em}
+.blog-directory-list>a span em{padding:4px 7px;border-radius:20px;background:#1f6659;color:#fff;font-style:normal;letter-spacing:0}
+.blog-directory-list>a b{font:700 17px Georgia,"Noto Sans KR",serif}
+.blog-directory-list>a p{margin:0;color:#73817e;font-size:9px}
+.blog-directory-list>a>svg{color:#438273}
+.blog-directory-list>a.recommended{border-color:#8dbeb2;background:#f0faf6}
+
 @media (max-width:700px){
   .upgrade-page{padding:16px 12px 60px}
   .upgrade-tabs{position:sticky;top:8px;z-index:5}
@@ -570,4 +594,8 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
   .upgrade-quiz>article{padding:16px}
   .upgrade-result>div{display:grid}
   .upgrade-library article>div{flex-wrap:wrap}
+  .blog-directory{padding:17px}
+  .blog-directory>header{grid-template-columns:1fr}
+  .blog-directory-list>a{grid-template-columns:28px 1fr auto;padding:12px}
+  .blog-directory-list>a p{line-height:1.5}
 }
