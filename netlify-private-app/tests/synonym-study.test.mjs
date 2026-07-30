@@ -11,6 +11,7 @@ import {
   dailySynonymThemes30,
   getTodaySynonymTheme,
 } from "../../data/synonym-study/index.js";
+import { buildSynonymQuiz } from "../../data/synonym-study/quiz-templates.js";
 
 test("published curriculum contains one hundred curated words", () => {
   assert.equal(synonymStudySets.length, 12);
@@ -51,6 +52,14 @@ test("every quiz asks learners to select every synonym", () => {
     assert.ok(question.answers.every((answer) => question.choices.includes(answer)));
     assert.ok(question.choices.some((choice) => !question.answers.includes(choice)));
   }
+});
+
+test("quiz choices are shuffled instead of keeping answer-first order", () => {
+  const entry = synonymStudySets[0].words[0];
+  const orders = new Set(
+    Array.from({ length: 12 }, (_, index) => buildSynonymQuiz(entry, "synonym_select_all", index).choices.join("|")),
+  );
+  assert.ok(orders.size > 1);
 });
 
 test("source data stays separate and follows the requested priority", () => {

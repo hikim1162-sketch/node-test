@@ -1,12 +1,15 @@
+function shuffled(values) {
+  const result = [...values];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
+}
+
 export function buildSynonymQuiz(entry, _type, index) {
   const answers = [...new Set([entry.targetWord, ...entry.additionalSynonyms])];
-  const choices = [...answers, ...entry.distractors.slice(0, 3)]
-    .map((choice, choiceIndex) => ({
-      choice,
-      order: (choiceIndex * 7 + index * 3) % (answers.length + 3),
-    }))
-    .sort((left, right) => left.order - right.order)
-    .map(({ choice }) => choice);
+  const choices = shuffled([...answers, ...entry.distractors.slice(0, 3)]);
 
   return {
     id: `${entry.id}-quiz-${index + 1}`,
