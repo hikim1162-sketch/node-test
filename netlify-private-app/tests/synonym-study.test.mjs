@@ -100,6 +100,8 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(tabs, />오답 복습 /);
   assert.doesNotMatch(tabs, /학습 세트|학습·문제/);
   assert.match(appSource, /const vocabulary = synonymStudySets\.flatMap/);
-  assert.match(appSource, /dailyVocabulary\.every\(\(\{ word \}\) => synonymStudyState\.learnedWordIds\.includes\(word\.id\)\)/);
+  assert.match(appSource, /const meaningsComplete = dailyVocabulary\.length > 0/);
+  assert.match(appSource, /const relatedExpressionsComplete = dailyVocabulary\.every/);
+  assert.match(appSource, /if \(!meaningsComplete \|\| !relatedExpressionsComplete\) return false/);
   assert.match(appSource, /data-synonym-submit/);
 });

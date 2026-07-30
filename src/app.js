@@ -2004,6 +2004,29 @@ function findSynonymWord(wordId) {
   return null;
 }
 
+function startDailySynonymQuizIfComplete(preferredWordId = null) {
+  const vocabulary = synonymStudySets.flatMap(sourceSet => sourceSet.words.map(word => ({ sourceSet, word })));
+  const day = Math.max(1, Math.min(30, Number(synonymStudyState.vocabularyDay) || 1));
+  const dayStart = day <= 10 ? (day - 1) * 4 : 40 + (day - 11) * 3;
+  const dayCount = day <= 10 ? 4 : 3;
+  const dailyVocabulary = vocabulary.slice(dayStart, dayStart + dayCount);
+  const meaningsComplete = dailyVocabulary.length > 0
+    && dailyVocabulary.every(({ word }) => synonymStudyState.learnedWordIds.includes(word.id));
+  const relatedExpressionsComplete = dailyVocabulary.every(({ word }) =>
+    word.additionalSynonyms.every(item =>
+      synonymStudyState.clearedRelatedExpressionIds.includes(`${word.id}::${item}`)
+    )
+  );
+  if (!meaningsComplete || !relatedExpressionsComplete) return false;
+  const currentEntry = dailyVocabulary.find(({ word }) => word.id === preferredWordId) || dailyVocabulary[0];
+  synonymStudyState.activeSetId = currentEntry.sourceSet.id;
+  synonymStudyState.view = "quiz";
+  synonymStudyState.quizIndex = 0;
+  synonymStudyState.quizSelections = {};
+  synonymStudyState.answers = [];
+  return true;
+}
+
 function synonymQuizTypeLabel(type) {
   return {
     synonym_select_all: "유의어 모두 선택",
@@ -5908,9 +5931,11 @@ function bindEvents(){
   }));
   document.querySelectorAll("[data-synonym-related-clear]").forEach(button => button.addEventListener("click", event => {
     const clearId = event.currentTarget.dataset.synonymRelatedClear;
-    synonymStudyState.clearedRelatedExpressionIds = synonymStudyState.clearedRelatedExpressionIds.includes(clearId)
+    const wasCleared = synonymStudyState.clearedRelatedExpressionIds.includes(clearId);
+    synonymStudyState.clearedRelatedExpressionIds = wasCleared
       ? synonymStudyState.clearedRelatedExpressionIds.filter(id => id !== clearId)
       : [...synonymStudyState.clearedRelatedExpressionIds, clearId];
+    if (!wasCleared) startDailySynonymQuizIfComplete(clearId.split("::")[0]);
     saveSynonymStudyState();
     render();
   }));
@@ -5929,21 +5954,7 @@ function bindEvents(){
     synonymStudyState.learnedWordIds = wasLearned
       ? synonymStudyState.learnedWordIds.filter(id => id !== wordId)
       : [...synonymStudyState.learnedWordIds, wordId];
-    if (!wasLearned) {
-      const vocabulary = synonymStudySets.flatMap(sourceSet => sourceSet.words.map(word => ({ sourceSet, word })));
-      const day = Math.max(1, Math.min(30, Number(synonymStudyState.vocabularyDay) || 1));
-      const dayStart = day <= 10 ? (day - 1) * 4 : 40 + (day - 11) * 3;
-      const dayCount = day <= 10 ? 4 : 3;
-      const dailyVocabulary = vocabulary.slice(dayStart, dayStart + dayCount);
-      if (dailyVocabulary.length && dailyVocabulary.every(({ word }) => synonymStudyState.learnedWordIds.includes(word.id))) {
-        const currentEntry = dailyVocabulary.find(({ word }) => word.id === wordId) || dailyVocabulary[0];
-        synonymStudyState.activeSetId = currentEntry.sourceSet.id;
-        synonymStudyState.view = "quiz";
-        synonymStudyState.quizIndex = 0;
-        synonymStudyState.quizSelections = {};
-        synonymStudyState.answers = [];
-      }
-    }
+    if (!wasLearned) startDailySynonymQuizIfComplete(wordId);
     saveSynonymStudyState();
     render();
   }));
