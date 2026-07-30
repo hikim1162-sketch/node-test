@@ -4233,13 +4233,6 @@ function getReviewQuestionPool(reviewItems) {
 }
 
 function reviewChatbotUi() {
-  if (isAcademicMode()) {
-    reviewChatState.open = false;
-    reviewChatState.selected = null;
-    reviewChatState.question = null;
-    reviewChatState.answered = null;
-    return "";
-  }
   const items = getReviewChatbotItems();
   const questionPool = getReviewQuestionPool(items);
   items.forEach(item => {

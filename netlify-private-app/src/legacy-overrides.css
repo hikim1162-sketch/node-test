@@ -632,7 +632,6 @@ html[data-theme="dark"] #app .news-daily-focus-grid > article { border-color: #3
 
 #app .app-shell:has(.news-reader-page) > .sidebar,
 #app .app-shell:has(.news-reader-page) .content > header,
-#app .app-shell:has(.news-reader-page) .review-chatbot,
 #app .app-shell:has(.news-reader-page) .selection-assistant {
   display: none !important;
 }
