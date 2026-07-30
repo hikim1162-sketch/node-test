@@ -103,5 +103,6 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(appSource, /const meaningsComplete = dailyVocabulary\.length > 0/);
   assert.match(appSource, /const relatedExpressionsComplete = dailyVocabulary\.every/);
   assert.match(appSource, /if \(!meaningsComplete \|\| !relatedExpressionsComplete\) return false/);
+  assert.match(appSource, /Clear all related expressions before moving to the next day\./);
   assert.match(appSource, /data-synonym-submit/);
 });

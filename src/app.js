@@ -5921,7 +5921,7 @@ function bindEvents(){
         word.additionalSynonyms.map(item => `${word.id}::${item}`)
       );
       if (!requiredIds.every(id => synonymStudyState.clearedRelatedExpressionIds.includes(id))) {
-        window.alert("관련 표현을 모두 클리어해야 다음 날로 넘어갑니다.");
+        window.alert("Clear all related expressions before moving to the next day.");
         return;
       }
     }
