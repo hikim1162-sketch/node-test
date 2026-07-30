@@ -33,6 +33,12 @@ export default defineConfig({
     },
   ],
   server: {
+    watch: {
+      ignored: [
+        "**/.tmp-*/**",
+        "**/.chrome-*/**",
+      ],
+    },
     fs: {
       allow: [valueTimeRoot],
     },

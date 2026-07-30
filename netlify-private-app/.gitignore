@@ -9,3 +9,5 @@ dist/
 imports/wordmaster/
 .tmp-*/
 tmp-*.png
+artifacts/
+output/

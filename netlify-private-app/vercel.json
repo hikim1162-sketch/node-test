@@ -4,6 +4,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "routes": [
+    { "src": "^/api/home/learning$", "dest": "/api/home-learning" },
+    { "src": "^/api/learning/daily/([^/]+)$", "dest": "/api/learning-daily?id=$1" },
+    { "src": "^/api/learning/ted/([^/]+)$", "dest": "/api/learning-ted?id=$1" },
+    { "src": "^/api/learning/quiz/submit$", "dest": "/api/learning-quiz-submit" },
+    { "src": "^/api/admin/contents/([^/]+)$", "dest": "/api/admin-content?id=$1" },
+    { "src": "^/api/admin/contents$", "dest": "/api/admin-contents" },
     { "handle": "filesystem" },
     { "src": "^/(?!api(?:/|$)).*$", "dest": "/index.html" }
   ]

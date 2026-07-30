@@ -12,16 +12,16 @@ import {
   getTodaySynonymTheme,
 } from "../../data/synonym-study/index.js";
 
-test("MVP contains four published sets and twenty curated words", () => {
-  assert.equal(synonymStudySets.length, 4);
-  assert.equal(synonymStudySets.flatMap((set) => set.words).length, 20);
+test("published curriculum contains one hundred curated words", () => {
+  assert.equal(synonymStudySets.length, 12);
+  assert.equal(synonymStudySets.flatMap((set) => set.words).length, 100);
   assert.ok(synonymStudySets.every((set) => set.status === "published"));
 });
 
-test("each set has five cards and three CSAT-style quiz items", () => {
+test("each set has learning cards and three CSAT-style quiz items", () => {
   const allowedTypes = new Set(["synonym_select", "blank", "context_match", "meaning_match"]);
   for (const set of synonymStudySets) {
-    assert.equal(set.words.length, 5);
+    assert.ok(set.words.length >= 5);
     assert.equal(set.quiz.length, 3);
     assert.ok(set.quiz.every((item) => allowedTypes.has(item.type)));
     assert.ok(new Set(set.quiz.map((item) => item.type)).size >= 2);

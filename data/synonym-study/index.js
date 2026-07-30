@@ -2,6 +2,7 @@ import { adjectiveDegreeData } from "./adjectives.degree.js";
 import { adjectiveEmotionData } from "./adjectives.emotion.js";
 import { adjectiveQualitySizeData } from "./adjectives.quality-size.js";
 import { examHighFrequencyData } from "./exam-vocab.high-frequency.js";
+import { expandedCoreData } from "./expanded-core.js";
 import { buildSetQuiz } from "./quiz-templates.js";
 
 export { synonymContentSources } from "./sources.js";
@@ -15,6 +16,7 @@ export const synonymStudyData = [
   ...adjectiveQualitySizeData,
   ...adjectiveEmotionData,
   ...examHighFrequencyData,
+  ...expandedCoreData,
 ];
 
 const setDefinitions = [
@@ -24,20 +26,32 @@ const setDefinitions = [
   ["syn-csat-01", "빈출 수능 어휘", "독해에서 자주 바뀌는 핵심어", "쉬운 동사와 형용사를 학술적 문맥의 빈출 어휘로 연결합니다.", examHighFrequencyData],
 ];
 
-export const synonymStudySets = setDefinitions.map(([id, category, title, description, words]) => ({
+const expandedSetDefinitions = Array.from({ length: 8 }, (_, index) => {
+  const start = index * 10;
+  return [
+    `syn-core-${String(index + 1).padStart(2, "0")}`,
+    "핵심 확장",
+    `필수 유의어 ${start + 1}–${start + 10}`,
+    "기본 표현을 수능·말하기·글쓰기에 유용한 표현으로 확장합니다.",
+    expandedCoreData.slice(start, start + 10),
+  ];
+});
+
+export const synonymStudySets = [...setDefinitions, ...expandedSetDefinitions].map(([id, category, title, description, words]) => ({
   id, category, title, description, words, quiz: buildSetQuiz(words), status: "published",
 }));
 
 export function getSynonymStudyInitialState() {
-  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, learnedWordIds: [], quizIndex: 0, answers: [], wrongWordIds: [], completedSetIds: [], dailyThemeAnswers: {} };
+  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, vocabularyDay: 1, learnedWordIds: [], clearedRelatedExpressionIds: [], quizIndex: 0, answers: [], wrongWordIds: [], completedSetIds: [], dailyThemeAnswers: {} };
 }
 
 export function normalizeSynonymStudyState(value) {
   const initial = getSynonymStudyInitialState();
   const state = value && typeof value === "object" ? { ...initial, ...value } : initial;
-  ["learnedWordIds", "answers", "wrongWordIds", "completedSetIds"].forEach((key) => {
+  ["learnedWordIds", "clearedRelatedExpressionIds", "answers", "wrongWordIds", "completedSetIds"].forEach((key) => {
     if (!Array.isArray(state[key])) state[key] = [];
   });
   if (!state.dailyThemeAnswers || typeof state.dailyThemeAnswers !== "object" || Array.isArray(state.dailyThemeAnswers)) state.dailyThemeAnswers = {};
+  state.vocabularyDay = Math.max(1, Math.min(30, Number(state.vocabularyDay) || 1));
   return state;
 }

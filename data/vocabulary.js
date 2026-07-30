@@ -3,7 +3,7 @@
 export const vocabularyWords = [
   {
     "word": "abandon",
-    "phonetic": "",
+    "phonetic": "/əˈbændən/",
     "type": "수능 어휘",
     "meaning": "포기하다",
     "definition": "수능·고등 영어 독해를 위한 1번째 핵심 어휘입니다.",
@@ -17,7 +17,7 @@ export const vocabularyWords = [
   },
   {
     "word": "access",
-    "phonetic": "",
+    "phonetic": "/ˈæˌksɛs/",
     "type": "수능 어휘",
     "meaning": "채널; 기회, 참가할 권리; 접근하다",
     "definition": "수능·고등 영어 독해를 위한 2번째 핵심 어휘입니다.",
@@ -31,7 +31,7 @@ export const vocabularyWords = [
   },
   {
     "word": "accompany",
-    "phonetic": "",
+    "phonetic": "/əˈkʌmpəni/",
     "type": "수능 어휘",
     "meaning": "동행하다, 동행하다; 반주",
     "definition": "수능·고등 영어 독해를 위한 3번째 핵심 어휘입니다.",
@@ -45,7 +45,7 @@ export const vocabularyWords = [
   },
   {
     "word": "accurate",
-    "phonetic": "",
+    "phonetic": "/ˈækjɚət/",
     "type": "수능 어휘",
     "meaning": "정확하다, 정확하다",
     "definition": "수능·고등 영어 독해를 위한 4번째 핵심 어휘입니다.",
@@ -59,7 +59,7 @@ export const vocabularyWords = [
   },
   {
     "word": "achieve",
-    "phonetic": "",
+    "phonetic": "/əˈtʃiv/",
     "type": "수능 어휘",
     "meaning": "도달하다, 획득하다",
     "definition": "수능·고등 영어 독해를 위한 5번째 핵심 어휘입니다.",
@@ -73,7 +73,7 @@ export const vocabularyWords = [
   },
   {
     "word": "acquire",
-    "phonetic": "",
+    "phonetic": "/əˈkwaɪɚ/",
     "type": "수능 어휘",
     "meaning": "획득하다; 배우다",
     "definition": "수능·고등 영어 독해를 위한 6번째 핵심 어휘입니다.",
@@ -87,7 +87,7 @@ export const vocabularyWords = [
   },
   {
     "word": "adapt",
-    "phonetic": "",
+    "phonetic": "/əˈdæpt/",
     "type": "수능 어휘",
     "meaning": "적응하다; 적응하다",
     "definition": "수능·고등 영어 독해를 위한 7번째 핵심 어휘입니다.",
@@ -101,7 +101,7 @@ export const vocabularyWords = [
   },
   {
     "word": "adequate",
-    "phonetic": "",
+    "phonetic": "/ˈædəkwət/",
     "type": "수능 어휘",
     "meaning": "충분하다, 적절하다",
     "definition": "수능·고등 영어 독해를 위한 8번째 핵심 어휘입니다.",
@@ -115,7 +115,7 @@ export const vocabularyWords = [
   },
   {
     "word": "adjust",
-    "phonetic": "",
+    "phonetic": "/əˈdʒʌst/",
     "type": "수능 어휘",
     "meaning": "적응하다; 조정하다, 규제하다",
     "definition": "수능·고등 영어 독해를 위한 9번째 핵심 어휘입니다.",
@@ -129,7 +129,7 @@ export const vocabularyWords = [
   },
   {
     "word": "administration",
-    "phonetic": "",
+    "phonetic": "/æˌdmɪnɪˈstreɪʃən/",
     "type": "수능 어휘",
     "meaning": "관리; 행정 부서",
     "definition": "수능·고등 영어 독해를 위한 10번째 핵심 어휘입니다.",
@@ -143,7 +143,7 @@ export const vocabularyWords = [
   },
   {
     "word": "adult",
-    "phonetic": "",
+    "phonetic": "/əˈdʌlt/",
     "type": "수능 어휘",
     "meaning": "성인; 성숙한 어른",
     "definition": "수능·고등 영어 독해를 위한 11번째 핵심 어휘입니다.",
@@ -157,7 +157,7 @@ export const vocabularyWords = [
   },
   {
     "word": "affect",
-    "phonetic": "",
+    "phonetic": "/əˈfɛkt/",
     "type": "수능 어휘",
     "meaning": "영향",
     "definition": "수능·고등 영어 독해를 위한 12번째 핵심 어휘입니다.",
@@ -171,7 +171,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alternative",
-    "phonetic": "",
+    "phonetic": "/ɔˈltɝnətɪv/",
     "type": "수능 어휘",
     "meaning": "선택적인, 대안적인",
     "definition": "수능·고등 영어 독해를 위한 13번째 핵심 어휘입니다.",
@@ -185,7 +185,7 @@ export const vocabularyWords = [
   },
   {
     "word": "amend",
-    "phonetic": "",
+    "phonetic": "/əˈmɛnd/",
     "type": "수능 어휘",
     "meaning": "수정하다, 수정하다",
     "definition": "수능·고등 영어 독해를 위한 14번째 핵심 어휘입니다.",
@@ -199,7 +199,7 @@ export const vocabularyWords = [
   },
   {
     "word": "analyze",
-    "phonetic": "",
+    "phonetic": "/ˈænəˌlaɪz/",
     "type": "수능 어휘",
     "meaning": "분석, 분해(분석과 동일)",
     "definition": "수능·고등 영어 독해를 위한 15번째 핵심 어휘입니다.",
@@ -213,7 +213,7 @@ export const vocabularyWords = [
   },
   {
     "word": "annual",
-    "phonetic": "",
+    "phonetic": "/ˈænjuəl/",
     "type": "수능 어휘",
     "meaning": "일년에 한 번, 매년",
     "definition": "수능·고등 영어 독해를 위한 16번째 핵심 어휘입니다.",
@@ -227,7 +227,7 @@ export const vocabularyWords = [
   },
   {
     "word": "apparent",
-    "phonetic": "",
+    "phonetic": "/əˈpɛrənt/",
     "type": "수능 어휘",
     "meaning": "명백한, 명확한",
     "definition": "수능·고등 영어 독해를 위한 17번째 핵심 어휘입니다.",
@@ -241,7 +241,7 @@ export const vocabularyWords = [
   },
   {
     "word": "appreciate",
-    "phonetic": "",
+    "phonetic": "/əˈpriʃiˌeɪt/",
     "type": "수능 어휘",
     "meaning": "감사합니다; 감사하다",
     "definition": "수능·고등 영어 독해를 위한 18번째 핵심 어휘입니다.",
@@ -255,7 +255,7 @@ export const vocabularyWords = [
   },
   {
     "word": "approach",
-    "phonetic": "",
+    "phonetic": "/əˈproʊtʃ/",
     "type": "수능 어휘",
     "meaning": "가까운, 가까운 길, 방법",
     "definition": "수능·고등 영어 독해를 위한 19번째 핵심 어휘입니다.",
@@ -269,7 +269,7 @@ export const vocabularyWords = [
   },
   {
     "word": "appropriate",
-    "phonetic": "",
+    "phonetic": "/əˈproʊpriət/",
     "type": "수능 어휘",
     "meaning": "적절한",
     "definition": "수능·고등 영어 독해를 위한 20번째 핵심 어휘입니다.",
@@ -283,7 +283,7 @@ export const vocabularyWords = [
   },
   {
     "word": "approximate",
-    "phonetic": "",
+    "phonetic": "/əˈprɑksəmət/",
     "type": "수능 어휘",
     "meaning": "대략적인",
     "definition": "수능·고등 영어 독해를 위한 21번째 핵심 어휘입니다.",
@@ -297,7 +297,7 @@ export const vocabularyWords = [
   },
   {
     "word": "area",
-    "phonetic": "",
+    "phonetic": "/ˈɛriə/",
     "type": "수능 어휘",
     "meaning": "지역, 지역; 영역; 범위",
     "definition": "수능·고등 영어 독해를 위한 22번째 핵심 어휘입니다.",
@@ -311,7 +311,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aspect",
-    "phonetic": "",
+    "phonetic": "/ˈæˌspɛkt/",
     "type": "수능 어휘",
     "meaning": "측면; 외관",
     "definition": "수능·고등 영어 독해를 위한 23번째 핵심 어휘입니다.",
@@ -325,7 +325,7 @@ export const vocabularyWords = [
   },
   {
     "word": "assign",
-    "phonetic": "",
+    "phonetic": "/əˈsaɪn/",
     "type": "수능 어휘",
     "meaning": "할당하다",
     "definition": "수능·고등 영어 독해를 위한 24번째 핵심 어휘입니다.",
@@ -339,7 +339,7 @@ export const vocabularyWords = [
   },
   {
     "word": "assist",
-    "phonetic": "",
+    "phonetic": "/əˈsɪst/",
     "type": "수능 어휘",
     "meaning": "도와주다, 도와주다",
     "definition": "수능·고등 영어 독해를 위한 25번째 핵심 어휘입니다.",
@@ -353,7 +353,7 @@ export const vocabularyWords = [
   },
   {
     "word": "assume",
-    "phonetic": "",
+    "phonetic": "/əˈsum/",
     "type": "수능 어휘",
     "meaning": "가정하다, 가정하다; 가정하다",
     "definition": "수능·고등 영어 독해를 위한 26번째 핵심 어휘입니다.",
@@ -367,7 +367,7 @@ export const vocabularyWords = [
   },
   {
     "word": "assure",
-    "phonetic": "",
+    "phonetic": "/əˈʃʊr/",
     "type": "수능 어휘",
     "meaning": "확신하다",
     "definition": "수능·고등 영어 독해를 위한 27번째 핵심 어휘입니다.",
@@ -381,7 +381,7 @@ export const vocabularyWords = [
   },
   {
     "word": "attach",
-    "phonetic": "",
+    "phonetic": "/əˈtætʃ/",
     "type": "수능 어휘",
     "meaning": "묶다, 붙이다",
     "definition": "수능·고등 영어 독해를 위한 28번째 핵심 어휘입니다.",
@@ -395,7 +395,7 @@ export const vocabularyWords = [
   },
   {
     "word": "attitude",
-    "phonetic": "",
+    "phonetic": "/ˈætəˌtud/",
     "type": "수능 어휘",
     "meaning": "태도; 의견",
     "definition": "수능·고등 영어 독해를 위한 29번째 핵심 어휘입니다.",
@@ -409,7 +409,7 @@ export const vocabularyWords = [
   },
   {
     "word": "author",
-    "phonetic": "",
+    "phonetic": "/ˈɔθɚ/",
     "type": "수능 어휘",
     "meaning": "저자; 작가; 창립자 크리에이티브 퍼블리싱",
     "definition": "수능·고등 영어 독해를 위한 30번째 핵심 어휘입니다.",
@@ -423,7 +423,7 @@ export const vocabularyWords = [
   },
   {
     "word": "authority",
-    "phonetic": "",
+    "phonetic": "/əˈθɔrəti/",
     "type": "수능 어휘",
     "meaning": "권위; 권위",
     "definition": "수능·고등 영어 독해를 위한 31번째 핵심 어휘입니다.",
@@ -437,7 +437,7 @@ export const vocabularyWords = [
   },
   {
     "word": "available",
-    "phonetic": "",
+    "phonetic": "/əˈveɪləbəl/",
     "type": "수능 어휘",
     "meaning": "사용 가능; 이용 가능, 이용 가능",
     "definition": "수능·고등 영어 독해를 위한 32번째 핵심 어휘입니다.",
@@ -451,7 +451,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aware",
-    "phonetic": "",
+    "phonetic": "/əˈwɛr/",
     "type": "수능 어휘",
     "meaning": "알다, 깨닫다",
     "definition": "수능·고등 영어 독해를 위한 33번째 핵심 어휘입니다.",
@@ -465,7 +465,7 @@ export const vocabularyWords = [
   },
   {
     "word": "benefit",
-    "phonetic": "",
+    "phonetic": "/ˈbɛnəfɪt/",
     "type": "수능 어휘",
     "meaning": "이익, 이점, 혜택",
     "definition": "수능·고등 영어 독해를 위한 34번째 핵심 어휘입니다.",
@@ -479,7 +479,7 @@ export const vocabularyWords = [
   },
   {
     "word": "bond",
-    "phonetic": "",
+    "phonetic": "/ˈbɑnd/",
     "type": "수능 어휘",
     "meaning": "접착력; 콤비네이션; 연결; 연결",
     "definition": "수능·고등 영어 독해를 위한 35번째 핵심 어휘입니다.",
@@ -493,7 +493,7 @@ export const vocabularyWords = [
   },
   {
     "word": "brief",
-    "phonetic": "",
+    "phonetic": "/ˈbrif/",
     "type": "수능 어휘",
     "meaning": "간결하다",
     "definition": "수능·고등 영어 독해를 위한 36번째 핵심 어휘입니다.",
@@ -507,7 +507,7 @@ export const vocabularyWords = [
   },
   {
     "word": "capable",
-    "phonetic": "",
+    "phonetic": "/ˈkeɪpəbəl/",
     "type": "수능 어휘",
     "meaning": "유능한",
     "definition": "수능·고등 영어 독해를 위한 37번째 핵심 어휘입니다.",
@@ -521,7 +521,7 @@ export const vocabularyWords = [
   },
   {
     "word": "capacity",
-    "phonetic": "",
+    "phonetic": "/kəˈpæsəti/",
     "type": "수능 어휘",
     "meaning": "용량",
     "definition": "수능·고등 영어 독해를 위한 38번째 핵심 어휘입니다.",
@@ -535,7 +535,7 @@ export const vocabularyWords = [
   },
   {
     "word": "category",
-    "phonetic": "",
+    "phonetic": "/ˈkætəˌɡɔri/",
     "type": "수능 어휘",
     "meaning": "종류",
     "definition": "수능·고등 영어 독해를 위한 39번째 핵심 어휘입니다.",
@@ -549,7 +549,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cease",
-    "phonetic": "",
+    "phonetic": "/ˈsis/",
     "type": "수능 어휘",
     "meaning": "그만하다",
     "definition": "수능·고등 영어 독해를 위한 40번째 핵심 어휘입니다.",
@@ -563,7 +563,7 @@ export const vocabularyWords = [
   },
   {
     "word": "challenge",
-    "phonetic": "",
+    "phonetic": "/ˈtʃæləndʒ/",
     "type": "수능 어휘",
     "meaning": "도전;도전 도전",
     "definition": "수능·고등 영어 독해를 위한 41번째 핵심 어휘입니다.",
@@ -577,7 +577,7 @@ export const vocabularyWords = [
   },
   {
     "word": "channel",
-    "phonetic": "",
+    "phonetic": "/ˈtʃænəl/",
     "type": "수능 어휘",
     "meaning": "해협; 채널; 채널",
     "definition": "수능·고등 영어 독해를 위한 42번째 핵심 어휘입니다.",
@@ -591,7 +591,7 @@ export const vocabularyWords = [
   },
   {
     "word": "chapter",
-    "phonetic": "",
+    "phonetic": "/ˈtʃæptɚ/",
     "type": "수능 어휘",
     "meaning": "장",
     "definition": "수능·고등 영어 독해를 위한 43번째 핵심 어휘입니다.",
@@ -605,7 +605,7 @@ export const vocabularyWords = [
   },
   {
     "word": "chart",
-    "phonetic": "",
+    "phonetic": "/ˈtʃɑrt/",
     "type": "수능 어휘",
     "meaning": "차트; 항해도",
     "definition": "수능·고등 영어 독해를 위한 44번째 핵심 어휘입니다.",
@@ -619,7 +619,7 @@ export const vocabularyWords = [
   },
   {
     "word": "chemical",
-    "phonetic": "",
+    "phonetic": "/ˈkɛməkəl/",
     "type": "수능 어휘",
     "meaning": "화학 약품",
     "definition": "수능·고등 영어 독해를 위한 45번째 핵심 어휘입니다.",
@@ -633,7 +633,7 @@ export const vocabularyWords = [
   },
   {
     "word": "circumstance",
-    "phonetic": "",
+    "phonetic": "/ˈsɝkəˌmstæns/",
     "type": "수능 어휘",
     "meaning": "환경; 상황",
     "definition": "수능·고등 영어 독해를 위한 46번째 핵심 어휘입니다.",
@@ -647,7 +647,7 @@ export const vocabularyWords = [
   },
   {
     "word": "civil",
-    "phonetic": "",
+    "phonetic": "/ˈsɪvəl/",
     "type": "수능 어휘",
     "meaning": "국내; 일반 민간인; 시민",
     "definition": "수능·고등 영어 독해를 위한 47번째 핵심 어휘입니다.",
@@ -661,7 +661,7 @@ export const vocabularyWords = [
   },
   {
     "word": "clause",
-    "phonetic": "",
+    "phonetic": "/ˈklɔz/",
     "type": "수능 어휘",
     "meaning": "조항",
     "definition": "수능·고등 영어 독해를 위한 48번째 핵심 어휘입니다.",
@@ -675,7 +675,7 @@ export const vocabularyWords = [
   },
   {
     "word": "code",
-    "phonetic": "",
+    "phonetic": "/ˈkoʊd/",
     "type": "수능 어휘",
     "meaning": "비밀번호; 코드, 코드명, 인코딩",
     "definition": "수능·고등 영어 독해를 위한 49번째 핵심 어휘입니다.",
@@ -689,7 +689,7 @@ export const vocabularyWords = [
   },
   {
     "word": "commission",
-    "phonetic": "",
+    "phonetic": "/kəˈmɪʃən/",
     "type": "수능 어휘",
     "meaning": "임명·위탁·대리·대리 수수료; 수수료; 커미션, 임명, 커미션; 위탁 생산",
     "definition": "수능·고등 영어 독해를 위한 50번째 핵심 어휘입니다.",
@@ -703,7 +703,7 @@ export const vocabularyWords = [
   },
   {
     "word": "commit",
-    "phonetic": "",
+    "phonetic": "/kəˈmɪt/",
     "type": "수능 어휘",
     "meaning": "저지르다, 하다",
     "definition": "수능·고등 영어 독해를 위한 51번째 핵심 어휘입니다.",
@@ -717,7 +717,7 @@ export const vocabularyWords = [
   },
   {
     "word": "communicate",
-    "phonetic": "",
+    "phonetic": "/kəˈmjunəˌkeɪt/",
     "type": "수능 어휘",
     "meaning": "의사소통; 의사소통; 의사소통",
     "definition": "수능·고등 영어 독해를 위한 52번째 핵심 어휘입니다.",
@@ -731,7 +731,7 @@ export const vocabularyWords = [
   },
   {
     "word": "community",
-    "phonetic": "",
+    "phonetic": "/kəˈmjunəti/",
     "type": "수능 어휘",
     "meaning": "집단, 사회",
     "definition": "수능·고등 영어 독해를 위한 53번째 핵심 어휘입니다.",
@@ -745,7 +745,7 @@ export const vocabularyWords = [
   },
   {
     "word": "complex",
-    "phonetic": "",
+    "phonetic": "/ˈkɑmplɛks/",
     "type": "수능 어휘",
     "meaning": "복잡한; 결합된 조합",
     "definition": "수능·고등 영어 독해를 위한 54번째 핵심 어휘입니다.",
@@ -759,7 +759,7 @@ export const vocabularyWords = [
   },
   {
     "word": "component",
-    "phonetic": "",
+    "phonetic": "/kəˈmpoʊnənt/",
     "type": "수능 어휘",
     "meaning": "성분; 부품",
     "definition": "수능·고등 영어 독해를 위한 55번째 핵심 어휘입니다.",
@@ -773,7 +773,7 @@ export const vocabularyWords = [
   },
   {
     "word": "compound",
-    "phonetic": "",
+    "phonetic": "/ˈkɑmpaʊnd/",
     "type": "수능 어휘",
     "meaning": "화합물",
     "definition": "수능·고등 영어 독해를 위한 56번째 핵심 어휘입니다.",
@@ -787,7 +787,7 @@ export const vocabularyWords = [
   },
   {
     "word": "compute",
-    "phonetic": "",
+    "phonetic": "/kəˈmpjut/",
     "type": "수능 어휘",
     "meaning": "계산하다",
     "definition": "수능·고등 영어 독해를 위한 57번째 핵심 어휘입니다.",
@@ -801,7 +801,7 @@ export const vocabularyWords = [
   },
   {
     "word": "concentrate",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnsəˌntreɪt/",
     "type": "수능 어휘",
     "meaning": "집중하다, 모으다",
     "definition": "수능·고등 영어 독해를 위한 58번째 핵심 어휘입니다.",
@@ -815,7 +815,7 @@ export const vocabularyWords = [
   },
   {
     "word": "concept",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnsɛpt/",
     "type": "수능 어휘",
     "meaning": "컨셉, 아이디어",
     "definition": "수능·고등 영어 독해를 위한 59번째 핵심 어휘입니다.",
@@ -829,7 +829,7 @@ export const vocabularyWords = [
   },
   {
     "word": "conclude",
-    "phonetic": "",
+    "phonetic": "/kəˈnklud/",
     "type": "수능 어휘",
     "meaning": "추론; 결론; 완성; 끝",
     "definition": "수능·고등 영어 독해를 위한 60번째 핵심 어휘입니다.",
@@ -843,7 +843,7 @@ export const vocabularyWords = [
   },
   {
     "word": "conduct",
-    "phonetic": "",
+    "phonetic": "/ˈkɑndəkt/",
     "type": "수능 어휘",
     "meaning": "가이드; 관리하다",
     "definition": "수능·고등 영어 독해를 위한 61번째 핵심 어휘입니다.",
@@ -857,7 +857,7 @@ export const vocabularyWords = [
   },
   {
     "word": "confine",
-    "phonetic": "",
+    "phonetic": "/kəˈnfaɪn/",
     "type": "수능 어휘",
     "meaning": "가두다",
     "definition": "수능·고등 영어 독해를 위한 62번째 핵심 어휘입니다.",
@@ -871,7 +871,7 @@ export const vocabularyWords = [
   },
   {
     "word": "conflict",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnflɪkt/",
     "type": "수능 어휘",
     "meaning": "투쟁, 갈등",
     "definition": "수능·고등 영어 독해를 위한 63번째 핵심 어휘입니다.",
@@ -885,7 +885,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consent",
-    "phonetic": "",
+    "phonetic": "/kəˈnsɛnt/",
     "type": "수능 어휘",
     "meaning": "동의",
     "definition": "수능·고등 영어 독해를 위한 64번째 핵심 어휘입니다.",
@@ -899,7 +899,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consequent",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnsəkwənt/",
     "type": "수능 어휘",
     "meaning": "결과적인",
     "definition": "수능·고등 영어 독해를 위한 65번째 핵심 어휘입니다.",
@@ -913,7 +913,7 @@ export const vocabularyWords = [
   },
   {
     "word": "considerable",
-    "phonetic": "",
+    "phonetic": "/kəˈnsɪdɚəbəl/",
     "type": "수능 어휘",
     "meaning": "상당한, 상당한; 고려할 가치가 있는, 중요한",
     "definition": "수능·고등 영어 독해를 위한 66번째 핵심 어휘입니다.",
@@ -927,7 +927,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consist",
-    "phonetic": "",
+    "phonetic": "/kəˈnsɪst/",
     "type": "수능 어휘",
     "meaning": "구성됨",
     "definition": "수능·고등 영어 독해를 위한 67번째 핵심 어휘입니다.",
@@ -941,7 +941,7 @@ export const vocabularyWords = [
   },
   {
     "word": "constant",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnstənt/",
     "type": "수능 어휘",
     "meaning": "자주, 끊임없이",
     "definition": "수능·고등 영어 독해를 위한 68번째 핵심 어휘입니다.",
@@ -955,7 +955,7 @@ export const vocabularyWords = [
   },
   {
     "word": "construct",
-    "phonetic": "",
+    "phonetic": "/kəˈnstrʌkt/",
     "type": "수능 어휘",
     "meaning": "구성; 구성하다",
     "definition": "수능·고등 영어 독해를 위한 69번째 핵심 어휘입니다.",
@@ -969,7 +969,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consume",
-    "phonetic": "",
+    "phonetic": "/kəˈnsum/",
     "type": "수능 어휘",
     "meaning": "소비하다; 소비하다",
     "definition": "수능·고등 영어 독해를 위한 70번째 핵심 어휘입니다.",
@@ -983,7 +983,7 @@ export const vocabularyWords = [
   },
   {
     "word": "contact",
-    "phonetic": "",
+    "phonetic": "/ˈkɑˌntækt/",
     "type": "수능 어휘",
     "meaning": "연락",
     "definition": "수능·고등 영어 독해를 위한 71번째 핵심 어휘입니다.",
@@ -997,7 +997,7 @@ export const vocabularyWords = [
   },
   {
     "word": "contemporary",
-    "phonetic": "",
+    "phonetic": "/kəˈntɛmpɚˌɛri/",
     "type": "수능 어휘",
     "meaning": "현대; 동시대의",
     "definition": "수능·고등 영어 독해를 위한 72번째 핵심 어휘입니다.",
@@ -1011,7 +1011,7 @@ export const vocabularyWords = [
   },
   {
     "word": "context",
-    "phonetic": "",
+    "phonetic": "/ˈkɑntɛkst/",
     "type": "수능 어휘",
     "meaning": "문맥, 기사와 기사 사이의 관계",
     "definition": "수능·고등 영어 독해를 위한 73번째 핵심 어휘입니다.",
@@ -1025,7 +1025,7 @@ export const vocabularyWords = [
   },
   {
     "word": "contract",
-    "phonetic": "",
+    "phonetic": "/ˈkɑˌntrækt/",
     "type": "수능 어휘",
     "meaning": "축소하다, 단축시키다; 주문하다; 감염 계약, 계약",
     "definition": "수능·고등 영어 독해를 위한 74번째 핵심 어휘입니다.",
@@ -1039,7 +1039,7 @@ export const vocabularyWords = [
   },
   {
     "word": "contrary",
-    "phonetic": "",
+    "phonetic": "/ˈkɑntrɛri/",
     "type": "수능 어휘",
     "meaning": "반대편 반대쪽",
     "definition": "수능·고등 영어 독해를 위한 75번째 핵심 어휘입니다.",
@@ -1053,7 +1053,7 @@ export const vocabularyWords = [
   },
   {
     "word": "contrast",
-    "phonetic": "",
+    "phonetic": "/ˈkɑntræst/",
     "type": "수능 어휘",
     "meaning": "대비",
     "definition": "수능·고등 영어 독해를 위한 76번째 핵심 어휘입니다.",
@@ -1067,12 +1067,12 @@ export const vocabularyWords = [
   },
   {
     "word": "contribute",
-    "phonetic": "",
+    "phonetic": "/kəˈntrɪbjut/",
     "type": "수능 어휘",
-    "meaning": "기부하세요, 기부하세요",
+    "meaning": "기여하다; 기부하다",
     "definition": "수능·고등 영어 독해를 위한 77번째 핵심 어휘입니다.",
     "example": "The meaning of \"contribute\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '기부하세요, 기부하세요'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '기여하다; 기부하다'라는 의미를 확인해 보세요.",
     "source": "Academic Word List",
     "sourceUrl": "https://textproject.org/wp-content/uploads/resources/Academic-word-list.pdf",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/contribute",
@@ -1081,7 +1081,7 @@ export const vocabularyWords = [
   },
   {
     "word": "convert",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnvɚt/",
     "type": "수능 어휘",
     "meaning": "변형하다, 변형시키다",
     "definition": "수능·고등 영어 독해를 위한 78번째 핵심 어휘입니다.",
@@ -1095,7 +1095,7 @@ export const vocabularyWords = [
   },
   {
     "word": "convince",
-    "phonetic": "",
+    "phonetic": "/kəˈnvɪns/",
     "type": "수능 어휘",
     "meaning": "납득시키다, 납득시키다",
     "definition": "수능·고등 영어 독해를 위한 79번째 핵심 어휘입니다.",
@@ -1109,7 +1109,7 @@ export const vocabularyWords = [
   },
   {
     "word": "core",
-    "phonetic": "",
+    "phonetic": "/ˈkɔr/",
     "type": "수능 어휘",
     "meaning": "핵심",
     "definition": "수능·고등 영어 독해를 위한 80번째 핵심 어휘입니다.",
@@ -1123,7 +1123,7 @@ export const vocabularyWords = [
   },
   {
     "word": "couple",
-    "phonetic": "",
+    "phonetic": "/ˈkʌpəl/",
     "type": "수능 어휘",
     "meaning": "커플; 짝, 짝",
     "definition": "수능·고등 영어 독해를 위한 81번째 핵심 어휘입니다.",
@@ -1137,7 +1137,7 @@ export const vocabularyWords = [
   },
   {
     "word": "create",
-    "phonetic": "",
+    "phonetic": "/kriˈeɪt/",
     "type": "수능 어휘",
     "meaning": "창조하다; 원인",
     "definition": "수능·고등 영어 독해를 위한 82번째 핵심 어휘입니다.",
@@ -1151,7 +1151,7 @@ export const vocabularyWords = [
   },
   {
     "word": "credit",
-    "phonetic": "",
+    "phonetic": "/ˈkrɛdət/",
     "type": "수능 어휘",
     "meaning": "신용; 신뢰하다; 대출 기관",
     "definition": "수능·고등 영어 독해를 위한 83번째 핵심 어휘입니다.",
@@ -1165,7 +1165,7 @@ export const vocabularyWords = [
   },
   {
     "word": "culture",
-    "phonetic": "",
+    "phonetic": "/ˈkʌltʃɚ/",
     "type": "수능 어휘",
     "meaning": "문화",
     "definition": "수능·고등 영어 독해를 위한 84번째 핵심 어휘입니다.",
@@ -1179,7 +1179,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cycle",
-    "phonetic": "",
+    "phonetic": "/ˈsaɪkəl/",
     "type": "수능 어휘",
     "meaning": "사이클링, 사이클 사이클; 주기는 주기를 만든다",
     "definition": "수능·고등 영어 독해를 위한 85번째 핵심 어휘입니다.",
@@ -1193,7 +1193,7 @@ export const vocabularyWords = [
   },
   {
     "word": "data",
-    "phonetic": "",
+    "phonetic": "/ˈdeɪtə/",
     "type": "수능 어휘",
     "meaning": "데이터(데이터의 복수형); 정보",
     "definition": "수능·고등 영어 독해를 위한 86번째 핵심 어휘입니다.",
@@ -1207,7 +1207,7 @@ export const vocabularyWords = [
   },
   {
     "word": "debate",
-    "phonetic": "",
+    "phonetic": "/dəˈbeɪt/",
     "type": "수능 어휘",
     "meaning": "n&토론, 토론",
     "definition": "수능·고등 영어 독해를 위한 87번째 핵심 어휘입니다.",
@@ -1221,7 +1221,7 @@ export const vocabularyWords = [
   },
   {
     "word": "decade",
-    "phonetic": "",
+    "phonetic": "/dɛˈkeɪd/",
     "type": "수능 어휘",
     "meaning": "10년",
     "definition": "수능·고등 영어 독해를 위한 88번째 핵심 어휘입니다.",
@@ -1235,7 +1235,7 @@ export const vocabularyWords = [
   },
   {
     "word": "decline",
-    "phonetic": "",
+    "phonetic": "/dɪˈklaɪn/",
     "type": "수능 어휘",
     "meaning": "쇠퇴; 감소; 경사; 쇠퇴",
     "definition": "수능·고등 영어 독해를 위한 89번째 핵심 어휘입니다.",
@@ -1249,7 +1249,7 @@ export const vocabularyWords = [
   },
   {
     "word": "define",
-    "phonetic": "",
+    "phonetic": "/dɪˈfaɪn/",
     "type": "수능 어휘",
     "meaning": "정의하다",
     "definition": "수능·고등 영어 독해를 위한 90번째 핵심 어휘입니다.",
@@ -1263,7 +1263,7 @@ export const vocabularyWords = [
   },
   {
     "word": "definite",
-    "phonetic": "",
+    "phonetic": "/ˈdɛfənət/",
     "type": "수능 어휘",
     "meaning": "분명하다, 확실하다, 확실하다",
     "definition": "수능·고등 영어 독해를 위한 91번째 핵심 어휘입니다.",
@@ -1277,7 +1277,7 @@ export const vocabularyWords = [
   },
   {
     "word": "demonstrate",
-    "phonetic": "",
+    "phonetic": "/ˈdɛməˌnstreɪt/",
     "type": "수능 어휘",
     "meaning": "증명하다, 확인하다; 시연하다, 설명하다; 쇼",
     "definition": "수능·고등 영어 독해를 위한 92번째 핵심 어휘입니다.",
@@ -1291,7 +1291,7 @@ export const vocabularyWords = [
   },
   {
     "word": "depress",
-    "phonetic": "",
+    "phonetic": "/dɪˈprɛs/",
     "type": "수능 어휘",
     "meaning": "누르고 낮추십시오. 우울하다, 우울하다; 우울하게 하다",
     "definition": "수능·고등 영어 독해를 위한 93번째 핵심 어휘입니다.",
@@ -1305,7 +1305,7 @@ export const vocabularyWords = [
   },
   {
     "word": "derive",
-    "phonetic": "",
+    "phonetic": "/dɚˈaɪv/",
     "type": "수능 어휘",
     "meaning": "획득, 파생, 확장; 유래하다, 유래하다",
     "definition": "수능·고등 영어 독해를 위한 94번째 핵심 어휘입니다.",
@@ -1319,7 +1319,7 @@ export const vocabularyWords = [
   },
   {
     "word": "design",
-    "phonetic": "",
+    "phonetic": "/dɪˈzaɪn/",
     "type": "수능 어휘",
     "meaning": "디자인; 공식화하다; 계획 스타일",
     "definition": "수능·고등 영어 독해를 위한 95번째 핵심 어휘입니다.",
@@ -1333,7 +1333,7 @@ export const vocabularyWords = [
   },
   {
     "word": "despite",
-    "phonetic": "",
+    "phonetic": "/dɪˈspaɪt/",
     "type": "수능 어휘",
     "meaning": "그럼에도 불구하고",
     "definition": "수능·고등 영어 독해를 위한 96번째 핵심 어휘입니다.",
@@ -1347,7 +1347,7 @@ export const vocabularyWords = [
   },
   {
     "word": "detect",
-    "phonetic": "",
+    "phonetic": "/dɪˈtɛkt/",
     "type": "수능 어휘",
     "meaning": "감지하다",
     "definition": "수능·고등 영어 독해를 위한 97번째 핵심 어휘입니다.",
@@ -1361,7 +1361,7 @@ export const vocabularyWords = [
   },
   {
     "word": "device",
-    "phonetic": "",
+    "phonetic": "/dɪˈvaɪs/",
     "type": "수능 어휘",
     "meaning": "장치",
     "definition": "수능·고등 영어 독해를 위한 98번째 핵심 어휘입니다.",
@@ -1375,7 +1375,7 @@ export const vocabularyWords = [
   },
   {
     "word": "devote",
-    "phonetic": "",
+    "phonetic": "/dɪˈvoʊt/",
     "type": "수능 어휘",
     "meaning": "헌신; 봉납; 집중",
     "definition": "수능·고등 영어 독해를 위한 99번째 핵심 어휘입니다.",
@@ -1389,7 +1389,7 @@ export const vocabularyWords = [
   },
   {
     "word": "display",
-    "phonetic": "",
+    "phonetic": "/dɪˈspleɪ/",
     "type": "수능 어휘",
     "meaning": "디스플레이",
     "definition": "수능·고등 영어 독해를 위한 100번째 핵심 어휘입니다.",
@@ -1403,7 +1403,7 @@ export const vocabularyWords = [
   },
   {
     "word": "distinct",
-    "phonetic": "",
+    "phonetic": "/dɪˈstɪŋkt/",
     "type": "수능 어휘",
     "meaning": "별개의",
     "definition": "수능·고등 영어 독해를 위한 101번째 핵심 어휘입니다.",
@@ -1417,7 +1417,7 @@ export const vocabularyWords = [
   },
   {
     "word": "distribute",
-    "phonetic": "",
+    "phonetic": "/dɪˈstrɪbjut/",
     "type": "수능 어휘",
     "meaning": "배포하다; 할당하다",
     "definition": "수능·고등 영어 독해를 위한 102번째 핵심 어휘입니다.",
@@ -1431,7 +1431,7 @@ export const vocabularyWords = [
   },
   {
     "word": "domestic",
-    "phonetic": "",
+    "phonetic": "/dəˈmɛstɪk/",
     "type": "수능 어휘",
     "meaning": "국내, 가족; 토종의; 길들여진",
     "definition": "수능·고등 영어 독해를 위한 103번째 핵심 어휘입니다.",
@@ -1445,7 +1445,7 @@ export const vocabularyWords = [
   },
   {
     "word": "draft",
-    "phonetic": "",
+    "phonetic": "/ˈdræft/",
     "type": "수능 어휘",
     "meaning": "초안 초안",
     "definition": "수능·고등 영어 독해를 위한 104번째 핵심 어휘입니다.",
@@ -1459,7 +1459,7 @@ export const vocabularyWords = [
   },
   {
     "word": "economy",
-    "phonetic": "",
+    "phonetic": "/ɪˈkɑnəmi/",
     "type": "수능 어휘",
     "meaning": "경제",
     "definition": "수능·고등 영어 독해를 위한 105번째 핵심 어휘입니다.",
@@ -1473,7 +1473,7 @@ export const vocabularyWords = [
   },
   {
     "word": "edit",
-    "phonetic": "",
+    "phonetic": "/ˈɛdət/",
     "type": "수능 어휘",
     "meaning": "편집하다",
     "definition": "수능·고등 영어 독해를 위한 106번째 핵심 어휘입니다.",
@@ -1487,7 +1487,7 @@ export const vocabularyWords = [
   },
   {
     "word": "element",
-    "phonetic": "",
+    "phonetic": "/ˈɛləmənt/",
     "type": "수능 어휘",
     "meaning": "요소; 성분, 성분",
     "definition": "수능·고등 영어 독해를 위한 107번째 핵심 어휘입니다.",
@@ -1501,7 +1501,7 @@ export const vocabularyWords = [
   },
   {
     "word": "eliminate",
-    "phonetic": "",
+    "phonetic": "/ɪˈlɪməˌneɪt/",
     "type": "수능 어휘",
     "meaning": "제거하다; 제외하다",
     "definition": "수능·고등 영어 독해를 위한 108번째 핵심 어휘입니다.",
@@ -1515,7 +1515,7 @@ export const vocabularyWords = [
   },
   {
     "word": "emerge",
-    "phonetic": "",
+    "phonetic": "/ɪˈmɝdʒ/",
     "type": "수능 어휘",
     "meaning": "나타나다, 나타나다, 나타나다",
     "definition": "수능·고등 영어 독해를 위한 109번째 핵심 어휘입니다.",
@@ -1529,7 +1529,7 @@ export const vocabularyWords = [
   },
   {
     "word": "emphasis",
-    "phonetic": "",
+    "phonetic": "/ˈɛmfəsəs/",
     "type": "수능 어휘",
     "meaning": "강조하다, 집중하다",
     "definition": "수능·고등 영어 독해를 위한 110번째 핵심 어휘입니다.",
@@ -1543,7 +1543,7 @@ export const vocabularyWords = [
   },
   {
     "word": "enable",
-    "phonetic": "",
+    "phonetic": "/ɛˈneɪbəl/",
     "type": "수능 어휘",
     "meaning": "활성화",
     "definition": "수능·고등 영어 독해를 위한 111번째 핵심 어휘입니다.",
@@ -1557,7 +1557,7 @@ export const vocabularyWords = [
   },
   {
     "word": "encounter",
-    "phonetic": "",
+    "phonetic": "/ɪˈnkaʊntɚ/",
     "type": "수능 어휘",
     "meaning": "만남, 만남 [특히 문제나 반대] 만나다, 만남",
     "definition": "수능·고등 영어 독해를 위한 112번째 핵심 어휘입니다.",
@@ -1571,7 +1571,7 @@ export const vocabularyWords = [
   },
   {
     "word": "energy",
-    "phonetic": "",
+    "phonetic": "/ˈɛnɚdʒi/",
     "type": "수능 어휘",
     "meaning": "에너지; 에너지",
     "definition": "수능·고등 영어 독해를 위한 113번째 핵심 어휘입니다.",
@@ -1585,7 +1585,7 @@ export const vocabularyWords = [
   },
   {
     "word": "enormous",
-    "phonetic": "",
+    "phonetic": "/ɪˈnɔrməs/",
     "type": "수능 어휘",
     "meaning": "거대한, 거대한",
     "definition": "수능·고등 영어 독해를 위한 114번째 핵심 어휘입니다.",
@@ -1599,7 +1599,7 @@ export const vocabularyWords = [
   },
   {
     "word": "environment",
-    "phonetic": "",
+    "phonetic": "/ɪˈnvaɪrənmənt/",
     "type": "수능 어휘",
     "meaning": "환경",
     "definition": "수능·고등 영어 독해를 위한 115번째 핵심 어휘입니다.",
@@ -1613,7 +1613,7 @@ export const vocabularyWords = [
   },
   {
     "word": "equip",
-    "phonetic": "",
+    "phonetic": "/ɪˈkwɪp/",
     "type": "수능 어휘",
     "meaning": "장비; 훈련",
     "definition": "수능·고등 영어 독해를 위한 116번째 핵심 어휘입니다.",
@@ -1627,7 +1627,7 @@ export const vocabularyWords = [
   },
   {
     "word": "equivalent",
-    "phonetic": "",
+    "phonetic": "/ɪˈkwɪvələnt/",
     "type": "수능 어휘",
     "meaning": "동등하다, 동등하다, 동등하다; 동일한 면적; 같은 양 같은, 동등한, 동등한",
     "definition": "수능·고등 영어 독해를 위한 117번째 핵심 어휘입니다.",
@@ -1641,7 +1641,7 @@ export const vocabularyWords = [
   },
   {
     "word": "error",
-    "phonetic": "",
+    "phonetic": "/ˈɛrɚ/",
     "type": "수능 어휘",
     "meaning": "오류",
     "definition": "수능·고등 영어 독해를 위한 118번째 핵심 어휘입니다.",
@@ -1655,7 +1655,7 @@ export const vocabularyWords = [
   },
   {
     "word": "establish",
-    "phonetic": "",
+    "phonetic": "/ɪˈstæblɪʃ/",
     "type": "수능 어휘",
     "meaning": "확립하다",
     "definition": "수능·고등 영어 독해를 위한 119번째 핵심 어휘입니다.",
@@ -1669,7 +1669,7 @@ export const vocabularyWords = [
   },
   {
     "word": "estate",
-    "phonetic": "",
+    "phonetic": "/ɪˈsteɪt/",
     "type": "수능 어휘",
     "meaning": "재산",
     "definition": "수능·고등 영어 독해를 위한 120번째 핵심 어휘입니다.",
@@ -1683,7 +1683,7 @@ export const vocabularyWords = [
   },
   {
     "word": "estimate",
-    "phonetic": "",
+    "phonetic": "/ˈɛstəmət/",
     "type": "수능 어휘",
     "meaning": "견적",
     "definition": "수능·고등 영어 독해를 위한 121번째 핵심 어휘입니다.",
@@ -1697,7 +1697,7 @@ export const vocabularyWords = [
   },
   {
     "word": "evaluate",
-    "phonetic": "",
+    "phonetic": "/ɪˈvæljuˌeɪt/",
     "type": "수능 어휘",
     "meaning": "평가하다; 견적",
     "definition": "수능·고등 영어 독해를 위한 122번째 핵심 어휘입니다.",
@@ -1711,7 +1711,7 @@ export const vocabularyWords = [
   },
   {
     "word": "eventual",
-    "phonetic": "",
+    "phonetic": "/əˈvɛntʃuəl/",
     "type": "수능 어휘",
     "meaning": "결국",
     "definition": "수능·고등 영어 독해를 위한 123번째 핵심 어휘입니다.",
@@ -1725,7 +1725,7 @@ export const vocabularyWords = [
   },
   {
     "word": "evident",
-    "phonetic": "",
+    "phonetic": "/ˈɛvədənt/",
     "type": "수능 어휘",
     "meaning": "명백한, 명백한",
     "definition": "수능·고등 영어 독해를 위한 124번째 핵심 어휘입니다.",
@@ -1739,7 +1739,7 @@ export const vocabularyWords = [
   },
   {
     "word": "evolve",
-    "phonetic": "",
+    "phonetic": "/ɪˈvɑlv/",
     "type": "수능 어휘",
     "meaning": "개발, 진화, 진화; 확장, 추론, 유도",
     "definition": "수능·고등 영어 독해를 위한 125번째 핵심 어휘입니다.",
@@ -1753,7 +1753,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exhibit",
-    "phonetic": "",
+    "phonetic": "/ɪˈɡzɪbɪt/",
     "type": "수능 어휘",
     "meaning": "전시하다",
     "definition": "수능·고등 영어 독해를 위한 126번째 핵심 어휘입니다.",
@@ -1767,7 +1767,7 @@ export const vocabularyWords = [
   },
   {
     "word": "expand",
-    "phonetic": "",
+    "phonetic": "/ɪˈkspænd/",
     "type": "수능 어휘",
     "meaning": "개발 확장",
     "definition": "수능·고등 영어 독해를 위한 127번째 핵심 어휘입니다.",
@@ -1781,7 +1781,7 @@ export const vocabularyWords = [
   },
   {
     "word": "expert",
-    "phonetic": "",
+    "phonetic": "/ˈɛkspɚt/",
     "type": "수능 어휘",
     "meaning": "전문가, 전문가",
     "definition": "수능·고등 영어 독해를 위한 128번째 핵심 어휘입니다.",
@@ -1795,7 +1795,7 @@ export const vocabularyWords = [
   },
   {
     "word": "expose",
-    "phonetic": "",
+    "phonetic": "/ɪˈkspoʊz/",
     "type": "수능 어휘",
     "meaning": "노출하다; 공개하다",
     "definition": "수능·고등 영어 독해를 위한 129번째 핵심 어휘입니다.",
@@ -1809,7 +1809,7 @@ export const vocabularyWords = [
   },
   {
     "word": "external",
-    "phonetic": "",
+    "phonetic": "/ɪˈkstɝnəl/",
     "type": "수능 어휘",
     "meaning": "외부, 외부",
     "definition": "수능·고등 영어 독해를 위한 130번째 핵심 어휘입니다.",
@@ -1823,7 +1823,7 @@ export const vocabularyWords = [
   },
   {
     "word": "factor",
-    "phonetic": "",
+    "phonetic": "/ˈfæktɚ/",
     "type": "수능 어휘",
     "meaning": "요인",
     "definition": "수능·고등 영어 독해를 위한 131번째 핵심 어휘입니다.",
@@ -1837,7 +1837,7 @@ export const vocabularyWords = [
   },
   {
     "word": "feature",
-    "phonetic": "",
+    "phonetic": "/ˈfitʃɚ/",
     "type": "수능 어휘",
     "meaning": "특징",
     "definition": "수능·고등 영어 독해를 위한 132번째 핵심 어휘입니다.",
@@ -1851,7 +1851,7 @@ export const vocabularyWords = [
   },
   {
     "word": "federal",
-    "phonetic": "",
+    "phonetic": "/ˈfɛdɚəl/",
     "type": "수능 어휘",
     "meaning": "중앙, 연방",
     "definition": "수능·고등 영어 독해를 위한 133번째 핵심 어휘입니다.",
@@ -1865,7 +1865,7 @@ export const vocabularyWords = [
   },
   {
     "word": "file",
-    "phonetic": "",
+    "phonetic": "/ˈfaɪl/",
     "type": "수능 어휘",
     "meaning": "파일, 파일",
     "definition": "수능·고등 영어 독해를 위한 134번째 핵심 어휘입니다.",
@@ -1879,7 +1879,7 @@ export const vocabularyWords = [
   },
   {
     "word": "final",
-    "phonetic": "",
+    "phonetic": "/ˈfaɪnəl/",
     "type": "수능 어휘",
     "meaning": "최종 결승; 기말고사",
     "definition": "수능·고등 영어 독해를 위한 135번째 핵심 어휘입니다.",
@@ -1893,7 +1893,7 @@ export const vocabularyWords = [
   },
   {
     "word": "flexible",
-    "phonetic": "",
+    "phonetic": "/ˈflɛksəbəl/",
     "type": "수능 어휘",
     "meaning": "부드러운, 유연한",
     "definition": "수능·고등 영어 독해를 위한 136번째 핵심 어휘입니다.",
@@ -1907,7 +1907,7 @@ export const vocabularyWords = [
   },
   {
     "word": "focus",
-    "phonetic": "",
+    "phonetic": "/ˈfoʊkəs/",
     "type": "수능 어휘",
     "meaning": "초점, 중심, 초점",
     "definition": "수능·고등 영어 독해를 위한 137번째 핵심 어휘입니다.",
@@ -1921,7 +1921,7 @@ export const vocabularyWords = [
   },
   {
     "word": "formula",
-    "phonetic": "",
+    "phonetic": "/ˈfɔrmjələ/",
     "type": "수능 어휘",
     "meaning": "공식, 공식",
     "definition": "수능·고등 영어 독해를 위한 138번째 핵심 어휘입니다.",
@@ -1935,7 +1935,7 @@ export const vocabularyWords = [
   },
   {
     "word": "found",
-    "phonetic": "",
+    "phonetic": "/ˈfaʊnd/",
     "type": "수능 어휘",
     "meaning": "확립하다, 확립하다",
     "definition": "수능·고등 영어 독해를 위한 139번째 핵심 어휘입니다.",
@@ -1949,7 +1949,7 @@ export const vocabularyWords = [
   },
   {
     "word": "foundation",
-    "phonetic": "",
+    "phonetic": "/faʊˈndeɪʃən/",
     "type": "수능 어휘",
     "meaning": "기초",
     "definition": "수능·고등 영어 독해를 위한 140번째 핵심 어휘입니다.",
@@ -1963,7 +1963,7 @@ export const vocabularyWords = [
   },
   {
     "word": "framework",
-    "phonetic": "",
+    "phonetic": "/ˈfreɪˌmwɝk/",
     "type": "수능 어휘",
     "meaning": "프레임, 구조",
     "definition": "수능·고등 영어 독해를 위한 141번째 핵심 어휘입니다.",
@@ -1977,7 +1977,7 @@ export const vocabularyWords = [
   },
   {
     "word": "function",
-    "phonetic": "",
+    "phonetic": "/ˈfʌŋkʃən/",
     "type": "수능 어휘",
     "meaning": "기능; 임무를 수행하다; 기능, 역할, 책임; 기능",
     "definition": "수능·고등 영어 독해를 위한 142번째 핵심 어휘입니다.",
@@ -1991,7 +1991,7 @@ export const vocabularyWords = [
   },
   {
     "word": "fund",
-    "phonetic": "",
+    "phonetic": "/ˈfʌnd/",
     "type": "수능 어휘",
     "meaning": "기금",
     "definition": "수능·고등 영어 독해를 위한 143번째 핵심 어휘입니다.",
@@ -2005,7 +2005,7 @@ export const vocabularyWords = [
   },
   {
     "word": "fundamental",
-    "phonetic": "",
+    "phonetic": "/ˌfʌndəˈmɛntəl/",
     "type": "수능 어휘",
     "meaning": "기본, 기본",
     "definition": "수능·고등 영어 독해를 위한 144번째 핵심 어휘입니다.",
@@ -2019,7 +2019,7 @@ export const vocabularyWords = [
   },
   {
     "word": "furthermore",
-    "phonetic": "",
+    "phonetic": "/ˈfɝðɚˌmɔr/",
     "type": "수능 어휘",
     "meaning": "게다가",
     "definition": "수능·고등 영어 독해를 위한 145번째 핵심 어휘입니다.",
@@ -2033,7 +2033,7 @@ export const vocabularyWords = [
   },
   {
     "word": "generation",
-    "phonetic": "",
+    "phonetic": "/ˌdʒɛnɚˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "세대, 세대",
     "definition": "수능·고등 영어 독해를 위한 146번째 핵심 어휘입니다.",
@@ -2047,7 +2047,7 @@ export const vocabularyWords = [
   },
   {
     "word": "globe",
-    "phonetic": "",
+    "phonetic": "/ˈɡloʊb/",
     "type": "수능 어휘",
     "meaning": "지구; 지구; 구체. 공 모양으로 만듭니다. 공 모양으로 만듭니다.",
     "definition": "수능·고등 영어 독해를 위한 147번째 핵심 어휘입니다.",
@@ -2061,7 +2061,7 @@ export const vocabularyWords = [
   },
   {
     "word": "goal",
-    "phonetic": "",
+    "phonetic": "/ˈɡoʊl/",
     "type": "수능 어휘",
     "meaning": "목표; 골 점수; 목표",
     "definition": "수능·고등 영어 독해를 위한 148번째 핵심 어휘입니다.",
@@ -2075,7 +2075,7 @@ export const vocabularyWords = [
   },
   {
     "word": "grade",
-    "phonetic": "",
+    "phonetic": "/ˈɡreɪd/",
     "type": "수능 어휘",
     "meaning": "등급; 학년; 성적, 점수",
     "definition": "수능·고등 영어 독해를 위한 149번째 핵심 어휘입니다.",
@@ -2089,7 +2089,7 @@ export const vocabularyWords = [
   },
   {
     "word": "grant",
-    "phonetic": "",
+    "phonetic": "/ˈɡrænt/",
     "type": "수능 어휘",
     "meaning": "보조금",
     "definition": "수능·고등 영어 독해를 위한 150번째 핵심 어휘입니다.",
@@ -2103,7 +2103,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hence",
-    "phonetic": "",
+    "phonetic": "/ˈhɛns/",
     "type": "수능 어휘",
     "meaning": "따라서",
     "definition": "수능·고등 영어 독해를 위한 151번째 핵심 어휘입니다.",
@@ -2117,12 +2117,12 @@ export const vocabularyWords = [
   },
   {
     "word": "identical",
-    "phonetic": "",
+    "phonetic": "/aɪˈdɛntɪkəl/",
     "type": "수능 어휘",
-    "meaning": "동일하고 똑같습니다. 동등한, 동일한",
+    "meaning": "동일한; 똑같은",
     "definition": "수능·고등 영어 독해를 위한 152번째 핵심 어휘입니다.",
     "example": "The meaning of \"identical\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '동일하고 똑같습니다. 동등한, 동일한'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '동일한; 똑같은'이라는 의미를 확인해 보세요.",
     "source": "Academic Word List",
     "sourceUrl": "https://textproject.org/wp-content/uploads/resources/Academic-word-list.pdf",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/identical",
@@ -2131,7 +2131,7 @@ export const vocabularyWords = [
   },
   {
     "word": "identify",
-    "phonetic": "",
+    "phonetic": "/aɪˈdɛntəˌfaɪ/",
     "type": "수능 어휘",
     "meaning": "식별하다",
     "definition": "수능·고등 영어 독해를 위한 153번째 핵심 어휘입니다.",
@@ -2145,7 +2145,7 @@ export const vocabularyWords = [
   },
   {
     "word": "illustrate",
-    "phonetic": "",
+    "phonetic": "/ˈɪləˌstreɪt/",
     "type": "수능 어휘",
     "meaning": "설명하다",
     "definition": "수능·고등 영어 독해를 위한 154번째 핵심 어휘입니다.",
@@ -2159,7 +2159,7 @@ export const vocabularyWords = [
   },
   {
     "word": "image",
-    "phonetic": "",
+    "phonetic": "/ˈɪmədʒ/",
     "type": "수능 어휘",
     "meaning": "같은",
     "definition": "수능·고등 영어 독해를 위한 155번째 핵심 어휘입니다.",
@@ -2173,7 +2173,7 @@ export const vocabularyWords = [
   },
   {
     "word": "immigrate",
-    "phonetic": "",
+    "phonetic": "/ˈɪməˌɡreɪt/",
     "type": "수능 어휘",
     "meaning": "이민",
     "definition": "수능·고등 영어 독해를 위한 156번째 핵심 어휘입니다.",
@@ -2187,7 +2187,7 @@ export const vocabularyWords = [
   },
   {
     "word": "impact",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈmpækt/",
     "type": "수능 어휘",
     "meaning": "효과; 영향력 (...에 [중요하거나 명백한] 영향을 미치다)",
     "definition": "수능·고등 영어 독해를 위한 157번째 핵심 어휘입니다.",
@@ -2201,7 +2201,7 @@ export const vocabularyWords = [
   },
   {
     "word": "income",
-    "phonetic": "",
+    "phonetic": "/ˈɪˌnkʌm/",
     "type": "수능 어휘",
     "meaning": "소득, 수입",
     "definition": "수능·고등 영어 독해를 위한 158번째 핵심 어휘입니다.",
@@ -2215,7 +2215,7 @@ export const vocabularyWords = [
   },
   {
     "word": "index",
-    "phonetic": "",
+    "phonetic": "/ˈɪndɛks/",
     "type": "수능 어휘",
     "meaning": "색인",
     "definition": "수능·고등 영어 독해를 위한 159번째 핵심 어휘입니다.",
@@ -2229,7 +2229,7 @@ export const vocabularyWords = [
   },
   {
     "word": "indicate",
-    "phonetic": "",
+    "phonetic": "/ˈɪndəˌkeɪt/",
     "type": "수능 어휘",
     "meaning": "지적하다, 보여주다",
     "definition": "수능·고등 영어 독해를 위한 160번째 핵심 어휘입니다.",
@@ -2243,7 +2243,7 @@ export const vocabularyWords = [
   },
   {
     "word": "individual",
-    "phonetic": "",
+    "phonetic": "/ˌɪndəˈvɪdʒəwəl/",
     "type": "수능 어휘",
     "meaning": "개인",
     "definition": "수능·고등 영어 독해를 위한 161번째 핵심 어휘입니다.",
@@ -2257,7 +2257,7 @@ export const vocabularyWords = [
   },
   {
     "word": "initial",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnɪʃəl/",
     "type": "수능 어휘",
     "meaning": "시작, 초기",
     "definition": "수능·고등 영어 독해를 위한 162번째 핵심 어휘입니다.",
@@ -2271,7 +2271,7 @@ export const vocabularyWords = [
   },
   {
     "word": "injure",
-    "phonetic": "",
+    "phonetic": "/ˈɪndʒɚ/",
     "type": "수능 어휘",
     "meaning": "피해, 피해",
     "definition": "수능·고등 영어 독해를 위한 163번째 핵심 어휘입니다.",
@@ -2285,7 +2285,7 @@ export const vocabularyWords = [
   },
   {
     "word": "input",
-    "phonetic": "",
+    "phonetic": "/ˈɪˌnpʊt/",
     "type": "수능 어휘",
     "meaning": "〔 컴퓨터에 입력 ] [ 데이터 ] 를 [ 컴퓨터] 에 입력",
     "definition": "수능·고등 영어 독해를 위한 164번째 핵심 어휘입니다.",
@@ -2299,7 +2299,7 @@ export const vocabularyWords = [
   },
   {
     "word": "instance",
-    "phonetic": "",
+    "phonetic": "/ˈɪnstəns/",
     "type": "수능 어휘",
     "meaning": "예, 예, 삽화",
     "definition": "수능·고등 영어 독해를 위한 165번째 핵심 어휘입니다.",
@@ -2313,7 +2313,7 @@ export const vocabularyWords = [
   },
   {
     "word": "institute",
-    "phonetic": "",
+    "phonetic": "/ˈɪnstəˌtut/",
     "type": "수능 어휘",
     "meaning": "협회를 설립하다, 설립하다; 아카데미",
     "definition": "수능·고등 영어 독해를 위한 166번째 핵심 어휘입니다.",
@@ -2327,7 +2327,7 @@ export const vocabularyWords = [
   },
   {
     "word": "intelligent",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈntɛlədʒənt/",
     "type": "수능 어휘",
     "meaning": "지능적인",
     "definition": "수능·고등 영어 독해를 위한 167번째 핵심 어휘입니다.",
@@ -2341,7 +2341,7 @@ export const vocabularyWords = [
   },
   {
     "word": "intense",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈntɛns/",
     "type": "수능 어휘",
     "meaning": "강렬한",
     "definition": "수능·고등 영어 독해를 위한 168번째 핵심 어휘입니다.",
@@ -2355,7 +2355,7 @@ export const vocabularyWords = [
   },
   {
     "word": "internal",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈntɝnəl/",
     "type": "수능 어휘",
     "meaning": "내부",
     "definition": "수능·고등 영어 독해를 위한 169번째 핵심 어휘입니다.",
@@ -2369,7 +2369,7 @@ export const vocabularyWords = [
   },
   {
     "word": "interpret",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈntɝprət/",
     "type": "수능 어휘",
     "meaning": "해석하다",
     "definition": "수능·고등 영어 독해를 위한 170번째 핵심 어휘입니다.",
@@ -2383,7 +2383,7 @@ export const vocabularyWords = [
   },
   {
     "word": "interval",
-    "phonetic": "",
+    "phonetic": "/ˈɪntɚvəl/",
     "type": "수능 어휘",
     "meaning": "간격, 간격; 휴식 시간",
     "definition": "수능·고등 영어 독해를 위한 171번째 핵심 어휘입니다.",
@@ -2397,7 +2397,7 @@ export const vocabularyWords = [
   },
   {
     "word": "investigate",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnvɛstəˌɡeɪt/",
     "type": "수능 어휘",
     "meaning": "조사하다",
     "definition": "수능·고등 영어 독해를 위한 172번째 핵심 어휘입니다.",
@@ -2411,7 +2411,7 @@ export const vocabularyWords = [
   },
   {
     "word": "involve",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnvɑlv/",
     "type": "수능 어휘",
     "meaning": "누군가를 참여시키다, 누군가를 참여시키다, 누군가를 참여시키다; 누군가를 참여시키다, 누군가를 참여시키다, 누군가를 참여시키다",
     "definition": "수능·고등 영어 독해를 위한 173번째 핵심 어휘입니다.",
@@ -2425,7 +2425,7 @@ export const vocabularyWords = [
   },
   {
     "word": "isolate",
-    "phonetic": "",
+    "phonetic": "/ˈaɪsəˌleɪt/",
     "type": "수능 어휘",
     "meaning": "고립, 고립",
     "definition": "수능·고등 영어 독해를 위한 174번째 핵심 어휘입니다.",
@@ -2439,7 +2439,7 @@ export const vocabularyWords = [
   },
   {
     "word": "issue",
-    "phonetic": "",
+    "phonetic": "/ˈɪʃu/",
     "type": "수능 어휘",
     "meaning": "흘러나오다, 방출되다; 발행하다, 출판하다, 발행하다, 발행하다; 문제, 문제, 분쟁",
     "definition": "수능·고등 영어 독해를 위한 175번째 핵심 어휘입니다.",
@@ -2453,7 +2453,7 @@ export const vocabularyWords = [
   },
   {
     "word": "item",
-    "phonetic": "",
+    "phonetic": "/ˈaɪtəm/",
     "type": "수능 어휘",
     "meaning": "아이템",
     "definition": "수능·고등 영어 독해를 위한 176번째 핵심 어휘입니다.",
@@ -2467,7 +2467,7 @@ export const vocabularyWords = [
   },
   {
     "word": "journal",
-    "phonetic": "",
+    "phonetic": "/ˈdʒɝnəl/",
     "type": "수능 어휘",
     "meaning": "일지",
     "definition": "수능·고등 영어 독해를 위한 177번째 핵심 어휘입니다.",
@@ -2481,7 +2481,7 @@ export const vocabularyWords = [
   },
   {
     "word": "label",
-    "phonetic": "",
+    "phonetic": "/ˈleɪbəl/",
     "type": "수능 어휘",
     "meaning": "라벨",
     "definition": "수능·고등 영어 독해를 위한 178번째 핵심 어휘입니다.",
@@ -2495,7 +2495,7 @@ export const vocabularyWords = [
   },
   {
     "word": "layer",
-    "phonetic": "",
+    "phonetic": "/ˈleɪɚ/",
     "type": "수능 어휘",
     "meaning": "레이어",
     "definition": "수능·고등 영어 독해를 위한 179번째 핵심 어휘입니다.",
@@ -2509,7 +2509,7 @@ export const vocabularyWords = [
   },
   {
     "word": "legal",
-    "phonetic": "",
+    "phonetic": "/ˈliɡəl/",
     "type": "수능 어휘",
     "meaning": "법적, 법정적",
     "definition": "수능·고등 영어 독해를 위한 180번째 핵심 어휘입니다.",
@@ -2523,7 +2523,7 @@ export const vocabularyWords = [
   },
   {
     "word": "legislate",
-    "phonetic": "",
+    "phonetic": "/ˈlɛdʒɪˌsleɪt/",
     "type": "수능 어휘",
     "meaning": "법을 만들다, 법안을 통과시키다",
     "definition": "수능·고등 영어 독해를 위한 181번째 핵심 어휘입니다.",
@@ -2537,7 +2537,7 @@ export const vocabularyWords = [
   },
   {
     "word": "liberal",
-    "phonetic": "",
+    "phonetic": "/ˈlɪˌbɝəl/",
     "type": "수능 어휘",
     "meaning": "관대하고 관대하다; 부자, 부자; 자유롭다, 개방적이다",
     "definition": "수능·고등 영어 독해를 위한 182번째 핵심 어휘입니다.",
@@ -2551,7 +2551,7 @@ export const vocabularyWords = [
   },
   {
     "word": "license",
-    "phonetic": "",
+    "phonetic": "/ˈlaɪsəns/",
     "type": "수능 어휘",
     "meaning": "면허, 허가",
     "definition": "수능·고등 영어 독해를 위한 183번째 핵심 어휘입니다.",
@@ -2565,7 +2565,7 @@ export const vocabularyWords = [
   },
   {
     "word": "likewise",
-    "phonetic": "",
+    "phonetic": "/ˈlaɪˌkwaɪz/",
     "type": "수능 어휘",
     "meaning": "마찬가지로",
     "definition": "수능·고등 영어 독해를 위한 184번째 핵심 어휘입니다.",
@@ -2579,7 +2579,7 @@ export const vocabularyWords = [
   },
   {
     "word": "link",
-    "phonetic": "",
+    "phonetic": "/ˈlɪŋk/",
     "type": "수능 어휘",
     "meaning": "연결, 통합 링크, 링크",
     "definition": "수능·고등 영어 독해를 위한 185번째 핵심 어휘입니다.",
@@ -2593,7 +2593,7 @@ export const vocabularyWords = [
   },
   {
     "word": "locate",
-    "phonetic": "",
+    "phonetic": "/ˈloʊˌkeɪt/",
     "type": "수능 어휘",
     "meaning": "위치",
     "definition": "수능·고등 영어 독해를 위한 186번째 핵심 어휘입니다.",
@@ -2607,7 +2607,7 @@ export const vocabularyWords = [
   },
   {
     "word": "maintain",
-    "phonetic": "",
+    "phonetic": "/meɪˈnteɪn/",
     "type": "수능 어휘",
     "meaning": "수리, 유지; 유지하다, 유지하다; 지속하다, 옹호하다, 지지하다",
     "definition": "수능·고등 영어 독해를 위한 187번째 핵심 어휘입니다.",
@@ -2621,7 +2621,7 @@ export const vocabularyWords = [
   },
   {
     "word": "major",
-    "phonetic": "",
+    "phonetic": "/ˈmeɪdʒɚ/",
     "type": "수능 어휘",
     "meaning": "전공; 성인 전공",
     "definition": "수능·고등 영어 독해를 위한 188번째 핵심 어휘입니다.",
@@ -2635,7 +2635,7 @@ export const vocabularyWords = [
   },
   {
     "word": "manual",
-    "phonetic": "",
+    "phonetic": "/ˈmænjuəl/",
     "type": "수능 어휘",
     "meaning": "매뉴얼",
     "definition": "수능·고등 영어 독해를 위한 189번째 핵심 어휘입니다.",
@@ -2649,7 +2649,7 @@ export const vocabularyWords = [
   },
   {
     "word": "margin",
-    "phonetic": "",
+    "phonetic": "/ˈmɑrdʒən/",
     "type": "수능 어휘",
     "meaning": "여백",
     "definition": "수능·고등 영어 독해를 위한 190번째 핵심 어휘입니다.",
@@ -2663,7 +2663,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mature",
-    "phonetic": "",
+    "phonetic": "/məˈtʃʊr/",
     "type": "수능 어휘",
     "meaning": "성숙한, 어른",
     "definition": "수능·고등 영어 독해를 위한 191번째 핵심 어휘입니다.",
@@ -2677,7 +2677,7 @@ export const vocabularyWords = [
   },
   {
     "word": "maximize",
-    "phonetic": "",
+    "phonetic": "/ˈmæksəˌmaɪz/",
     "type": "수능 어휘",
     "meaning": "최대화하다",
     "definition": "수능·고등 영어 독해를 위한 192번째 핵심 어휘입니다.",
@@ -2691,7 +2691,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mechanism",
-    "phonetic": "",
+    "phonetic": "/ˈmɛkəˌnɪzəm/",
     "type": "수능 어휘",
     "meaning": "메커니즘",
     "definition": "수능·고등 영어 독해를 위한 193번째 핵심 어휘입니다.",
@@ -2705,7 +2705,7 @@ export const vocabularyWords = [
   },
   {
     "word": "media",
-    "phonetic": "",
+    "phonetic": "/ˈmidiə/",
     "type": "수능 어휘",
     "meaning": "미디어; 미디어(매체의 복수형); 혈관의 중간층; 유성 정지; 중정맥",
     "definition": "수능·고등 영어 독해를 위한 194번째 핵심 어휘입니다.",
@@ -2719,7 +2719,7 @@ export const vocabularyWords = [
   },
   {
     "word": "medical",
-    "phonetic": "",
+    "phonetic": "/ˈmɛdəkəl/",
     "type": "수능 어휘",
     "meaning": "의료, 의료",
     "definition": "수능·고등 영어 독해를 위한 195번째 핵심 어휘입니다.",
@@ -2733,7 +2733,7 @@ export const vocabularyWords = [
   },
   {
     "word": "medium",
-    "phonetic": "",
+    "phonetic": "/ˈmidiəm/",
     "type": "수능 어휘",
     "meaning": "중간, 중간 중간",
     "definition": "수능·고등 영어 독해를 위한 196번째 핵심 어휘입니다.",
@@ -2747,7 +2747,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mental",
-    "phonetic": "",
+    "phonetic": "/ˈmɛntəl/",
     "type": "수능 어휘",
     "meaning": "정신적, 정신적",
     "definition": "수능·고등 영어 독해를 위한 197번째 핵심 어휘입니다.",
@@ -2761,7 +2761,7 @@ export const vocabularyWords = [
   },
   {
     "word": "method",
-    "phonetic": "",
+    "phonetic": "/ˈmɛθəd/",
     "type": "수능 어휘",
     "meaning": "방법; 조직; 체험 수행 방법을 이용한 수업 기능",
     "definition": "수능·고등 영어 독해를 위한 198번째 핵심 어휘입니다.",
@@ -2775,7 +2775,7 @@ export const vocabularyWords = [
   },
   {
     "word": "military",
-    "phonetic": "",
+    "phonetic": "/ˈmɪləˌtɛri/",
     "type": "수능 어휘",
     "meaning": "군사",
     "definition": "수능·고등 영어 독해를 위한 199번째 핵심 어휘입니다.",
@@ -2789,7 +2789,7 @@ export const vocabularyWords = [
   },
   {
     "word": "minimize",
-    "phonetic": "",
+    "phonetic": "/ˈmɪnəˌmaɪz/",
     "type": "수능 어휘",
     "meaning": "최소화하다",
     "definition": "수능·고등 영어 독해를 위한 200번째 핵심 어휘입니다.",
@@ -2803,7 +2803,7 @@ export const vocabularyWords = [
   },
   {
     "word": "minimum",
-    "phonetic": "",
+    "phonetic": "/ˈmɪnəməm/",
     "type": "수능 어휘",
     "meaning": "최소 최소 금액, 최소 값",
     "definition": "수능·고등 영어 독해를 위한 201번째 핵심 어휘입니다.",
@@ -2817,7 +2817,7 @@ export const vocabularyWords = [
   },
   {
     "word": "minor",
-    "phonetic": "",
+    "phonetic": "/ˈmaɪnɚ/",
     "type": "수능 어휘",
     "meaning": "미성년자",
     "definition": "수능·고등 영어 독해를 위한 202번째 핵심 어휘입니다.",
@@ -2831,7 +2831,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mutual",
-    "phonetic": "",
+    "phonetic": "/ˈmjutʃuəl/",
     "type": "수능 어휘",
     "meaning": "상호",
     "definition": "수능·고등 영어 독해를 위한 203번째 핵심 어휘입니다.",
@@ -2845,7 +2845,7 @@ export const vocabularyWords = [
   },
   {
     "word": "network",
-    "phonetic": "",
+    "phonetic": "/ˈnɛˌtwɝk/",
     "type": "수능 어휘",
     "meaning": "네트워크; 방송 네트워크; 메쉬",
     "definition": "수능·고등 영어 독해를 위한 204번째 핵심 어휘입니다.",
@@ -2859,7 +2859,7 @@ export const vocabularyWords = [
   },
   {
     "word": "neutral",
-    "phonetic": "",
+    "phonetic": "/ˈnutrəl/",
     "type": "수능 어휘",
     "meaning": "중립; 중립, 중립",
     "definition": "수능·고등 영어 독해를 위한 205번째 핵심 어휘입니다.",
@@ -2873,7 +2873,7 @@ export const vocabularyWords = [
   },
   {
     "word": "nevertheless",
-    "phonetic": "",
+    "phonetic": "/ˌnɛvɚðəˈlɛs/",
     "type": "수능 어휘",
     "meaning": "그럼에도 불구하고",
     "definition": "수능·고등 영어 독해를 위한 206번째 핵심 어휘입니다.",
@@ -2887,7 +2887,7 @@ export const vocabularyWords = [
   },
   {
     "word": "normal",
-    "phonetic": "",
+    "phonetic": "/ˈnɔrməl/",
     "type": "수능 어휘",
     "meaning": "보통 보통, 보통, 보통",
     "definition": "수능·고등 영어 독해를 위한 207번째 핵심 어휘입니다.",
@@ -2901,7 +2901,7 @@ export const vocabularyWords = [
   },
   {
     "word": "notion",
-    "phonetic": "",
+    "phonetic": "/ˈnoʊʃən/",
     "type": "수능 어휘",
     "meaning": "개념",
     "definition": "수능·고등 영어 독해를 위한 208번째 핵심 어휘입니다.",
@@ -2915,7 +2915,7 @@ export const vocabularyWords = [
   },
   {
     "word": "nuclear",
-    "phonetic": "",
+    "phonetic": "/ˈnukliɚ/",
     "type": "수능 어휘",
     "meaning": "원자; [세포] 핵; 본부; 핵",
     "definition": "수능·고등 영어 독해를 위한 209번째 핵심 어휘입니다.",
@@ -2929,7 +2929,7 @@ export const vocabularyWords = [
   },
   {
     "word": "objective",
-    "phonetic": "",
+    "phonetic": "/əˈbdʒɛktɪv/",
     "type": "수능 어휘",
     "meaning": "객관적인, 실제 목표, 목적; 대물렌즈",
     "definition": "수능·고등 영어 독해를 위한 210번째 핵심 어휘입니다.",
@@ -2943,7 +2943,7 @@ export const vocabularyWords = [
   },
   {
     "word": "obtain",
-    "phonetic": "",
+    "phonetic": "/əˈbteɪn/",
     "type": "수능 어휘",
     "meaning": "얻다, 얻다",
     "definition": "수능·고등 영어 독해를 위한 211번째 핵심 어휘입니다.",
@@ -2957,7 +2957,7 @@ export const vocabularyWords = [
   },
   {
     "word": "obvious",
-    "phonetic": "",
+    "phonetic": "/ˈɑbviəs/",
     "type": "수능 어휘",
     "meaning": "명백한, 명백한",
     "definition": "수능·고등 영어 독해를 위한 212번째 핵심 어휘입니다.",
@@ -2971,7 +2971,7 @@ export const vocabularyWords = [
   },
   {
     "word": "occupy",
-    "phonetic": "",
+    "phonetic": "/ˈɑkjəˌpaɪ/",
     "type": "수능 어휘",
     "meaning": "점유하다, 점유하다",
     "definition": "수능·고등 영어 독해를 위한 213번째 핵심 어휘입니다.",
@@ -2985,7 +2985,7 @@ export const vocabularyWords = [
   },
   {
     "word": "occur",
-    "phonetic": "",
+    "phonetic": "/əˈkɝ/",
     "type": "수능 어휘",
     "meaning": "일어나다, 나타나다",
     "definition": "수능·고등 영어 독해를 위한 214번째 핵심 어휘입니다.",
@@ -2999,7 +2999,7 @@ export const vocabularyWords = [
   },
   {
     "word": "output",
-    "phonetic": "",
+    "phonetic": "/ˈaʊˌtpʊt/",
     "type": "수능 어휘",
     "meaning": "출력, 출력",
     "definition": "수능·고등 영어 독해를 위한 215번째 핵심 어휘입니다.",
@@ -3013,7 +3013,7 @@ export const vocabularyWords = [
   },
   {
     "word": "overall",
-    "phonetic": "",
+    "phonetic": "/ˈoʊvɚˌɔl/",
     "type": "수능 어휘",
     "meaning": "전반적으로",
     "definition": "수능·고등 영어 독해를 위한 216번째 핵심 어휘입니다.",
@@ -3027,7 +3027,7 @@ export const vocabularyWords = [
   },
   {
     "word": "paragraph",
-    "phonetic": "",
+    "phonetic": "/ˈpærəˌɡræf/",
     "type": "수능 어휘",
     "meaning": "단락",
     "definition": "수능·고등 영어 독해를 위한 217번째 핵심 어휘입니다.",
@@ -3041,7 +3041,7 @@ export const vocabularyWords = [
   },
   {
     "word": "parallel",
-    "phonetic": "",
+    "phonetic": "/ˈpɛrəˌlɛl/",
     "type": "수능 어휘",
     "meaning": "평행 평행선; 비슷한",
     "definition": "수능·고등 영어 독해를 위한 218번째 핵심 어휘입니다.",
@@ -3055,7 +3055,7 @@ export const vocabularyWords = [
   },
   {
     "word": "participate",
-    "phonetic": "",
+    "phonetic": "/pɑˈrtɪsəˌpeɪt/",
     "type": "수능 어휘",
     "meaning": "참여하다, 참여하다",
     "definition": "수능·고등 영어 독해를 위한 219번째 핵심 어휘입니다.",
@@ -3069,7 +3069,7 @@ export const vocabularyWords = [
   },
   {
     "word": "partner",
-    "phonetic": "",
+    "phonetic": "/ˈpɑrtnɚ/",
     "type": "수능 어휘",
     "meaning": "파트너, 협력자",
     "definition": "수능·고등 영어 독해를 위한 220번째 핵심 어휘입니다.",
@@ -3083,7 +3083,7 @@ export const vocabularyWords = [
   },
   {
     "word": "percent",
-    "phonetic": "",
+    "phonetic": "/pɚˈsɛnt/",
     "type": "수능 어휘",
     "meaning": "퍼센트…",
     "definition": "수능·고등 영어 독해를 위한 221번째 핵심 어휘입니다.",
@@ -3097,7 +3097,7 @@ export const vocabularyWords = [
   },
   {
     "word": "period",
-    "phonetic": "",
+    "phonetic": "/ˈpɪriəd/",
     "type": "수능 어휘",
     "meaning": "시대, 시대",
     "definition": "수능·고등 영어 독해를 위한 222번째 핵심 어휘입니다.",
@@ -3111,7 +3111,7 @@ export const vocabularyWords = [
   },
   {
     "word": "phase",
-    "phonetic": "",
+    "phonetic": "/ˈfeɪz/",
     "type": "수능 어휘",
     "meaning": "위상",
     "definition": "수능·고등 영어 독해를 위한 223번째 핵심 어휘입니다.",
@@ -3125,7 +3125,7 @@ export const vocabularyWords = [
   },
   {
     "word": "phenomenon",
-    "phonetic": "",
+    "phonetic": "/fəˈnɑməˌnɑn/",
     "type": "수능 어휘",
     "meaning": "현상",
     "definition": "수능·고등 영어 독해를 위한 224번째 핵심 어휘입니다.",
@@ -3139,7 +3139,7 @@ export const vocabularyWords = [
   },
   {
     "word": "philosophy",
-    "phonetic": "",
+    "phonetic": "/fəˈlɑsəfi/",
     "type": "수능 어휘",
     "meaning": "철학",
     "definition": "수능·고등 영어 독해를 위한 225번째 핵심 어휘입니다.",
@@ -3153,7 +3153,7 @@ export const vocabularyWords = [
   },
   {
     "word": "physical",
-    "phonetic": "",
+    "phonetic": "/ˈfɪzɪkəl/",
     "type": "수능 어휘",
     "meaning": "물리적; 물리적; 객관적인 존재",
     "definition": "수능·고등 영어 독해를 위한 226번째 핵심 어휘입니다.",
@@ -3167,7 +3167,7 @@ export const vocabularyWords = [
   },
   {
     "word": "plus",
-    "phonetic": "",
+    "phonetic": "/ˈplʌs/",
     "type": "수능 어휘",
     "meaning": "추가하다, 추가하다",
     "definition": "수능·고등 영어 독해를 위한 227번째 핵심 어휘입니다.",
@@ -3181,7 +3181,7 @@ export const vocabularyWords = [
   },
   {
     "word": "policy",
-    "phonetic": "",
+    "phonetic": "/ˈpɑləsi/",
     "type": "수능 어휘",
     "meaning": "정책, 정책; 보험 정책",
     "definition": "수능·고등 영어 독해를 위한 228번째 핵심 어휘입니다.",
@@ -3195,7 +3195,7 @@ export const vocabularyWords = [
   },
   {
     "word": "portion",
-    "phonetic": "",
+    "phonetic": "/ˈpɔrʃən/",
     "type": "수능 어휘",
     "meaning": "부분",
     "definition": "수능·고등 영어 독해를 위한 229번째 핵심 어휘입니다.",
@@ -3209,7 +3209,7 @@ export const vocabularyWords = [
   },
   {
     "word": "positive",
-    "phonetic": "",
+    "phonetic": "/ˈpɑzətɪv/",
     "type": "수능 어휘",
     "meaning": "긍정적; 긍정",
     "definition": "수능·고등 영어 독해를 위한 230번째 핵심 어휘입니다.",
@@ -3223,7 +3223,7 @@ export const vocabularyWords = [
   },
   {
     "word": "potential",
-    "phonetic": "",
+    "phonetic": "/pəˈtɛnʃəl/",
     "type": "수능 어휘",
     "meaning": "잠재력, 가능한 잠재력",
     "definition": "수능·고등 영어 독해를 위한 231번째 핵심 어휘입니다.",
@@ -3237,7 +3237,7 @@ export const vocabularyWords = [
   },
   {
     "word": "precede",
-    "phonetic": "",
+    "phonetic": "/prɪˈsid/",
     "type": "수능 어휘",
     "meaning": "리드, 앞에; 우선하다, 우선하다",
     "definition": "수능·고등 영어 독해를 위한 232번째 핵심 어휘입니다.",
@@ -3251,7 +3251,7 @@ export const vocabularyWords = [
   },
   {
     "word": "precise",
-    "phonetic": "",
+    "phonetic": "/prɪˈsaɪs/",
     "type": "수능 어휘",
     "meaning": "정확하다, 정확하다",
     "definition": "수능·고등 영어 독해를 위한 233번째 핵심 어휘입니다.",
@@ -3265,7 +3265,7 @@ export const vocabularyWords = [
   },
   {
     "word": "predict",
-    "phonetic": "",
+    "phonetic": "/prɪˈdɪkt/",
     "type": "수능 어휘",
     "meaning": "예언; 예측",
     "definition": "수능·고등 영어 독해를 위한 234번째 핵심 어휘입니다.",
@@ -3279,7 +3279,7 @@ export const vocabularyWords = [
   },
   {
     "word": "previous",
-    "phonetic": "",
+    "phonetic": "/ˈpriviəs/",
     "type": "수능 어휘",
     "meaning": "이전, 이전",
     "definition": "수능·고등 영어 독해를 위한 235번째 핵심 어휘입니다.",
@@ -3293,7 +3293,7 @@ export const vocabularyWords = [
   },
   {
     "word": "primary",
-    "phonetic": "",
+    "phonetic": "/ˈpraɪˌmɛri/",
     "type": "수능 어휘",
     "meaning": "기본; 기본",
     "definition": "수능·고등 영어 독해를 위한 236번째 핵심 어휘입니다.",
@@ -3307,7 +3307,7 @@ export const vocabularyWords = [
   },
   {
     "word": "prime",
-    "phonetic": "",
+    "phonetic": "/ˈpraɪm/",
     "type": "수능 어휘",
     "meaning": "프라임",
     "definition": "수능·고등 영어 독해를 위한 237번째 핵심 어휘입니다.",
@@ -3321,7 +3321,7 @@ export const vocabularyWords = [
   },
   {
     "word": "principal",
-    "phonetic": "",
+    "phonetic": "/ˈprɪnsəpəl/",
     "type": "수능 어휘",
     "meaning": "주요, 최고 책임자, 책임자; 주범",
     "definition": "수능·고등 영어 독해를 위한 238번째 핵심 어휘입니다.",
@@ -3335,7 +3335,7 @@ export const vocabularyWords = [
   },
   {
     "word": "principle",
-    "phonetic": "",
+    "phonetic": "/ˈprɪnsəpəl/",
     "type": "수능 어휘",
     "meaning": "원칙; 원리",
     "definition": "수능·고등 영어 독해를 위한 239번째 핵심 어휘입니다.",
@@ -3349,7 +3349,7 @@ export const vocabularyWords = [
   },
   {
     "word": "prior",
-    "phonetic": "",
+    "phonetic": "/ˈpraɪɚ/",
     "type": "수능 어휘",
     "meaning": "이전",
     "definition": "수능·고등 영어 독해를 위한 240번째 핵심 어휘입니다.",
@@ -3363,7 +3363,7 @@ export const vocabularyWords = [
   },
   {
     "word": "proceed",
-    "phonetic": "",
+    "phonetic": "/prəˈsid/",
     "type": "수능 어휘",
     "meaning": "계속하다, 시작하다, 시작하다; 출발하다; 계속하다; 일이 일어나다, ~로부터",
     "definition": "수능·고등 영어 독해를 위한 241번째 핵심 어휘입니다.",
@@ -3377,7 +3377,7 @@ export const vocabularyWords = [
   },
   {
     "word": "process",
-    "phonetic": "",
+    "phonetic": "/ˈprɑˌsɛs/",
     "type": "수능 어휘",
     "meaning": "처리, 처리 절차 방법",
     "definition": "수능·고등 영어 독해를 위한 242번째 핵심 어휘입니다.",
@@ -3391,7 +3391,7 @@ export const vocabularyWords = [
   },
   {
     "word": "professional",
-    "phonetic": "",
+    "phonetic": "/prəˈfɛʃənəl/",
     "type": "수능 어휘",
     "meaning": "전문적인",
     "definition": "수능·고등 영어 독해를 위한 243번째 핵심 어휘입니다.",
@@ -3405,7 +3405,7 @@ export const vocabularyWords = [
   },
   {
     "word": "project",
-    "phonetic": "",
+    "phonetic": "/ˈprɑdʒɛkt/",
     "type": "수능 어휘",
     "meaning": "프로젝트, 엔지니어링",
     "definition": "수능·고등 영어 독해를 위한 244번째 핵심 어휘입니다.",
@@ -3419,7 +3419,7 @@ export const vocabularyWords = [
   },
   {
     "word": "promote",
-    "phonetic": "",
+    "phonetic": "/prəˈmoʊt/",
     "type": "수능 어휘",
     "meaning": "홍보하다; 향상시키다; 홍보하다",
     "definition": "수능·고등 영어 독해를 위한 245번째 핵심 어휘입니다.",
@@ -3433,7 +3433,7 @@ export const vocabularyWords = [
   },
   {
     "word": "proportion",
-    "phonetic": "",
+    "phonetic": "/prəˈpɔrʃən/",
     "type": "수능 어휘",
     "meaning": "비율, 비율; 비율",
     "definition": "수능·고등 영어 독해를 위한 246번째 핵심 어휘입니다.",
@@ -3447,7 +3447,7 @@ export const vocabularyWords = [
   },
   {
     "word": "psychology",
-    "phonetic": "",
+    "phonetic": "/saɪˈkɑlədʒi/",
     "type": "수능 어휘",
     "meaning": "심리학",
     "definition": "수능·고등 영어 독해를 위한 247번째 핵심 어휘입니다.",
@@ -3461,7 +3461,7 @@ export const vocabularyWords = [
   },
   {
     "word": "publish",
-    "phonetic": "",
+    "phonetic": "/ˈpʌblɪʃ/",
     "type": "수능 어휘",
     "meaning": "출판하다, 발행하다",
     "definition": "수능·고등 영어 독해를 위한 248번째 핵심 어휘입니다.",
@@ -3475,7 +3475,7 @@ export const vocabularyWords = [
   },
   {
     "word": "purchase",
-    "phonetic": "",
+    "phonetic": "/ˈpɝtʃəs/",
     "type": "수능 어휘",
     "meaning": "n&구매",
     "definition": "수능·고등 영어 독해를 위한 249번째 핵심 어휘입니다.",
@@ -3489,7 +3489,7 @@ export const vocabularyWords = [
   },
   {
     "word": "radical",
-    "phonetic": "",
+    "phonetic": "/ˈrædəkəl/",
     "type": "수능 어휘",
     "meaning": "기본적이고 중요합니다. 급진적인, 극단적인; 기본 루트 기호, 근호 공식",
     "definition": "수능·고등 영어 독해를 위한 250번째 핵심 어휘입니다.",
@@ -3503,7 +3503,7 @@ export const vocabularyWords = [
   },
   {
     "word": "range",
-    "phonetic": "",
+    "phonetic": "/ˈreɪndʒ/",
     "type": "수능 어휘",
     "meaning": "범위; 범위",
     "definition": "수능·고등 영어 독해를 위한 251번째 핵심 어휘입니다.",
@@ -3517,7 +3517,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ratio",
-    "phonetic": "",
+    "phonetic": "/ˈreɪʃiˌoʊ/",
     "type": "수능 어휘",
     "meaning": "비율; 비율",
     "definition": "수능·고등 영어 독해를 위한 252번째 핵심 어휘입니다.",
@@ -3531,7 +3531,7 @@ export const vocabularyWords = [
   },
   {
     "word": "react",
-    "phonetic": "",
+    "phonetic": "/riˈækt/",
     "type": "수능 어휘",
     "meaning": "반응하다, 행동하다; 저항하다",
     "definition": "수능·고등 영어 독해를 위한 253번째 핵심 어휘입니다.",
@@ -3545,7 +3545,7 @@ export const vocabularyWords = [
   },
   {
     "word": "recover",
-    "phonetic": "",
+    "phonetic": "/rɪˈkʌvɚ/",
     "type": "수능 어휘",
     "meaning": "회복하다; 회복하다",
     "definition": "수능·고등 영어 독해를 위한 254번째 핵심 어휘입니다.",
@@ -3559,7 +3559,7 @@ export const vocabularyWords = [
   },
   {
     "word": "region",
-    "phonetic": "",
+    "phonetic": "/ˈridʒən/",
     "type": "수능 어휘",
     "meaning": "지역",
     "definition": "수능·고등 영어 독해를 위한 255번째 핵심 어휘입니다.",
@@ -3573,7 +3573,7 @@ export const vocabularyWords = [
   },
   {
     "word": "register",
-    "phonetic": "",
+    "phonetic": "/ˈrɛdʒɪstɚ/",
     "type": "수능 어휘",
     "meaning": "등록, 등록 기록, 등록하다",
     "definition": "수능·고등 영어 독해를 위한 256번째 핵심 어휘입니다.",
@@ -3587,7 +3587,7 @@ export const vocabularyWords = [
   },
   {
     "word": "regulate",
-    "phonetic": "",
+    "phonetic": "/ˈrɛɡjəˌleɪt/",
     "type": "수능 어휘",
     "meaning": "규정을 관리, 통제하고 준수합니다. 조정하다, 조정하다, 교정하다",
     "definition": "수능·고등 영어 독해를 위한 257번째 핵심 어휘입니다.",
@@ -3601,7 +3601,7 @@ export const vocabularyWords = [
   },
   {
     "word": "relax",
-    "phonetic": "",
+    "phonetic": "/rɪˈlæks/",
     "type": "수능 어휘",
     "meaning": "긴장을 풀다, 긴장을 풀다",
     "definition": "수능·고등 영어 독해를 위한 258번째 핵심 어휘입니다.",
@@ -3615,7 +3615,7 @@ export const vocabularyWords = [
   },
   {
     "word": "release",
-    "phonetic": "",
+    "phonetic": "/riˈlis/",
     "type": "수능 어휘",
     "meaning": "석방하다, 해방시키다",
     "definition": "수능·고등 영어 독해를 위한 259번째 핵심 어휘입니다.",
@@ -3629,7 +3629,7 @@ export const vocabularyWords = [
   },
   {
     "word": "rely",
-    "phonetic": "",
+    "phonetic": "/rɪˈlaɪ/",
     "type": "수능 어휘",
     "meaning": "의지하다, 의지하다; 신뢰하다",
     "definition": "수능·고등 영어 독해를 위한 260번째 핵심 어휘입니다.",
@@ -3643,7 +3643,7 @@ export const vocabularyWords = [
   },
   {
     "word": "remove",
-    "phonetic": "",
+    "phonetic": "/riˈmuv/",
     "type": "수능 어휘",
     "meaning": "움직이다, 빼앗다; 제거하다",
     "definition": "수능·고등 영어 독해를 위한 261번째 핵심 어휘입니다.",
@@ -3657,7 +3657,7 @@ export const vocabularyWords = [
   },
   {
     "word": "require",
-    "phonetic": "",
+    "phonetic": "/ˌriˈkwaɪɚ/",
     "type": "수능 어휘",
     "meaning": "수요; 요구 사항",
     "definition": "수능·고등 영어 독해를 위한 262번째 핵심 어휘입니다.",
@@ -3671,7 +3671,7 @@ export const vocabularyWords = [
   },
   {
     "word": "research",
-    "phonetic": "",
+    "phonetic": "/riˈsɝtʃ/",
     "type": "수능 어휘",
     "meaning": "연구, 조사",
     "definition": "수능·고등 영어 독해를 위한 263번째 핵심 어휘입니다.",
@@ -3685,7 +3685,7 @@ export const vocabularyWords = [
   },
   {
     "word": "resolve",
-    "phonetic": "",
+    "phonetic": "/riˈzɑlv/",
     "type": "수능 어휘",
     "meaning": "해결하다",
     "definition": "수능·고등 영어 독해를 위한 264번째 핵심 어휘입니다.",
@@ -3699,7 +3699,7 @@ export const vocabularyWords = [
   },
   {
     "word": "resource",
-    "phonetic": "",
+    "phonetic": "/ˈrisɔrs/",
     "type": "수능 어휘",
     "meaning": "자원",
     "definition": "수능·고등 영어 독해를 위한 265번째 핵심 어휘입니다.",
@@ -3713,7 +3713,7 @@ export const vocabularyWords = [
   },
   {
     "word": "respond",
-    "phonetic": "",
+    "phonetic": "/rɪˈspɑnd/",
     "type": "수능 어휘",
     "meaning": "답변; 반응하다",
     "definition": "수능·고등 영어 독해를 위한 266번째 핵심 어휘입니다.",
@@ -3727,7 +3727,7 @@ export const vocabularyWords = [
   },
   {
     "word": "restrict",
-    "phonetic": "",
+    "phonetic": "/riˈstrɪkt/",
     "type": "수능 어휘",
     "meaning": "한도; 강제; 한도",
     "definition": "수능·고등 영어 독해를 위한 267번째 핵심 어휘입니다.",
@@ -3741,7 +3741,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reveal",
-    "phonetic": "",
+    "phonetic": "/rɪˈvil/",
     "type": "수능 어휘",
     "meaning": "누설하다, 폭로하다, 폭로하다",
     "definition": "수능·고등 영어 독해를 위한 268번째 핵심 어휘입니다.",
@@ -3755,7 +3755,7 @@ export const vocabularyWords = [
   },
   {
     "word": "revenue",
-    "phonetic": "",
+    "phonetic": "/ˈrɛvəˌnu/",
     "type": "수능 어휘",
     "meaning": "수익",
     "definition": "수능·고등 영어 독해를 위한 269번째 핵심 어휘입니다.",
@@ -3769,7 +3769,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reverse",
-    "phonetic": "",
+    "phonetic": "/rɪˈvɝs/",
     "type": "수능 어휘",
     "meaning": "역방향",
     "definition": "수능·고등 영어 독해를 위한 270번째 핵심 어휘입니다.",
@@ -3783,7 +3783,7 @@ export const vocabularyWords = [
   },
   {
     "word": "revolution",
-    "phonetic": "",
+    "phonetic": "/ˌrɛvəˈluʃən/",
     "type": "수능 어휘",
     "meaning": "혁명, 변화",
     "definition": "수능·고등 영어 독해를 위한 271번째 핵심 어휘입니다.",
@@ -3797,7 +3797,7 @@ export const vocabularyWords = [
   },
   {
     "word": "rigid",
-    "phonetic": "",
+    "phonetic": "/ˈrɪdʒəd/",
     "type": "수능 어휘",
     "meaning": "단단하고 단단합니다. 엄격한",
     "definition": "수능·고등 영어 독해를 위한 272번째 핵심 어휘입니다.",
@@ -3811,7 +3811,7 @@ export const vocabularyWords = [
   },
   {
     "word": "role",
-    "phonetic": "",
+    "phonetic": "/ˈroʊl/",
     "type": "수능 어휘",
     "meaning": "[C] 역할; 기능",
     "definition": "수능·고등 영어 독해를 위한 273번째 핵심 어휘입니다.",
@@ -3825,7 +3825,7 @@ export const vocabularyWords = [
   },
   {
     "word": "route",
-    "phonetic": "",
+    "phonetic": "/ˈrut/",
     "type": "수능 어휘",
     "meaning": "경로",
     "definition": "수능·고등 영어 독해를 위한 274번째 핵심 어휘입니다.",
@@ -3839,7 +3839,7 @@ export const vocabularyWords = [
   },
   {
     "word": "schedule",
-    "phonetic": "",
+    "phonetic": "/ˈskɛdʒʊl/",
     "type": "수능 어휘",
     "meaning": "시간표 정리, 일정",
     "definition": "수능·고등 영어 독해를 위한 275번째 핵심 어휘입니다.",
@@ -3853,7 +3853,7 @@ export const vocabularyWords = [
   },
   {
     "word": "section",
-    "phonetic": "",
+    "phonetic": "/ˈsɛkʃən/",
     "type": "수능 어휘",
     "meaning": "섹션; 부분; 부서",
     "definition": "수능·고등 영어 독해를 위한 276번째 핵심 어휘입니다.",
@@ -3867,12 +3867,12 @@ export const vocabularyWords = [
   },
   {
     "word": "secure",
-    "phonetic": "",
+    "phonetic": "/sɪˈkjʊr/",
     "type": "수능 어휘",
-    "meaning": "안전하고 신뢰할 수 있습니다. 안심, 걱정 없이",
+    "meaning": "안전한; 확실히 확보하다",
     "definition": "수능·고등 영어 독해를 위한 277번째 핵심 어휘입니다.",
     "example": "The meaning of \"secure\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '안전하고 신뢰할 수 있습니다. 안심, 걱정 없이'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '안전한; 확실히 확보하다'라는 의미를 확인해 보세요.",
     "source": "Academic Word List",
     "sourceUrl": "https://textproject.org/wp-content/uploads/resources/Academic-word-list.pdf",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/secure",
@@ -3881,7 +3881,7 @@ export const vocabularyWords = [
   },
   {
     "word": "seek",
-    "phonetic": "",
+    "phonetic": "/ˈsik/",
     "type": "수능 어휘",
     "meaning": "시도; 추구하다, 추구하다",
     "definition": "수능·고등 영어 독해를 위한 278번째 핵심 어휘입니다.",
@@ -3895,7 +3895,7 @@ export const vocabularyWords = [
   },
   {
     "word": "select",
-    "phonetic": "",
+    "phonetic": "/səˈlɛkt/",
     "type": "수능 어휘",
     "meaning": "선택, 선택, 선택",
     "definition": "수능·고등 영어 독해를 위한 279번째 핵심 어휘입니다.",
@@ -3909,7 +3909,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sequence",
-    "phonetic": "",
+    "phonetic": "/ˈsikwəns/",
     "type": "수능 어휘",
     "meaning": "순서, 순서, 순서; 순서",
     "definition": "수능·고등 영어 독해를 위한 280번째 핵심 어휘입니다.",
@@ -3923,7 +3923,7 @@ export const vocabularyWords = [
   },
   {
     "word": "series",
-    "phonetic": "",
+    "phonetic": "/ˈsɪriz/",
     "type": "수능 어휘",
     "meaning": "시리즈",
     "definition": "수능·고등 영어 독해를 위한 281번째 핵심 어휘입니다.",
@@ -3937,7 +3937,7 @@ export const vocabularyWords = [
   },
   {
     "word": "shift",
-    "phonetic": "",
+    "phonetic": "/ˈʃɪft/",
     "type": "수능 어휘",
     "meaning": "교대",
     "definition": "수능·고등 영어 독해를 위한 282번째 핵심 어휘입니다.",
@@ -3951,12 +3951,12 @@ export const vocabularyWords = [
   },
   {
     "word": "significant",
-    "phonetic": "",
+    "phonetic": "/səˈɡnɪfɪkənt/",
     "type": "수능 어휘",
-    "meaning": "의미 있고 의미가 있습니다. 중요한, 중요한; 우연이 아닌",
+    "meaning": "중요한; 상당한; 의미 있는",
     "definition": "수능·고등 영어 독해를 위한 283번째 핵심 어휘입니다.",
     "example": "The meaning of \"significant\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '의미 있고 의미가 있습니다. 중요한, 중요한; 우연이 아닌'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '중요한; 상당한; 의미 있는'이라는 의미를 확인해 보세요.",
     "source": "Academic Word List",
     "sourceUrl": "https://textproject.org/wp-content/uploads/resources/Academic-word-list.pdf",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/significant",
@@ -3965,7 +3965,7 @@ export const vocabularyWords = [
   },
   {
     "word": "similar",
-    "phonetic": "",
+    "phonetic": "/ˈsɪməlɚ/",
     "type": "수능 어휘",
     "meaning": "비슷한, 같은",
     "definition": "수능·고등 영어 독해를 위한 284번째 핵심 어휘입니다.",
@@ -3979,7 +3979,7 @@ export const vocabularyWords = [
   },
   {
     "word": "site",
-    "phonetic": "",
+    "phonetic": "/ˈsaɪt/",
     "type": "수능 어휘",
     "meaning": "사이트",
     "definition": "수능·고등 영어 독해를 위한 285번째 핵심 어휘입니다.",
@@ -3993,7 +3993,7 @@ export const vocabularyWords = [
   },
   {
     "word": "somewhat",
-    "phonetic": "",
+    "phonetic": "/ˈsʌˈmwʌt/",
     "type": "수능 어휘",
     "meaning": "다소",
     "definition": "수능·고등 영어 독해를 위한 286번째 핵심 어휘입니다.",
@@ -4007,7 +4007,7 @@ export const vocabularyWords = [
   },
   {
     "word": "source",
-    "phonetic": "",
+    "phonetic": "/ˈsɔrs/",
     "type": "수능 어휘",
     "meaning": "전원 공급 장치",
     "definition": "수능·고등 영어 독해를 위한 287번째 핵심 어휘입니다.",
@@ -4021,7 +4021,7 @@ export const vocabularyWords = [
   },
   {
     "word": "specific",
-    "phonetic": "",
+    "phonetic": "/spəˈsɪfɪk/",
     "type": "수능 어휘",
     "meaning": "특별한; 명확한",
     "definition": "수능·고등 영어 독해를 위한 288번째 핵심 어휘입니다.",
@@ -4035,7 +4035,7 @@ export const vocabularyWords = [
   },
   {
     "word": "specify",
-    "phonetic": "",
+    "phonetic": "/ˈspɛsəˌfaɪ/",
     "type": "수능 어휘",
     "meaning": "지정하다",
     "definition": "수능·고등 영어 독해를 위한 289번째 핵심 어휘입니다.",
@@ -4049,7 +4049,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sphere",
-    "phonetic": "",
+    "phonetic": "/ˈsfɪr/",
     "type": "수능 어휘",
     "meaning": "구체",
     "definition": "수능·고등 영어 독해를 위한 290번째 핵심 어휘입니다.",
@@ -4063,7 +4063,7 @@ export const vocabularyWords = [
   },
   {
     "word": "stable",
-    "phonetic": "",
+    "phonetic": "/ˈsteɪbəl/",
     "type": "수능 어휘",
     "meaning": "안정적인",
     "definition": "수능·고등 영어 독해를 위한 291번째 핵심 어휘입니다.",
@@ -4077,7 +4077,7 @@ export const vocabularyWords = [
   },
   {
     "word": "statistic",
-    "phonetic": "",
+    "phonetic": "/stəˈtɪstɪk/",
     "type": "수능 어휘",
     "meaning": "통계적",
     "definition": "수능·고등 영어 독해를 위한 292번째 핵심 어휘입니다.",
@@ -4091,7 +4091,7 @@ export const vocabularyWords = [
   },
   {
     "word": "status",
-    "phonetic": "",
+    "phonetic": "/ˈstætəs/",
     "type": "수능 어휘",
     "meaning": "신분, 지위",
     "definition": "수능·고등 영어 독해를 위한 293번째 핵심 어휘입니다.",
@@ -4105,7 +4105,7 @@ export const vocabularyWords = [
   },
   {
     "word": "stress",
-    "phonetic": "",
+    "phonetic": "/ˈstrɛs/",
     "type": "수능 어휘",
     "meaning": "스트레스 스트레스",
     "definition": "수능·고등 영어 독해를 위한 294번째 핵심 어휘입니다.",
@@ -4119,7 +4119,7 @@ export const vocabularyWords = [
   },
   {
     "word": "structure",
-    "phonetic": "",
+    "phonetic": "/ˈstrʌktʃɚ/",
     "type": "수능 어휘",
     "meaning": "구조",
     "definition": "수능·고등 영어 독해를 위한 295번째 핵심 어휘입니다.",
@@ -4133,7 +4133,7 @@ export const vocabularyWords = [
   },
   {
     "word": "style",
-    "phonetic": "",
+    "phonetic": "/ˈstaɪl/",
     "type": "수능 어휘",
     "meaning": "스타일, 패션",
     "definition": "수능·고등 영어 독해를 위한 296번째 핵심 어휘입니다.",
@@ -4147,7 +4147,7 @@ export const vocabularyWords = [
   },
   {
     "word": "substitute",
-    "phonetic": "",
+    "phonetic": "/ˈsʌbstəˌtut/",
     "type": "수능 어휘",
     "meaning": "교체하다",
     "definition": "수능·고등 영어 독해를 위한 297번째 핵심 어휘입니다.",
@@ -4161,7 +4161,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sufficient",
-    "phonetic": "",
+    "phonetic": "/səˈfɪʃənt/",
     "type": "수능 어휘",
     "meaning": "충분하다",
     "definition": "수능·고등 영어 독해를 위한 298번째 핵심 어휘입니다.",
@@ -4175,7 +4175,7 @@ export const vocabularyWords = [
   },
   {
     "word": "survey",
-    "phonetic": "",
+    "phonetic": "/sɚˈveɪ/",
     "type": "수능 어휘",
     "meaning": "설문조사",
     "definition": "수능·고등 영어 독해를 위한 299번째 핵심 어휘입니다.",
@@ -4189,7 +4189,7 @@ export const vocabularyWords = [
   },
   {
     "word": "survive",
-    "phonetic": "",
+    "phonetic": "/sɚˈvaɪv/",
     "type": "수능 어휘",
     "meaning": "살아남아, 더 오래 살아라...",
     "definition": "수능·고등 영어 독해를 위한 300번째 핵심 어휘입니다.",
@@ -4203,7 +4203,7 @@ export const vocabularyWords = [
   },
   {
     "word": "suspend",
-    "phonetic": "",
+    "phonetic": "/səˈspɛnd/",
     "type": "수능 어휘",
     "meaning": "멈춰라, 멈춰라; 연기하다; 일시 중지하다",
     "definition": "수능·고등 영어 독해를 위한 301번째 핵심 어휘입니다.",
@@ -4217,7 +4217,7 @@ export const vocabularyWords = [
   },
   {
     "word": "symbol",
-    "phonetic": "",
+    "phonetic": "/ˈsɪmbəl/",
     "type": "수능 어휘",
     "meaning": "상징, 상징",
     "definition": "수능·고등 영어 독해를 위한 302번째 핵심 어휘입니다.",
@@ -4231,7 +4231,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tape",
-    "phonetic": "",
+    "phonetic": "/ˈteɪp/",
     "type": "수능 어휘",
     "meaning": "테이프; 줄자; 줄자; 측정 테이프; 녹음; 테이프로 바인딩; 테이프로 밀봉하기",
     "definition": "수능·고등 영어 독해를 위한 303번째 핵심 어휘입니다.",
@@ -4245,7 +4245,7 @@ export const vocabularyWords = [
   },
   {
     "word": "target",
-    "phonetic": "",
+    "phonetic": "/ˈtɑrɡət/",
     "type": "수능 어휘",
     "meaning": "대상, 대상; 목표",
     "definition": "수능·고등 영어 독해를 위한 304번째 핵심 어휘입니다.",
@@ -4259,7 +4259,7 @@ export const vocabularyWords = [
   },
   {
     "word": "task",
-    "phonetic": "",
+    "phonetic": "/ˈtæsk/",
     "type": "수능 어휘",
     "meaning": "과제, 일, 숙제를 할당하십시오. 작업",
     "definition": "수능·고등 영어 독해를 위한 305번째 핵심 어휘입니다.",
@@ -4273,7 +4273,7 @@ export const vocabularyWords = [
   },
   {
     "word": "team",
-    "phonetic": "",
+    "phonetic": "/ˈtim/",
     "type": "수능 어휘",
     "meaning": "팀; 협력하는 그룹",
     "definition": "수능·고등 영어 독해를 위한 306번째 핵심 어휘입니다.",
@@ -4287,7 +4287,7 @@ export const vocabularyWords = [
   },
   {
     "word": "technical",
-    "phonetic": "",
+    "phonetic": "/ˈtɛknɪkəl/",
     "type": "수능 어휘",
     "meaning": "기술, 장인정신",
     "definition": "수능·고등 영어 독해를 위한 307번째 핵심 어휘입니다.",
@@ -4301,7 +4301,7 @@ export const vocabularyWords = [
   },
   {
     "word": "technique",
-    "phonetic": "",
+    "phonetic": "/tɛˈknik/",
     "type": "수능 어휘",
     "meaning": "기술, 실력",
     "definition": "수능·고등 영어 독해를 위한 308번째 핵심 어휘입니다.",
@@ -4315,7 +4315,7 @@ export const vocabularyWords = [
   },
   {
     "word": "technology",
-    "phonetic": "",
+    "phonetic": "/tɛˈknɑlədʒi/",
     "type": "수능 어휘",
     "meaning": "기술, 기술",
     "definition": "수능·고등 영어 독해를 위한 309번째 핵심 어휘입니다.",
@@ -4329,7 +4329,7 @@ export const vocabularyWords = [
   },
   {
     "word": "temporary",
-    "phonetic": "",
+    "phonetic": "/ˈtɛmpɚˌɛri/",
     "type": "수능 어휘",
     "meaning": "임시, 임시",
     "definition": "수능·고등 영어 독해를 위한 310번째 핵심 어휘입니다.",
@@ -4343,7 +4343,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tense",
-    "phonetic": "",
+    "phonetic": "/ˈtɛns/",
     "type": "수능 어휘",
     "meaning": "긴장하다; 시제 시제",
     "definition": "수능·고등 영어 독해를 위한 311번째 핵심 어휘입니다.",
@@ -4357,7 +4357,7 @@ export const vocabularyWords = [
   },
   {
     "word": "text",
-    "phonetic": "",
+    "phonetic": "/ˈtɛkst/",
     "type": "수능 어휘",
     "meaning": "[계산] 텍스트; 텍스트; 테마 문자 메시지",
     "definition": "수능·고등 영어 독해를 위한 312번째 핵심 어휘입니다.",
@@ -4371,7 +4371,7 @@ export const vocabularyWords = [
   },
   {
     "word": "theme",
-    "phonetic": "",
+    "phonetic": "/ˈθim/",
     "type": "수능 어휘",
     "meaning": "주제",
     "definition": "수능·고등 영어 독해를 위한 313번째 핵심 어휘입니다.",
@@ -4385,7 +4385,7 @@ export const vocabularyWords = [
   },
   {
     "word": "theory",
-    "phonetic": "",
+    "phonetic": "/ˈθɪri/",
     "type": "수능 어휘",
     "meaning": "이론",
     "definition": "수능·고등 영어 독해를 위한 314번째 핵심 어휘입니다.",
@@ -4399,7 +4399,7 @@ export const vocabularyWords = [
   },
   {
     "word": "thereby",
-    "phonetic": "",
+    "phonetic": "/ˈðɛˈrbaɪ/",
     "type": "수능 어휘",
     "meaning": "이로써",
     "definition": "수능·고등 영어 독해를 위한 315번째 핵심 어휘입니다.",
@@ -4413,7 +4413,7 @@ export const vocabularyWords = [
   },
   {
     "word": "topic",
-    "phonetic": "",
+    "phonetic": "/ˈtɑpɪk/",
     "type": "수능 어휘",
     "meaning": "주제(주제와 동일) 제목; 일반 규칙; 요약",
     "definition": "수능·고등 영어 독해를 위한 316번째 핵심 어휘입니다.",
@@ -4427,7 +4427,7 @@ export const vocabularyWords = [
   },
   {
     "word": "trace",
-    "phonetic": "",
+    "phonetic": "/ˈtreɪs/",
     "type": "수능 어휘",
     "meaning": "추적",
     "definition": "수능·고등 영어 독해를 위한 317번째 핵심 어휘입니다.",
@@ -4441,7 +4441,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tradition",
-    "phonetic": "",
+    "phonetic": "/trəˈdɪʃən/",
     "type": "수능 어휘",
     "meaning": "전통, 관습",
     "definition": "수능·고등 영어 독해를 위한 318번째 핵심 어휘입니다.",
@@ -4455,7 +4455,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transfer",
-    "phonetic": "",
+    "phonetic": "/træˈnsfɝ/",
     "type": "수능 어휘",
     "meaning": "양도, 양도, 양도; 옮기다; 양도, 양도; 양도하다, 양도하다",
     "definition": "수능·고등 영어 독해를 위한 319번째 핵심 어휘입니다.",
@@ -4469,7 +4469,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transmit",
-    "phonetic": "",
+    "phonetic": "/træˈnzmɪt/",
     "type": "수능 어휘",
     "meaning": "전파하다, 방출하다; 전달하다, 실시하다",
     "definition": "수능·고등 영어 독해를 위한 320번째 핵심 어휘입니다.",
@@ -4483,7 +4483,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transport",
-    "phonetic": "",
+    "phonetic": "/træˈnspɔrt/",
     "type": "수능 어휘",
     "meaning": "수송; 컨베이어 운송, 전송",
     "definition": "수능·고등 영어 독해를 위한 321번째 핵심 어휘입니다.",
@@ -4497,7 +4497,7 @@ export const vocabularyWords = [
   },
   {
     "word": "trend",
-    "phonetic": "",
+    "phonetic": "/ˈtrɛnd/",
     "type": "수능 어휘",
     "meaning": "경향, 추세; 패션",
     "definition": "수능·고등 영어 독해를 위한 322번째 핵심 어휘입니다.",
@@ -4511,7 +4511,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ultimate",
-    "phonetic": "",
+    "phonetic": "/ˈʌltəmət/",
     "type": "수능 어휘",
     "meaning": "최종, 궁극적; 근본적인",
     "definition": "수능·고등 영어 독해를 위한 323번째 핵심 어휘입니다.",
@@ -4525,7 +4525,7 @@ export const vocabularyWords = [
   },
   {
     "word": "uniform",
-    "phonetic": "",
+    "phonetic": "/ˈjunəˌfɔrm/",
     "type": "수능 어휘",
     "meaning": "유니폼",
     "definition": "수능·고등 영어 독해를 위한 324번째 핵심 어휘입니다.",
@@ -4539,7 +4539,7 @@ export const vocabularyWords = [
   },
   {
     "word": "unique",
-    "phonetic": "",
+    "phonetic": "/juˈnik/",
     "type": "수능 어휘",
     "meaning": "독특하다, 독특하다",
     "definition": "수능·고등 영어 독해를 위한 325번째 핵심 어휘입니다.",
@@ -4553,7 +4553,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vary",
-    "phonetic": "",
+    "phonetic": "/ˈvɛri/",
     "type": "수능 어휘",
     "meaning": "다양하다",
     "definition": "수능·고등 영어 독해를 위한 326번째 핵심 어휘입니다.",
@@ -4567,7 +4567,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vehicle",
-    "phonetic": "",
+    "phonetic": "/ˈvihɪkəl/",
     "type": "수능 어휘",
     "meaning": "차량",
     "definition": "수능·고등 영어 독해를 위한 327번째 핵심 어휘입니다.",
@@ -4581,7 +4581,7 @@ export const vocabularyWords = [
   },
   {
     "word": "version",
-    "phonetic": "",
+    "phonetic": "/ˈvɝʒən/",
     "type": "수능 어휘",
     "meaning": "번역; 버전",
     "definition": "수능·고등 영어 독해를 위한 328번째 핵심 어휘입니다.",
@@ -4595,7 +4595,7 @@ export const vocabularyWords = [
   },
   {
     "word": "virtual",
-    "phonetic": "",
+    "phonetic": "/ˈvɝtʃuəl/",
     "type": "수능 어휘",
     "meaning": "가상; 실제, 사실상",
     "definition": "수능·고등 영어 독해를 위한 329번째 핵심 어휘입니다.",
@@ -4609,7 +4609,7 @@ export const vocabularyWords = [
   },
   {
     "word": "visible",
-    "phonetic": "",
+    "phonetic": "/ˈvɪzəbəl/",
     "type": "수능 어휘",
     "meaning": "보이는",
     "definition": "수능·고등 영어 독해를 위한 330번째 핵심 어휘입니다.",
@@ -4623,7 +4623,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vision",
-    "phonetic": "",
+    "phonetic": "/ˈvɪʒən/",
     "type": "수능 어휘",
     "meaning": "비전",
     "definition": "수능·고등 영어 독해를 위한 331번째 핵심 어휘입니다.",
@@ -4637,7 +4637,7 @@ export const vocabularyWords = [
   },
   {
     "word": "visual",
-    "phonetic": "",
+    "phonetic": "/ˈvɪʒəwəl/",
     "type": "수능 어휘",
     "meaning": "시각적인, 시각적인",
     "definition": "수능·고등 영어 독해를 위한 332번째 핵심 어휘입니다.",
@@ -4651,7 +4651,7 @@ export const vocabularyWords = [
   },
   {
     "word": "volume",
-    "phonetic": "",
+    "phonetic": "/ˈvɑljum/",
     "type": "수능 어휘",
     "meaning": "볼륨",
     "definition": "수능·고등 영어 독해를 위한 333번째 핵심 어휘입니다.",
@@ -4665,7 +4665,7 @@ export const vocabularyWords = [
   },
   {
     "word": "welfare",
-    "phonetic": "",
+    "phonetic": "/ˈwɛˌlfɛr/",
     "type": "수능 어휘",
     "meaning": "복지; 평화, 행복",
     "definition": "수능·고등 영어 독해를 위한 334번째 핵심 어휘입니다.",
@@ -4679,7 +4679,7 @@ export const vocabularyWords = [
   },
   {
     "word": "whereas",
-    "phonetic": "",
+    "phonetic": "/wɛˈræz/",
     "type": "수능 어휘",
     "meaning": "반면",
     "definition": "수능·고등 영어 독해를 위한 335번째 핵심 어휘입니다.",
@@ -4693,7 +4693,7 @@ export const vocabularyWords = [
   },
   {
     "word": "widespread",
-    "phonetic": "",
+    "phonetic": "/ˈwaɪˈdsprɛd/",
     "type": "수능 어휘",
     "meaning": "널리 분포",
     "definition": "수능·고등 영어 독해를 위한 336번째 핵심 어휘입니다.",
@@ -4707,7 +4707,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sound",
-    "phonetic": "",
+    "phonetic": "/ˈsaʊnd/",
     "type": "수능 어휘",
     "meaning": "소리",
     "definition": "수능·고등 영어 독해를 위한 337번째 핵심 어휘입니다.",
@@ -4721,7 +4721,7 @@ export const vocabularyWords = [
   },
   {
     "word": "global",
-    "phonetic": "",
+    "phonetic": "/ˈɡloʊbəl/",
     "type": "수능 어휘",
     "meaning": "글로벌, 세계; 구형, 구형; 일반, 보편적, 포괄적, 글로벌",
     "definition": "수능·고등 영어 독해를 위한 338번째 핵심 어휘입니다.",
@@ -4735,7 +4735,7 @@ export const vocabularyWords = [
   },
   {
     "word": "economic",
-    "phonetic": "",
+    "phonetic": "/ˌɛkəˈnɑmɪk/",
     "type": "수능 어휘",
     "meaning": "경제적이다, 경제적이다",
     "definition": "수능·고등 영어 독해를 위한 339번째 핵심 어휘입니다.",
@@ -4749,7 +4749,7 @@ export const vocabularyWords = [
   },
   {
     "word": "subscribe",
-    "phonetic": "",
+    "phonetic": "/səˈbskraɪb/",
     "type": "수능 어휘",
     "meaning": "주문, 구독, 예약",
     "definition": "수능·고등 영어 독해를 위한 340번째 핵심 어휘입니다.",
@@ -4763,7 +4763,7 @@ export const vocabularyWords = [
   },
   {
     "word": "submit",
-    "phonetic": "",
+    "phonetic": "/səˈbmɪt/",
     "type": "수능 어휘",
     "meaning": "제출하다, 제출하다; 제출하다, 제출하다",
     "definition": "수능·고등 영어 독해를 위한 341번째 핵심 어휘입니다.",
@@ -4777,7 +4777,7 @@ export const vocabularyWords = [
   },
   {
     "word": "amount",
-    "phonetic": "",
+    "phonetic": "/əˈmaʊnt/",
     "type": "수능 어휘",
     "meaning": "합계",
     "definition": "수능·고등 영어 독해를 위한 342번째 핵심 어휘입니다.",
@@ -4791,7 +4791,7 @@ export const vocabularyWords = [
   },
   {
     "word": "weight",
-    "phonetic": "",
+    "phonetic": "/ˈweɪt/",
     "type": "수능 어휘",
     "meaning": "무게",
     "definition": "수능·고등 영어 독해를 위한 343번째 핵심 어휘입니다.",
@@ -4805,7 +4805,7 @@ export const vocabularyWords = [
   },
   {
     "word": "domain",
-    "phonetic": "",
+    "phonetic": "/doʊˈmeɪn/",
     "type": "수능 어휘",
     "meaning": "도메인, 범위; 영토, 영토",
     "definition": "수능·고등 영어 독해를 위한 344번째 핵심 어휘입니다.",
@@ -4819,7 +4819,7 @@ export const vocabularyWords = [
   },
   {
     "word": "speed",
-    "phonetic": "",
+    "phonetic": "/ˈspid/",
     "type": "수능 어휘",
     "meaning": "비율",
     "definition": "수능·고등 영어 독해를 위한 345번째 핵심 어휘입니다.",
@@ -4833,7 +4833,7 @@ export const vocabularyWords = [
   },
   {
     "word": "discount",
-    "phonetic": "",
+    "phonetic": "/dɪˈskaʊnt/",
     "type": "수능 어휘",
     "meaning": "가격인하, 할인, 방치, [뭔가] 신경쓰지 마세요",
     "definition": "수능·고등 영어 독해를 위한 346번째 핵심 어휘입니다.",
@@ -4847,7 +4847,7 @@ export const vocabularyWords = [
   },
   {
     "word": "summary",
-    "phonetic": "",
+    "phonetic": "/ˈsʌmɚi/",
     "type": "수능 어휘",
     "meaning": "요약, 개요",
     "definition": "수능·고등 영어 독해를 위한 347번째 핵심 어휘입니다.",
@@ -4861,7 +4861,7 @@ export const vocabularyWords = [
   },
   {
     "word": "force",
-    "phonetic": "",
+    "phonetic": "/ˈfɔrs/",
     "type": "수능 어휘",
     "meaning": "힘",
     "definition": "수능·고등 영어 독해를 위한 348번째 핵심 어휘입니다.",
@@ -4875,7 +4875,7 @@ export const vocabularyWords = [
   },
   {
     "word": "album",
-    "phonetic": "",
+    "phonetic": "/ˈælbəm/",
     "type": "수능 어휘",
     "meaning": "우표앨범, 사진앨범",
     "definition": "수능·고등 영어 독해를 위한 349번째 핵심 어휘입니다.",
@@ -4889,7 +4889,7 @@ export const vocabularyWords = [
   },
   {
     "word": "solution",
-    "phonetic": "",
+    "phonetic": "/səˈluʃən/",
     "type": "수능 어휘",
     "meaning": "디졸브",
     "definition": "수능·고등 영어 독해를 위한 350번째 핵심 어휘입니다.",
@@ -4903,7 +4903,7 @@ export const vocabularyWords = [
   },
   {
     "word": "division",
-    "phonetic": "",
+    "phonetic": "/dɪˈvɪʒən/",
     "type": "수능 어휘",
     "meaning": "구분",
     "definition": "수능·고등 영어 독해를 위한 351번째 핵심 어휘입니다.",
@@ -4917,7 +4917,7 @@ export const vocabularyWords = [
   },
   {
     "word": "object",
-    "phonetic": "",
+    "phonetic": "/ˈɑbdʒɛkt/",
     "type": "수능 어휘",
     "meaning": "물체",
     "definition": "수능·고등 영어 독해를 위한 352번째 핵심 어휘입니다.",
@@ -4931,7 +4931,7 @@ export const vocabularyWords = [
   },
   {
     "word": "length",
-    "phonetic": "",
+    "phonetic": "/ˈlɛŋkθ/",
     "type": "수능 어휘",
     "meaning": "길이",
     "definition": "수능·고등 영어 독해를 위한 353번째 핵심 어휘입니다.",
@@ -4945,7 +4945,7 @@ export const vocabularyWords = [
   },
   {
     "word": "degree",
-    "phonetic": "",
+    "phonetic": "/dɪˈɡri/",
     "type": "수능 어휘",
     "meaning": "정도; 정도",
     "definition": "수능·고등 영어 독해를 위한 354번째 핵심 어휘입니다.",
@@ -4959,7 +4959,7 @@ export const vocabularyWords = [
   },
   {
     "word": "matter",
-    "phonetic": "",
+    "phonetic": "/ˈmætɚ/",
     "type": "수능 어휘",
     "meaning": "문제",
     "definition": "수능·고등 영어 독해를 위한 355번째 핵심 어휘입니다.",
@@ -4973,7 +4973,7 @@ export const vocabularyWords = [
   },
   {
     "word": "multiple",
-    "phonetic": "",
+    "phonetic": "/ˈmʌltəpəl/",
     "type": "수능 어휘",
     "meaning": "여러 번,",
     "definition": "수능·고등 영어 독해를 위한 356번째 핵심 어휘입니다.",
@@ -4987,7 +4987,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cancer",
-    "phonetic": "",
+    "phonetic": "/ˈkænsɚ/",
     "type": "수능 어휘",
     "meaning": "암",
     "definition": "수능·고등 영어 독해를 위한 357번째 핵심 어휘입니다.",
@@ -5001,7 +5001,7 @@ export const vocabularyWords = [
   },
   {
     "word": "independent",
-    "phonetic": "",
+    "phonetic": "/ˌɪndɪˈpɛndənt/",
     "type": "수능 어휘",
     "meaning": "독립적인, 자율적인",
     "definition": "수능·고등 영어 독해를 위한 358번째 핵심 어휘입니다.",
@@ -5015,7 +5015,7 @@ export const vocabularyWords = [
   },
   {
     "word": "population",
-    "phonetic": "",
+    "phonetic": "/ˌpɑpjəˈleɪʃən/",
     "type": "수능 어휘",
     "meaning": "인구",
     "definition": "수능·고등 영어 독해를 위한 359번째 핵심 어휘입니다.",
@@ -5029,7 +5029,7 @@ export const vocabularyWords = [
   },
   {
     "word": "evidence",
-    "phonetic": "",
+    "phonetic": "/ˈɛvədəns/",
     "type": "수능 어휘",
     "meaning": "증거, 근거, 주장; 표시, 흔적, 징조",
     "definition": "수능·고등 영어 독해를 위한 360번째 핵심 어휘입니다.",
@@ -5043,7 +5043,7 @@ export const vocabularyWords = [
   },
   {
     "word": "round",
-    "phonetic": "",
+    "phonetic": "/ˈraʊnd/",
     "type": "수능 어휘",
     "meaning": "반올림",
     "definition": "수능·고등 영어 독해를 위한 361번째 핵심 어휘입니다.",
@@ -5057,7 +5057,7 @@ export const vocabularyWords = [
   },
   {
     "word": "option",
-    "phonetic": "",
+    "phonetic": "/ˈɑpʃən/",
     "type": "수능 어휘",
     "meaning": "선택, 선택할 권리; 선택할 것; 코스 선택",
     "definition": "수능·고등 영어 독해를 위한 362번째 핵심 어휘입니다.",
@@ -5071,7 +5071,7 @@ export const vocabularyWords = [
   },
   {
     "word": "excellent",
-    "phonetic": "",
+    "phonetic": "/ˈɛksələnt/",
     "type": "수능 어휘",
     "meaning": "훌륭하다, 훌륭하다",
     "definition": "수능·고등 영어 독해를 위한 363번째 핵심 어휘입니다.",
@@ -5085,7 +5085,7 @@ export const vocabularyWords = [
   },
   {
     "word": "distance",
-    "phonetic": "",
+    "phonetic": "/ˈdɪstəns/",
     "type": "수능 어휘",
     "meaning": "거리",
     "definition": "수능·고등 영어 독해를 위한 364번째 핵심 어휘입니다.",
@@ -5099,7 +5099,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ensure",
-    "phonetic": "",
+    "phonetic": "/ɛˈnʃʊr/",
     "type": "수능 어휘",
     "meaning": "보장하다, 보증하다",
     "definition": "수능·고등 영어 독해를 위한 365번째 핵심 어휘입니다.",
@@ -5113,7 +5113,7 @@ export const vocabularyWords = [
   },
   {
     "word": "operation",
-    "phonetic": "",
+    "phonetic": "/ˌɑpɚˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "작동",
     "definition": "수능·고등 영어 독해를 위한 366번째 핵심 어휘입니다.",
@@ -5127,7 +5127,7 @@ export const vocabularyWords = [
   },
   {
     "word": "catalog",
-    "phonetic": "",
+    "phonetic": "/ˈkætəlɔɡ/",
     "type": "수능 어휘",
     "meaning": "디렉토리; 디렉토리",
     "definition": "수능·고등 영어 독해를 위한 367번째 핵심 어휘입니다.",
@@ -5141,7 +5141,7 @@ export const vocabularyWords = [
   },
   {
     "word": "valid",
-    "phonetic": "",
+    "phonetic": "/ˈvælɪd/",
     "type": "수능 어휘",
     "meaning": "효과적이다; 합리적인, 근거가 충분한",
     "definition": "수능·고등 영어 독해를 위한 368번째 핵심 어휘입니다.",
@@ -5155,7 +5155,7 @@ export const vocabularyWords = [
   },
   {
     "word": "trial",
-    "phonetic": "",
+    "phonetic": "/ˈtraɪəl/",
     "type": "수능 어휘",
     "meaning": "심문; 재판, 테스트",
     "definition": "수능·고등 영어 독해를 위한 369번째 핵심 어휘입니다.",
@@ -5169,7 +5169,7 @@ export const vocabularyWords = [
   },
   {
     "word": "charge",
-    "phonetic": "",
+    "phonetic": "/ˈtʃɑrdʒ/",
     "type": "수능 어휘",
     "meaning": "수수료, 대가, 고발, 고발",
     "definition": "수능·고등 영어 독해를 위한 370번째 핵심 어휘입니다.",
@@ -5183,7 +5183,7 @@ export const vocabularyWords = [
   },
   {
     "word": "enterprise",
-    "phonetic": "",
+    "phonetic": "/ˈɛntɚˌpraɪz/",
     "type": "수능 어휘",
     "meaning": "일; 경력, 기업; 진취적인 정신, 진취적인 정신, 모험적인 정신",
     "definition": "수능·고등 영어 독해를 위한 371번째 핵심 어휘입니다.",
@@ -5197,7 +5197,7 @@ export const vocabularyWords = [
   },
   {
     "word": "metal",
-    "phonetic": "",
+    "phonetic": "/ˈmɛtəl/",
     "type": "수능 어휘",
     "meaning": "금속",
     "definition": "수능·고등 영어 독해를 위한 372번째 핵심 어휘입니다.",
@@ -5211,7 +5211,7 @@ export const vocabularyWords = [
   },
   {
     "word": "abstract",
-    "phonetic": "",
+    "phonetic": "/æˈbstrækt/",
     "type": "수능 어휘",
     "meaning": "추상, 추상; 난해한; 이론적 요약, 요약, 요약",
     "definition": "수능·고등 영어 독해를 위한 373번째 핵심 어휘입니다.",
@@ -5225,7 +5225,7 @@ export const vocabularyWords = [
   },
   {
     "word": "photography",
-    "phonetic": "",
+    "phonetic": "/fəˈtɑɡrəfi/",
     "type": "수능 어휘",
     "meaning": "사진",
     "definition": "수능·고등 영어 독해를 위한 374번째 핵심 어휘입니다.",
@@ -5239,7 +5239,7 @@ export const vocabularyWords = [
   },
   {
     "word": "academic",
-    "phonetic": "",
+    "phonetic": "/ˌækəˈdɛmɪk/",
     "type": "수능 어휘",
     "meaning": "학술; 학술 학자; 대학 교사; 사회의 구성원",
     "definition": "수능·고등 영어 독해를 위한 375번째 핵심 어휘입니다.",
@@ -5253,7 +5253,7 @@ export const vocabularyWords = [
   },
   {
     "word": "filter",
-    "phonetic": "",
+    "phonetic": "/ˈfɪltɚ/",
     "type": "수능 어휘",
     "meaning": "필터 튜브",
     "definition": "수능·고등 영어 독해를 위한 376번째 핵심 어휘입니다.",
@@ -5267,7 +5267,7 @@ export const vocabularyWords = [
   },
   {
     "word": "protein",
-    "phonetic": "",
+    "phonetic": "/ˈproʊˌtin/",
     "type": "수능 어휘",
     "meaning": "단백질",
     "definition": "수능·고등 영어 독해를 위한 377번째 핵심 어휘입니다.",
@@ -5281,12 +5281,12 @@ export const vocabularyWords = [
   },
   {
     "word": "string",
-    "phonetic": "",
+    "phonetic": "/ˈstrɪŋ/",
     "type": "수능 어휘",
-    "meaning": "넥타이, 묶음; 문자열, 줄, 문자열을 걸어 놓습니다. 문자열, 줄",
+    "meaning": "끈; 줄; 일련",
     "definition": "수능·고등 영어 독해를 위한 378번째 핵심 어휘입니다.",
     "example": "The meaning of \"string\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '넥타이, 묶음; 문자열, 줄, 문자열을 걸어 놓습니다. 문자열, 줄'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '끈; 줄; 일련'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/string",
@@ -5295,7 +5295,7 @@ export const vocabularyWords = [
   },
   {
     "word": "maintenance",
-    "phonetic": "",
+    "phonetic": "/ˈmeɪntənəns/",
     "type": "수능 어휘",
     "meaning": "수리, 유지; 유지하다, 유지하다",
     "definition": "수능·고등 영어 독해를 위한 379번째 핵심 어휘입니다.",
@@ -5309,7 +5309,7 @@ export const vocabularyWords = [
   },
   {
     "word": "battery",
-    "phonetic": "",
+    "phonetic": "/ˈbætɚi/",
     "type": "수능 어휘",
     "meaning": "배터리 팩",
     "definition": "수능·고등 영어 독해를 위한 380번째 핵심 어휘입니다.",
@@ -5323,7 +5323,7 @@ export const vocabularyWords = [
   },
   {
     "word": "pressure",
-    "phonetic": "",
+    "phonetic": "/ˈprɛʃɚ/",
     "type": "수능 어휘",
     "meaning": "압력; 압력",
     "definition": "수능·고등 영어 독해를 위한 381번째 핵심 어휘입니다.",
@@ -5337,7 +5337,7 @@ export const vocabularyWords = [
   },
   {
     "word": "remote",
-    "phonetic": "",
+    "phonetic": "/rɪˈmoʊt/",
     "type": "수능 어휘",
     "meaning": "먼, 먼, 소외된",
     "definition": "수능·고등 영어 독해를 위한 382번째 핵심 어휘입니다.",
@@ -5351,7 +5351,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sector",
-    "phonetic": "",
+    "phonetic": "/ˈsɛktɚ/",
     "type": "수능 어휘",
     "meaning": "부채 모양의",
     "definition": "수능·고등 영어 독해를 위한 383번째 핵심 어휘입니다.",
@@ -5365,7 +5365,7 @@ export const vocabularyWords = [
   },
   {
     "word": "unknown",
-    "phonetic": "",
+    "phonetic": "/əˈnnoʊn/",
     "type": "수능 어휘",
     "meaning": "알 수 없는 수량",
     "definition": "수능·고등 영어 독해를 위한 384번째 핵심 어휘입니다.",
@@ -5379,7 +5379,7 @@ export const vocabularyWords = [
   },
   {
     "word": "literature",
-    "phonetic": "",
+    "phonetic": "/ˈlɪtɚətʃɚ/",
     "type": "수능 어휘",
     "meaning": "문학; 문학 작품; 문서",
     "definition": "수능·고등 영어 독해를 위한 385번째 핵심 어휘입니다.",
@@ -5393,7 +5393,7 @@ export const vocabularyWords = [
   },
   {
     "word": "scale",
-    "phonetic": "",
+    "phonetic": "/ˈskeɪl/",
     "type": "수능 어휘",
     "meaning": "저울",
     "definition": "수능·고등 영어 독해를 위한 386번째 핵심 어휘입니다.",
@@ -5407,7 +5407,7 @@ export const vocabularyWords = [
   },
   {
     "word": "switch",
-    "phonetic": "",
+    "phonetic": "/ˈswɪtʃ/",
     "type": "수능 어휘",
     "meaning": "스위치",
     "definition": "수능·고등 영어 독해를 위한 387번째 핵심 어휘입니다.",
@@ -5421,7 +5421,7 @@ export const vocabularyWords = [
   },
   {
     "word": "relevant",
-    "phonetic": "",
+    "phonetic": "/ˈrɛləvənt/",
     "type": "수능 어휘",
     "meaning": "관련",
     "definition": "수능·고등 영어 독해를 위한 388번째 핵심 어휘입니다.",
@@ -5435,7 +5435,7 @@ export const vocabularyWords = [
   },
   {
     "word": "square",
-    "phonetic": "",
+    "phonetic": "/ˈskwɛr/",
     "type": "수능 어휘",
     "meaning": "광장",
     "definition": "수능·고등 영어 독해를 위한 389번째 핵심 어휘입니다.",
@@ -5449,7 +5449,7 @@ export const vocabularyWords = [
   },
   {
     "word": "difference",
-    "phonetic": "",
+    "phonetic": "/ˈdɪfɚəns/",
     "type": "수능 어휘",
     "meaning": "차이; 차이",
     "definition": "수능·고등 영어 독해를 위한 390번째 핵심 어휘입니다.",
@@ -5463,7 +5463,7 @@ export const vocabularyWords = [
   },
   {
     "word": "species",
-    "phonetic": "",
+    "phonetic": "/ˈspiʃiz/",
     "type": "수능 어휘",
     "meaning": "종, 종류",
     "definition": "수능·고등 영어 독해를 위한 391번째 핵심 어휘입니다.",
@@ -5477,7 +5477,7 @@ export const vocabularyWords = [
   },
   {
     "word": "facility",
-    "phonetic": "",
+    "phonetic": "/fəˈsɪlɪti/",
     "type": "수능 어휘",
     "meaning": "시설; 장비; 쉬운; 능숙한",
     "definition": "수능·고등 영어 독해를 위한 392번째 핵심 어휘입니다.",
@@ -5491,7 +5491,7 @@ export const vocabularyWords = [
   },
   {
     "word": "emergency",
-    "phonetic": "",
+    "phonetic": "/ɪˈmɝdʒənsi/",
     "type": "수능 어휘",
     "meaning": "비상사태, 갑작스러운 사건, 특별한 순간",
     "definition": "수능·고등 영어 독해를 위한 393번째 핵심 어휘입니다.",
@@ -5505,7 +5505,7 @@ export const vocabularyWords = [
   },
   {
     "word": "temperature",
-    "phonetic": "",
+    "phonetic": "/ˈtɛmprətʃɚ/",
     "type": "수능 어휘",
     "meaning": "온도",
     "definition": "수능·고등 영어 독해를 위한 394번째 핵심 어휘입니다.",
@@ -5519,7 +5519,7 @@ export const vocabularyWords = [
   },
   {
     "word": "historical",
-    "phonetic": "",
+    "phonetic": "/hɪˈstɔrɪkəl/",
     "type": "수능 어휘",
     "meaning": "역사적; 역사와 관련된",
     "definition": "수능·고등 영어 독해를 위한 395번째 핵심 어휘입니다.",
@@ -5533,7 +5533,7 @@ export const vocabularyWords = [
   },
   {
     "word": "amateur",
-    "phonetic": "",
+    "phonetic": "/ˈæməˌtɝ/",
     "type": "수능 어휘",
     "meaning": "아마추어 아마추어 운동가",
     "definition": "수능·고등 영어 독해를 위한 396번째 핵심 어휘입니다.",
@@ -5547,7 +5547,7 @@ export const vocabularyWords = [
   },
   {
     "word": "balance",
-    "phonetic": "",
+    "phonetic": "/ˈbæləns/",
     "type": "수능 어휘",
     "meaning": "균형",
     "definition": "수능·고등 영어 독해를 위한 397번째 핵심 어휘입니다.",
@@ -5561,7 +5561,7 @@ export const vocabularyWords = [
   },
   {
     "word": "graduate",
-    "phonetic": "",
+    "phonetic": "/ˈɡrædʒəwət/",
     "type": "수능 어휘",
     "meaning": "측정 실린더, 측정 컵; 계량 실린더 또는 계량 컵의 양",
     "definition": "수능·고등 영어 독해를 위한 398번째 핵심 어휘입니다.",
@@ -5575,7 +5575,7 @@ export const vocabularyWords = [
   },
   {
     "word": "canon",
-    "phonetic": "",
+    "phonetic": "/ˈkænən/",
     "type": "수능 어휘",
     "meaning": "캐논; 정경, 고전 성경; 실제 글 모음",
     "definition": "수능·고등 영어 독해를 위한 399번째 핵심 어휘입니다.",
@@ -5589,7 +5589,7 @@ export const vocabularyWords = [
   },
   {
     "word": "minute",
-    "phonetic": "",
+    "phonetic": "/ˈmɪnət/",
     "type": "수능 어휘",
     "meaning": "분, 분; 메모; 회의록, 의사록, 요약",
     "definition": "수능·고등 영어 독해를 위한 400번째 핵심 어휘입니다.",
@@ -5603,7 +5603,7 @@ export const vocabularyWords = [
   },
   {
     "word": "motor",
-    "phonetic": "",
+    "phonetic": "/ˈmoʊtɚ/",
     "type": "수능 어휘",
     "meaning": "전기 모터",
     "definition": "수능·고등 영어 독해를 위한 401번째 핵심 어휘입니다.",
@@ -5617,7 +5617,7 @@ export const vocabularyWords = [
   },
   {
     "word": "guarantee",
-    "phonetic": "",
+    "phonetic": "/ˌɡɛrəˈnti/",
     "type": "수능 어휘",
     "meaning": "보증, 보증, 보증, 보증서",
     "definition": "수능·고등 영어 독해를 위한 402번째 핵심 어휘입니다.",
@@ -5631,7 +5631,7 @@ export const vocabularyWords = [
   },
   {
     "word": "joint",
-    "phonetic": "",
+    "phonetic": "/ˈdʒɔɪnt/",
     "type": "수능 어휘",
     "meaning": "[고기]를 큰 조각으로 자르는 관절, 공통의, 공유하는 관절",
     "definition": "수능·고등 영어 독해를 위한 403번째 핵심 어휘입니다.",
@@ -5645,7 +5645,7 @@ export const vocabularyWords = [
   },
   {
     "word": "quantity",
-    "phonetic": "",
+    "phonetic": "/ˈkwɑntəti/",
     "type": "수능 어휘",
     "meaning": "수량, 수량",
     "definition": "수능·고등 영어 독해를 위한 404번째 핵심 어휘입니다.",
@@ -5659,7 +5659,7 @@ export const vocabularyWords = [
   },
   {
     "word": "affiliate",
-    "phonetic": "",
+    "phonetic": "/əˈfɪliˌeɪt/",
     "type": "수능 어휘",
     "meaning": "소속기관, 소속지점",
     "definition": "수능·고등 영어 독해를 위한 405번째 핵심 어휘입니다.",
@@ -5673,7 +5673,7 @@ export const vocabularyWords = [
   },
   {
     "word": "comprehensive",
-    "phonetic": "",
+    "phonetic": "/ˌkɑmpriˈhɛnsɪv/",
     "type": "수능 어휘",
     "meaning": "광범위하고 포괄적임",
     "definition": "수능·고등 영어 독해를 위한 406번째 핵심 어휘입니다.",
@@ -5687,7 +5687,7 @@ export const vocabularyWords = [
   },
   {
     "word": "solid",
-    "phonetic": "",
+    "phonetic": "/ˈsɑləd/",
     "type": "수능 어휘",
     "meaning": "고체; 단단한 고체",
     "definition": "수능·고등 영어 독해를 위한 407번째 핵심 어휘입니다.",
@@ -5701,7 +5701,7 @@ export const vocabularyWords = [
   },
   {
     "word": "campaign",
-    "phonetic": "",
+    "phonetic": "/kæˈmpeɪn/",
     "type": "수능 어휘",
     "meaning": "활동에 참여하고 활동에 참여하십시오. 싸움, 캠페인; 활동, 캠페인",
     "definition": "수능·고등 영어 독해를 위한 408번째 핵심 어휘입니다.",
@@ -5715,7 +5715,7 @@ export const vocabularyWords = [
   },
   {
     "word": "branch",
-    "phonetic": "",
+    "phonetic": "/ˈbræntʃ/",
     "type": "수능 어휘",
     "meaning": "분기 도로",
     "definition": "수능·고등 영어 독해를 위한 409번째 핵심 어휘입니다.",
@@ -5729,7 +5729,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mount",
-    "phonetic": "",
+    "phonetic": "/ˈmaʊnt/",
     "type": "수능 어휘",
     "meaning": "올라타라, 올라가라. 설치, 조립, 고정, 인레이 브래킷, 베이스, 바닥판; 산봉우리",
     "definition": "수능·고등 영어 독해를 위한 410번째 핵심 어휘입니다.",
@@ -5743,7 +5743,7 @@ export const vocabularyWords = [
   },
   {
     "word": "virus",
-    "phonetic": "",
+    "phonetic": "/ˈvaɪrəs/",
     "type": "수능 어휘",
     "meaning": "바이러스",
     "definition": "수능·고등 영어 독해를 위한 411번째 핵심 어휘입니다.",
@@ -5757,7 +5757,7 @@ export const vocabularyWords = [
   },
   {
     "word": "separate",
-    "phonetic": "",
+    "phonetic": "/ˈsɛpɚˌeɪt/",
     "type": "수능 어휘",
     "meaning": "별도 별도",
     "definition": "수능·고등 영어 독해를 위한 412번째 핵심 어휘입니다.",
@@ -5771,7 +5771,7 @@ export const vocabularyWords = [
   },
   {
     "word": "procedure",
-    "phonetic": "",
+    "phonetic": "/prəˈsidʒɚ/",
     "type": "수능 어휘",
     "meaning": "절차, 단계",
     "definition": "수능·고등 영어 독해를 위한 413번째 핵심 어휘입니다.",
@@ -5785,7 +5785,7 @@ export const vocabularyWords = [
   },
   {
     "word": "column",
-    "phonetic": "",
+    "phonetic": "/ˈkɑləm/",
     "type": "수능 어휘",
     "meaning": "칼럼; 실린더",
     "definition": "수능·고등 영어 독해를 위한 414번째 핵심 어휘입니다.",
@@ -5799,7 +5799,7 @@ export const vocabularyWords = [
   },
   {
     "word": "approximately",
-    "phonetic": "",
+    "phonetic": "/əˈprɑksəmətli/",
     "type": "수능 어휘",
     "meaning": "대략, 대충",
     "definition": "수능·고등 영어 독해를 위한 415번째 핵심 어휘입니다.",
@@ -5813,7 +5813,7 @@ export const vocabularyWords = [
   },
   {
     "word": "comparison",
-    "phonetic": "",
+    "phonetic": "/kəˈmpɛrəsən/",
     "type": "수능 어휘",
     "meaning": "비교, 대조; 은유, 비유",
     "definition": "수능·고등 영어 독해를 위한 416번째 핵심 어휘입니다.",
@@ -5827,7 +5827,7 @@ export const vocabularyWords = [
   },
   {
     "word": "moment",
-    "phonetic": "",
+    "phonetic": "/ˈmoʊmənt/",
     "type": "수능 어휘",
     "meaning": "순간",
     "definition": "수능·고등 영어 독해를 위한 417번째 핵심 어휘입니다.",
@@ -5841,7 +5841,7 @@ export const vocabularyWords = [
   },
   {
     "word": "plastic",
-    "phonetic": "",
+    "phonetic": "/ˈplæstɪk/",
     "type": "수능 어휘",
     "meaning": "플라스틱",
     "definition": "수능·고등 영어 독해를 위한 418번째 핵심 어휘입니다.",
@@ -5855,7 +5855,7 @@ export const vocabularyWords = [
   },
   {
     "word": "counter",
-    "phonetic": "",
+    "phonetic": "/ˈkaʊntɚ/",
     "type": "수능 어휘",
     "meaning": "카운터",
     "definition": "수능·고등 영어 독해를 위한 419번째 핵심 어휘입니다.",
@@ -5869,7 +5869,7 @@ export const vocabularyWords = [
   },
   {
     "word": "bridge",
-    "phonetic": "",
+    "phonetic": "/ˈbrɪdʒ/",
     "type": "수능 어휘",
     "meaning": "다리; 다리; 십자가",
     "definition": "수능·고등 영어 독해를 위한 420번째 핵심 어휘입니다.",
@@ -5883,7 +5883,7 @@ export const vocabularyWords = [
   },
   {
     "word": "native",
-    "phonetic": "",
+    "phonetic": "/ˈneɪtɪv/",
     "type": "수능 어휘",
     "meaning": "현지의; 타고난",
     "definition": "수능·고등 영어 독해를 위한 421번째 핵심 어휘입니다.",
@@ -5897,7 +5897,7 @@ export const vocabularyWords = [
   },
   {
     "word": "approval",
-    "phonetic": "",
+    "phonetic": "/əˈpruvəl/",
     "type": "수능 어휘",
     "meaning": "승인하다, 동의하다; 승인하다, 승인하다",
     "definition": "수능·고등 영어 독해를 위한 422번째 핵심 어휘입니다.",
@@ -5911,7 +5911,7 @@ export const vocabularyWords = [
   },
   {
     "word": "variable",
-    "phonetic": "",
+    "phonetic": "/ˈvɛriəbəl/",
     "type": "수능 어휘",
     "meaning": "변경 가능; 가변, 가변 변수",
     "definition": "수능·고등 영어 독해를 위한 423번째 핵심 어휘입니다.",
@@ -5925,7 +5925,7 @@ export const vocabularyWords = [
   },
   {
     "word": "expect",
-    "phonetic": "",
+    "phonetic": "/ɪˈkspɛkt/",
     "type": "수능 어휘",
     "meaning": "기대하다, 기대하다, 희망하다, 희망하다",
     "definition": "수능·고등 영어 독해를 위한 424번째 핵심 어휘입니다.",
@@ -5939,7 +5939,7 @@ export const vocabularyWords = [
   },
   {
     "word": "laser",
-    "phonetic": "",
+    "phonetic": "/ˈleɪzɚ/",
     "type": "수능 어휘",
     "meaning": "레이저; 레이저",
     "definition": "수능·고등 영어 독해를 위한 425번째 핵심 어휘입니다.",
@@ -5953,7 +5953,7 @@ export const vocabularyWords = [
   },
   {
     "word": "personnel",
-    "phonetic": "",
+    "phonetic": "/ˌpɝsəˈnɛl/",
     "type": "수능 어휘",
     "meaning": "모든 직원, 모든 직원; 인원",
     "definition": "수능·고등 영어 독해를 위한 426번째 핵심 어휘입니다.",
@@ -5967,7 +5967,7 @@ export const vocabularyWords = [
   },
   {
     "word": "advantage",
-    "phonetic": "",
+    "phonetic": "/æˈdvæntɪdʒ/",
     "type": "수능 어휘",
     "meaning": "장점, 강점; 유리한 조건; 혜택, 이익, 유익하다, 유익하다",
     "definition": "수능·고등 영어 독해를 위한 427번째 핵심 어휘입니다.",
@@ -5981,7 +5981,7 @@ export const vocabularyWords = [
   },
   {
     "word": "graphic",
-    "phonetic": "",
+    "phonetic": "/ˈɡræfɪk/",
     "type": "수능 어휘",
     "meaning": "생생하고 비유적입니다. 그림, 텍스트, 차트",
     "definition": "수능·고등 영어 독해를 위한 428번째 핵심 어휘입니다.",
@@ -5995,7 +5995,7 @@ export const vocabularyWords = [
   },
   {
     "word": "anonymous",
-    "phonetic": "",
+    "phonetic": "/əˈnɑnəməs/",
     "type": "수능 어휘",
     "meaning": "익명; 이름이 없음; 특징이 없는",
     "definition": "수능·고등 영어 독해를 위한 429번째 핵심 어휘입니다.",
@@ -6009,7 +6009,7 @@ export const vocabularyWords = [
   },
   {
     "word": "script",
-    "phonetic": "",
+    "phonetic": "/ˈskrɪpt/",
     "type": "수능 어휘",
     "meaning": "대본, 방송 대본; 쓰기 시스템; 손글씨, 손글씨",
     "definition": "수능·고등 영어 독해를 위한 430번째 핵심 어휘입니다.",
@@ -6023,7 +6023,7 @@ export const vocabularyWords = [
   },
   {
     "word": "depth",
-    "phonetic": "",
+    "phonetic": "/ˈdɛpθ/",
     "type": "수능 어휘",
     "meaning": "깊이",
     "definition": "수능·고등 영어 독해를 위한 431번째 핵심 어휘입니다.",
@@ -6037,7 +6037,7 @@ export const vocabularyWords = [
   },
   {
     "word": "eligible",
-    "phonetic": "",
+    "phonetic": "/ˈɛlədʒəbəl/",
     "type": "수능 어휘",
     "meaning": "자격이 있는, 자격을 갖춘; 적합한, 바람직한",
     "definition": "수능·고등 영어 독해를 위한 432번째 핵심 어휘입니다.",
@@ -6051,7 +6051,7 @@ export const vocabularyWords = [
   },
   {
     "word": "origin",
-    "phonetic": "",
+    "phonetic": "/ˈɔrədʒən/",
     "type": "수능 어휘",
     "meaning": "원산지, 원산지; 원산지, 원산지; 원산지",
     "definition": "수능·고등 영어 독해를 위한 433번째 핵심 어휘입니다.",
@@ -6065,7 +6065,7 @@ export const vocabularyWords = [
   },
   {
     "word": "billion",
-    "phonetic": "",
+    "phonetic": "/ˈbɪljən/",
     "type": "수능 어휘",
     "meaning": "조; 10억",
     "definition": "수능·고등 영어 독해를 위한 434번째 핵심 어휘입니다.",
@@ -6079,7 +6079,7 @@ export const vocabularyWords = [
   },
   {
     "word": "destination",
-    "phonetic": "",
+    "phonetic": "/ˌdɛstəˈneɪʃən/",
     "type": "수능 어휘",
     "meaning": "목적지, 목표",
     "definition": "수능·고등 영어 독해를 위한 435번째 핵심 어휘입니다.",
@@ -6093,7 +6093,7 @@ export const vocabularyWords = [
   },
   {
     "word": "intelligence",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈntɛlədʒəns/",
     "type": "수능 어휘",
     "meaning": "지능, 지능; 이해; 정보, 뉴스, 보고",
     "definition": "수능·고등 영어 독해를 위한 436번째 핵심 어휘입니다.",
@@ -6107,7 +6107,7 @@ export const vocabularyWords = [
   },
   {
     "word": "frank",
-    "phonetic": "",
+    "phonetic": "/ˈfræŋk/",
     "type": "수능 어휘",
     "meaning": "솔직한, 솔직한",
     "definition": "수능·고등 영어 독해를 위한 437번째 핵심 어휘입니다.",
@@ -6121,7 +6121,7 @@ export const vocabularyWords = [
   },
   {
     "word": "residential",
-    "phonetic": "",
+    "phonetic": "/ˌrɛzɪˈdɛnʃəl/",
     "type": "수능 어휘",
     "meaning": "주거용, 생활에 적합, 주택으로 사용",
     "definition": "수능·고등 영어 독해를 위한 438번째 핵심 어휘입니다.",
@@ -6135,7 +6135,7 @@ export const vocabularyWords = [
   },
   {
     "word": "protocol",
-    "phonetic": "",
+    "phonetic": "/ˈproʊtəˌkɑl/",
     "type": "수능 어휘",
     "meaning": "초안; 합의",
     "definition": "수능·고등 영어 독해를 위한 439번째 핵심 어휘입니다.",
@@ -6149,7 +6149,7 @@ export const vocabularyWords = [
   },
   {
     "word": "query",
-    "phonetic": "",
+    "phonetic": "/ˈkwiri/",
     "type": "수능 어휘",
     "meaning": "질문하다, 질문하다",
     "definition": "수능·고등 영어 독해를 위한 440번째 핵심 어휘입니다.",
@@ -6163,7 +6163,7 @@ export const vocabularyWords = [
   },
   {
     "word": "expression",
-    "phonetic": "",
+    "phonetic": "/ɪˈksprɛʃən/",
     "type": "수능 어휘",
     "meaning": "표현",
     "definition": "수능·고등 영어 독해를 위한 441번째 핵심 어휘입니다.",
@@ -6177,7 +6177,7 @@ export const vocabularyWords = [
   },
   {
     "word": "rural",
-    "phonetic": "",
+    "phonetic": "/ˈrʊrəl/",
     "type": "수능 어휘",
     "meaning": "시골",
     "definition": "수능·고등 영어 독해를 위한 442번째 핵심 어휘입니다.",
@@ -6191,7 +6191,7 @@ export const vocabularyWords = [
   },
   {
     "word": "height",
-    "phonetic": "",
+    "phonetic": "/ˈhaɪt/",
     "type": "수능 어휘",
     "meaning": "높다",
     "definition": "수능·고등 영어 독해를 위한 443번째 핵심 어휘입니다.",
@@ -6205,7 +6205,7 @@ export const vocabularyWords = [
   },
   {
     "word": "perform",
-    "phonetic": "",
+    "phonetic": "/pɚˈfɔrm/",
     "type": "수능 어휘",
     "meaning": "수행하다, 실행하다, 하다; 공연하다, 공연하다",
     "definition": "수능·고등 영어 독해를 위한 444번째 핵심 어휘입니다.",
@@ -6219,7 +6219,7 @@ export const vocabularyWords = [
   },
   {
     "word": "translation",
-    "phonetic": "",
+    "phonetic": "/træˈnzleɪʃən/",
     "type": "수능 어휘",
     "meaning": "팬",
     "definition": "수능·고등 영어 독해를 위한 445번째 핵심 어휘입니다.",
@@ -6233,7 +6233,7 @@ export const vocabularyWords = [
   },
   {
     "word": "frequency",
-    "phonetic": "",
+    "phonetic": "/ˈfrikwənsi/",
     "type": "수능 어휘",
     "meaning": "빈도",
     "definition": "수능·고등 영어 독해를 위한 446번째 핵심 어휘입니다.",
@@ -6247,7 +6247,7 @@ export const vocabularyWords = [
   },
   {
     "word": "physics",
-    "phonetic": "",
+    "phonetic": "/ˈfɪzɪks/",
     "type": "수능 어휘",
     "meaning": "물리학",
     "definition": "수능·고등 영어 독해를 위한 447번째 핵심 어휘입니다.",
@@ -6261,7 +6261,7 @@ export const vocabularyWords = [
   },
   {
     "word": "forecast",
-    "phonetic": "",
+    "phonetic": "/ˈfɔˌrkæst/",
     "type": "수능 어휘",
     "meaning": "예측, 예측 예측, 예측",
     "definition": "수능·고등 영어 독해를 위한 448번째 핵심 어휘입니다.",
@@ -6275,7 +6275,7 @@ export const vocabularyWords = [
   },
   {
     "word": "administrator",
-    "phonetic": "",
+    "phonetic": "/əˈdmɪnəˌstreɪtɚ/",
     "type": "수능 어휘",
     "meaning": "관리자; 행정관",
     "definition": "수능·고등 영어 독해를 위한 449번째 핵심 어휘입니다.",
@@ -6289,7 +6289,7 @@ export const vocabularyWords = [
   },
   {
     "word": "pharmacy",
-    "phonetic": "",
+    "phonetic": "/ˈfɑrməsi/",
     "type": "수능 어휘",
     "meaning": "약국; 약국; 조제, 제약 산업",
     "definition": "수능·고등 영어 독해를 위한 450번째 핵심 어휘입니다.",
@@ -6303,7 +6303,7 @@ export const vocabularyWords = [
   },
   {
     "word": "creation",
-    "phonetic": "",
+    "phonetic": "/kriˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "생산하다",
     "definition": "수능·고등 영어 독해를 위한 451번째 핵심 어휘입니다.",
@@ -6317,7 +6317,7 @@ export const vocabularyWords = [
   },
   {
     "word": "static",
-    "phonetic": "",
+    "phonetic": "/ˈstætɪk/",
     "type": "수능 어휘",
     "meaning": "정적",
     "definition": "수능·고등 영어 독해를 위한 452번째 핵심 어휘입니다.",
@@ -6331,7 +6331,7 @@ export const vocabularyWords = [
   },
   {
     "word": "crystal",
-    "phonetic": "",
+    "phonetic": "/ˈkrɪstəl/",
     "type": "수능 어휘",
     "meaning": "크리스탈",
     "definition": "수능·고등 영어 독해를 위한 453번째 핵심 어휘입니다.",
@@ -6345,7 +6345,7 @@ export const vocabularyWords = [
   },
   {
     "word": "academy",
-    "phonetic": "",
+    "phonetic": "/əˈkædəmi/",
     "type": "수능 어휘",
     "meaning": "전문대학, 연구기관, 학회, 학회",
     "definition": "수능·고등 영어 독해를 위한 454번째 핵심 어휘입니다.",
@@ -6359,7 +6359,7 @@ export const vocabularyWords = [
   },
   {
     "word": "dynamic",
-    "phonetic": "",
+    "phonetic": "/daɪˈnæmɪk/",
     "type": "수능 어휘",
     "meaning": "동적; 운동; 동적",
     "definition": "수능·고등 영어 독해를 위한 455번째 핵심 어휘입니다.",
@@ -6373,7 +6373,7 @@ export const vocabularyWords = [
   },
   {
     "word": "permanent",
-    "phonetic": "",
+    "phonetic": "/ˈpɝmənənt/",
     "type": "수능 어휘",
     "meaning": "영구적인, 지속되는",
     "definition": "수능·고등 영어 독해를 위한 456번째 핵심 어휘입니다.",
@@ -6387,7 +6387,7 @@ export const vocabularyWords = [
   },
   {
     "word": "portfolio",
-    "phonetic": "",
+    "phonetic": "/pɔˈrtfoʊliˌoʊ/",
     "type": "수능 어휘",
     "meaning": "폴더; 서류가방",
     "definition": "수능·고등 영어 독해를 위한 457번째 핵심 어휘입니다.",
@@ -6401,7 +6401,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exclusive",
-    "phonetic": "",
+    "phonetic": "/ɪˈksklusɪv/",
     "type": "수능 어휘",
     "meaning": "독점, 독점; 독점적인, 독점적인",
     "definition": "수능·고등 영어 독해를 위한 458번째 핵심 어휘입니다.",
@@ -6415,7 +6415,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vendor",
-    "phonetic": "",
+    "phonetic": "/ˈvɛndɚ/",
     "type": "수능 어휘",
     "meaning": "행상인; [법률] 판매자",
     "definition": "수능·고등 영어 독해를 위한 459번째 핵심 어휘입니다.",
@@ -6429,7 +6429,7 @@ export const vocabularyWords = [
   },
   {
     "word": "nutrition",
-    "phonetic": "",
+    "phonetic": "/nuˈtrɪʃən/",
     "type": "수능 어휘",
     "meaning": "영양",
     "definition": "수능·고등 영어 독해를 위한 460번째 핵심 어휘입니다.",
@@ -6443,7 +6443,7 @@ export const vocabularyWords = [
   },
   {
     "word": "secondary",
-    "phonetic": "",
+    "phonetic": "/ˈsɛkəˌndɛri/",
     "type": "수능 어휘",
     "meaning": "반성; 간접적인, 독창적이지 않은",
     "definition": "수능·고등 영어 독해를 위한 461번째 핵심 어휘입니다.",
@@ -6457,7 +6457,7 @@ export const vocabularyWords = [
   },
   {
     "word": "instant",
-    "phonetic": "",
+    "phonetic": "/ˈɪnstənt/",
     "type": "수능 어휘",
     "meaning": "즉시, 직접; 긴급한; 즉시, 편리한 즉시, 즉시",
     "definition": "수능·고등 영어 독해를 위한 462번째 핵심 어휘입니다.",
@@ -6471,7 +6471,7 @@ export const vocabularyWords = [
   },
   {
     "word": "utility",
-    "phonetic": "",
+    "phonetic": "/juˈtɪləti/",
     "type": "수능 어휘",
     "meaning": "유틸리티, 유용한",
     "definition": "수능·고등 영어 독해를 위한 463번째 핵심 어휘입니다.",
@@ -6485,7 +6485,7 @@ export const vocabularyWords = [
   },
   {
     "word": "combination",
-    "phonetic": "",
+    "phonetic": "/ˌkɑmbəˈneɪʃən/",
     "type": "수능 어휘",
     "meaning": "합성",
     "definition": "수능·고등 영어 독해를 위한 464번째 핵심 어휘입니다.",
@@ -6499,7 +6499,7 @@ export const vocabularyWords = [
   },
   {
     "word": "appeal",
-    "phonetic": "",
+    "phonetic": "/əˈpil/",
     "type": "수능 어휘",
     "meaning": "항소, 요구; 매력적이다; 항소, 항소; 항소, 요구; 매력",
     "definition": "수능·고등 영어 독해를 위한 465번째 핵심 어휘입니다.",
@@ -6513,7 +6513,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exposure",
-    "phonetic": "",
+    "phonetic": "/ɪˈkspoʊʒɚ/",
     "type": "수능 어휘",
     "meaning": "노출, 노출; 노출된",
     "definition": "수능·고등 영어 독해를 위한 466번째 핵심 어휘입니다.",
@@ -6527,7 +6527,7 @@ export const vocabularyWords = [
   },
   {
     "word": "refer",
-    "phonetic": "",
+    "phonetic": "/rəˈfɝ/",
     "type": "수능 어휘",
     "meaning": "제출하다, 이야기하다",
     "definition": "수능·고등 영어 독해를 위한 467번째 핵심 어휘입니다.",
@@ -6541,7 +6541,7 @@ export const vocabularyWords = [
   },
   {
     "word": "circuit",
-    "phonetic": "",
+    "phonetic": "/ˈsɝkət/",
     "type": "수능 어휘",
     "meaning": "회로",
     "definition": "수능·고등 영어 독해를 위한 468번째 핵심 어휘입니다.",
@@ -6555,7 +6555,7 @@ export const vocabularyWords = [
   },
   {
     "word": "promotion",
-    "phonetic": "",
+    "phonetic": "/prəˈmoʊʃən/",
     "type": "수능 어휘",
     "meaning": "판촉, 판촉; 홍보, 판촉",
     "definition": "수능·고등 영어 독해를 위한 469번째 핵심 어휘입니다.",
@@ -6569,7 +6569,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reasonable",
-    "phonetic": "",
+    "phonetic": "/ˈrizənəbəl/",
     "type": "수능 어휘",
     "meaning": "합리적이고 합리적입니다. 보통의; 합리적인",
     "definition": "수능·고등 영어 독해를 위한 470번째 핵심 어휘입니다.",
@@ -6583,7 +6583,7 @@ export const vocabularyWords = [
   },
   {
     "word": "prescription",
-    "phonetic": "",
+    "phonetic": "/prəˈskrɪpʃən/",
     "type": "수능 어휘",
     "meaning": "지침, 규정; 규정; 처방전, 처방전; 의사가 처방한 약",
     "definition": "수능·고등 영어 독해를 위한 471번째 핵심 어휘입니다.",
@@ -6597,7 +6597,7 @@ export const vocabularyWords = [
   },
   {
     "word": "bureau",
-    "phonetic": "",
+    "phonetic": "/ˈbjʊroʊ/",
     "type": "수능 어휘",
     "meaning": "국; 사무실",
     "definition": "수능·고등 영어 독해를 위한 472번째 핵심 어휘입니다.",
@@ -6611,7 +6611,7 @@ export const vocabularyWords = [
   },
   {
     "word": "evolution",
-    "phonetic": "",
+    "phonetic": "/ˌɛvəˈluʃən/",
     "type": "수능 어휘",
     "meaning": "진화하다, 진화하다, 진화하다",
     "definition": "수능·고등 영어 독해를 위한 473번째 핵심 어휘입니다.",
@@ -6625,7 +6625,7 @@ export const vocabularyWords = [
   },
   {
     "word": "generic",
-    "phonetic": "",
+    "phonetic": "/dʒəˈnɛrɪk/",
     "type": "수능 어휘",
     "meaning": "평범하다, 평범하다",
     "definition": "수능·고등 영어 독해를 위한 474번째 핵심 어휘입니다.",
@@ -6639,7 +6639,7 @@ export const vocabularyWords = [
   },
   {
     "word": "encyclopedia",
-    "phonetic": "",
+    "phonetic": "/ɪˌnsaɪkləˈpidiə/",
     "type": "수능 어휘",
     "meaning": "백과사전",
     "definition": "수능·고등 영어 독해를 위한 475번째 핵심 어휘입니다.",
@@ -6653,7 +6653,7 @@ export const vocabularyWords = [
   },
   {
     "word": "usage",
-    "phonetic": "",
+    "phonetic": "/ˈjusədʒ/",
     "type": "수능 어휘",
     "meaning": "용법, 관용적 용법",
     "definition": "수능·고등 영어 독해를 위한 476번째 핵심 어휘입니다.",
@@ -6667,7 +6667,7 @@ export const vocabularyWords = [
   },
   {
     "word": "census",
-    "phonetic": "",
+    "phonetic": "/ˈsɛnsəs/",
     "type": "수능 어휘",
     "meaning": "인구 조사",
     "definition": "수능·고등 영어 독해를 위한 477번째 핵심 어휘입니다.",
@@ -6681,7 +6681,7 @@ export const vocabularyWords = [
   },
   {
     "word": "competitive",
-    "phonetic": "",
+    "phonetic": "/kəˈmpɛtətɪv/",
     "type": "수능 어휘",
     "meaning": "경쟁력 있는",
     "definition": "수능·고등 영어 독해를 위한 478번째 핵심 어휘입니다.",
@@ -6695,7 +6695,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alcohol",
-    "phonetic": "",
+    "phonetic": "/ˈælkəˌhɑl/",
     "type": "수능 어휘",
     "meaning": "알코올",
     "definition": "수능·고등 영어 독해를 위한 479번째 핵심 어휘입니다.",
@@ -6709,7 +6709,7 @@ export const vocabularyWords = [
   },
   {
     "word": "immediate",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈmiˌdiət/",
     "type": "수능 어휘",
     "meaning": "직접; 즉각적인, 즉각적인",
     "definition": "수능·고등 영어 독해를 위한 480번째 핵심 어휘입니다.",
@@ -6723,7 +6723,7 @@ export const vocabularyWords = [
   },
   {
     "word": "affected",
-    "phonetic": "",
+    "phonetic": "/əˈfɛktɪd/",
     "type": "수능 어휘",
     "meaning": "가장하다, 가식하다",
     "definition": "수능·고등 영어 독해를 위한 481번째 핵심 어휘입니다.",
@@ -6737,7 +6737,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transmission",
-    "phonetic": "",
+    "phonetic": "/træˈnsmɪʃən/",
     "type": "수능 어휘",
     "meaning": "방송하다, 전송하다; 전송하다, 전달하다, 전파하다, 감염시키다",
     "definition": "수능·고등 영어 독해를 위한 482번째 핵심 어휘입니다.",
@@ -6751,7 +6751,7 @@ export const vocabularyWords = [
   },
   {
     "word": "organic",
-    "phonetic": "",
+    "phonetic": "/ɔˈrɡænɪk/",
     "type": "수능 어휘",
     "meaning": "유기농",
     "definition": "수능·고등 영어 독해를 위한 483번째 핵심 어휘입니다.",
@@ -6765,7 +6765,7 @@ export const vocabularyWords = [
   },
   {
     "word": "advisory",
-    "phonetic": "",
+    "phonetic": "/æˈdvaɪzɚi/",
     "type": "수능 어휘",
     "meaning": "컨설팅; 조언",
     "definition": "수능·고등 영어 독해를 위한 484번째 핵심 어휘입니다.",
@@ -6779,7 +6779,7 @@ export const vocabularyWords = [
   },
   {
     "word": "circle",
-    "phonetic": "",
+    "phonetic": "/ˈsɝkəl/",
     "type": "수능 어휘",
     "meaning": "둥근",
     "definition": "수능·고등 영어 독해를 위한 485번째 핵심 어휘입니다.",
@@ -6793,7 +6793,7 @@ export const vocabularyWords = [
   },
   {
     "word": "celebrity",
-    "phonetic": "",
+    "phonetic": "/səˈlɛbrɪti/",
     "type": "수능 어휘",
     "meaning": "평판",
     "definition": "수능·고등 영어 독해를 위한 486번째 핵심 어휘입니다.",
@@ -6807,7 +6807,7 @@ export const vocabularyWords = [
   },
   {
     "word": "scope",
-    "phonetic": "",
+    "phonetic": "/ˈskoʊp/",
     "type": "수능 어휘",
     "meaning": "범위; 기회, 범위",
     "definition": "수능·고등 영어 독해를 위한 487번째 핵심 어휘입니다.",
@@ -6821,7 +6821,7 @@ export const vocabularyWords = [
   },
   {
     "word": "biology",
-    "phonetic": "",
+    "phonetic": "/baɪˈɑlədʒi/",
     "type": "수능 어휘",
     "meaning": "생물학",
     "definition": "수능·고등 영어 독해를 위한 488번째 핵심 어휘입니다.",
@@ -6835,7 +6835,7 @@ export const vocabularyWords = [
   },
   {
     "word": "biography",
-    "phonetic": "",
+    "phonetic": "/baɪˈɑɡrəfi/",
     "type": "수능 어휘",
     "meaning": "약력",
     "definition": "수능·고등 영어 독해를 위한 489번째 핵심 어휘입니다.",
@@ -6849,7 +6849,7 @@ export const vocabularyWords = [
   },
   {
     "word": "leisure",
-    "phonetic": "",
+    "phonetic": "/ˈlɛʒɚ/",
     "type": "수능 어휘",
     "meaning": "여가, 여가; 여가, 편안함",
     "definition": "수능·고등 영어 독해를 위한 490번째 핵심 어휘입니다.",
@@ -6863,7 +6863,7 @@ export const vocabularyWords = [
   },
   {
     "word": "linear",
-    "phonetic": "",
+    "phonetic": "/ˈlɪniɚ/",
     "type": "수능 어휘",
     "meaning": "선형, 선형, 선형; 선형",
     "definition": "수능·고등 영어 독해를 위한 491번째 핵심 어휘입니다.",
@@ -6877,7 +6877,7 @@ export const vocabularyWords = [
   },
   {
     "word": "commitment",
-    "phonetic": "",
+    "phonetic": "/kəˈmɪtmənt/",
     "type": "수능 어휘",
     "meaning": "약속; 약속",
     "definition": "수능·고등 영어 독해를 위한 492번째 핵심 어휘입니다.",
@@ -6891,7 +6891,7 @@ export const vocabularyWords = [
   },
   {
     "word": "specialty",
-    "phonetic": "",
+    "phonetic": "/ˈspɛʃəlti/",
     "type": "수능 어휘",
     "meaning": "전문가",
     "definition": "수능·고등 영어 독해를 위한 493번째 핵심 어휘입니다.",
@@ -6905,7 +6905,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reform",
-    "phonetic": "",
+    "phonetic": "/rəˈfɔrm/",
     "type": "수능 어휘",
     "meaning": "개선하다; 개혁 개선; 개혁",
     "definition": "수능·고등 영어 독해를 위한 494번째 핵심 어휘입니다.",
@@ -6919,7 +6919,7 @@ export const vocabularyWords = [
   },
   {
     "word": "confidence",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnfədəns/",
     "type": "수능 어휘",
     "meaning": "신뢰; 자신감, 자신감; 비밀, 기밀",
     "definition": "수능·고등 영어 독해를 위한 495번째 핵심 어휘입니다.",
@@ -6933,7 +6933,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alliance",
-    "phonetic": "",
+    "phonetic": "/əˈlaɪəns/",
     "type": "수능 어휘",
     "meaning": "동맹, 동맹; 결혼",
     "definition": "수능·고등 영어 독해를 위한 496번째 핵심 어휘입니다.",
@@ -6947,7 +6947,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sugar",
-    "phonetic": "",
+    "phonetic": "/ˈʃʊɡɚ/",
     "type": "수능 어휘",
     "meaning": "설탕",
     "definition": "수능·고등 영어 독해를 위한 497번째 핵심 어휘입니다.",
@@ -6961,7 +6961,7 @@ export const vocabularyWords = [
   },
   {
     "word": "genre",
-    "phonetic": "",
+    "phonetic": "/ˈʒɑnrə/",
     "type": "수능 어휘",
     "meaning": "유형; 장르",
     "definition": "수능·고등 영어 독해를 위한 498번째 핵심 어휘입니다.",
@@ -6975,7 +6975,7 @@ export const vocabularyWords = [
   },
   {
     "word": "enhance",
-    "phonetic": "",
+    "phonetic": "/ɛˈnhæns/",
     "type": "수능 어휘",
     "meaning": "개선하다, 강화하다",
     "definition": "수능·고등 영어 독해를 위한 499번째 핵심 어휘입니다.",
@@ -6989,7 +6989,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exact",
-    "phonetic": "",
+    "phonetic": "/ɪˈɡzækt/",
     "type": "수능 어휘",
     "meaning": "강제로; 긴급하게 요구하다; 요구하다",
     "definition": "수능·고등 영어 독해를 위한 500번째 핵심 어휘입니다.",
@@ -7003,7 +7003,7 @@ export const vocabularyWords = [
   },
   {
     "word": "parameter",
-    "phonetic": "",
+    "phonetic": "/pɚˈæmətɚ/",
     "type": "수능 어휘",
     "meaning": "매개변수",
     "definition": "수능·고등 영어 독해를 위한 501번째 핵심 어휘입니다.",
@@ -7017,7 +7017,7 @@ export const vocabularyWords = [
   },
   {
     "word": "submission",
-    "phonetic": "",
+    "phonetic": "/səˈbmɪʃən/",
     "type": "수능 어휘",
     "meaning": "항복하다, 항복하다",
     "definition": "수능·고등 영어 독해를 위한 502번째 핵심 어휘입니다.",
@@ -7031,7 +7031,7 @@ export const vocabularyWords = [
   },
   {
     "word": "inspection",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnspɛkʃən/",
     "type": "수능 어휘",
     "meaning": "검사",
     "definition": "수능·고등 영어 독해를 위한 503번째 핵심 어휘입니다.",
@@ -7045,7 +7045,7 @@ export const vocabularyWords = [
   },
   {
     "word": "novel",
-    "phonetic": "",
+    "phonetic": "/ˈnɑvəl/",
     "type": "수능 어휘",
     "meaning": "소설, 소설",
     "definition": "수능·고등 영어 독해를 위한 504번째 핵심 어휘입니다.",
@@ -7059,7 +7059,7 @@ export const vocabularyWords = [
   },
   {
     "word": "episode",
-    "phonetic": "",
+    "phonetic": "/ˈɛpəˌsoʊd/",
     "type": "수능 어휘",
     "meaning": "줄거리, 단편, 에피소드",
     "definition": "수능·고등 영어 독해를 위한 505번째 핵심 어휘입니다.",
@@ -7073,7 +7073,7 @@ export const vocabularyWords = [
   },
   {
     "word": "modify",
-    "phonetic": "",
+    "phonetic": "/ˈmɑdəˌfaɪ/",
     "type": "수능 어휘",
     "meaning": "변경하다, 수정하다, 변환하다, 장식하다",
     "definition": "수능·고등 영어 독해를 위한 506번째 핵심 어휘입니다.",
@@ -7087,7 +7087,7 @@ export const vocabularyWords = [
   },
   {
     "word": "extensive",
-    "phonetic": "",
+    "phonetic": "/ɪˈkstɛnsɪv/",
     "type": "수능 어휘",
     "meaning": "광대하다, 광대하다",
     "definition": "수능·고등 영어 독해를 위한 507번째 핵심 어휘입니다.",
@@ -7101,7 +7101,7 @@ export const vocabularyWords = [
   },
   {
     "word": "candidate",
-    "phonetic": "",
+    "phonetic": "/ˈkændədeɪt/",
     "type": "수능 어휘",
     "meaning": "후보자; 후보자; 지원자",
     "definition": "수능·고등 영어 독해를 위한 508번째 핵심 어휘입니다.",
@@ -7115,7 +7115,7 @@ export const vocabularyWords = [
   },
   {
     "word": "perspective",
-    "phonetic": "",
+    "phonetic": "/pɚˈspɛktɪv/",
     "type": "수능 어휘",
     "meaning": "투시도, 투시도; 관점, 미래; 관점, 관점",
     "definition": "수능·고등 영어 독해를 위한 509번째 핵심 어휘입니다.",
@@ -7129,7 +7129,7 @@ export const vocabularyWords = [
   },
   {
     "word": "lodge",
-    "phonetic": "",
+    "phonetic": "/ˈlɑdʒ/",
     "type": "수능 어휘",
     "meaning": "숙박, 숙박, 숙박, 여관; 호텔; 임시 숙소; 숙소",
     "definition": "수능·고등 영어 독해를 위한 510번째 핵심 어휘입니다.",
@@ -7143,7 +7143,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mirror",
-    "phonetic": "",
+    "phonetic": "/ˈmɪrɚ/",
     "type": "수능 어휘",
     "meaning": "거울",
     "definition": "수능·고등 영어 독해를 위한 511번째 핵심 어휘입니다.",
@@ -7157,7 +7157,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sterling",
-    "phonetic": "",
+    "phonetic": "/ˈstɝlɪŋ/",
     "type": "수능 어휘",
     "meaning": "순수한",
     "definition": "수능·고등 영어 독해를 위한 512번째 핵심 어휘입니다.",
@@ -7171,7 +7171,7 @@ export const vocabularyWords = [
   },
   {
     "word": "kernel",
-    "phonetic": "",
+    "phonetic": "/ˈkɝnəl/",
     "type": "수능 어휘",
     "meaning": "코어, 커널",
     "definition": "수능·고등 영어 독해를 위한 513번째 핵심 어휘입니다.",
@@ -7185,7 +7185,7 @@ export const vocabularyWords = [
   },
   {
     "word": "catalogue",
-    "phonetic": "",
+    "phonetic": "/ˈkætəˌlɔɡ/",
     "type": "수능 어휘",
     "meaning": "디렉토리; 디렉토리",
     "definition": "수능·고등 영어 독해를 위한 514번째 핵심 어휘입니다.",
@@ -7199,7 +7199,7 @@ export const vocabularyWords = [
   },
   {
     "word": "terminal",
-    "phonetic": "",
+    "phonetic": "/ˈtɝmənəl/",
     "type": "수능 어휘",
     "meaning": "터미널; 터미널, 터미널; 컴퓨터 터미널",
     "definition": "수능·고등 영어 독해를 위한 515번째 핵심 어휘입니다.",
@@ -7213,7 +7213,7 @@ export const vocabularyWords = [
   },
   {
     "word": "liquid",
-    "phonetic": "",
+    "phonetic": "/ˈlɪkwəd/",
     "type": "수능 어휘",
     "meaning": "액체",
     "definition": "수능·고등 영어 독해를 위한 516번째 핵심 어휘입니다.",
@@ -7227,7 +7227,7 @@ export const vocabularyWords = [
   },
   {
     "word": "gourmet",
-    "phonetic": "",
+    "phonetic": "/ˈɡʊˌrmeɪ/",
     "type": "수능 어휘",
     "meaning": "미식가",
     "definition": "수능·고등 영어 독해를 위한 517번째 핵심 어휘입니다.",
@@ -7241,7 +7241,7 @@ export const vocabularyWords = [
   },
   {
     "word": "illegal",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈliɡəl/",
     "type": "수능 어휘",
     "meaning": "불법, 불법",
     "definition": "수능·고등 영어 독해를 위한 518번째 핵심 어휘입니다.",
@@ -7255,7 +7255,7 @@ export const vocabularyWords = [
   },
   {
     "word": "premier",
-    "phonetic": "",
+    "phonetic": "/prɛˈmɪr/",
     "type": "수능 어휘",
     "meaning": "첫 번째, 기본, 총리, 총리",
     "definition": "수능·고등 영어 독해를 위한 519번째 핵심 어휘입니다.",
@@ -7269,7 +7269,7 @@ export const vocabularyWords = [
   },
   {
     "word": "contest",
-    "phonetic": "",
+    "phonetic": "/ˈkɑntɛst/",
     "type": "수능 어휘",
     "meaning": "논쟁하다, 논쟁하다, 경쟁하다, 경쟁하다, 경쟁하다, 경쟁하다",
     "definition": "수능·고등 영어 독해를 위한 520번째 핵심 어휘입니다.",
@@ -7283,7 +7283,7 @@ export const vocabularyWords = [
   },
   {
     "word": "implement",
-    "phonetic": "",
+    "phonetic": "/ˈɪmpləmənt/",
     "type": "수능 어휘",
     "meaning": "구현하다, 도구를 구현하다, 구현하다",
     "definition": "수능·고등 영어 독해를 위한 521번째 핵심 어휘입니다.",
@@ -7297,7 +7297,7 @@ export const vocabularyWords = [
   },
   {
     "word": "typical",
-    "phonetic": "",
+    "phonetic": "/ˈtɪpəkəl/",
     "type": "수능 어휘",
     "meaning": "전형적, 상징적",
     "definition": "수능·고등 영어 독해를 위한 522번째 핵심 어휘입니다.",
@@ -7311,7 +7311,7 @@ export const vocabularyWords = [
   },
   {
     "word": "measurement",
-    "phonetic": "",
+    "phonetic": "/ˈmɛʒɚmənt/",
     "type": "수능 어휘",
     "meaning": "측정",
     "definition": "수능·고등 영어 독해를 위한 523번째 핵심 어휘입니다.",
@@ -7325,7 +7325,7 @@ export const vocabularyWords = [
   },
   {
     "word": "solar",
-    "phonetic": "",
+    "phonetic": "/ˈsoʊlɚ/",
     "type": "수능 어휘",
     "meaning": "태양광, 일광",
     "definition": "수능·고등 영어 독해를 위한 524번째 핵심 어휘입니다.",
@@ -7339,7 +7339,7 @@ export const vocabularyWords = [
   },
   {
     "word": "resistance",
-    "phonetic": "",
+    "phonetic": "/rɪˈzɪstəns/",
     "type": "수능 어휘",
     "meaning": "저항, 저항; 저항",
     "definition": "수능·고등 영어 독해를 위한 525번째 핵심 어휘입니다.",
@@ -7353,7 +7353,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transition",
-    "phonetic": "",
+    "phonetic": "/træˈnzɪʃən/",
     "type": "수능 어휘",
     "meaning": "변형, 전환",
     "definition": "수능·고등 영어 독해를 위한 526번째 핵심 어휘입니다.",
@@ -7367,7 +7367,7 @@ export const vocabularyWords = [
   },
   {
     "word": "instrument",
-    "phonetic": "",
+    "phonetic": "/ˈɪnstrəmənt/",
     "type": "수능 어휘",
     "meaning": "악기",
     "definition": "수능·고등 영어 독해를 위한 527번째 핵심 어휘입니다.",
@@ -7381,7 +7381,7 @@ export const vocabularyWords = [
   },
   {
     "word": "numerous",
-    "phonetic": "",
+    "phonetic": "/ˈnumɚəs/",
     "type": "수능 어휘",
     "meaning": "수많은, 많은, 많은 수",
     "definition": "수능·고등 영어 독해를 위한 528번째 핵심 어휘입니다.",
@@ -7395,7 +7395,7 @@ export const vocabularyWords = [
   },
   {
     "word": "superior",
-    "phonetic": "",
+    "phonetic": "/suˈpɪriɚ/",
     "type": "수능 어휘",
     "meaning": "훌륭하고 탁월합니다. 더... 더, 더... 더 좋아, 상사",
     "definition": "수능·고등 영어 독해를 위한 529번째 핵심 어휘입니다.",
@@ -7409,7 +7409,7 @@ export const vocabularyWords = [
   },
   {
     "word": "intellectual",
-    "phonetic": "",
+    "phonetic": "/ˌɪntəˈlɛktʃuəl/",
     "type": "수능 어휘",
     "meaning": "지적인, 대뇌적인, 지적인",
     "definition": "수능·고등 영어 독해를 위한 530번째 핵심 어휘입니다.",
@@ -7423,7 +7423,7 @@ export const vocabularyWords = [
   },
   {
     "word": "poverty",
-    "phonetic": "",
+    "phonetic": "/ˈpɑvɚti/",
     "type": "수능 어휘",
     "meaning": "빈곤; 부족, 빈곤, 부족함; 불임",
     "definition": "수능·고등 영어 독해를 위한 531번째 핵심 어휘입니다.",
@@ -7437,7 +7437,7 @@ export const vocabularyWords = [
   },
   {
     "word": "plasma",
-    "phonetic": "",
+    "phonetic": "/ˈplæzmə/",
     "type": "수능 어휘",
     "meaning": "플라즈마",
     "definition": "수능·고등 영어 독해를 위한 532번째 핵심 어휘입니다.",
@@ -7451,7 +7451,7 @@ export const vocabularyWords = [
   },
   {
     "word": "landscape",
-    "phonetic": "",
+    "phonetic": "/ˈlæˌndskeɪp/",
     "type": "수능 어휘",
     "meaning": "풍경",
     "definition": "수능·고등 영어 독해를 위한 533번째 핵심 어휘입니다.",
@@ -7465,7 +7465,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mechanical",
-    "phonetic": "",
+    "phonetic": "/məˈkænɪkəl/",
     "type": "수능 어휘",
     "meaning": "기계, 기계; 기계적, 지루함",
     "definition": "수능·고등 영어 독해를 위한 534번째 핵심 어휘입니다.",
@@ -7479,7 +7479,7 @@ export const vocabularyWords = [
   },
   {
     "word": "charter",
-    "phonetic": "",
+    "phonetic": "/ˈtʃɑrtɚ/",
     "type": "수능 어휘",
     "meaning": "임대, 임대, 특권, 면책; 계약, 증서; 헌장",
     "definition": "수능·고등 영어 독해를 위한 535번째 핵심 어휘입니다.",
@@ -7493,7 +7493,7 @@ export const vocabularyWords = [
   },
   {
     "word": "acquisition",
-    "phonetic": "",
+    "phonetic": "/ˌækwəˈzɪʃən/",
     "type": "수능 어휘",
     "meaning": "뭔가를 얻으세요",
     "definition": "수능·고등 영어 독해를 위한 536번째 핵심 어휘입니다.",
@@ -7507,7 +7507,7 @@ export const vocabularyWords = [
   },
   {
     "word": "diversity",
-    "phonetic": "",
+    "phonetic": "/dɪˈvɝsɪti/",
     "type": "수능 어휘",
     "meaning": "차이; 다양성",
     "definition": "수능·고등 영어 독해를 위한 537번째 핵심 어휘입니다.",
@@ -7521,7 +7521,7 @@ export const vocabularyWords = [
   },
   {
     "word": "seminar",
-    "phonetic": "",
+    "phonetic": "/ˈsɛməˌnɑr/",
     "type": "수능 어휘",
     "meaning": "세미나, 세미나",
     "definition": "수능·고등 영어 독해를 위한 538번째 핵심 어휘입니다.",
@@ -7535,7 +7535,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sensitive",
-    "phonetic": "",
+    "phonetic": "/ˈsɛnsətɪv/",
     "type": "수능 어휘",
     "meaning": "민감하다; 민감한",
     "definition": "수능·고등 영어 독해를 위한 539번째 핵심 어휘입니다.",
@@ -7549,7 +7549,7 @@ export const vocabularyWords = [
   },
   {
     "word": "accessible",
-    "phonetic": "",
+    "phonetic": "/æˈksɛsəbəl/",
     "type": "수능 어휘",
     "meaning": "접근 가능한, 달성 가능한, 민감한, 이해할 수 있는",
     "definition": "수능·고등 영어 독해를 위한 540번째 핵심 어휘입니다.",
@@ -7563,7 +7563,7 @@ export const vocabularyWords = [
   },
   {
     "word": "accessory",
-    "phonetic": "",
+    "phonetic": "/æˈksɛsɚi/",
     "type": "수능 어휘",
     "meaning": "액세서리, 액세서리",
     "definition": "수능·고등 영어 독해를 위한 541번째 핵심 어휘입니다.",
@@ -7577,7 +7577,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consultant",
-    "phonetic": "",
+    "phonetic": "/kəˈnsʌltənt/",
     "type": "수능 어휘",
     "meaning": "컨설턴트 의사, 컨설턴트 의사; 컨설턴트",
     "definition": "수능·고등 영어 독해를 위한 542번째 핵심 어휘입니다.",
@@ -7591,7 +7591,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ownership",
-    "phonetic": "",
+    "phonetic": "/ˈoʊnɚˌʃɪp/",
     "type": "수능 어휘",
     "meaning": "소유권, 소유권",
     "definition": "수능·고등 영어 독해를 위한 543번째 핵심 어휘입니다.",
@@ -7605,7 +7605,7 @@ export const vocabularyWords = [
   },
   {
     "word": "legislative",
-    "phonetic": "",
+    "phonetic": "/ˈlɛdʒəˌsleɪtɪv/",
     "type": "수능 어휘",
     "meaning": "입법상의, 입법상의",
     "definition": "수능·고등 영어 독해를 위한 544번째 핵심 어휘입니다.",
@@ -7619,7 +7619,7 @@ export const vocabularyWords = [
   },
   {
     "word": "antique",
-    "phonetic": "",
+    "phonetic": "/æˈntik/",
     "type": "수능 어휘",
     "meaning": "고대, 고대유물, 골동품, 골동품",
     "definition": "수능·고등 영어 독해를 위한 545번째 핵심 어휘입니다.",
@@ -7633,7 +7633,7 @@ export const vocabularyWords = [
   },
   {
     "word": "density",
-    "phonetic": "",
+    "phonetic": "/ˈdɛnsəti/",
     "type": "수능 어휘",
     "meaning": "밀도",
     "definition": "수능·고등 영어 독해를 위한 546번째 핵심 어휘입니다.",
@@ -7647,7 +7647,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sustainable",
-    "phonetic": "",
+    "phonetic": "/səˈsteɪnəbəl/",
     "type": "수능 어휘",
     "meaning": "지속 가능한",
     "definition": "수능·고등 영어 독해를 위한 547번째 핵심 어휘입니다.",
@@ -7661,7 +7661,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reaction",
-    "phonetic": "",
+    "phonetic": "/riˈækʃən/",
     "type": "수능 어휘",
     "meaning": "반응, 반응",
     "definition": "수능·고등 영어 독해를 위한 548번째 핵심 어휘입니다.",
@@ -7675,7 +7675,7 @@ export const vocabularyWords = [
   },
   {
     "word": "duration",
-    "phonetic": "",
+    "phonetic": "/ˈdʊˈreɪʃən/",
     "type": "수능 어휘",
     "meaning": "지속; 기간; 기간",
     "definition": "수능·고등 영어 독해를 위한 549번째 핵심 어휘입니다.",
@@ -7689,7 +7689,7 @@ export const vocabularyWords = [
   },
   {
     "word": "plane",
-    "phonetic": "",
+    "phonetic": "/ˈpleɪn/",
     "type": "수능 어휘",
     "meaning": "비행기",
     "definition": "수능·고등 영어 독해를 위한 550번째 핵심 어휘입니다.",
@@ -7703,7 +7703,7 @@ export const vocabularyWords = [
   },
   {
     "word": "innovative",
-    "phonetic": "",
+    "phonetic": "/ˈɪnəˌveɪtɪv/",
     "type": "수능 어휘",
     "meaning": "혁신적인",
     "definition": "수능·고등 영어 독해를 위한 551번째 핵심 어휘입니다.",
@@ -7717,7 +7717,7 @@ export const vocabularyWords = [
   },
   {
     "word": "collaboration",
-    "phonetic": "",
+    "phonetic": "/kəˌlæbɚˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "협업",
     "definition": "수능·고등 영어 독해를 위한 552번째 핵심 어휘입니다.",
@@ -7731,7 +7731,7 @@ export const vocabularyWords = [
   },
   {
     "word": "entity",
-    "phonetic": "",
+    "phonetic": "/ˈɛntəti/",
     "type": "수능 어휘",
     "meaning": "실체, 존재",
     "definition": "수능·고등 영어 독해를 위한 553번째 핵심 어휘입니다.",
@@ -7745,7 +7745,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ethics",
-    "phonetic": "",
+    "phonetic": "/ˈɛθɪks/",
     "type": "수능 어휘",
     "meaning": "윤리, 윤리",
     "definition": "수능·고등 영어 독해를 위한 554번째 핵심 어휘입니다.",
@@ -7759,7 +7759,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cache",
-    "phonetic": "",
+    "phonetic": "/ˈkæʃ/",
     "type": "수능 어휘",
     "meaning": "은신처; 숨겨진 음식이나 물품, 보관",
     "definition": "수능·고등 영어 독해를 위한 555번째 핵심 어휘입니다.",
@@ -7773,7 +7773,7 @@ export const vocabularyWords = [
   },
   {
     "word": "determination",
-    "phonetic": "",
+    "phonetic": "/dɪˌtɝməˈneɪʃən/",
     "type": "수능 어휘",
     "meaning": "결단력, 결단력",
     "definition": "수능·고등 영어 독해를 위한 556번째 핵심 어휘입니다.",
@@ -7787,7 +7787,7 @@ export const vocabularyWords = [
   },
   {
     "word": "excess",
-    "phonetic": "",
+    "phonetic": "/ˈɛˌksɛs/",
     "type": "수능 어휘",
     "meaning": "초과, 초과, 초과",
     "definition": "수능·고등 영어 독해를 위한 557번째 핵심 어휘입니다.",
@@ -7801,7 +7801,7 @@ export const vocabularyWords = [
   },
   {
     "word": "voltage",
-    "phonetic": "",
+    "phonetic": "/ˈvoʊltədʒ/",
     "type": "수능 어휘",
     "meaning": "전압",
     "definition": "수능·고등 영어 독해를 위한 558번째 핵심 어휘입니다.",
@@ -7815,7 +7815,7 @@ export const vocabularyWords = [
   },
   {
     "word": "angle",
-    "phonetic": "",
+    "phonetic": "/ˈæŋɡəl/",
     "type": "수능 어휘",
     "meaning": "각도",
     "definition": "수능·고등 영어 독해를 위한 559번째 핵심 어휘입니다.",
@@ -7829,7 +7829,7 @@ export const vocabularyWords = [
   },
   {
     "word": "liberty",
-    "phonetic": "",
+    "phonetic": "/ˈlɪbɚˌti/",
     "type": "수능 어휘",
     "meaning": "자유; 경솔함, 뻔뻔함, 무례함",
     "definition": "수능·고등 영어 독해를 위한 560번째 핵심 어휘입니다.",
@@ -7843,7 +7843,7 @@ export const vocabularyWords = [
   },
   {
     "word": "analyst",
-    "phonetic": "",
+    "phonetic": "/ˈænəlɪst/",
     "type": "수능 어휘",
     "meaning": "분석자; 분해자",
     "definition": "수능·고등 영어 독해를 위한 561번째 핵심 어휘입니다.",
@@ -7857,7 +7857,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hurricane",
-    "phonetic": "",
+    "phonetic": "/ˈhɝəˌkeɪn/",
     "type": "수능 어휘",
     "meaning": "허리케인",
     "definition": "수능·고등 영어 독해를 위한 562번째 핵심 어휘입니다.",
@@ -7871,7 +7871,7 @@ export const vocabularyWords = [
   },
   {
     "word": "producer",
-    "phonetic": "",
+    "phonetic": "/prəˈdusɚ/",
     "type": "수능 어휘",
     "meaning": "생산자",
     "definition": "수능·고등 영어 독해를 위한 563번째 핵심 어휘입니다.",
@@ -7885,7 +7885,7 @@ export const vocabularyWords = [
   },
   {
     "word": "diagnosis",
-    "phonetic": "",
+    "phonetic": "/ˌdaɪəˈɡnoʊsəs/",
     "type": "수능 어휘",
     "meaning": "진단",
     "definition": "수능·고등 영어 독해를 위한 564번째 핵심 어휘입니다.",
@@ -7899,12 +7899,12 @@ export const vocabularyWords = [
   },
   {
     "word": "gross",
-    "phonetic": "",
+    "phonetic": "/ˈɡroʊs/",
     "type": "수능 어휘",
-    "meaning": "전체적으로 털이 많네요",
+    "meaning": "총체적인; 총수입의; 심한",
     "definition": "수능·고등 영어 독해를 위한 565번째 핵심 어휘입니다.",
     "example": "The meaning of \"gross\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '전체적으로 털이 많네요'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '총체적인; 총수입의; 심한'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/gross",
@@ -7913,7 +7913,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ethnic",
-    "phonetic": "",
+    "phonetic": "/ˈɛθnɪk/",
     "type": "수능 어휘",
     "meaning": "민족, 인종",
     "definition": "수능·고등 영어 독해를 위한 566번째 핵심 어휘입니다.",
@@ -7927,7 +7927,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vertical",
-    "phonetic": "",
+    "phonetic": "/ˈvɝtɪkəl/",
     "type": "수능 어휘",
     "meaning": "수직, 수직선",
     "definition": "수능·고등 영어 독해를 위한 567번째 핵심 어휘입니다.",
@@ -7941,7 +7941,7 @@ export const vocabularyWords = [
   },
   {
     "word": "concentration",
-    "phonetic": "",
+    "phonetic": "/ˌkɑnsəˈntreɪʃən/",
     "type": "수능 어휘",
     "meaning": "집중",
     "definition": "수능·고등 영어 독해를 위한 568번째 핵심 어휘입니다.",
@@ -7955,7 +7955,7 @@ export const vocabularyWords = [
   },
   {
     "word": "donate",
-    "phonetic": "",
+    "phonetic": "/ˈdoʊˌneɪt/",
     "type": "수능 어휘",
     "meaning": "기부하다, 나눠주다",
     "definition": "수능·고등 영어 독해를 위한 569번째 핵심 어휘입니다.",
@@ -7969,7 +7969,7 @@ export const vocabularyWords = [
   },
   {
     "word": "genetic",
-    "phonetic": "",
+    "phonetic": "/dʒəˈnɛtɪk/",
     "type": "수능 어휘",
     "meaning": "유전적인, 유전적인",
     "definition": "수능·고등 영어 독해를 위한 570번째 핵심 어휘입니다.",
@@ -7983,7 +7983,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cabinet",
-    "phonetic": "",
+    "phonetic": "/ˈkæbənət/",
     "type": "수능 어휘",
     "meaning": "캐비닛 캐비닛; 캐비닛",
     "definition": "수능·고등 영어 독해를 위한 571번째 핵심 어휘입니다.",
@@ -7997,7 +7997,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tropical",
-    "phonetic": "",
+    "phonetic": "/ˈtrɑpɪkəl/",
     "type": "수능 어휘",
     "meaning": "열대의",
     "definition": "수능·고등 영어 독해를 위한 572번째 핵심 어휘입니다.",
@@ -8011,7 +8011,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vector",
-    "phonetic": "",
+    "phonetic": "/ˈvɛktɚ/",
     "type": "수능 어휘",
     "meaning": "벡터",
     "definition": "수능·고등 영어 독해를 위한 573번째 핵심 어휘입니다.",
@@ -8025,7 +8025,7 @@ export const vocabularyWords = [
   },
   {
     "word": "buffer",
-    "phonetic": "",
+    "phonetic": "/ˈbʌfɚ/",
     "type": "수능 어휘",
     "meaning": "버퍼",
     "definition": "수능·고등 영어 독해를 위한 574번째 핵심 어휘입니다.",
@@ -8039,7 +8039,7 @@ export const vocabularyWords = [
   },
   {
     "word": "commentary",
-    "phonetic": "",
+    "phonetic": "/ˈkɑməˌntɛri/",
     "type": "수능 어휘",
     "meaning": "주석, 해설",
     "definition": "수능·고등 영어 독해를 위한 575번째 핵심 어휘입니다.",
@@ -8053,7 +8053,7 @@ export const vocabularyWords = [
   },
   {
     "word": "attribute",
-    "phonetic": "",
+    "phonetic": "/ˈætrəˌbjut/",
     "type": "수능 어휘",
     "meaning": "속성; 기인하다; 품질; 특징",
     "definition": "수능·고등 영어 독해를 위한 576번째 핵심 어휘입니다.",
@@ -8067,7 +8067,7 @@ export const vocabularyWords = [
   },
   {
     "word": "desert",
-    "phonetic": "",
+    "phonetic": "/ˈdɛzɚt/",
     "type": "수능 어휘",
     "meaning": "버리다, 포기하다 사막",
     "definition": "수능·고등 영어 독해를 위한 577번째 핵심 어휘입니다.",
@@ -8081,7 +8081,7 @@ export const vocabularyWords = [
   },
   {
     "word": "navigate",
-    "phonetic": "",
+    "phonetic": "/ˈnævəˌɡeɪt/",
     "type": "수능 어휘",
     "meaning": "항해, 항해; 탐색; 운전하다; 십자가; <은유> 건너려고 노력하다",
     "definition": "수능·고등 영어 독해를 위한 578번째 핵심 어휘입니다.",
@@ -8095,7 +8095,7 @@ export const vocabularyWords = [
   },
   {
     "word": "burning",
-    "phonetic": "",
+    "phonetic": "/ˈbɝnɪŋ/",
     "type": "수능 어휘",
     "meaning": "화상",
     "definition": "수능·고등 영어 독해를 위한 579번째 핵심 어휘입니다.",
@@ -8109,7 +8109,7 @@ export const vocabularyWords = [
   },
   {
     "word": "substantial",
-    "phonetic": "",
+    "phonetic": "/səˈbstænʃəl/",
     "type": "수능 어휘",
     "meaning": "실질적인, 실제; 견고하고 강함; 부자, 상당한",
     "definition": "수능·고등 영어 독해를 위한 580번째 핵심 어휘입니다.",
@@ -8123,7 +8123,7 @@ export const vocabularyWords = [
   },
   {
     "word": "glance",
-    "phonetic": "",
+    "phonetic": "/ˈɡlæns/",
     "type": "수능 어휘",
     "meaning": "재빠른 시선, 흘끗, 윙크",
     "definition": "수능·고등 영어 독해를 위한 581번째 핵심 어휘입니다.",
@@ -8137,7 +8137,7 @@ export const vocabularyWords = [
   },
   {
     "word": "arcade",
-    "phonetic": "",
+    "phonetic": "/ɑˈrkeɪd/",
     "type": "수능 어휘",
     "meaning": "【건물】 아케이드, 아케이드가 있는 거리",
     "definition": "수능·고등 영어 독해를 위한 582번째 핵심 어휘입니다.",
@@ -8151,7 +8151,7 @@ export const vocabularyWords = [
   },
   {
     "word": "graph",
-    "phonetic": "",
+    "phonetic": "/ˈɡræf/",
     "type": "수능 어휘",
     "meaning": "차트, 그래프",
     "definition": "수능·고등 영어 독해를 위한 583번째 핵심 어휘입니다.",
@@ -8165,7 +8165,7 @@ export const vocabularyWords = [
   },
   {
     "word": "foster",
-    "phonetic": "",
+    "phonetic": "/ˈfɑstɚ/",
     "type": "수능 어휘",
     "meaning": "입양, 입양, 입양, 양육; 채택; 육성, 홍보",
     "definition": "수능·고등 영어 독해를 위한 584번째 핵심 어휘입니다.",
@@ -8179,7 +8179,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cartridge",
-    "phonetic": "",
+    "phonetic": "/ˈkɑrtrədʒ/",
     "type": "수능 어휘",
     "meaning": "카트리지",
     "definition": "수능·고등 영어 독해를 위한 585번째 핵심 어휘입니다.",
@@ -8193,7 +8193,7 @@ export const vocabularyWords = [
   },
   {
     "word": "spectrum",
-    "phonetic": "",
+    "phonetic": "/ˈspɛktrəm/",
     "type": "수능 어휘",
     "meaning": "스펙트럼, 스펙트럼, 스펙트럼; 범위; 진폭",
     "definition": "수능·고등 영어 독해를 위한 586번째 핵심 어휘입니다.",
@@ -8207,7 +8207,7 @@ export const vocabularyWords = [
   },
   {
     "word": "infection",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnfɛkʃən/",
     "type": "수능 어휘",
     "meaning": "감염",
     "definition": "수능·고등 영어 독해를 위한 587번째 핵심 어휘입니다.",
@@ -8221,7 +8221,7 @@ export const vocabularyWords = [
   },
   {
     "word": "subsequent",
-    "phonetic": "",
+    "phonetic": "/ˈsʌbsəkwənt/",
     "type": "수능 어휘",
     "meaning": "나중에, 나중에",
     "definition": "수능·고등 영어 독해를 위한 588번째 핵심 어휘입니다.",
@@ -8235,7 +8235,7 @@ export const vocabularyWords = [
   },
   {
     "word": "senator",
-    "phonetic": "",
+    "phonetic": "/ˈsɛnətɚ/",
     "type": "수능 어휘",
     "meaning": "상원의원",
     "definition": "수능·고등 영어 독해를 위한 589번째 핵심 어휘입니다.",
@@ -8249,7 +8249,7 @@ export const vocabularyWords = [
   },
   {
     "word": "digest",
-    "phonetic": "",
+    "phonetic": "/daɪˈdʒɛst/",
     "type": "수능 어휘",
     "meaning": "소화 초록, 초록",
     "definition": "수능·고등 영어 독해를 위한 590번째 핵심 어휘입니다.",
@@ -8263,7 +8263,7 @@ export const vocabularyWords = [
   },
   {
     "word": "radar",
-    "phonetic": "",
+    "phonetic": "/ˈreɪˌdɑr/",
     "type": "수능 어휘",
     "meaning": "레이더",
     "definition": "수능·고등 영어 독해를 위한 591번째 핵심 어휘입니다.",
@@ -8277,7 +8277,7 @@ export const vocabularyWords = [
   },
   {
     "word": "conservative",
-    "phonetic": "",
+    "phonetic": "/kəˈnsɝvətɪv/",
     "type": "수능 어휘",
     "meaning": "보수적; 신중한 보수적",
     "definition": "수능·고등 영어 독해를 위한 592번째 핵심 어휘입니다.",
@@ -8291,7 +8291,7 @@ export const vocabularyWords = [
   },
   {
     "word": "experiment",
-    "phonetic": "",
+    "phonetic": "/ɪˈkspɛrəmənt/",
     "type": "수능 어휘",
     "meaning": "실험",
     "definition": "수능·고등 영어 독해를 위한 593번째 핵심 어휘입니다.",
@@ -8305,7 +8305,7 @@ export const vocabularyWords = [
   },
   {
     "word": "absence",
-    "phonetic": "",
+    "phonetic": "/ˈæbsəns/",
     "type": "수능 어휘",
     "meaning": "부재, 부재; 결핍, 부재",
     "definition": "수능·고등 영어 독해를 위한 594번째 핵심 어휘입니다.",
@@ -8319,7 +8319,7 @@ export const vocabularyWords = [
   },
   {
     "word": "verify",
-    "phonetic": "",
+    "phonetic": "/ˈvɛrəˌfaɪ/",
     "type": "수능 어휘",
     "meaning": "확인하다, 증명하다",
     "definition": "수능·고등 영어 독해를 위한 595번째 핵심 어휘입니다.",
@@ -8333,7 +8333,7 @@ export const vocabularyWords = [
   },
   {
     "word": "violation",
-    "phonetic": "",
+    "phonetic": "/vaɪəˈleɪʃən/",
     "type": "수능 어휘",
     "meaning": "위반하다, 위반하다; 방해하다, 침해하다",
     "definition": "수능·고등 영어 독해를 위한 596번째 핵심 어휘입니다.",
@@ -8347,7 +8347,7 @@ export const vocabularyWords = [
   },
   {
     "word": "stability",
-    "phonetic": "",
+    "phonetic": "/stəˈbɪlɪti/",
     "type": "수능 어휘",
     "meaning": "안정적이다, 안정적이다",
     "definition": "수능·고등 영어 독해를 위한 597번째 핵심 어휘입니다.",
@@ -8361,7 +8361,7 @@ export const vocabularyWords = [
   },
   {
     "word": "metabolism",
-    "phonetic": "",
+    "phonetic": "/məˈtæbəˌlɪzəm/",
     "type": "수능 어휘",
     "meaning": "대사",
     "definition": "수능·고등 영어 독해를 위한 598번째 핵심 어휘입니다.",
@@ -8375,7 +8375,7 @@ export const vocabularyWords = [
   },
   {
     "word": "champion",
-    "phonetic": "",
+    "phonetic": "/ˈtʃæmpiən/",
     "type": "수능 어휘",
     "meaning": "챔피언; 전사",
     "definition": "수능·고등 영어 독해를 위한 599번째 핵심 어휘입니다.",
@@ -8389,7 +8389,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vacuum",
-    "phonetic": "",
+    "phonetic": "/ˈvækjum/",
     "type": "수능 어휘",
     "meaning": "진공",
     "definition": "수능·고등 영어 독해를 위한 600번째 핵심 어휘입니다.",
@@ -8403,7 +8403,7 @@ export const vocabularyWords = [
   },
   {
     "word": "lifetime",
-    "phonetic": "",
+    "phonetic": "/ˈlaɪˌftaɪm/",
     "type": "수능 어휘",
     "meaning": "인생, 인생",
     "definition": "수능·고등 영어 독해를 위한 601번째 핵심 어휘입니다.",
@@ -8417,7 +8417,7 @@ export const vocabularyWords = [
   },
   {
     "word": "thermal",
-    "phonetic": "",
+    "phonetic": "/ˈθɝməl/",
     "type": "수능 어휘",
     "meaning": "열로 인해 뜨겁다; 따뜻하게 유지",
     "definition": "수능·고등 영어 독해를 위한 602번째 핵심 어휘입니다.",
@@ -8431,7 +8431,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vital",
-    "phonetic": "",
+    "phonetic": "/ˈvaɪtəl/",
     "type": "수능 어휘",
     "meaning": "삶과 죽음, 중요한, 중요한; 필수적인, 필수적인",
     "definition": "수능·고등 영어 독해를 위한 603번째 핵심 어휘입니다.",
@@ -8445,7 +8445,7 @@ export const vocabularyWords = [
   },
   {
     "word": "segment",
-    "phonetic": "",
+    "phonetic": "/ˈsɛɡmənt/",
     "type": "수능 어휘",
     "meaning": "활; 부분",
     "definition": "수능·고등 영어 독해를 위한 604번째 핵심 어휘입니다.",
@@ -8459,7 +8459,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aluminum",
-    "phonetic": "",
+    "phonetic": "/əˈlumənəm/",
     "type": "수능 어휘",
     "meaning": "알루미늄",
     "definition": "수능·고등 영어 독해를 위한 605번째 핵심 어휘입니다.",
@@ -8473,7 +8473,7 @@ export const vocabularyWords = [
   },
   {
     "word": "insight",
-    "phonetic": "",
+    "phonetic": "/ˈɪˌnsaɪt/",
     "type": "수능 어휘",
     "meaning": "통찰력",
     "definition": "수능·고등 영어 독해를 위한 606번째 핵심 어휘입니다.",
@@ -8487,7 +8487,7 @@ export const vocabularyWords = [
   },
   {
     "word": "syndrome",
-    "phonetic": "",
+    "phonetic": "/ˈsɪˌndroʊm/",
     "type": "수능 어휘",
     "meaning": "증후군",
     "definition": "수능·고등 영어 독해를 위한 607번째 핵심 어휘입니다.",
@@ -8501,7 +8501,7 @@ export const vocabularyWords = [
   },
   {
     "word": "penalty",
-    "phonetic": "",
+    "phonetic": "/ˈpɛnəlti/",
     "type": "수능 어휘",
     "meaning": "처벌, 처벌",
     "definition": "수능·고등 영어 독해를 위한 608번째 핵심 어휘입니다.",
@@ -8515,7 +8515,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vista",
-    "phonetic": "",
+    "phonetic": "/ˈvɪstə/",
     "type": "수능 어휘",
     "meaning": "풍경, 풍경",
     "definition": "수능·고등 영어 독해를 위한 609번째 핵심 어휘입니다.",
@@ -8529,7 +8529,7 @@ export const vocabularyWords = [
   },
   {
     "word": "outcome",
-    "phonetic": "",
+    "phonetic": "/ˈaʊˌtkʌm/",
     "type": "수능 어휘",
     "meaning": "결과, 결과",
     "definition": "수능·고등 영어 독해를 위한 610번째 핵심 어휘입니다.",
@@ -8543,7 +8543,7 @@ export const vocabularyWords = [
   },
   {
     "word": "casual",
-    "phonetic": "",
+    "phonetic": "/ˈkæʒəwəl/",
     "type": "수능 어휘",
     "meaning": "우연한; 임시",
     "definition": "수능·고등 영어 독해를 위한 611번째 핵심 어휘입니다.",
@@ -8557,7 +8557,7 @@ export const vocabularyWords = [
   },
   {
     "word": "polish",
-    "phonetic": "",
+    "phonetic": "/ˈpɑlɪʃ/",
     "type": "수능 어휘",
     "meaning": "닦고, 닦고; 광택을 내다, 광택을 내다, 광택을 내다, 광택을 내다",
     "definition": "수능·고등 영어 독해를 위한 612번째 핵심 어휘입니다.",
@@ -8571,7 +8571,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cooling",
-    "phonetic": "",
+    "phonetic": "/ˈkulɪŋ/",
     "type": "수능 어휘",
     "meaning": "냉각",
     "definition": "수능·고등 영어 독해를 위한 613번째 핵심 어휘입니다.",
@@ -8585,7 +8585,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sensor",
-    "phonetic": "",
+    "phonetic": "/ˈsɛnsɚ/",
     "type": "수능 어휘",
     "meaning": "센서",
     "definition": "수능·고등 영어 독해를 위한 614번째 핵심 어휘입니다.",
@@ -8599,7 +8599,7 @@ export const vocabularyWords = [
   },
   {
     "word": "complaint",
-    "phonetic": "",
+    "phonetic": "/kəˈmpleɪnt/",
     "type": "수능 어휘",
     "meaning": "불평하다, 불평하다",
     "definition": "수능·고등 영어 독해를 위한 615번째 핵심 어휘입니다.",
@@ -8613,7 +8613,7 @@ export const vocabularyWords = [
   },
   {
     "word": "incident",
-    "phonetic": "",
+    "phonetic": "/ˈɪnsədənt/",
     "type": "수능 어휘",
     "meaning": "사건, 사건",
     "definition": "수능·고등 영어 독해를 위한 616번째 핵심 어휘입니다.",
@@ -8627,7 +8627,7 @@ export const vocabularyWords = [
   },
   {
     "word": "decrease",
-    "phonetic": "",
+    "phonetic": "/dɪˈkris/",
     "type": "수능 어휘",
     "meaning": "(만들다) 더 작게 하다, (하다) 줄이다, 줄이다; 감소량",
     "definition": "수능·고등 영어 독해를 위한 617번째 핵심 어휘입니다.",
@@ -8641,7 +8641,7 @@ export const vocabularyWords = [
   },
   {
     "word": "pension",
-    "phonetic": "",
+    "phonetic": "/ˈpɛnʃən/",
     "type": "수능 어휘",
     "meaning": "연금, 연금",
     "definition": "수능·고등 영어 독해를 위한 618번째 핵심 어휘입니다.",
@@ -8655,7 +8655,7 @@ export const vocabularyWords = [
   },
   {
     "word": "precision",
-    "phonetic": "",
+    "phonetic": "/priˈsɪʒən/",
     "type": "수능 어휘",
     "meaning": "정확하고 정확합니다. 정밀도",
     "definition": "수능·고등 영어 독해를 위한 619번째 핵심 어휘입니다.",
@@ -8669,7 +8669,7 @@ export const vocabularyWords = [
   },
   {
     "word": "minority",
-    "phonetic": "",
+    "phonetic": "/maɪˈnɔrəti/",
     "type": "수능 어휘",
     "meaning": "소수; 소수; 소수민족",
     "definition": "수능·고등 영어 독해를 위한 620번째 핵심 어휘입니다.",
@@ -8683,7 +8683,7 @@ export const vocabularyWords = [
   },
   {
     "word": "diverse",
-    "phonetic": "",
+    "phonetic": "/daɪˈvɝs/",
     "type": "수능 어휘",
     "meaning": "다양하다, 다양하다, 다양하다",
     "definition": "수능·고등 영어 독해를 위한 621번째 핵심 어휘입니다.",
@@ -8697,7 +8697,7 @@ export const vocabularyWords = [
   },
   {
     "word": "integrity",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈntɛɡrəti/",
     "type": "수능 어휘",
     "meaning": "성실성, 정직성; 완전성, 완전성",
     "definition": "수능·고등 영어 독해를 위한 622번째 핵심 어휘입니다.",
@@ -8711,7 +8711,7 @@ export const vocabularyWords = [
   },
   {
     "word": "legacy",
-    "phonetic": "",
+    "phonetic": "/ˈlɛɡəsi/",
     "type": "수능 어휘",
     "meaning": "물려받은 재산, 상속",
     "definition": "수능·고등 영어 독해를 위한 623번째 핵심 어휘입니다.",
@@ -8725,7 +8725,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vitamin",
-    "phonetic": "",
+    "phonetic": "/ˈvaɪtəmən/",
     "type": "수능 어휘",
     "meaning": "비타민",
     "definition": "수능·고등 영어 독해를 위한 624번째 핵심 어휘입니다.",
@@ -8739,7 +8739,7 @@ export const vocabularyWords = [
   },
   {
     "word": "intermediate",
-    "phonetic": "",
+    "phonetic": "/ˌɪntɚˈmidiɪt/",
     "type": "수능 어휘",
     "meaning": "중급, 중급; 중간 중간, 중간",
     "definition": "수능·고등 영어 독해를 위한 625번째 핵심 어휘입니다.",
@@ -8753,7 +8753,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exceed",
-    "phonetic": "",
+    "phonetic": "/ɪˈksid/",
     "type": "수능 어휘",
     "meaning": "초과하다, 능가하다",
     "definition": "수능·고등 영어 독해를 위한 626번째 핵심 어휘입니다.",
@@ -8767,7 +8767,7 @@ export const vocabularyWords = [
   },
   {
     "word": "generator",
-    "phonetic": "",
+    "phonetic": "/ˈdʒɛnɚˌeɪtɚ/",
     "type": "수능 어휘",
     "meaning": "발전기",
     "definition": "수능·고등 영어 독해를 위한 627번째 핵심 어휘입니다.",
@@ -8781,7 +8781,7 @@ export const vocabularyWords = [
   },
   {
     "word": "suspension",
-    "phonetic": "",
+    "phonetic": "/səˈspɛnʃən/",
     "type": "수능 어휘",
     "meaning": "교수형; 보류; 보류; 정지, 정지; 보류 중, 지연됨",
     "definition": "수능·고등 영어 독해를 위한 628번째 핵심 어휘입니다.",
@@ -8795,7 +8795,7 @@ export const vocabularyWords = [
   },
   {
     "word": "supplement",
-    "phonetic": "",
+    "phonetic": "/ˈsʌpləmənt/",
     "type": "수능 어휘",
     "meaning": "보각이란 두 각의 합이 180도라는 뜻이다.",
     "definition": "수능·고등 영어 독해를 위한 629번째 핵심 어휘입니다.",
@@ -8809,7 +8809,7 @@ export const vocabularyWords = [
   },
   {
     "word": "fluid",
-    "phonetic": "",
+    "phonetic": "/ˈfluəd/",
     "type": "수능 어휘",
     "meaning": "흐르다, 액체 액체, 액체",
     "definition": "수능·고등 영어 독해를 위한 630번째 핵심 어휘입니다.",
@@ -8823,7 +8823,7 @@ export const vocabularyWords = [
   },
   {
     "word": "equation",
-    "phonetic": "",
+    "phonetic": "/ɪˈkweɪʒən/",
     "type": "수능 어휘",
     "meaning": "방정식, 방정식",
     "definition": "수능·고등 영어 독해를 위한 631번째 핵심 어휘입니다.",
@@ -8837,7 +8837,7 @@ export const vocabularyWords = [
   },
   {
     "word": "probability",
-    "phonetic": "",
+    "phonetic": "/ˌprɑbəˈbɪləˌti/",
     "type": "수능 어휘",
     "meaning": "확률",
     "definition": "수능·고등 영어 독해를 위한 632번째 핵심 어휘입니다.",
@@ -8851,7 +8851,7 @@ export const vocabularyWords = [
   },
   {
     "word": "dimension",
-    "phonetic": "",
+    "phonetic": "/dɪˈmɛnʃən/",
     "type": "수능 어휘",
     "meaning": "크기, 규모; 차원; 정도, 요소",
     "definition": "수능·고등 영어 독해를 위한 633번째 핵심 어휘입니다.",
@@ -8865,7 +8865,7 @@ export const vocabularyWords = [
   },
   {
     "word": "quarterly",
-    "phonetic": "",
+    "phonetic": "/ˈkwɔrtɚli/",
     "type": "수능 어휘",
     "meaning": "분기별",
     "definition": "수능·고등 영어 독해를 위한 634번째 핵심 어휘입니다.",
@@ -8879,7 +8879,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alternate",
-    "phonetic": "",
+    "phonetic": "/ˈɔltɚnət/",
     "type": "수능 어휘",
     "meaning": "교대로, 교대로, 교대로, 교대로",
     "definition": "수능·고등 영어 독해를 위한 635번째 핵심 어휘입니다.",
@@ -8893,7 +8893,7 @@ export const vocabularyWords = [
   },
   {
     "word": "convenient",
-    "phonetic": "",
+    "phonetic": "/kəˈnvinjənt/",
     "type": "수능 어휘",
     "meaning": "편리하다; 편리하다",
     "definition": "수능·고등 영어 독해를 위한 636번째 핵심 어휘입니다.",
@@ -8907,7 +8907,7 @@ export const vocabularyWords = [
   },
   {
     "word": "literary",
-    "phonetic": "",
+    "phonetic": "/ˈlɪtɚˌɛri/",
     "type": "수능 어휘",
     "meaning": "문학, 문학; 문학에 능숙하고 글쓰기에 종사",
     "definition": "수능·고등 영어 독해를 위한 637번째 핵심 어휘입니다.",
@@ -8921,7 +8921,7 @@ export const vocabularyWords = [
   },
   {
     "word": "witness",
-    "phonetic": "",
+    "phonetic": "/ˈwɪtnəs/",
     "type": "수능 어휘",
     "meaning": "증인, 증인; 증언하다, 목격자를 증명하다, 증인; 증거",
     "definition": "수능·고등 영어 독해를 위한 638번째 핵심 어휘입니다.",
@@ -8935,12 +8935,12 @@ export const vocabularyWords = [
   },
   {
     "word": "acquired",
-    "phonetic": "",
+    "phonetic": "/əˈkwaɪɚd/",
     "type": "수능 어휘",
-    "meaning": "이미 획득했습니다. 내일 모레 자신의 노력으로 얻은 것",
+    "meaning": "획득한; 습득한",
     "definition": "수능·고등 영어 독해를 위한 639번째 핵심 어휘입니다.",
     "example": "The meaning of \"acquired\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '이미 획득했습니다. 내일 모레 자신의 노력으로 얻은 것'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '획득한; 습득한'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/acquired",
@@ -8949,7 +8949,7 @@ export const vocabularyWords = [
   },
   {
     "word": "assess",
-    "phonetic": "",
+    "phonetic": "/əˈsɛs/",
     "type": "수능 어휘",
     "meaning": "평가하다; 평가하다",
     "definition": "수능·고등 영어 독해를 위한 640번째 핵심 어휘입니다.",
@@ -8963,7 +8963,7 @@ export const vocabularyWords = [
   },
   {
     "word": "entrance",
-    "phonetic": "",
+    "phonetic": "/ˈɛntrəns/",
     "type": "수능 어휘",
     "meaning": "들어가다",
     "definition": "수능·고등 영어 독해를 위한 641번째 핵심 어휘입니다.",
@@ -8977,7 +8977,7 @@ export const vocabularyWords = [
   },
   {
     "word": "triple",
-    "phonetic": "",
+    "phonetic": "/ˈtrɪpəl/",
     "type": "수능 어휘",
     "meaning": "삼자, 삼자; 삼자, 삼자에서 삼자까지",
     "definition": "수능·고등 영어 독해를 위한 642번째 핵심 어휘입니다.",
@@ -8991,7 +8991,7 @@ export const vocabularyWords = [
   },
   {
     "word": "disorder",
-    "phonetic": "",
+    "phonetic": "/dɪˈsɔrdɚ/",
     "type": "수능 어휘",
     "meaning": "무질서",
     "definition": "수능·고등 영어 독해를 위한 643번째 핵심 어휘입니다.",
@@ -9005,7 +9005,7 @@ export const vocabularyWords = [
   },
   {
     "word": "conventional",
-    "phonetic": "",
+    "phonetic": "/kəˈnvɛnʃənəl/",
     "type": "수능 어휘",
     "meaning": "관례적인, 관습적인; 관습적인, 전통적인",
     "definition": "수능·고등 영어 독해를 위한 644번째 핵심 어휘입니다.",
@@ -9019,7 +9019,7 @@ export const vocabularyWords = [
   },
   {
     "word": "median",
-    "phonetic": "",
+    "phonetic": "/ˈmidiən/",
     "type": "수능 어휘",
     "meaning": "중간점; 정중선",
     "definition": "수능·고등 영어 독해를 위한 645번째 핵심 어휘입니다.",
@@ -9033,7 +9033,7 @@ export const vocabularyWords = [
   },
   {
     "word": "scanner",
-    "phonetic": "",
+    "phonetic": "/ˈskænɚ/",
     "type": "수능 어휘",
     "meaning": "스캐너",
     "definition": "수능·고등 영어 독해를 위한 646번째 핵심 어휘입니다.",
@@ -9047,7 +9047,7 @@ export const vocabularyWords = [
   },
   {
     "word": "adjustment",
-    "phonetic": "",
+    "phonetic": "/əˈdʒʌstmənt/",
     "type": "수능 어휘",
     "meaning": "조정하다",
     "definition": "수능·고등 영어 독해를 위한 647번째 핵심 어휘입니다.",
@@ -9061,7 +9061,7 @@ export const vocabularyWords = [
   },
   {
     "word": "integer",
-    "phonetic": "",
+    "phonetic": "/ˈɪntədʒɚ/",
     "type": "수능 어휘",
     "meaning": "정수",
     "definition": "수능·고등 영어 독해를 위한 648번째 핵심 어휘입니다.",
@@ -9075,7 +9075,7 @@ export const vocabularyWords = [
   },
   {
     "word": "collective",
-    "phonetic": "",
+    "phonetic": "/kəˈlɛktɪv/",
     "type": "수능 어휘",
     "meaning": "집단 집단",
     "definition": "수능·고등 영어 독해를 위한 649번째 핵심 어휘입니다.",
@@ -9089,7 +9089,7 @@ export const vocabularyWords = [
   },
   {
     "word": "coalition",
-    "phonetic": "",
+    "phonetic": "/ˌkoʊəˈlɪʃən/",
     "type": "수능 어휘",
     "meaning": "병합하다, 합류하다; 단결하다",
     "definition": "수능·고등 영어 독해를 위한 650번째 핵심 어휘입니다.",
@@ -9103,7 +9103,7 @@ export const vocabularyWords = [
   },
   {
     "word": "observation",
-    "phonetic": "",
+    "phonetic": "/ˌɑbzɚˈveɪʃən/",
     "type": "수능 어휘",
     "meaning": "관찰하다",
     "definition": "수능·고등 영어 독해를 위한 651번째 핵심 어휘입니다.",
@@ -9117,7 +9117,7 @@ export const vocabularyWords = [
   },
   {
     "word": "restoration",
-    "phonetic": "",
+    "phonetic": "/ˌrɛstɚˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "수리; 복원",
     "definition": "수능·고등 영어 독해를 위한 652번째 핵심 어휘입니다.",
@@ -9131,7 +9131,7 @@ export const vocabularyWords = [
   },
   {
     "word": "defendant",
-    "phonetic": "",
+    "phonetic": "/dɪˈfɛndənt/",
     "type": "수능 어휘",
     "meaning": "피고인",
     "definition": "수능·고등 영어 독해를 위한 653번째 핵심 어휘입니다.",
@@ -9145,7 +9145,7 @@ export const vocabularyWords = [
   },
   {
     "word": "liable",
-    "phonetic": "",
+    "phonetic": "/ˈlaɪəbəl/",
     "type": "수능 어휘",
     "meaning": "책임 있고 의무적입니다. 경향이 있는, 경향이 있는...",
     "definition": "수능·고등 영어 독해를 위한 654번째 핵심 어휘입니다.",
@@ -9159,7 +9159,7 @@ export const vocabularyWords = [
   },
   {
     "word": "antenna",
-    "phonetic": "",
+    "phonetic": "/æˈntɛnə/",
     "type": "수능 어휘",
     "meaning": "안테나",
     "definition": "수능·고등 영어 독해를 위한 655번째 핵심 어휘입니다.",
@@ -9173,7 +9173,7 @@ export const vocabularyWords = [
   },
   {
     "word": "belief",
-    "phonetic": "",
+    "phonetic": "/bɪˈlif/",
     "type": "수능 어휘",
     "meaning": "믿음, 신조; 믿다, 믿음",
     "definition": "수능·고등 영어 독해를 위한 656번째 핵심 어휘입니다.",
@@ -9187,7 +9187,7 @@ export const vocabularyWords = [
   },
   {
     "word": "diameter",
-    "phonetic": "",
+    "phonetic": "/daɪˈæmətɚ/",
     "type": "수능 어휘",
     "meaning": "직경",
     "definition": "수능·고등 영어 독해를 위한 657번째 핵심 어휘입니다.",
@@ -9201,7 +9201,7 @@ export const vocabularyWords = [
   },
   {
     "word": "herald",
-    "phonetic": "",
+    "phonetic": "/ˈhɛrəld/",
     "type": "수능 어휘",
     "meaning": "전달하다, 발표하다; ...의 도래를 알리기 위해; 메신저, 메신저; 개척자, 선봉대",
     "definition": "수능·고등 영어 독해를 위한 658번째 핵심 어휘입니다.",
@@ -9215,12 +9215,12 @@ export const vocabularyWords = [
   },
   {
     "word": "literacy",
-    "phonetic": "",
+    "phonetic": "/ˈlɪtɚəsi/",
     "type": "수능 어휘",
-    "meaning": "글을 읽고 교육을 받았습니다. 읽기 및 쓰기 능력",
+    "meaning": "읽고 쓰는 능력; 문해력",
     "definition": "수능·고등 영어 독해를 위한 659번째 핵심 어휘입니다.",
     "example": "The meaning of \"literacy\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '글을 읽고 교육을 받았습니다. 읽기 및 쓰기 능력'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '읽고 쓰는 능력; 문해력'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/literacy",
@@ -9229,7 +9229,7 @@ export const vocabularyWords = [
   },
   {
     "word": "attraction",
-    "phonetic": "",
+    "phonetic": "/əˈtrækʃən/",
     "type": "수능 어휘",
     "meaning": "중력",
     "definition": "수능·고등 영어 독해를 위한 660번째 핵심 어휘입니다.",
@@ -9243,7 +9243,7 @@ export const vocabularyWords = [
   },
   {
     "word": "moderate",
-    "phonetic": "",
+    "phonetic": "/ˈmɑdɚət/",
     "type": "수능 어휘",
     "meaning": "보통, 보통, 보통, 보통",
     "definition": "수능·고등 영어 독해를 위한 661번째 핵심 어휘입니다.",
@@ -9257,7 +9257,7 @@ export const vocabularyWords = [
   },
   {
     "word": "assurance",
-    "phonetic": "",
+    "phonetic": "/əˈʃʊrəns/",
     "type": "수능 어휘",
     "meaning": "설득하다, 주장하다; 보증하다, 보증하다",
     "definition": "수능·고등 영어 독해를 위한 662번째 핵심 어휘입니다.",
@@ -9271,7 +9271,7 @@ export const vocabularyWords = [
   },
   {
     "word": "verification",
-    "phonetic": "",
+    "phonetic": "/ˌvɛrəfəˈkeɪʃən/",
     "type": "수능 어휘",
     "meaning": "확인하다, 검증하다",
     "definition": "수능·고등 영어 독해를 위한 663번째 핵심 어휘입니다.",
@@ -9285,7 +9285,7 @@ export const vocabularyWords = [
   },
   {
     "word": "occasion",
-    "phonetic": "",
+    "phonetic": "/əˈkeɪʒən/",
     "type": "수능 어휘",
     "meaning": "행사, 계절, 순간; 기회, 기회",
     "definition": "수능·고등 영어 독해를 위한 664번째 핵심 어휘입니다.",
@@ -9299,7 +9299,7 @@ export const vocabularyWords = [
   },
   {
     "word": "orchestra",
-    "phonetic": "",
+    "phonetic": "/ˈɔrkəstrə/",
     "type": "수능 어휘",
     "meaning": "오케스트라",
     "definition": "수능·고등 영어 독해를 위한 665번째 핵심 어휘입니다.",
@@ -9313,7 +9313,7 @@ export const vocabularyWords = [
   },
   {
     "word": "discipline",
-    "phonetic": "",
+    "phonetic": "/ˈdɪsəplən/",
     "type": "수능 어휘",
     "meaning": "훈련; 규율을 행사하다; 주제; 규정; 훈련",
     "definition": "수능·고등 영어 독해를 위한 666번째 핵심 어휘입니다.",
@@ -9327,7 +9327,7 @@ export const vocabularyWords = [
   },
   {
     "word": "quantum",
-    "phonetic": "",
+    "phonetic": "/ˈkwɑntəm/",
     "type": "수능 어휘",
     "meaning": "양자",
     "definition": "수능·고등 영어 독해를 위한 667번째 핵심 어휘입니다.",
@@ -9341,7 +9341,7 @@ export const vocabularyWords = [
   },
   {
     "word": "oxygen",
-    "phonetic": "",
+    "phonetic": "/ˈɑksədʒən/",
     "type": "수능 어휘",
     "meaning": "산소",
     "definition": "수능·고등 영어 독해를 위한 668번째 핵심 어휘입니다.",
@@ -9355,7 +9355,7 @@ export const vocabularyWords = [
   },
   {
     "word": "bibliography",
-    "phonetic": "",
+    "phonetic": "/ˌbɪbliˈɑɡrəfi/",
     "type": "수능 어휘",
     "meaning": "참고문헌; 참고문헌",
     "definition": "수능·고등 영어 독해를 위한 669번째 핵심 어휘입니다.",
@@ -9369,7 +9369,7 @@ export const vocabularyWords = [
   },
   {
     "word": "pointer",
-    "phonetic": "",
+    "phonetic": "/ˈpɔɪntɚ/",
     "type": "수능 어휘",
     "meaning": "포인터",
     "definition": "수능·고등 영어 독해를 위한 670번째 핵심 어휘입니다.",
@@ -9383,7 +9383,7 @@ export const vocabularyWords = [
   },
   {
     "word": "personality",
-    "phonetic": "",
+    "phonetic": "/ˌpɝsəˈnælɪti/",
     "type": "수능 어휘",
     "meaning": "개성, 개성; 성격",
     "definition": "수능·고등 영어 독해를 위한 671번째 핵심 어휘입니다.",
@@ -9397,7 +9397,7 @@ export const vocabularyWords = [
   },
   {
     "word": "facilitate",
-    "phonetic": "",
+    "phonetic": "/fəˈsɪləˌteɪt/",
     "type": "수능 어휘",
     "meaning": "쉽게 해라, 편리하게 해라",
     "definition": "수능·고등 영어 독해를 위한 672번째 핵심 어휘입니다.",
@@ -9411,7 +9411,7 @@ export const vocabularyWords = [
   },
   {
     "word": "adverse",
-    "phonetic": "",
+    "phonetic": "/æˈdvɝs/",
     "type": "수능 어휘",
     "meaning": "불리한, 해로운",
     "definition": "수능·고등 영어 독해를 위한 673번째 핵심 어휘입니다.",
@@ -9425,7 +9425,7 @@ export const vocabularyWords = [
   },
   {
     "word": "excerpt",
-    "phonetic": "",
+    "phonetic": "/ˈɛksɚpt/",
     "type": "수능 어휘",
     "meaning": "발췌하다, 발췌하다, 발췌하다",
     "definition": "수능·고등 영어 독해를 위한 674번째 핵심 어휘입니다.",
@@ -9439,7 +9439,7 @@ export const vocabularyWords = [
   },
   {
     "word": "discharge",
-    "phonetic": "",
+    "phonetic": "/dɪˈstʃɑrdʒ/",
     "type": "수능 어휘",
     "meaning": "[누군가가] 떠나도록 공식적으로 허락하다 [특히 환자를 퇴원시키거나 군인을 퇴원시키기 위해]; [환자]에게 퇴원을 통보하다 [군인]을 군대에서 추방하다. 떠나는 것이 허용됩니다. 퇴원하다; 퇴원하다.",
     "definition": "수능·고등 영어 독해를 위한 675번째 핵심 어휘입니다.",
@@ -9453,7 +9453,7 @@ export const vocabularyWords = [
   },
   {
     "word": "acute",
-    "phonetic": "",
+    "phonetic": "/əˈkjut/",
     "type": "수능 어휘",
     "meaning": "예리하고 날카로운; 급성",
     "definition": "수능·고등 영어 독해를 위한 676번째 핵심 어휘입니다.",
@@ -9467,7 +9467,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hazardous",
-    "phonetic": "",
+    "phonetic": "/ˈhæzɚdəs/",
     "type": "수능 어휘",
     "meaning": "위험하고 모험적입니다. 운이 좋은",
     "definition": "수능·고등 영어 독해를 위한 677번째 핵심 어휘입니다.",
@@ -9481,7 +9481,7 @@ export const vocabularyWords = [
   },
   {
     "word": "resistant",
-    "phonetic": "",
+    "phonetic": "/rɪˈzɪstənt/",
     "type": "수능 어휘",
     "meaning": "저항하는, 저항하는",
     "definition": "수능·고등 영어 독해를 위한 678번째 핵심 어휘입니다.",
@@ -9495,7 +9495,7 @@ export const vocabularyWords = [
   },
   {
     "word": "curve",
-    "phonetic": "",
+    "phonetic": "/ˈkɝv/",
     "type": "수능 어휘",
     "meaning": "곡선",
     "definition": "수능·고등 영어 독해를 위한 679번째 핵심 어휘입니다.",
@@ -9509,7 +9509,7 @@ export const vocabularyWords = [
   },
   {
     "word": "variation",
-    "phonetic": "",
+    "phonetic": "/ˌvɛriˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "변화, 변형; 변이, 돌연변이",
     "definition": "수능·고등 영어 독해를 위한 680번째 핵심 어휘입니다.",
@@ -9523,7 +9523,7 @@ export const vocabularyWords = [
   },
   {
     "word": "projection",
-    "phonetic": "",
+    "phonetic": "/prəˈdʒɛkʃən/",
     "type": "수능 어휘",
     "meaning": "시작하다; 계획; 프로젝트",
     "definition": "수능·고등 영어 독해를 위한 681번째 핵심 어휘입니다.",
@@ -9537,7 +9537,7 @@ export const vocabularyWords = [
   },
   {
     "word": "logical",
-    "phonetic": "",
+    "phonetic": "/ˈlɑdʒɪkəl/",
     "type": "수능 어휘",
     "meaning": "논리적; 논리적",
     "definition": "수능·고등 영어 독해를 위한 682번째 핵심 어휘입니다.",
@@ -9551,7 +9551,7 @@ export const vocabularyWords = [
   },
   {
     "word": "diagnostic",
-    "phonetic": "",
+    "phonetic": "/ˌdaɪəˈɡnɑstɪk/",
     "type": "수능 어휘",
     "meaning": "진단",
     "definition": "수능·고등 영어 독해를 위한 683번째 핵심 어휘입니다.",
@@ -9565,7 +9565,7 @@ export const vocabularyWords = [
   },
   {
     "word": "juvenile",
-    "phonetic": "",
+    "phonetic": "/ˈdʒuvənəl/",
     "type": "수능 어휘",
     "meaning": "청소년기 특유의 청소년기; 유치한, 미성년자, 청소년",
     "definition": "수능·고등 영어 독해를 위한 684번째 핵심 어휘입니다.",
@@ -9579,7 +9579,7 @@ export const vocabularyWords = [
   },
   {
     "word": "acoustic",
-    "phonetic": "",
+    "phonetic": "/əˈkustɪk/",
     "type": "수능 어휘",
     "meaning": "소리, 음향에 관련된",
     "definition": "수능·고등 영어 독해를 위한 685번째 핵심 어휘입니다.",
@@ -9593,7 +9593,7 @@ export const vocabularyWords = [
   },
   {
     "word": "indicator",
-    "phonetic": "",
+    "phonetic": "/ˈɪndəˌkeɪtɚ/",
     "type": "수능 어휘",
     "meaning": "표시기",
     "definition": "수능·고등 영어 독해를 위한 686번째 핵심 어휘입니다.",
@@ -9607,7 +9607,7 @@ export const vocabularyWords = [
   },
   {
     "word": "fusion",
-    "phonetic": "",
+    "phonetic": "/ˈfjuʒən/",
     "type": "수능 어휘",
     "meaning": "녹다",
     "definition": "수능·고등 영어 독해를 위한 687번째 핵심 어휘입니다.",
@@ -9621,7 +9621,7 @@ export const vocabularyWords = [
   },
   {
     "word": "preference",
-    "phonetic": "",
+    "phonetic": "/ˈprɛfɚəns/",
     "type": "수능 어휘",
     "meaning": "선호, 좋아하는; 선호; 선호",
     "definition": "수능·고등 영어 독해를 위한 688번째 핵심 어휘입니다.",
@@ -9635,7 +9635,7 @@ export const vocabularyWords = [
   },
   {
     "word": "proxy",
-    "phonetic": "",
+    "phonetic": "/ˈprɑksi/",
     "type": "수능 어휘",
     "meaning": "대리인",
     "definition": "수능·고등 영어 독해를 위한 689번째 핵심 어휘입니다.",
@@ -9649,7 +9649,7 @@ export const vocabularyWords = [
   },
   {
     "word": "compression",
-    "phonetic": "",
+    "phonetic": "/kəˈmprɛʃən/",
     "type": "수능 어휘",
     "meaning": "집중하고, 압축하고, 누르십시오. 압축하다",
     "definition": "수능·고등 영어 독해를 위한 690번째 핵심 어휘입니다.",
@@ -9663,7 +9663,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ethical",
-    "phonetic": "",
+    "phonetic": "/ˈɛθɪkəl/",
     "type": "수능 어휘",
     "meaning": "윤리와 관련; 도덕적인",
     "definition": "수능·고등 영어 독해를 위한 691번째 핵심 어휘입니다.",
@@ -9677,7 +9677,7 @@ export const vocabularyWords = [
   },
   {
     "word": "guilty",
-    "phonetic": "",
+    "phonetic": "/ˈɡɪlti/",
     "type": "수능 어휘",
     "meaning": "유죄, 유죄; 의식적으로 유죄, 유죄, 유죄",
     "definition": "수능·고등 영어 독해를 위한 692번째 핵심 어휘입니다.",
@@ -9691,7 +9691,7 @@ export const vocabularyWords = [
   },
   {
     "word": "violent",
-    "phonetic": "",
+    "phonetic": "/ˈvaɪələnt/",
     "type": "수능 어휘",
     "meaning": "폭력적이고 강렬합니다. 폭력으로 인한, 폭력적인",
     "definition": "수능·고등 영어 독해를 위한 693번째 핵심 어휘입니다.",
@@ -9705,7 +9705,7 @@ export const vocabularyWords = [
   },
   {
     "word": "inclusive",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnklusɪv/",
     "type": "수능 어휘",
     "meaning": "포함되다, 포함되다",
     "definition": "수능·고등 영어 독해를 위한 694번째 핵심 어휘입니다.",
@@ -9719,7 +9719,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alien",
-    "phonetic": "",
+    "phonetic": "/ˈeɪliən/",
     "type": "수능 어휘",
     "meaning": "외국; 다른; 호환되지 않는 외계인; 외계인",
     "definition": "수능·고등 영어 독해를 위한 695번째 핵심 어휘입니다.",
@@ -9733,7 +9733,7 @@ export const vocabularyWords = [
   },
   {
     "word": "thesis",
-    "phonetic": "",
+    "phonetic": "/ˈθisəs/",
     "type": "수능 어휘",
     "meaning": "논문; 주제; 논쟁",
     "definition": "수능·고등 영어 독해를 위한 696번째 핵심 어휘입니다.",
@@ -9747,7 +9747,7 @@ export const vocabularyWords = [
   },
   {
     "word": "frequent",
-    "phonetic": "",
+    "phonetic": "/ˈfrikwənt/",
     "type": "수능 어휘",
     "meaning": "자주 발생합니다. 자주; 공통의",
     "definition": "수능·고등 영어 독해를 위한 697번째 핵심 어휘입니다.",
@@ -9761,7 +9761,7 @@ export const vocabularyWords = [
   },
   {
     "word": "theoretical",
-    "phonetic": "",
+    "phonetic": "/ˌθiɚˈɛtɪkəl/",
     "type": "수능 어휘",
     "meaning": "이론적",
     "definition": "수능·고등 영어 독해를 위한 698번째 핵심 어휘입니다.",
@@ -9775,7 +9775,7 @@ export const vocabularyWords = [
   },
   {
     "word": "optimal",
-    "phonetic": "",
+    "phonetic": "/ˈɑptəməl/",
     "type": "수능 어휘",
     "meaning": "가장 좋은, 가장 이상적인",
     "definition": "수능·고등 영어 독해를 위한 699번째 핵심 어휘입니다.",
@@ -9789,7 +9789,7 @@ export const vocabularyWords = [
   },
   {
     "word": "highlight",
-    "phonetic": "",
+    "phonetic": "/ˈhaɪˌlaɪt/",
     "type": "수능 어휘",
     "meaning": "눈에 띄게 하다, 강조하다; 가장 강한 빛을 강조하기 위해; 가장 흥미로운 부분, 가장 중요한 이벤트",
     "definition": "수능·고등 영어 독해를 위한 700번째 핵심 어휘입니다.",
@@ -9803,7 +9803,7 @@ export const vocabularyWords = [
   },
   {
     "word": "termination",
-    "phonetic": "",
+    "phonetic": "/tɚməˈneɪʃən/",
     "type": "수능 어휘",
     "meaning": "종결; 끝, 끝",
     "definition": "수능·고등 영어 독해를 위한 701번째 핵심 어휘입니다.",
@@ -9817,7 +9817,7 @@ export const vocabularyWords = [
   },
   {
     "word": "redeem",
-    "phonetic": "",
+    "phonetic": "/rɪˈdim/",
     "type": "수능 어휘",
     "meaning": "구속하고 회복하십시오. 복원, 보상; 교환",
     "definition": "수능·고등 영어 독해를 위한 702번째 핵심 어휘입니다.",
@@ -9831,7 +9831,7 @@ export const vocabularyWords = [
   },
   {
     "word": "authentic",
-    "phonetic": "",
+    "phonetic": "/əˈθɛntɪk/",
     "type": "수능 어휘",
     "meaning": "진짜, 진짜; 신뢰할 수 있는",
     "definition": "수능·고등 영어 독해를 위한 703번째 핵심 어휘입니다.",
@@ -9845,7 +9845,7 @@ export const vocabularyWords = [
   },
   {
     "word": "regime",
-    "phonetic": "",
+    "phonetic": "/rəˈʒim/",
     "type": "수능 어휘",
     "meaning": "정부, 시스템",
     "definition": "수능·고등 영어 독해를 위한 704번째 핵심 어휘입니다.",
@@ -9859,7 +9859,7 @@ export const vocabularyWords = [
   },
   {
     "word": "differ",
-    "phonetic": "",
+    "phonetic": "/ˈdɪfɚ/",
     "type": "수능 어휘",
     "meaning": "다르다, 다르다",
     "definition": "수능·고등 영어 독해를 위한 705번째 핵심 어휘입니다.",
@@ -9873,7 +9873,7 @@ export const vocabularyWords = [
   },
   {
     "word": "projector",
-    "phonetic": "",
+    "phonetic": "/prəˈdʒɛktɚ/",
     "type": "수능 어휘",
     "meaning": "프로젝터",
     "definition": "수능·고등 영어 독해를 위한 706번째 핵심 어휘입니다.",
@@ -9887,7 +9887,7 @@ export const vocabularyWords = [
   },
   {
     "word": "comparative",
-    "phonetic": "",
+    "phonetic": "/kəˈmpɛrətɪv/",
     "type": "수능 어휘",
     "meaning": "비교적, 꽤",
     "definition": "수능·고등 영어 독해를 위한 707번째 핵심 어휘입니다.",
@@ -9901,7 +9901,7 @@ export const vocabularyWords = [
   },
   {
     "word": "skirt",
-    "phonetic": "",
+    "phonetic": "/ˈskɝt/",
     "type": "수능 어휘",
     "meaning": "가장자리",
     "definition": "수능·고등 영어 독해를 위한 708번째 핵심 어휘입니다.",
@@ -9915,7 +9915,7 @@ export const vocabularyWords = [
   },
   {
     "word": "junction",
-    "phonetic": "",
+    "phonetic": "/ˈdʒʌŋkʃən/",
     "type": "수능 어휘",
     "meaning": "연결, 접합; 교차점, 교차점, 허브",
     "definition": "수능·고등 영어 독해를 위한 709번째 핵심 어휘입니다.",
@@ -9929,7 +9929,7 @@ export const vocabularyWords = [
   },
   {
     "word": "intensive",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈntɛnsɪv/",
     "type": "수능 어휘",
     "meaning": "강화됨; 집중된; 깊이 있고 상세한",
     "definition": "수능·고등 영어 독해를 위한 710번째 핵심 어휘입니다.",
@@ -9943,7 +9943,7 @@ export const vocabularyWords = [
   },
   {
     "word": "testimony",
-    "phonetic": "",
+    "phonetic": "/ˈtɛstəˌmoʊni/",
     "type": "수능 어휘",
     "meaning": "증거, 증언; 보여주다, 설명하다",
     "definition": "수능·고등 영어 독해를 위한 711번째 핵심 어휘입니다.",
@@ -9957,7 +9957,7 @@ export const vocabularyWords = [
   },
   {
     "word": "suspect",
-    "phonetic": "",
+    "phonetic": "/səˈspɛkt/",
     "type": "수능 어휘",
     "meaning": "의심, 의심, 의혹, 의심스러운 용의자",
     "definition": "수능·고등 영어 독해를 위한 712번째 핵심 어휘입니다.",
@@ -9971,7 +9971,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mandatory",
-    "phonetic": "",
+    "phonetic": "/ˈmændəˌtɔri/",
     "type": "수능 어휘",
     "meaning": "명령을 받았다; 위탁",
     "definition": "수능·고등 영어 독해를 위한 713번째 핵심 어휘입니다.",
@@ -9985,7 +9985,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exotic",
-    "phonetic": "",
+    "phonetic": "/ɪˈɡzɑtɪk/",
     "type": "수능 어휘",
     "meaning": "이국적인, 외국; 이상한",
     "definition": "수능·고등 영어 독해를 위한 714번째 핵심 어휘입니다.",
@@ -9999,7 +9999,7 @@ export const vocabularyWords = [
   },
   {
     "word": "pitch",
-    "phonetic": "",
+    "phonetic": "/ˈpɪtʃ/",
     "type": "수능 어휘",
     "meaning": "피치",
     "definition": "수능·고등 영어 독해를 위한 715번째 핵심 어휘입니다.",
@@ -10013,7 +10013,7 @@ export const vocabularyWords = [
   },
   {
     "word": "maple",
-    "phonetic": "",
+    "phonetic": "/ˈmeɪpəl/",
     "type": "수능 어휘",
     "meaning": "단풍나무",
     "definition": "수능·고등 영어 독해를 위한 716번째 핵심 어휘입니다.",
@@ -10027,7 +10027,7 @@ export const vocabularyWords = [
   },
   {
     "word": "depot",
-    "phonetic": "",
+    "phonetic": "/ˈdipoʊ/",
     "type": "수능 어휘",
     "meaning": "저장",
     "definition": "수능·고등 영어 독해를 위한 717번째 핵심 어휘입니다.",
@@ -10041,7 +10041,7 @@ export const vocabularyWords = [
   },
   {
     "word": "probe",
-    "phonetic": "",
+    "phonetic": "/ˈproʊb/",
     "type": "수능 어휘",
     "meaning": "탐사, 천자, 조사 바늘; 탐지기",
     "definition": "수능·고등 영어 독해를 위한 718번째 핵심 어휘입니다.",
@@ -10055,7 +10055,7 @@ export const vocabularyWords = [
   },
   {
     "word": "explicit",
-    "phonetic": "",
+    "phonetic": "/ɪˈksplɪsət/",
     "type": "수능 어휘",
     "meaning": "명확하고, 명확하고, 명확합니다. 솔직한, 분명한",
     "definition": "수능·고등 영어 독해를 위한 719번째 핵심 어휘입니다.",
@@ -10069,7 +10069,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exclude",
-    "phonetic": "",
+    "phonetic": "/ɪˈksklud/",
     "type": "수능 어휘",
     "meaning": "제외하다, 배제하다",
     "definition": "수능·고등 영어 독해를 위한 720번째 핵심 어휘입니다.",
@@ -10083,7 +10083,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exceptional",
-    "phonetic": "",
+    "phonetic": "/ɪˈksɛpʃənəl/",
     "type": "수능 어휘",
     "meaning": "예외적, 특이함, 특별함; 우수한",
     "definition": "수능·고등 영어 독해를 위한 721번째 핵심 어휘입니다.",
@@ -10097,7 +10097,7 @@ export const vocabularyWords = [
   },
   {
     "word": "advocacy",
-    "phonetic": "",
+    "phonetic": "/ˈædvəkəsi/",
     "type": "수능 어휘",
     "meaning": "지원; 옹호자",
     "definition": "수능·고등 영어 독해를 위한 722번째 핵심 어휘입니다.",
@@ -10111,7 +10111,7 @@ export const vocabularyWords = [
   },
   {
     "word": "qualify",
-    "phonetic": "",
+    "phonetic": "/ˈkwɑləˌfaɪ/",
     "type": "수능 어휘",
     "meaning": "자격을 갖추고 자격이 있음을 증명하십시오. 제한하다, 제한하다; 수정하다",
     "definition": "수능·고등 영어 독해를 위한 723번째 핵심 어휘입니다.",
@@ -10125,7 +10125,7 @@ export const vocabularyWords = [
   },
   {
     "word": "spider",
-    "phonetic": "",
+    "phonetic": "/ˈspaɪdɚ/",
     "type": "수능 어휘",
     "meaning": "거미",
     "definition": "수능·고등 영어 독해를 위한 724번째 핵심 어휘입니다.",
@@ -10139,7 +10139,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sensitivity",
-    "phonetic": "",
+    "phonetic": "/ˌsɛnsɪˈtɪvɪti/",
     "type": "수능 어휘",
     "meaning": "감도",
     "definition": "수능·고등 영어 독해를 위한 725번째 핵심 어휘입니다.",
@@ -10153,7 +10153,7 @@ export const vocabularyWords = [
   },
   {
     "word": "preservation",
-    "phonetic": "",
+    "phonetic": "/ˌprɛzɚˈveɪʃən/",
     "type": "수능 어휘",
     "meaning": "저장",
     "definition": "수능·고등 영어 독해를 위한 726번째 핵심 어휘입니다.",
@@ -10167,7 +10167,7 @@ export const vocabularyWords = [
   },
   {
     "word": "interim",
-    "phonetic": "",
+    "phonetic": "/ˈɪntɚəm/",
     "type": "수능 어휘",
     "meaning": "임시, 임시 간격, 전환기, 중간기",
     "definition": "수능·고등 영어 독해를 위한 727번째 핵심 어휘입니다.",
@@ -10181,7 +10181,7 @@ export const vocabularyWords = [
   },
   {
     "word": "shield",
-    "phonetic": "",
+    "phonetic": "/ˈʃild/",
     "type": "수능 어휘",
     "meaning": "보호, 가드, 방패, 가드, 방패, 방패, 방패 같은 물체",
     "definition": "수능·고등 영어 독해를 위한 728번째 핵심 어휘입니다.",
@@ -10195,7 +10195,7 @@ export const vocabularyWords = [
   },
   {
     "word": "constitute",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnstəˌtut/",
     "type": "수능 어휘",
     "meaning": "구성하다, 구성하다",
     "definition": "수능·고등 영어 독해를 위한 729번째 핵심 어휘입니다.",
@@ -10209,7 +10209,7 @@ export const vocabularyWords = [
   },
   {
     "word": "desperate",
-    "phonetic": "",
+    "phonetic": "/ˈdɛsprɪt/",
     "type": "수능 어휘",
     "meaning": "절망적이다. 필사적이다, 필사적이다",
     "definition": "수능·고등 영어 독해를 위한 730번째 핵심 어휘입니다.",
@@ -10223,7 +10223,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exterior",
-    "phonetic": "",
+    "phonetic": "/ɪˈkstɪriɚ/",
     "type": "수능 어휘",
     "meaning": "외부, 외부 외부",
     "definition": "수능·고등 영어 독해를 위한 731번째 핵심 어휘입니다.",
@@ -10237,7 +10237,7 @@ export const vocabularyWords = [
   },
   {
     "word": "synthesis",
-    "phonetic": "",
+    "phonetic": "/ˈsɪnθəsəs/",
     "type": "수능 어휘",
     "meaning": "합성; 합성",
     "definition": "수능·고등 영어 독해를 위한 732번째 핵심 어휘입니다.",
@@ -10251,7 +10251,7 @@ export const vocabularyWords = [
   },
   {
     "word": "velocity",
-    "phonetic": "",
+    "phonetic": "/vəˈlɑsəti/",
     "type": "수능 어휘",
     "meaning": "속도",
     "definition": "수능·고등 영어 독해를 위한 733번째 핵심 어휘입니다.",
@@ -10265,7 +10265,7 @@ export const vocabularyWords = [
   },
   {
     "word": "composed",
-    "phonetic": "",
+    "phonetic": "/kəˈmpoʊzd/",
     "type": "수능 어휘",
     "meaning": "진정; 진정",
     "definition": "수능·고등 영어 독해를 위한 734번째 핵심 어휘입니다.",
@@ -10279,7 +10279,7 @@ export const vocabularyWords = [
   },
   {
     "word": "profession",
-    "phonetic": "",
+    "phonetic": "/prəˈfɛʃən/",
     "type": "수능 어휘",
     "meaning": "직업, 프리랜서; 공개적인 표현",
     "definition": "수능·고등 영어 독해를 위한 735번째 핵심 어휘입니다.",
@@ -10293,7 +10293,7 @@ export const vocabularyWords = [
   },
   {
     "word": "electron",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈlɛktrɑn/",
     "type": "수능 어휘",
     "meaning": "전자",
     "definition": "수능·고등 영어 독해를 위한 736번째 핵심 어휘입니다.",
@@ -10307,7 +10307,7 @@ export const vocabularyWords = [
   },
   {
     "word": "warrant",
-    "phonetic": "",
+    "phonetic": "/ˈwɔrənt/",
     "type": "수능 어휘",
     "meaning": "보증, 보증, 정당한 원인; 면허증, 임명장",
     "definition": "수능·고등 영어 독해를 위한 737번째 핵심 어휘입니다.",
@@ -10321,7 +10321,7 @@ export const vocabularyWords = [
   },
   {
     "word": "provincial",
-    "phonetic": "",
+    "phonetic": "/prəˈvɪnʃəl/",
     "type": "수능 어휘",
     "meaning": "지방, 주; 편협한",
     "definition": "수능·고등 영어 독해를 위한 738번째 핵심 어휘입니다.",
@@ -10335,7 +10335,7 @@ export const vocabularyWords = [
   },
   {
     "word": "advertiser",
-    "phonetic": "",
+    "phonetic": "/ˈædvɚˌtaɪzɚ/",
     "type": "수능 어휘",
     "meaning": "광고주; 광고주",
     "definition": "수능·고등 영어 독해를 위한 739번째 핵심 어휘입니다.",
@@ -10349,7 +10349,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sophisticated",
-    "phonetic": "",
+    "phonetic": "/səˈfɪstəˌkeɪtɪd/",
     "type": "수능 어휘",
     "meaning": "정교한, 복잡한, 고급; 정교하다, 정교하다",
     "definition": "수능·고등 영어 독해를 위한 740번째 핵심 어휘입니다.",
@@ -10363,7 +10363,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vocal",
-    "phonetic": "",
+    "phonetic": "/ˈvoʊkəl/",
     "type": "수능 어휘",
     "meaning": "보컬, 보컬, 보컬",
     "definition": "수능·고등 영어 독해를 위한 741번째 핵심 어휘입니다.",
@@ -10377,7 +10377,7 @@ export const vocabularyWords = [
   },
   {
     "word": "toxic",
-    "phonetic": "",
+    "phonetic": "/ˈtɑksɪk/",
     "type": "수능 어휘",
     "meaning": "독성이 있어 중독으로 인해 발생함",
     "definition": "수능·고등 영어 독해를 위한 742번째 핵심 어휘입니다.",
@@ -10391,7 +10391,7 @@ export const vocabularyWords = [
   },
   {
     "word": "respondent",
-    "phonetic": "",
+    "phonetic": "/rɪˈspɑndənt/",
     "type": "수능 어휘",
     "meaning": "질문에 답변하는 사람 피고인",
     "definition": "수능·고등 영어 독해를 위한 743번째 핵심 어휘입니다.",
@@ -10405,7 +10405,7 @@ export const vocabularyWords = [
   },
   {
     "word": "statute",
-    "phonetic": "",
+    "phonetic": "/ˈstætʃut/",
     "type": "수능 어휘",
     "meaning": "법령; 법령, 규정; 헌장, 규칙; 규제",
     "definition": "수능·고등 영어 독해를 위한 744번째 핵심 어휘입니다.",
@@ -10419,7 +10419,7 @@ export const vocabularyWords = [
   },
   {
     "word": "satisfy",
-    "phonetic": "",
+    "phonetic": "/ˈsætəˌsfaɪ/",
     "type": "수능 어휘",
     "meaning": "확립하다",
     "definition": "수능·고등 영어 독해를 위한 745번째 핵심 어휘입니다.",
@@ -10433,7 +10433,7 @@ export const vocabularyWords = [
   },
   {
     "word": "celebrate",
-    "phonetic": "",
+    "phonetic": "/ˈsɛləˌbreɪt/",
     "type": "수능 어휘",
     "meaning": "축하하다, 축하하다",
     "definition": "수능·고등 영어 독해를 위한 746번째 핵심 어휘입니다.",
@@ -10447,7 +10447,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mixture",
-    "phonetic": "",
+    "phonetic": "/ˈmɪkstʃɚ/",
     "type": "수능 어휘",
     "meaning": "혼합물",
     "definition": "수능·고등 영어 독해를 위한 747번째 핵심 어휘입니다.",
@@ -10461,7 +10461,7 @@ export const vocabularyWords = [
   },
   {
     "word": "radius",
-    "phonetic": "",
+    "phonetic": "/ˈreɪdiəs/",
     "type": "수능 어휘",
     "meaning": "반경",
     "definition": "수능·고등 영어 독해를 위한 748번째 핵심 어휘입니다.",
@@ -10475,7 +10475,7 @@ export const vocabularyWords = [
   },
   {
     "word": "therapeutic",
-    "phonetic": "",
+    "phonetic": "/ˌθɛrəˈpjutɪk/",
     "type": "수능 어휘",
     "meaning": "치료",
     "definition": "수능·고등 영어 독해를 위한 749번째 핵심 어휘입니다.",
@@ -10489,7 +10489,7 @@ export const vocabularyWords = [
   },
   {
     "word": "discretion",
-    "phonetic": "",
+    "phonetic": "/dɪˈskrɛʃən/",
     "type": "수능 어휘",
     "meaning": "판단력, 분별력; 신중함, 주의",
     "definition": "수능·고등 영어 독해를 위한 750번째 핵심 어휘입니다.",
@@ -10503,7 +10503,7 @@ export const vocabularyWords = [
   },
   {
     "word": "repository",
-    "phonetic": "",
+    "phonetic": "/riˈpɑzəˌtɔri/",
     "type": "수능 어휘",
     "meaning": "창고; 배운 사람",
     "definition": "수능·고등 영어 독해를 위한 751번째 핵심 어휘입니다.",
@@ -10517,7 +10517,7 @@ export const vocabularyWords = [
   },
   {
     "word": "synopsis",
-    "phonetic": "",
+    "phonetic": "/sɪˈnɑpsɪs/",
     "type": "수능 어휘",
     "meaning": "개요",
     "definition": "수능·고등 영어 독해를 위한 752번째 핵심 어휘입니다.",
@@ -10531,7 +10531,7 @@ export const vocabularyWords = [
   },
   {
     "word": "equality",
-    "phonetic": "",
+    "phonetic": "/ɪˈkwɑləti/",
     "type": "수능 어휘",
     "meaning": "방정식",
     "definition": "수능·고등 영어 독해를 위한 753번째 핵심 어휘입니다.",
@@ -10545,12 +10545,12 @@ export const vocabularyWords = [
   },
   {
     "word": "invalid",
-    "phonetic": "",
+    "phonetic": "/ˈɪnvələd/",
     "type": "수능 어휘",
-    "meaning": "아프고 장애가 있습니다. 아픈 사람을 위해; 유효하지 않은; 유효하지 않은; 근거 없는, 지지할 수 없는 환자, 아프고 약한, 장애인",
+    "meaning": "유효하지 않은; 타당하지 않은",
     "definition": "수능·고등 영어 독해를 위한 754번째 핵심 어휘입니다.",
     "example": "The meaning of \"invalid\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '아프고 장애가 있습니다. 아픈 사람을 위해; 유효하지 않은; 유효하지 않은; 근거 없는, 지지할 수 없는 환자, 아프고 약한, 장애인'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '유효하지 않은; 타당하지 않은'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/invalid",
@@ -10559,7 +10559,7 @@ export const vocabularyWords = [
   },
   {
     "word": "execute",
-    "phonetic": "",
+    "phonetic": "/ˈɛksəˌkjut/",
     "type": "수능 어휘",
     "meaning": "수행하다, 수행하다, 수행하다, 완료하다, 실현하다; 다하다; 실행하다",
     "definition": "수능·고등 영어 독해를 위한 755번째 핵심 어휘입니다.",
@@ -10573,7 +10573,7 @@ export const vocabularyWords = [
   },
   {
     "word": "chaos",
-    "phonetic": "",
+    "phonetic": "/ˈkeɪɑs/",
     "type": "수능 어휘",
     "meaning": "혼돈; 혼돈",
     "definition": "수능·고등 영어 독해를 위한 756번째 핵심 어휘입니다.",
@@ -10587,7 +10587,7 @@ export const vocabularyWords = [
   },
   {
     "word": "indigenous",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈndɪdʒənəs/",
     "type": "수능 어휘",
     "meaning": "지역; 원주민; 원주민",
     "definition": "수능·고등 영어 독해를 위한 757번째 핵심 어휘입니다.",
@@ -10601,7 +10601,7 @@ export const vocabularyWords = [
   },
   {
     "word": "trigger",
-    "phonetic": "",
+    "phonetic": "/ˈtrɪɡɚ/",
     "type": "수능 어휘",
     "meaning": "방아쇠를 당기다, 방아쇠를 당기다",
     "definition": "수능·고등 영어 독해를 위한 758번째 핵심 어휘입니다.",
@@ -10615,7 +10615,7 @@ export const vocabularyWords = [
   },
   {
     "word": "dramatic",
-    "phonetic": "",
+    "phonetic": "/drəˈmætɪk/",
     "type": "수능 어휘",
     "meaning": "드라마틱하고 대본이 있는; 극적인; 치는; 갑자기",
     "definition": "수능·고등 영어 독해를 위한 759번째 핵심 어휘입니다.",
@@ -10629,7 +10629,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transcript",
-    "phonetic": "",
+    "phonetic": "/ˈtræˌnskrɪpt/",
     "type": "수능 어휘",
     "meaning": "성적 증명서",
     "definition": "수능·고등 영어 독해를 위한 760번째 핵심 어휘입니다.",
@@ -10643,7 +10643,7 @@ export const vocabularyWords = [
   },
   {
     "word": "theorem",
-    "phonetic": "",
+    "phonetic": "/ˈθɪrəm/",
     "type": "수능 어휘",
     "meaning": "원리",
     "definition": "수능·고등 영어 독해를 위한 761번째 핵심 어휘입니다.",
@@ -10657,7 +10657,7 @@ export const vocabularyWords = [
   },
   {
     "word": "flame",
-    "phonetic": "",
+    "phonetic": "/ˈfleɪm/",
     "type": "수능 어휘",
     "meaning": "불꽃",
     "definition": "수능·고등 영어 독해를 위한 762번째 핵심 어휘입니다.",
@@ -10671,7 +10671,7 @@ export const vocabularyWords = [
   },
   {
     "word": "monetary",
-    "phonetic": "",
+    "phonetic": "/ˈmɑnəˌtɛri/",
     "type": "수능 어휘",
     "meaning": "재정적, 금전적",
     "definition": "수능·고등 영어 독해를 위한 763번째 핵심 어휘입니다.",
@@ -10685,7 +10685,7 @@ export const vocabularyWords = [
   },
   {
     "word": "extraordinary",
-    "phonetic": "",
+    "phonetic": "/ˌɛkstrəˈɔrdəˌnɛri/",
     "type": "수능 어휘",
     "meaning": "아주, 유난히",
     "definition": "수능·고등 영어 독해를 위한 764번째 핵심 어휘입니다.",
@@ -10699,7 +10699,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alleged",
-    "phonetic": "",
+    "phonetic": "/əˈlɛdʒd/",
     "type": "수능 어휘",
     "meaning": "근거 없는, 주장된; 소위",
     "definition": "수능·고등 영어 독해를 위한 765번째 핵심 어휘입니다.",
@@ -10713,7 +10713,7 @@ export const vocabularyWords = [
   },
   {
     "word": "limitation",
-    "phonetic": "",
+    "phonetic": "/ˌlɪmɪˈteɪʃən/",
     "type": "수능 어휘",
     "meaning": "제한, 제한",
     "definition": "수능·고등 영어 독해를 위한 766번째 핵심 어휘입니다.",
@@ -10727,7 +10727,7 @@ export const vocabularyWords = [
   },
   {
     "word": "annex",
-    "phonetic": "",
+    "phonetic": "/ˈæˌnɛks/",
     "type": "수능 어휘",
     "meaning": "별첨, 첨부파일 첨부",
     "definition": "수능·고등 영어 독해를 위한 767번째 핵심 어휘입니다.",
@@ -10741,7 +10741,7 @@ export const vocabularyWords = [
   },
   {
     "word": "inspiration",
-    "phonetic": "",
+    "phonetic": "/ˌɪnspɚˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "흡입하다, 흡입하다; 영감을 주고, 흥분시키다; 영감",
     "definition": "수능·고등 영어 독해를 위한 768번째 핵심 어휘입니다.",
@@ -10755,7 +10755,7 @@ export const vocabularyWords = [
   },
   {
     "word": "eclipse",
-    "phonetic": "",
+    "phonetic": "/ɪˈklɪps/",
     "type": "수능 어휘",
     "meaning": "일식, 월식",
     "definition": "수능·고등 영어 독해를 위한 769번째 핵심 어휘입니다.",
@@ -10769,7 +10769,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aggregate",
-    "phonetic": "",
+    "phonetic": "/ˈæɡrəɡət/",
     "type": "수능 어휘",
     "meaning": "모으다, 모으다; 합계",
     "definition": "수능·고등 영어 독해를 위한 770번째 핵심 어휘입니다.",
@@ -10783,7 +10783,7 @@ export const vocabularyWords = [
   },
   {
     "word": "collapse",
-    "phonetic": "",
+    "phonetic": "/kəˈlæps/",
     "type": "수능 어휘",
     "meaning": "붕괴, 붕괴; 붕괴",
     "definition": "수능·고등 영어 독해를 위한 771번째 핵심 어휘입니다.",
@@ -10797,7 +10797,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tribute",
-    "phonetic": "",
+    "phonetic": "/ˈtrɪbjut/",
     "type": "수능 어휘",
     "meaning": "공물; 추도, 찬양; 선물",
     "definition": "수능·고등 영어 독해를 위한 772번째 핵심 어휘입니다.",
@@ -10811,7 +10811,7 @@ export const vocabularyWords = [
   },
   {
     "word": "immune",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈmjun/",
     "type": "수능 어휘",
     "meaning": "면역, 면역; 영향을 받지 않음; 면제, 면제",
     "definition": "수능·고등 영어 독해를 위한 773번째 핵심 어휘입니다.",
@@ -10825,7 +10825,7 @@ export const vocabularyWords = [
   },
   {
     "word": "genesis",
-    "phonetic": "",
+    "phonetic": "/ˈdʒɛnəsəs/",
     "type": "수능 어휘",
     "meaning": "원산지",
     "definition": "수능·고등 영어 독해를 위한 774번째 핵심 어휘입니다.",
@@ -10839,7 +10839,7 @@ export const vocabularyWords = [
   },
   {
     "word": "particle",
-    "phonetic": "",
+    "phonetic": "/ˈpɑrtəkəl/",
     "type": "수능 어휘",
     "meaning": "입자, 입자",
     "definition": "수능·고등 영어 독해를 위한 775번째 핵심 어휘입니다.",
@@ -10853,7 +10853,7 @@ export const vocabularyWords = [
   },
   {
     "word": "perception",
-    "phonetic": "",
+    "phonetic": "/pɚˈsɛpʃən/",
     "type": "수능 어휘",
     "meaning": "이해, 인식; 느낌, 이해; 지각, 지각 과정; 이해, 통찰",
     "definition": "수능·고등 영어 독해를 위한 776번째 핵심 어휘입니다.",
@@ -10867,7 +10867,7 @@ export const vocabularyWords = [
   },
   {
     "word": "renaissance",
-    "phonetic": "",
+    "phonetic": "/ˌrɛnəˈsɑns/",
     "type": "수능 어휘",
     "meaning": "부흥, 부활, 중생; 르네상스, 르네상스 시대",
     "definition": "수능·고등 영어 독해를 위한 777번째 핵심 어휘입니다.",
@@ -10881,7 +10881,7 @@ export const vocabularyWords = [
   },
   {
     "word": "nickname",
-    "phonetic": "",
+    "phonetic": "/ˈnɪˌkneɪm/",
     "type": "수능 어휘",
     "meaning": "닉네임, 붙여줄 별명...",
     "definition": "수능·고등 영어 독해를 위한 778번째 핵심 어휘입니다.",
@@ -10895,7 +10895,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cognitive",
-    "phonetic": "",
+    "phonetic": "/ˈkɑɡnɪtɪv/",
     "type": "수능 어휘",
     "meaning": "인지적, 지식적, 지각적",
     "definition": "수능·고등 영어 독해를 위한 779번째 핵심 어휘입니다.",
@@ -10909,7 +10909,7 @@ export const vocabularyWords = [
   },
   {
     "word": "trick",
-    "phonetic": "",
+    "phonetic": "/ˈtrɪk/",
     "type": "수능 어휘",
     "meaning": "속이다, 속이다",
     "definition": "수능·고등 영어 독해를 위한 780번째 핵심 어휘입니다.",
@@ -10923,7 +10923,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cancellation",
-    "phonetic": "",
+    "phonetic": "/ˌkænsəˈleɪʃən/",
     "type": "수능 어휘",
     "meaning": "약속을 잡다; 제거하다",
     "definition": "수능·고등 영어 독해를 위한 781번째 핵심 어휘입니다.",
@@ -10937,7 +10937,7 @@ export const vocabularyWords = [
   },
   {
     "word": "informal",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnfɔrməl/",
     "type": "수능 어휘",
     "meaning": "비공식; 비공식",
     "definition": "수능·고등 영어 독해를 위한 782번째 핵심 어휘입니다.",
@@ -10951,7 +10951,7 @@ export const vocabularyWords = [
   },
   {
     "word": "incentive",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnsɛntɪv/",
     "type": "수능 어휘",
     "meaning": "자극; 동기 부여; 격려",
     "definition": "수능·고등 영어 독해를 위한 783번째 핵심 어휘입니다.",
@@ -10965,7 +10965,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mechanics",
-    "phonetic": "",
+    "phonetic": "/məˈkænɪks/",
     "type": "수능 어휘",
     "meaning": "역학",
     "definition": "수능·고등 영어 독해를 위한 784번째 핵심 어휘입니다.",
@@ -10979,7 +10979,7 @@ export const vocabularyWords = [
   },
   {
     "word": "numerical",
-    "phonetic": "",
+    "phonetic": "/nuˈmɛrəkəl/",
     "type": "수능 어휘",
     "meaning": "숫자로 표현되는 숫자",
     "definition": "수능·고등 영어 독해를 위한 785번째 핵심 어휘입니다.",
@@ -10993,7 +10993,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reflection",
-    "phonetic": "",
+    "phonetic": "/rɪˈflɛkʃən/",
     "type": "수능 어휘",
     "meaning": "반성; 이미지, 반사; 자기 성찰, 묵상",
     "definition": "수능·고등 영어 독해를 위한 786번째 핵심 어휘입니다.",
@@ -11007,7 +11007,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hormone",
-    "phonetic": "",
+    "phonetic": "/ˈhɔˌrmoʊn/",
     "type": "수능 어휘",
     "meaning": "호르몬",
     "definition": "수능·고등 영어 독해를 위한 787번째 핵심 어휘입니다.",
@@ -11021,7 +11021,7 @@ export const vocabularyWords = [
   },
   {
     "word": "naval",
-    "phonetic": "",
+    "phonetic": "/ˈneɪvəl/",
     "type": "수능 어휘",
     "meaning": "해군, 군함",
     "definition": "수능·고등 영어 독해를 위한 788번째 핵심 어휘입니다.",
@@ -11035,7 +11035,7 @@ export const vocabularyWords = [
   },
   {
     "word": "medieval",
-    "phonetic": "",
+    "phonetic": "/mɪˈdivəl/",
     "type": "수능 어휘",
     "meaning": "중세, 중세의 모방; 구식, 오리지널",
     "definition": "수능·고등 영어 독해를 위한 789번째 핵심 어휘입니다.",
@@ -11049,7 +11049,7 @@ export const vocabularyWords = [
   },
   {
     "word": "decent",
-    "phonetic": "",
+    "phonetic": "/ˈdisənt/",
     "type": "수능 어휘",
     "meaning": "괜찮은, 표현하기 쉬운; 괜찮은 에티켓; 적절한",
     "definition": "수능·고등 영어 독해를 위한 790번째 핵심 어휘입니다.",
@@ -11063,7 +11063,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consensus",
-    "phonetic": "",
+    "phonetic": "/kəˈnsɛnsəs/",
     "type": "수능 어휘",
     "meaning": "만장일치로 동의; 다수의견; 여론",
     "definition": "수능·고등 영어 독해를 위한 791번째 핵심 어휘입니다.",
@@ -11077,7 +11077,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hazard",
-    "phonetic": "",
+    "phonetic": "/ˈhæzɚd/",
     "type": "수능 어휘",
     "meaning": "모험, 위험, 위험, 모험, 위험",
     "definition": "수능·고등 영어 독해를 위한 792번째 핵심 어휘입니다.",
@@ -11091,7 +11091,7 @@ export const vocabularyWords = [
   },
   {
     "word": "semiconductor",
-    "phonetic": "",
+    "phonetic": "/ˌsɛmikəˈndʌktɚ/",
     "type": "수능 어휘",
     "meaning": "반도체",
     "definition": "수능·고등 영어 독해를 위한 793번째 핵심 어휘입니다.",
@@ -11105,7 +11105,7 @@ export const vocabularyWords = [
   },
   {
     "word": "circular",
-    "phonetic": "",
+    "phonetic": "/ˈsɝkjəlɚ/",
     "type": "수능 어휘",
     "meaning": "원형; 원형",
     "definition": "수능·고등 영어 독해를 위한 794번째 핵심 어휘입니다.",
@@ -11119,7 +11119,7 @@ export const vocabularyWords = [
   },
   {
     "word": "interact",
-    "phonetic": "",
+    "phonetic": "/ˌɪntɚˈækt/",
     "type": "수능 어휘",
     "meaning": "상호작용하다, 서로 영향을 미치다",
     "definition": "수능·고등 영어 독해를 위한 795번째 핵심 어휘입니다.",
@@ -11133,12 +11133,12 @@ export const vocabularyWords = [
   },
   {
     "word": "bizarre",
-    "phonetic": "",
+    "phonetic": "/bəˈzɑr/",
     "type": "수능 어휘",
-    "meaning": "이상하고 우스꽝스럽습니다. 기괴한",
+    "meaning": "기괴한; 아주 이상한",
     "definition": "수능·고등 영어 독해를 위한 796번째 핵심 어휘입니다.",
     "example": "The meaning of \"bizarre\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '이상하고 우스꽝스럽습니다. 기괴한'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '기괴한; 아주 이상한'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/bizarre",
@@ -11147,7 +11147,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exempt",
-    "phonetic": "",
+    "phonetic": "/ɪˈɡzɛmpt/",
     "type": "수능 어휘",
     "meaning": "면제, 면제, 면제, 면제",
     "definition": "수능·고등 영어 독해를 위한 797번째 핵심 어휘입니다.",
@@ -11161,7 +11161,7 @@ export const vocabularyWords = [
   },
   {
     "word": "geometry",
-    "phonetic": "",
+    "phonetic": "/dʒiˈɑmətri/",
     "type": "수능 어휘",
     "meaning": "기하학",
     "definition": "수능·고등 영어 독해를 위한 798번째 핵심 어휘입니다.",
@@ -11175,7 +11175,7 @@ export const vocabularyWords = [
   },
   {
     "word": "impression",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈmprɛʃən/",
     "type": "수능 어휘",
     "meaning": "인상, 느낌; 봉인, 들여쓰기",
     "definition": "수능·고등 영어 독해를 위한 799번째 핵심 어휘입니다.",
@@ -11189,7 +11189,7 @@ export const vocabularyWords = [
   },
   {
     "word": "replica",
-    "phonetic": "",
+    "phonetic": "/ˈrɛplɪkə/",
     "type": "수능 어휘",
     "meaning": "복제품",
     "definition": "수능·고등 영어 독해를 위한 800번째 핵심 어휘입니다.",
@@ -11203,7 +11203,7 @@ export const vocabularyWords = [
   },
   {
     "word": "superb",
-    "phonetic": "",
+    "phonetic": "/sʊˈpɝb/",
     "type": "수능 어휘",
     "meaning": "우수한, 고품질",
     "definition": "수능·고등 영어 독해를 위한 801번째 핵심 어휘입니다.",
@@ -11217,7 +11217,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transparent",
-    "phonetic": "",
+    "phonetic": "/træˈnspɛrənt/",
     "type": "수능 어휘",
     "meaning": "투명하다; 명백하다, 명백하다; 명확하다, 이해하기 쉽다",
     "definition": "수능·고등 영어 독해를 위한 802번째 핵심 어휘입니다.",
@@ -11231,7 +11231,7 @@ export const vocabularyWords = [
   },
   {
     "word": "exhaust",
-    "phonetic": "",
+    "phonetic": "/ɪˈɡzɔst/",
     "type": "수능 어휘",
     "meaning": "지치게 하다, 다 써버리다; 몸을 지치게 하다, 배기 장치를 빼내다; 배기 가스",
     "definition": "수능·고등 영어 독해를 위한 803번째 핵심 어휘입니다.",
@@ -11245,7 +11245,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alter",
-    "phonetic": "",
+    "phonetic": "/ˈɔltɚ/",
     "type": "수능 어휘",
     "meaning": "변화하다, 변화하다",
     "definition": "수능·고등 영어 독해를 위한 804번째 핵심 어휘입니다.",
@@ -11259,7 +11259,7 @@ export const vocabularyWords = [
   },
   {
     "word": "triangle",
-    "phonetic": "",
+    "phonetic": "/ˈtraɪˌæŋɡəl/",
     "type": "수능 어휘",
     "meaning": "삼각형",
     "definition": "수능·고등 영어 독해를 위한 805번째 핵심 어휘입니다.",
@@ -11273,7 +11273,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hydrogen",
-    "phonetic": "",
+    "phonetic": "/ˈhaɪdrədʒən/",
     "type": "수능 어휘",
     "meaning": "수소",
     "definition": "수능·고등 영어 독해를 위한 806번째 핵심 어휘입니다.",
@@ -11287,7 +11287,7 @@ export const vocabularyWords = [
   },
   {
     "word": "comparable",
-    "phonetic": "",
+    "phonetic": "/ˈkɑmpɚəbəl/",
     "type": "수능 어휘",
     "meaning": "비교할 만한, 비교할 만한",
     "definition": "수능·고등 영어 독해를 위한 807번째 핵심 어휘입니다.",
@@ -11301,7 +11301,7 @@ export const vocabularyWords = [
   },
   {
     "word": "advocate",
-    "phonetic": "",
+    "phonetic": "/ˈædvəkət/",
     "type": "수능 어휘",
     "meaning": "지지자, 격려하는 사람, 지지하는 사람, 지지하는 사람",
     "definition": "수능·고등 영어 독해를 위한 808번째 핵심 어휘입니다.",
@@ -11315,7 +11315,7 @@ export const vocabularyWords = [
   },
   {
     "word": "genome",
-    "phonetic": "",
+    "phonetic": "/ˈdʒiˌnoʊm/",
     "type": "수능 어휘",
     "meaning": "게놈",
     "definition": "수능·고등 영어 독해를 위한 809번째 핵심 어휘입니다.",
@@ -11329,7 +11329,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vulnerable",
-    "phonetic": "",
+    "phonetic": "/ˈvʌlnɚəbəl/",
     "type": "수능 어휘",
     "meaning": "취약한, 취약한",
     "definition": "수능·고등 영어 독해를 위한 810번째 핵심 어휘입니다.",
@@ -11343,7 +11343,7 @@ export const vocabularyWords = [
   },
   {
     "word": "arrange",
-    "phonetic": "",
+    "phonetic": "/ɚˈeɪndʒ/",
     "type": "수능 어휘",
     "meaning": "정리하다; 마련하다; 마련하다; 마련하다; 준비하다",
     "definition": "수능·고등 영어 독해를 위한 811번째 핵심 어휘입니다.",
@@ -11357,7 +11357,7 @@ export const vocabularyWords = [
   },
   {
     "word": "artistic",
-    "phonetic": "",
+    "phonetic": "/ɑˈrtɪstɪk/",
     "type": "수능 어휘",
     "meaning": "예술, 미술; 미적인; 우아한",
     "definition": "수능·고등 영어 독해를 위한 812번째 핵심 어휘입니다.",
@@ -11371,7 +11371,7 @@ export const vocabularyWords = [
   },
   {
     "word": "polar",
-    "phonetic": "",
+    "phonetic": "/ˈpoʊlɚ/",
     "type": "수능 어휘",
     "meaning": "지구의 극, 지구의 극 근처; 자극",
     "definition": "수능·고등 영어 독해를 위한 813번째 핵심 어휘입니다.",
@@ -11385,7 +11385,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mainstream",
-    "phonetic": "",
+    "phonetic": "/ˈmeɪˌnstrim/",
     "type": "수능 어휘",
     "meaning": "주류",
     "definition": "수능·고등 영어 독해를 위한 814번째 핵심 어휘입니다.",
@@ -11399,7 +11399,7 @@ export const vocabularyWords = [
   },
   {
     "word": "slight",
-    "phonetic": "",
+    "phonetic": "/ˈslaɪt/",
     "type": "수능 어휘",
     "meaning": "경미한, 아주 작은",
     "definition": "수능·고등 영어 독해를 위한 815번째 핵심 어휘입니다.",
@@ -11413,7 +11413,7 @@ export const vocabularyWords = [
   },
   {
     "word": "optics",
-    "phonetic": "",
+    "phonetic": "/ˈɑptɪks/",
     "type": "수능 어휘",
     "meaning": "광학",
     "definition": "수능·고등 영어 독해를 위한 816번째 핵심 어휘입니다.",
@@ -11427,7 +11427,7 @@ export const vocabularyWords = [
   },
   {
     "word": "pursue",
-    "phonetic": "",
+    "phonetic": "/pɚˈsu/",
     "type": "수능 어휘",
     "meaning": "추구하다, 추구하다; 계속하다; ~에 종사하다",
     "definition": "수능·고등 영어 독해를 위한 817번째 핵심 어휘입니다.",
@@ -11441,7 +11441,7 @@ export const vocabularyWords = [
   },
   {
     "word": "overcome",
-    "phonetic": "",
+    "phonetic": "/ˈoʊvɚˌkʌm/",
     "type": "수능 어휘",
     "meaning": "극복하다, 극복하다, 극복하다; 정복하다",
     "definition": "수능·고등 영어 독해를 위한 818번째 핵심 어휘입니다.",
@@ -11455,7 +11455,7 @@ export const vocabularyWords = [
   },
   {
     "word": "simultaneously",
-    "phonetic": "",
+    "phonetic": "/ˌsaɪməˈlteɪniəsli/",
     "type": "수능 어휘",
     "meaning": "동시에",
     "definition": "수능·고등 영어 독해를 위한 819번째 핵심 어휘입니다.",
@@ -11469,7 +11469,7 @@ export const vocabularyWords = [
   },
   {
     "word": "integrate",
-    "phonetic": "",
+    "phonetic": "/ˈɪntəˌɡreɪt/",
     "type": "수능 어휘",
     "meaning": "하나가 되다, 합쳐지다, 합쳐지다",
     "definition": "수능·고등 영어 독해를 위한 820번째 핵심 어휘입니다.",
@@ -11483,7 +11483,7 @@ export const vocabularyWords = [
   },
   {
     "word": "bacteria",
-    "phonetic": "",
+    "phonetic": "/bæˈktɪriə/",
     "type": "수능 어휘",
     "meaning": "박테리아",
     "definition": "수능·고등 영어 독해를 위한 821번째 핵심 어휘입니다.",
@@ -11497,7 +11497,7 @@ export const vocabularyWords = [
   },
   {
     "word": "finite",
-    "phonetic": "",
+    "phonetic": "/ˈfaɪˌnaɪt/",
     "type": "수능 어휘",
     "meaning": "제한적; 제한된",
     "definition": "수능·고등 영어 독해를 위한 822번째 핵심 어휘입니다.",
@@ -11511,7 +11511,7 @@ export const vocabularyWords = [
   },
   {
     "word": "kidney",
-    "phonetic": "",
+    "phonetic": "/ˈkɪdni/",
     "type": "수능 어휘",
     "meaning": "신장",
     "definition": "수능·고등 영어 독해를 위한 823번째 핵심 어휘입니다.",
@@ -11525,7 +11525,7 @@ export const vocabularyWords = [
   },
   {
     "word": "timer",
-    "phonetic": "",
+    "phonetic": "/ˈtaɪmɚ/",
     "type": "수능 어휘",
     "meaning": "타이머",
     "definition": "수능·고등 영어 독해를 위한 824번째 핵심 어휘입니다.",
@@ -11539,7 +11539,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vegetable",
-    "phonetic": "",
+    "phonetic": "/ˈvɛdʒtəbəl/",
     "type": "수능 어휘",
     "meaning": "야채; 지루하고 단조로운 삶을 살아가는 사람들",
     "definition": "수능·고등 영어 독해를 위한 825번째 핵심 어휘입니다.",
@@ -11553,7 +11553,7 @@ export const vocabularyWords = [
   },
   {
     "word": "visibility",
-    "phonetic": "",
+    "phonetic": "/ˌvɪzəˈbɪlɪti/",
     "type": "수능 어휘",
     "meaning": "가시성",
     "definition": "수능·고등 영어 독해를 위한 826번째 핵심 어휘입니다.",
@@ -11567,7 +11567,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tumor",
-    "phonetic": "",
+    "phonetic": "/ˈtumɚ/",
     "type": "수능 어휘",
     "meaning": "종양",
     "definition": "수능·고등 영어 독해를 위한 827번째 핵심 어휘입니다.",
@@ -11581,7 +11581,7 @@ export const vocabularyWords = [
   },
   {
     "word": "invasion",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnveɪʒən/",
     "type": "수능 어휘",
     "meaning": "침략하다, 침략하다",
     "definition": "수능·고등 영어 독해를 위한 828번째 핵심 어휘입니다.",
@@ -11595,7 +11595,7 @@ export const vocabularyWords = [
   },
   {
     "word": "infrared",
-    "phonetic": "",
+    "phonetic": "/ˌɪnfrɚˈɛd/",
     "type": "수능 어휘",
     "meaning": "적외선",
     "definition": "수능·고등 영어 독해를 위한 829번째 핵심 어휘입니다.",
@@ -11609,7 +11609,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aggressive",
-    "phonetic": "",
+    "phonetic": "/əˈɡrɛsɪv/",
     "type": "수능 어휘",
     "meaning": "공격적이고 전투적입니다. 대담하고 진취적인; 활동적인; 강력한",
     "definition": "수능·고등 영어 독해를 위한 830번째 핵심 어휘입니다.",
@@ -11623,7 +11623,7 @@ export const vocabularyWords = [
   },
   {
     "word": "gravity",
-    "phonetic": "",
+    "phonetic": "/ˈɡrævəti/",
     "type": "수능 어휘",
     "meaning": "중력, 중력; 진지함, 엄숙함",
     "definition": "수능·고등 영어 독해를 위한 831번째 핵심 어휘입니다.",
@@ -11637,7 +11637,7 @@ export const vocabularyWords = [
   },
   {
     "word": "incorporate",
-    "phonetic": "",
+    "phonetic": "/ˌɪˈnkɔrpɚˌeɪt/",
     "type": "수능 어휘",
     "meaning": "병합하다, 통합하다, 결합하다",
     "definition": "수능·고등 영어 독해를 위한 832번째 핵심 어휘입니다.",
@@ -11651,7 +11651,7 @@ export const vocabularyWords = [
   },
   {
     "word": "essence",
-    "phonetic": "",
+    "phonetic": "/ˈɛsəns/",
     "type": "수능 어휘",
     "meaning": "본질, 본질",
     "definition": "수능·고등 영어 독해를 위한 833번째 핵심 어휘입니다.",
@@ -11665,7 +11665,7 @@ export const vocabularyWords = [
   },
   {
     "word": "humanity",
-    "phonetic": "",
+    "phonetic": "/hjuˈmænɪti/",
     "type": "수능 어휘",
     "meaning": "인간성, 인간 본성, 인간 감정; 인문학",
     "definition": "수능·고등 영어 독해를 위한 834번째 핵심 어휘입니다.",
@@ -11679,7 +11679,7 @@ export const vocabularyWords = [
   },
   {
     "word": "transcription",
-    "phonetic": "",
+    "phonetic": "/ˌtræˈnskrɪpʃən/",
     "type": "수능 어휘",
     "meaning": "전사",
     "definition": "수능·고등 영어 독해를 위한 835번째 핵심 어휘입니다.",
@@ -11693,7 +11693,7 @@ export const vocabularyWords = [
   },
   {
     "word": "synthetic",
-    "phonetic": "",
+    "phonetic": "/sɪˈnθɛtɪk/",
     "type": "수능 어휘",
     "meaning": "합성, 인공; 합성",
     "definition": "수능·고등 영어 독해를 위한 836번째 핵심 어휘입니다.",
@@ -11707,7 +11707,7 @@ export const vocabularyWords = [
   },
   {
     "word": "testament",
-    "phonetic": "",
+    "phonetic": "/ˈtɛstəmənt/",
     "type": "수능 어휘",
     "meaning": "결정적인 증거나 증명이 되는 것. 유언장",
     "definition": "수능·고등 영어 독해를 위한 837번째 핵심 어휘입니다.",
@@ -11721,7 +11721,7 @@ export const vocabularyWords = [
   },
   {
     "word": "dominant",
-    "phonetic": "",
+    "phonetic": "/ˈdɑmənənt/",
     "type": "수능 어휘",
     "meaning": "지배적인, 지배적인, 지배적인",
     "definition": "수능·고등 영어 독해를 위한 838번째 핵심 어휘입니다.",
@@ -11735,7 +11735,7 @@ export const vocabularyWords = [
   },
   {
     "word": "debut",
-    "phonetic": "",
+    "phonetic": "/deɪˈbju/",
     "type": "수능 어휘",
     "meaning": "데뷔",
     "definition": "수능·고등 영어 독해를 위한 839번째 핵심 어휘입니다.",
@@ -11749,7 +11749,7 @@ export const vocabularyWords = [
   },
   {
     "word": "anatomy",
-    "phonetic": "",
+    "phonetic": "/əˈnætəmi/",
     "type": "수능 어휘",
     "meaning": "해부학; 해부",
     "definition": "수능·고등 영어 독해를 위한 840번째 핵심 어휘입니다.",
@@ -11763,7 +11763,7 @@ export const vocabularyWords = [
   },
   {
     "word": "fraction",
-    "phonetic": "",
+    "phonetic": "/ˈfrækʃən/",
     "type": "수능 어휘",
     "meaning": "점수",
     "definition": "수능·고등 영어 독해를 위한 841번째 핵심 어휘입니다.",
@@ -11777,7 +11777,7 @@ export const vocabularyWords = [
   },
   {
     "word": "breakdown",
-    "phonetic": "",
+    "phonetic": "/ˈbreɪˌkdaʊn/",
     "type": "수능 어휘",
     "meaning": "고장",
     "definition": "수능·고등 영어 독해를 위한 842번째 핵심 어휘입니다.",
@@ -11791,7 +11791,7 @@ export const vocabularyWords = [
   },
   {
     "word": "clarity",
-    "phonetic": "",
+    "phonetic": "/ˈklɛrəti/",
     "type": "수능 어휘",
     "meaning": "맑다, 투명하다",
     "definition": "수능·고등 영어 독해를 위한 843번째 핵심 어휘입니다.",
@@ -11805,7 +11805,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vaccine",
-    "phonetic": "",
+    "phonetic": "/ˌvæˈksin/",
     "type": "수능 어휘",
     "meaning": "백신",
     "definition": "수능·고등 영어 독해를 위한 844번째 핵심 어휘입니다.",
@@ -11819,7 +11819,7 @@ export const vocabularyWords = [
   },
   {
     "word": "robust",
-    "phonetic": "",
+    "phonetic": "/roʊˈbʌst/",
     "type": "수능 어휘",
     "meaning": "강하다, 건강하다",
     "definition": "수능·고등 영어 독해를 위한 845번째 핵심 어휘입니다.",
@@ -11833,7 +11833,7 @@ export const vocabularyWords = [
   },
   {
     "word": "jungle",
-    "phonetic": "",
+    "phonetic": "/ˈdʒʌŋɡəl/",
     "type": "수능 어휘",
     "meaning": "정글, 울창한 숲; 뒤죽박죽",
     "definition": "수능·고등 영어 독해를 위한 846번째 핵심 어휘입니다.",
@@ -11847,7 +11847,7 @@ export const vocabularyWords = [
   },
   {
     "word": "fabulous",
-    "phonetic": "",
+    "phonetic": "/ˈfæbjələs/",
     "type": "수능 어휘",
     "meaning": "훌륭하고 훌륭합니다. 우화적이고 신화적인; 놀라운, 믿을 수 없는",
     "definition": "수능·고등 영어 독해를 위한 847번째 핵심 어휘입니다.",
@@ -11861,7 +11861,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alias",
-    "phonetic": "",
+    "phonetic": "/ˈeɪliəs/",
     "type": "수능 어휘",
     "meaning": "별칭, 가명",
     "definition": "수능·고등 영어 독해를 위한 848번째 핵심 어휘입니다.",
@@ -11875,7 +11875,7 @@ export const vocabularyWords = [
   },
   {
     "word": "maritime",
-    "phonetic": "",
+    "phonetic": "/ˈmɛrəˌtaɪm/",
     "type": "수능 어휘",
     "meaning": "해상; 해상, 운송; 선원의",
     "definition": "수능·고등 영어 독해를 위한 849번째 핵심 어휘입니다.",
@@ -11889,7 +11889,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tension",
-    "phonetic": "",
+    "phonetic": "/ˈtɛnʃən/",
     "type": "수능 어휘",
     "meaning": "긴장감",
     "definition": "수능·고등 영어 독해를 위한 850번째 핵심 어휘입니다.",
@@ -11903,7 +11903,7 @@ export const vocabularyWords = [
   },
   {
     "word": "eternal",
-    "phonetic": "",
+    "phonetic": "/ɪˈtɝnəl/",
     "type": "수능 어휘",
     "meaning": "영원하고 영원합니다. 죽지 않는; 불멸의",
     "definition": "수능·고등 영어 독해를 위한 851번째 핵심 어휘입니다.",
@@ -11917,7 +11917,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aboriginal",
-    "phonetic": "",
+    "phonetic": "/ˌæbɚˈɪdʒənəl/",
     "type": "수능 어휘",
     "meaning": "원주민, 원시 원주민",
     "definition": "수능·고등 영어 독해를 위한 852번째 핵심 어휘입니다.",
@@ -11931,7 +11931,7 @@ export const vocabularyWords = [
   },
   {
     "word": "rotation",
-    "phonetic": "",
+    "phonetic": "/roʊˈteɪʃən/",
     "type": "수능 어휘",
     "meaning": "회전",
     "definition": "수능·고등 영어 독해를 위한 853번째 핵심 어휘입니다.",
@@ -11945,7 +11945,7 @@ export const vocabularyWords = [
   },
   {
     "word": "productive",
-    "phonetic": "",
+    "phonetic": "/prəˈdʌktɪv/",
     "type": "수능 어휘",
     "meaning": "생산적인; 유능한, 다산의",
     "definition": "수능·고등 영어 독해를 위한 854번째 핵심 어휘입니다.",
@@ -11959,7 +11959,7 @@ export const vocabularyWords = [
   },
   {
     "word": "compliant",
-    "phonetic": "",
+    "phonetic": "/kəˈmplaɪənt/",
     "type": "수능 어휘",
     "meaning": "준수; 적응력이 있는",
     "definition": "수능·고등 영어 독해를 위한 855번째 핵심 어휘입니다.",
@@ -11973,7 +11973,7 @@ export const vocabularyWords = [
   },
   {
     "word": "minus",
-    "phonetic": "",
+    "phonetic": "/ˈmaɪnəs/",
     "type": "수능 어휘",
     "meaning": "빼기, 음수를 나타냅니다. 부정, 뺄셈, 나눗셈",
     "definition": "수능·고등 영어 독해를 위한 856번째 핵심 어휘입니다.",
@@ -11987,7 +11987,7 @@ export const vocabularyWords = [
   },
   {
     "word": "accommodate",
-    "phonetic": "",
+    "phonetic": "/əˈkɑməˌdeɪt/",
     "type": "수능 어휘",
     "meaning": "머물고 수용하십시오. 공급, 공급; 화해하다, 적응하다",
     "definition": "수능·고등 영어 독해를 위한 857번째 핵심 어휘입니다.",
@@ -12001,7 +12001,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aurora",
-    "phonetic": "",
+    "phonetic": "/ɚˈɔrə/",
     "type": "수능 어휘",
     "meaning": "새벽, 오로라",
     "definition": "수능·고등 영어 독해를 위한 858번째 핵심 어휘입니다.",
@@ -12015,7 +12015,7 @@ export const vocabularyWords = [
   },
   {
     "word": "digit",
-    "phonetic": "",
+    "phonetic": "/ˈdɪdʒət/",
     "type": "수능 어휘",
     "meaning": "숫자, 숫자",
     "definition": "수능·고등 영어 독해를 위한 859번째 핵심 어휘입니다.",
@@ -12029,7 +12029,7 @@ export const vocabularyWords = [
   },
   {
     "word": "symphony",
-    "phonetic": "",
+    "phonetic": "/ˈsɪmfəni/",
     "type": "수능 어휘",
     "meaning": "교향곡, 교향곡",
     "definition": "수능·고등 영어 독해를 위한 860번째 핵심 어휘입니다.",
@@ -12043,7 +12043,7 @@ export const vocabularyWords = [
   },
   {
     "word": "precipitation",
-    "phonetic": "",
+    "phonetic": "/prɪˌsɪpɪˈteɪʃən/",
     "type": "수능 어휘",
     "meaning": "강수량; 강수량",
     "definition": "수능·고등 영어 독해를 위한 861번째 핵심 어휘입니다.",
@@ -12057,7 +12057,7 @@ export const vocabularyWords = [
   },
   {
     "word": "lyric",
-    "phonetic": "",
+    "phonetic": "/ˈlɪrɪk/",
     "type": "수능 어휘",
     "meaning": "서정시, 가사",
     "definition": "수능·고등 영어 독해를 위한 862번째 핵심 어휘입니다.",
@@ -12071,7 +12071,7 @@ export const vocabularyWords = [
   },
   {
     "word": "rational",
-    "phonetic": "",
+    "phonetic": "/ˈræʃənəl/",
     "type": "수능 어휘",
     "meaning": "합리적; 합리적인",
     "definition": "수능·고등 영어 독해를 위한 863번째 핵심 어휘입니다.",
@@ -12085,7 +12085,7 @@ export const vocabularyWords = [
   },
   {
     "word": "chronicle",
-    "phonetic": "",
+    "phonetic": "/ˈkrɑnɪkəl/",
     "type": "수능 어휘",
     "meaning": "크로니클",
     "definition": "수능·고등 영어 독해를 위한 864번째 핵심 어휘입니다.",
@@ -12099,7 +12099,7 @@ export const vocabularyWords = [
   },
   {
     "word": "legitimate",
-    "phonetic": "",
+    "phonetic": "/ləˈdʒɪtəmət/",
     "type": "수능 어휘",
     "meaning": "합법적이고, 합법적이고, 합리적입니다. 적법한",
     "definition": "수능·고등 영어 독해를 위한 865번째 핵심 어휘입니다.",
@@ -12113,7 +12113,7 @@ export const vocabularyWords = [
   },
   {
     "word": "plaintiff",
-    "phonetic": "",
+    "phonetic": "/ˈpleɪntəf/",
     "type": "수능 어휘",
     "meaning": "원고",
     "definition": "수능·고등 영어 독해를 위한 866번째 핵심 어휘입니다.",
@@ -12127,7 +12127,7 @@ export const vocabularyWords = [
   },
   {
     "word": "characteristic",
-    "phonetic": "",
+    "phonetic": "/ˌkɛrəktɚˈɪstɪk/",
     "type": "수능 어휘",
     "meaning": "독특하고 특징적이다. 전형적인",
     "definition": "수능·고등 영어 독해를 위한 867번째 핵심 어휘입니다.",
@@ -12141,7 +12141,7 @@ export const vocabularyWords = [
   },
   {
     "word": "lobby",
-    "phonetic": "",
+    "phonetic": "/ˈlɑbi/",
     "type": "수능 어휘",
     "meaning": "국회의원 로비 현관, 로비; 라운지",
     "definition": "수능·고등 영어 독해를 위한 868번째 핵심 어휘입니다.",
@@ -12155,7 +12155,7 @@ export const vocabularyWords = [
   },
   {
     "word": "narrative",
-    "phonetic": "",
+    "phonetic": "/ˈnærətɪv/",
     "type": "수능 어휘",
     "meaning": "내러티브; 이야기 같은 내레이션, 내러티브",
     "definition": "수능·고등 영어 독해를 위한 869번째 핵심 어휘입니다.",
@@ -12169,7 +12169,7 @@ export const vocabularyWords = [
   },
   {
     "word": "quantitative",
-    "phonetic": "",
+    "phonetic": "/ˈkwɑntɪˌteɪtɪv/",
     "type": "수능 어휘",
     "meaning": "양적, 양적",
     "definition": "수능·고등 영어 독해를 위한 870번째 핵심 어휘입니다.",
@@ -12183,7 +12183,7 @@ export const vocabularyWords = [
   },
   {
     "word": "distinction",
-    "phonetic": "",
+    "phonetic": "/dɪˈstɪŋkʃən/",
     "type": "수능 어휘",
     "meaning": "차이, 차이",
     "definition": "수능·고등 영어 독해를 위한 871번째 핵심 어휘입니다.",
@@ -12197,7 +12197,7 @@ export const vocabularyWords = [
   },
   {
     "word": "algebra",
-    "phonetic": "",
+    "phonetic": "/ˈældʒəbrə/",
     "type": "수능 어휘",
     "meaning": "대수학",
     "definition": "수능·고등 영어 독해를 위한 872번째 핵심 어휘입니다.",
@@ -12211,7 +12211,7 @@ export const vocabularyWords = [
   },
   {
     "word": "readily",
-    "phonetic": "",
+    "phonetic": "/ˈrɛdəli/",
     "type": "수능 어휘",
     "meaning": "쉽게; 쉽게, 유쾌하게",
     "definition": "수능·고등 영어 독해를 위한 873번째 핵심 어휘입니다.",
@@ -12225,7 +12225,7 @@ export const vocabularyWords = [
   },
   {
     "word": "affiliation",
-    "phonetic": "",
+    "phonetic": "/əˌfɪliˈeɪʃən/",
     "type": "수능 어휘",
     "meaning": "소속; 소속, 종속",
     "definition": "수능·고등 영어 독해를 위한 874번째 핵심 어휘입니다.",
@@ -12239,12 +12239,12 @@ export const vocabularyWords = [
   },
   {
     "word": "wherever",
-    "phonetic": "",
+    "phonetic": "/wɛˈrɛvɚ/",
     "type": "수능 어휘",
-    "meaning": "어디든 상관없습니다. 상황이 어떻든",
+    "meaning": "어디든지; 어디에서든",
     "definition": "수능·고등 영어 독해를 위한 875번째 핵심 어휘입니다.",
     "example": "The meaning of \"wherever\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '어디든 상관없습니다. 상황이 어떻든'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '어디든지; 어디에서든'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/wherever",
@@ -12253,7 +12253,7 @@ export const vocabularyWords = [
   },
   {
     "word": "borough",
-    "phonetic": "",
+    "phonetic": "/ˈbɝˌoʊ/",
     "type": "수능 어휘",
     "meaning": "자치구; 지구",
     "definition": "수능·고등 영어 독해를 위한 876번째 핵심 어휘입니다.",
@@ -12267,7 +12267,7 @@ export const vocabularyWords = [
   },
   {
     "word": "microphone",
-    "phonetic": "",
+    "phonetic": "/ˈmaɪkrəˌfoʊn/",
     "type": "수능 어휘",
     "meaning": "마이크, 앰프",
     "definition": "수능·고등 영어 독해를 위한 877번째 핵심 어휘입니다.",
@@ -12281,7 +12281,7 @@ export const vocabularyWords = [
   },
   {
     "word": "partition",
-    "phonetic": "",
+    "phonetic": "/pɑˈrtɪʃən/",
     "type": "수능 어휘",
     "meaning": "구별하다, 분리하다, 분리하다",
     "definition": "수능·고등 영어 독해를 위한 878번째 핵심 어휘입니다.",
@@ -12295,7 +12295,7 @@ export const vocabularyWords = [
   },
   {
     "word": "magnet",
-    "phonetic": "",
+    "phonetic": "/ˈmæɡnət/",
     "type": "수능 어휘",
     "meaning": "자석",
     "definition": "수능·고등 영어 독해를 위한 879번째 핵심 어휘입니다.",
@@ -12309,7 +12309,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sheer",
-    "phonetic": "",
+    "phonetic": "/ˈʃɪr/",
     "type": "수능 어휘",
     "meaning": "완전하고 순수하다. 절대적인, 철저한; 매우 얇고 투명합니다. 험한",
     "definition": "수능·고등 영어 독해를 위한 880번째 핵심 어휘입니다.",
@@ -12323,7 +12323,7 @@ export const vocabularyWords = [
   },
   {
     "word": "commodity",
-    "phonetic": "",
+    "phonetic": "/kəˈmɑdəti/",
     "type": "수능 어휘",
     "meaning": "상품,아이템",
     "definition": "수능·고등 영어 독해를 위한 881번째 핵심 어휘입니다.",
@@ -12337,7 +12337,7 @@ export const vocabularyWords = [
   },
   {
     "word": "urgent",
-    "phonetic": "",
+    "phonetic": "/ˈɝdʒənt/",
     "type": "수능 어휘",
     "meaning": "긴급하다, 긴급하다",
     "definition": "수능·고등 영어 독해를 위한 882번째 핵심 어휘입니다.",
@@ -12351,7 +12351,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cylinder",
-    "phonetic": "",
+    "phonetic": "/ˈsɪləndɚ/",
     "type": "수능 어휘",
     "meaning": "실린더",
     "definition": "수능·고등 영어 독해를 위한 883번째 핵심 어휘입니다.",
@@ -12365,7 +12365,7 @@ export const vocabularyWords = [
   },
   {
     "word": "surround",
-    "phonetic": "",
+    "phonetic": "/sɚˈaʊnd/",
     "type": "수능 어휘",
     "meaning": "서라운드, 서라운드",
     "definition": "수능·고등 영어 독해를 위한 884번째 핵심 어휘입니다.",
@@ -12379,7 +12379,7 @@ export const vocabularyWords = [
   },
   {
     "word": "divide",
-    "phonetic": "",
+    "phonetic": "/dɪˈvaɪd/",
     "type": "수능 어휘",
     "meaning": "제외하고",
     "definition": "수능·고등 영어 독해를 위한 885번째 핵심 어휘입니다.",
@@ -12393,7 +12393,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consecutive",
-    "phonetic": "",
+    "phonetic": "/kəˈnsɛkjətɪv/",
     "type": "수능 어휘",
     "meaning": "연속적인",
     "definition": "수능·고등 영어 독해를 위한 886번째 핵심 어휘입니다.",
@@ -12407,7 +12407,7 @@ export const vocabularyWords = [
   },
   {
     "word": "barrel",
-    "phonetic": "",
+    "phonetic": "/ˈbærəl/",
     "type": "수능 어휘",
     "meaning": "배럴; 총신, 총신",
     "definition": "수능·고등 영어 독해를 위한 887번째 핵심 어휘입니다.",
@@ -12421,7 +12421,7 @@ export const vocabularyWords = [
   },
   {
     "word": "deficit",
-    "phonetic": "",
+    "phonetic": "/ˈdɛfəsət/",
     "type": "수능 어휘",
     "meaning": "적자, 적자",
     "definition": "수능·고등 영어 독해를 위한 888번째 핵심 어휘입니다.",
@@ -12435,7 +12435,7 @@ export const vocabularyWords = [
   },
   {
     "word": "acknowledge",
-    "phonetic": "",
+    "phonetic": "/æˈknɑlɪdʒ/",
     "type": "수능 어휘",
     "meaning": "인정하다; 인정하다",
     "definition": "수능·고등 영어 독해를 위한 889번째 핵심 어휘입니다.",
@@ -12449,7 +12449,7 @@ export const vocabularyWords = [
   },
   {
     "word": "qualification",
-    "phonetic": "",
+    "phonetic": "/ˌkwɑləfəˈkeɪʃən/",
     "type": "수능 어휘",
     "meaning": "자격, 자격; 기능; 제한, 조건; 인증서",
     "definition": "수능·고등 영어 독해를 위한 890번째 핵심 어휘입니다.",
@@ -12463,7 +12463,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aerial",
-    "phonetic": "",
+    "phonetic": "/ˈɛriəl/",
     "type": "수능 어휘",
     "meaning": "항공; 공중에 살고, 공기; 우뚝 솟은 안테나",
     "definition": "수능·고등 영어 독해를 위한 891번째 핵심 어휘입니다.",
@@ -12477,7 +12477,7 @@ export const vocabularyWords = [
   },
   {
     "word": "systematic",
-    "phonetic": "",
+    "phonetic": "/ˌsɪstəˈmætɪk/",
     "type": "수능 어휘",
     "meaning": "체계적인, 체계적인",
     "definition": "수능·고등 영어 독해를 위한 892번째 핵심 어휘입니다.",
@@ -12491,7 +12491,7 @@ export const vocabularyWords = [
   },
   {
     "word": "magnitude",
-    "phonetic": "",
+    "phonetic": "/ˈmæɡnəˌtud/",
     "type": "수능 어휘",
     "meaning": "크기, 수량; 거대하고 광대하다. 중요도, 중요도",
     "definition": "수능·고등 영어 독해를 위한 893번째 핵심 어휘입니다.",
@@ -12505,7 +12505,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vocabulary",
-    "phonetic": "",
+    "phonetic": "/voʊˈkæbjəˌlɛri/",
     "type": "수능 어휘",
     "meaning": "어휘, 어휘; 용어집",
     "definition": "수능·고등 영어 독해를 위한 894번째 핵심 어휘입니다.",
@@ -12519,7 +12519,7 @@ export const vocabularyWords = [
   },
   {
     "word": "lasting",
-    "phonetic": "",
+    "phonetic": "/ˈlæstɪŋ/",
     "type": "수능 어휘",
     "meaning": "지속되는, 영구적인",
     "definition": "수능·고등 영어 독해를 위한 895번째 핵심 어휘입니다.",
@@ -12533,7 +12533,7 @@ export const vocabularyWords = [
   },
   {
     "word": "slope",
-    "phonetic": "",
+    "phonetic": "/ˈsloʊp/",
     "type": "수능 어휘",
     "meaning": "경사",
     "definition": "수능·고등 영어 독해를 위한 896번째 핵심 어휘입니다.",
@@ -12547,7 +12547,7 @@ export const vocabularyWords = [
   },
   {
     "word": "preceding",
-    "phonetic": "",
+    "phonetic": "/priˈsidɪŋ/",
     "type": "수능 어휘",
     "meaning": "이전, 이전",
     "definition": "수능·고등 영어 독해를 위한 897번째 핵심 어휘입니다.",
@@ -12561,7 +12561,7 @@ export const vocabularyWords = [
   },
   {
     "word": "enzyme",
-    "phonetic": "",
+    "phonetic": "/ˈɛˌnzaɪm/",
     "type": "수능 어휘",
     "meaning": "효소",
     "definition": "수능·고등 영어 독해를 위한 898번째 핵심 어휘입니다.",
@@ -12575,7 +12575,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cumulative",
-    "phonetic": "",
+    "phonetic": "/ˈkjumjələtɪv/",
     "type": "수능 어휘",
     "meaning": "누적",
     "definition": "수능·고등 영어 독해를 위한 899번째 핵심 어휘입니다.",
@@ -12589,7 +12589,7 @@ export const vocabularyWords = [
   },
   {
     "word": "arbitrary",
-    "phonetic": "",
+    "phonetic": "/ˈɑrbəˌtrɛri/",
     "type": "수능 어휘",
     "meaning": "임의적; 임의적; 독재적인, 자의적인",
     "definition": "수능·고등 영어 독해를 위한 900번째 핵심 어휘입니다.",
@@ -12603,7 +12603,7 @@ export const vocabularyWords = [
   },
   {
     "word": "prominent",
-    "phonetic": "",
+    "phonetic": "/ˈprɑmənənt/",
     "type": "수능 어휘",
     "meaning": "눈에 띄는, 눈에 띄는; 뛰어난, 유명한; 주목할 만한",
     "definition": "수능·고등 영어 독해를 위한 901번째 핵심 어휘입니다.",
@@ -12617,7 +12617,7 @@ export const vocabularyWords = [
   },
   {
     "word": "retrieve",
-    "phonetic": "",
+    "phonetic": "/rɪˈtriv/",
     "type": "수능 어휘",
     "meaning": "회복하다; 복원",
     "definition": "수능·고등 영어 독해를 위한 902번째 핵심 어휘입니다.",
@@ -12631,7 +12631,7 @@ export const vocabularyWords = [
   },
   {
     "word": "panic",
-    "phonetic": "",
+    "phonetic": "/ˈpænɪk/",
     "type": "수능 어휘",
     "meaning": "패닉, 패닉",
     "definition": "수능·고등 영어 독해를 위한 903번째 핵심 어휘입니다.",
@@ -12645,7 +12645,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hierarchy",
-    "phonetic": "",
+    "phonetic": "/ˈhaɪɚˌɑrki/",
     "type": "수능 어휘",
     "meaning": "계층 구조; 집권세력",
     "definition": "수능·고등 영어 독해를 위한 904번째 핵심 어휘입니다.",
@@ -12659,7 +12659,7 @@ export const vocabularyWords = [
   },
   {
     "word": "complement",
-    "phonetic": "",
+    "phonetic": "/ˈkɑmpləmənt/",
     "type": "수능 어휘",
     "meaning": "보충하다, 화장하다",
     "definition": "수능·고등 영어 독해를 위한 905번째 핵심 어휘입니다.",
@@ -12673,7 +12673,7 @@ export const vocabularyWords = [
   },
   {
     "word": "passive",
-    "phonetic": "",
+    "phonetic": "/ˈpæsɪv/",
     "type": "수능 어휘",
     "meaning": "수동적, 부정적",
     "definition": "수능·고등 영어 독해를 위한 906번째 핵심 어휘입니다.",
@@ -12687,7 +12687,7 @@ export const vocabularyWords = [
   },
   {
     "word": "extraction",
-    "phonetic": "",
+    "phonetic": "/ɛˈkstrækʃən/",
     "type": "수능 어휘",
     "meaning": "추출",
     "definition": "수능·고등 영어 독해를 위한 907번째 핵심 어휘입니다.",
@@ -12701,7 +12701,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hypothesis",
-    "phonetic": "",
+    "phonetic": "/haɪˈpɑθəsəs/",
     "type": "수능 어휘",
     "meaning": "가설, 가정, 전제",
     "definition": "수능·고등 영어 독해를 위한 908번째 핵심 어휘입니다.",
@@ -12715,7 +12715,7 @@ export const vocabularyWords = [
   },
   {
     "word": "consistency",
-    "phonetic": "",
+    "phonetic": "/kəˈnsɪstənsi/",
     "type": "수능 어휘",
     "meaning": "일관되고 일관됨",
     "definition": "수능·고등 영어 독해를 위한 909번째 핵심 어휘입니다.",
@@ -12729,7 +12729,7 @@ export const vocabularyWords = [
   },
   {
     "word": "interference",
-    "phonetic": "",
+    "phonetic": "/ˌɪntɚˈfɪrəns/",
     "type": "수능 어휘",
     "meaning": "방해하다",
     "definition": "수능·고등 영어 독해를 위한 910번째 핵심 어휘입니다.",
@@ -12743,7 +12743,7 @@ export const vocabularyWords = [
   },
   {
     "word": "gasoline",
-    "phonetic": "",
+    "phonetic": "/ˈɡæsəˌlin/",
     "type": "수능 어휘",
     "meaning": "가솔린",
     "definition": "수능·고등 영어 독해를 위한 911번째 핵심 어휘입니다.",
@@ -12757,7 +12757,7 @@ export const vocabularyWords = [
   },
   {
     "word": "catalyst",
-    "phonetic": "",
+    "phonetic": "/ˈkætələst/",
     "type": "수능 어휘",
     "meaning": "촉매",
     "definition": "수능·고등 영어 독해를 위한 912번째 핵심 어휘입니다.",
@@ -12771,7 +12771,7 @@ export const vocabularyWords = [
   },
   {
     "word": "duplicate",
-    "phonetic": "",
+    "phonetic": "/ˈdupləkət/",
     "type": "수능 어휘",
     "meaning": "복제, 복제, 이중 복사, 복사, 이중 복사, 복제",
     "definition": "수능·고등 영어 독해를 위한 913번째 핵심 어휘입니다.",
@@ -12785,7 +12785,7 @@ export const vocabularyWords = [
   },
   {
     "word": "tremendous",
-    "phonetic": "",
+    "phonetic": "/trəˈmɛndəs/",
     "type": "수능 어휘",
     "meaning": "거대한, 거대한",
     "definition": "수능·고등 영어 독해를 위한 914번째 핵심 어휘입니다.",
@@ -12799,7 +12799,7 @@ export const vocabularyWords = [
   },
   {
     "word": "validity",
-    "phonetic": "",
+    "phonetic": "/vəˈlɪdəti/",
     "type": "수능 어휘",
     "meaning": "타당성, 정확성",
     "definition": "수능·고등 영어 독해를 위한 915번째 핵심 어휘입니다.",
@@ -12813,7 +12813,7 @@ export const vocabularyWords = [
   },
   {
     "word": "realm",
-    "phonetic": "",
+    "phonetic": "/ˈrɛlm/",
     "type": "수능 어휘",
     "meaning": "왕국, 영토; 영토",
     "definition": "수능·고등 영어 독해를 위한 916번째 핵심 어휘입니다.",
@@ -12827,7 +12827,7 @@ export const vocabularyWords = [
   },
   {
     "word": "nickel",
-    "phonetic": "",
+    "phonetic": "/ˈnɪkəl/",
     "type": "수능 어휘",
     "meaning": "다섯 점",
     "definition": "수능·고등 영어 독해를 위한 917번째 핵심 어휘입니다.",
@@ -12841,7 +12841,7 @@ export const vocabularyWords = [
   },
   {
     "word": "geology",
-    "phonetic": "",
+    "phonetic": "/dʒiˈɑlədʒi/",
     "type": "수능 어휘",
     "meaning": "지질학",
     "definition": "수능·고등 영어 독해를 위한 918번째 핵심 어휘입니다.",
@@ -12855,7 +12855,7 @@ export const vocabularyWords = [
   },
   {
     "word": "accomplish",
-    "phonetic": "",
+    "phonetic": "/əˈkɑmplɪʃ/",
     "type": "수능 어휘",
     "meaning": "완료하다, 달성하다; 깨닫다",
     "definition": "수능·고등 영어 독해를 위한 919번째 핵심 어휘입니다.",
@@ -12869,7 +12869,7 @@ export const vocabularyWords = [
   },
   {
     "word": "drainage",
-    "phonetic": "",
+    "phonetic": "/ˈdreɪnədʒ/",
     "type": "수능 어휘",
     "meaning": "배수장치, 배수장치",
     "definition": "수능·고등 영어 독해를 위한 920번째 핵심 어휘입니다.",
@@ -12883,7 +12883,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vegetarian",
-    "phonetic": "",
+    "phonetic": "/ˌvɛdʒəˈtɛˌriən/",
     "type": "수능 어휘",
     "meaning": "채식주의자",
     "definition": "수능·고등 영어 독해를 위한 921번째 핵심 어휘입니다.",
@@ -12897,7 +12897,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ambassador",
-    "phonetic": "",
+    "phonetic": "/æˈmbæsədɚ/",
     "type": "수능 어휘",
     "meaning": "대사",
     "definition": "수능·고등 영어 독해를 위한 922번째 핵심 어휘입니다.",
@@ -12911,7 +12911,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vegetation",
-    "phonetic": "",
+    "phonetic": "/ˌvɛdʒəˈteɪʃən/",
     "type": "수능 어휘",
     "meaning": "식물",
     "definition": "수능·고등 영어 독해를 위한 923번째 핵심 어휘입니다.",
@@ -12925,7 +12925,7 @@ export const vocabularyWords = [
   },
   {
     "word": "aquatic",
-    "phonetic": "",
+    "phonetic": "/əˈkwɑtɪk/",
     "type": "수능 어휘",
     "meaning": "수생, 수생; 물의, 물의",
     "definition": "수능·고등 영어 독해를 위한 924번째 핵심 어휘입니다.",
@@ -12939,7 +12939,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reliance",
-    "phonetic": "",
+    "phonetic": "/rɪˈlaɪəns/",
     "type": "수능 어휘",
     "meaning": "신뢰하다, 의지하다",
     "definition": "수능·고등 영어 독해를 위한 925번째 핵심 어휘입니다.",
@@ -12953,7 +12953,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ensemble",
-    "phonetic": "",
+    "phonetic": "/ɑˈnsɑmbəl/",
     "type": "수능 어휘",
     "meaning": "합창단",
     "definition": "수능·고등 영어 독해를 위한 926번째 핵심 어휘입니다.",
@@ -12967,7 +12967,7 @@ export const vocabularyWords = [
   },
   {
     "word": "insulin",
-    "phonetic": "",
+    "phonetic": "/ˈɪnsələn/",
     "type": "수능 어휘",
     "meaning": "인슐린",
     "definition": "수능·고등 영어 독해를 위한 927번째 핵심 어휘입니다.",
@@ -12981,7 +12981,7 @@ export const vocabularyWords = [
   },
   {
     "word": "conscious",
-    "phonetic": "",
+    "phonetic": "/ˈkɑnʃəs/",
     "type": "수능 어휘",
     "meaning": "인식하고 의식이 있는; 의식이 있는, 의식이 있는",
     "definition": "수능·고등 영어 독해를 위한 928번째 핵심 어휘입니다.",
@@ -12995,7 +12995,7 @@ export const vocabularyWords = [
   },
   {
     "word": "utilize",
-    "phonetic": "",
+    "phonetic": "/ˈjutəˌlaɪz/",
     "type": "수능 어휘",
     "meaning": "이용하다",
     "definition": "수능·고등 영어 독해를 위한 929번째 핵심 어휘입니다.",
@@ -13009,7 +13009,7 @@ export const vocabularyWords = [
   },
   {
     "word": "auburn",
-    "phonetic": "",
+    "phonetic": "/ˈɑbɚn/",
     "type": "수능 어휘",
     "meaning": "황갈색 황갈색",
     "definition": "수능·고등 영어 독해를 위한 930번째 핵심 어휘입니다.",
@@ -13023,7 +13023,7 @@ export const vocabularyWords = [
   },
   {
     "word": "nitrogen",
-    "phonetic": "",
+    "phonetic": "/ˈnaɪtrədʒən/",
     "type": "수능 어휘",
     "meaning": "질소",
     "definition": "수능·고등 영어 독해를 위한 931번째 핵심 어휘입니다.",
@@ -13037,7 +13037,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reasoning",
-    "phonetic": "",
+    "phonetic": "/ˈrizənɪŋ/",
     "type": "수능 어휘",
     "meaning": "추론",
     "definition": "수능·고등 영어 독해를 위한 932번째 핵심 어휘입니다.",
@@ -13051,7 +13051,7 @@ export const vocabularyWords = [
   },
   {
     "word": "equilibrium",
-    "phonetic": "",
+    "phonetic": "/ˌikwəˈlɪbriəm/",
     "type": "수능 어휘",
     "meaning": "균형; 침착한; 균형",
     "definition": "수능·고등 영어 독해를 위한 933번째 핵심 어휘입니다.",
@@ -13065,7 +13065,7 @@ export const vocabularyWords = [
   },
   {
     "word": "privilege",
-    "phonetic": "",
+    "phonetic": "/ˈprɪvlədʒ/",
     "type": "수능 어휘",
     "meaning": "우선권을 주다, 특권을 주다, 특권을 주다, 특권을 주다, 특권을 주다, 특권을 주다",
     "definition": "수능·고등 영어 독해를 위한 934번째 핵심 어휘입니다.",
@@ -13079,7 +13079,7 @@ export const vocabularyWords = [
   },
   {
     "word": "breach",
-    "phonetic": "",
+    "phonetic": "/ˈbritʃ/",
     "type": "수능 어휘",
     "meaning": "위반; 파괴; 파열, 균열, 파손; 획기적인",
     "definition": "수능·고등 영어 독해를 위한 935번째 핵심 어휘입니다.",
@@ -13093,7 +13093,7 @@ export const vocabularyWords = [
   },
   {
     "word": "antibody",
-    "phonetic": "",
+    "phonetic": "/ˈæntɪˌbɑdi/",
     "type": "수능 어휘",
     "meaning": "항체",
     "definition": "수능·고등 영어 독해를 위한 936번째 핵심 어휘입니다.",
@@ -13107,7 +13107,7 @@ export const vocabularyWords = [
   },
   {
     "word": "momentum",
-    "phonetic": "",
+    "phonetic": "/moʊˈmɛntəm/",
     "type": "수능 어휘",
     "meaning": "추진력",
     "definition": "수능·고등 영어 독해를 위한 937번째 핵심 어휘입니다.",
@@ -13121,7 +13121,7 @@ export const vocabularyWords = [
   },
   {
     "word": "bumper",
-    "phonetic": "",
+    "phonetic": "/ˈbʌmpɚ/",
     "type": "수능 어휘",
     "meaning": "버퍼",
     "definition": "수능·고등 영어 독해를 위한 938번째 핵심 어휘입니다.",
@@ -13135,7 +13135,7 @@ export const vocabularyWords = [
   },
   {
     "word": "explosion",
-    "phonetic": "",
+    "phonetic": "/ɪˈksploʊʒən/",
     "type": "수능 어휘",
     "meaning": "폭발",
     "definition": "수능·고등 영어 독해를 위한 939번째 핵심 어휘입니다.",
@@ -13149,7 +13149,7 @@ export const vocabularyWords = [
   },
   {
     "word": "ozone",
-    "phonetic": "",
+    "phonetic": "/ˈoʊˌzoʊn/",
     "type": "수능 어휘",
     "meaning": "오존",
     "definition": "수능·고등 영어 독해를 위한 940번째 핵심 어휘입니다.",
@@ -13163,7 +13163,7 @@ export const vocabularyWords = [
   },
   {
     "word": "opponent",
-    "phonetic": "",
+    "phonetic": "/əˈpoʊnənt/",
     "type": "수능 어휘",
     "meaning": "대립하는 상대, 대결하는 상대, 상대, 라이벌",
     "definition": "수능·고등 영어 독해를 위한 941번째 핵심 어휘입니다.",
@@ -13177,7 +13177,7 @@ export const vocabularyWords = [
   },
   {
     "word": "serum",
-    "phonetic": "",
+    "phonetic": "/ˈsɪrəm/",
     "type": "수능 어휘",
     "meaning": "혈청",
     "definition": "수능·고등 영어 독해를 위한 942번째 핵심 어휘입니다.",
@@ -13191,7 +13191,7 @@ export const vocabularyWords = [
   },
   {
     "word": "swift",
-    "phonetic": "",
+    "phonetic": "/ˈswɪft/",
     "type": "수능 어휘",
     "meaning": "빠르고, 민첩하다",
     "definition": "수능·고등 영어 독해를 위한 943번째 핵심 어휘입니다.",
@@ -13205,7 +13205,7 @@ export const vocabularyWords = [
   },
   {
     "word": "decimal",
-    "phonetic": "",
+    "phonetic": "/ˈdɛsəməl/",
     "type": "수능 어휘",
     "meaning": "십진수 [예: 0.5, 0.175, 0.661 등] 십진수, 십진수",
     "definition": "수능·고등 영어 독해를 위한 944번째 핵심 어휘입니다.",
@@ -13219,7 +13219,7 @@ export const vocabularyWords = [
   },
   {
     "word": "superintendent",
-    "phonetic": "",
+    "phonetic": "/ˌsupɚəˈntɛndənt/",
     "type": "수능 어휘",
     "meaning": "감독자, 책임자, 지휘관, 부장",
     "definition": "수능·고등 영어 독해를 위한 945번째 핵심 어휘입니다.",
@@ -13233,7 +13233,7 @@ export const vocabularyWords = [
   },
   {
     "word": "hydraulic",
-    "phonetic": "",
+    "phonetic": "/haɪˈdrɔlɪk/",
     "type": "수능 어휘",
     "meaning": "유압; 유압",
     "definition": "수능·고등 영어 독해를 위한 946번째 핵심 어휘입니다.",
@@ -13247,7 +13247,7 @@ export const vocabularyWords = [
   },
   {
     "word": "belle",
-    "phonetic": "",
+    "phonetic": "/ˈbɛl/",
     "type": "수능 어휘",
     "meaning": "아름다움, 아름다움",
     "definition": "수능·고등 영어 독해를 위한 947번째 핵심 어휘입니다.",
@@ -13261,12 +13261,12 @@ export const vocabularyWords = [
   },
   {
     "word": "conviction",
-    "phonetic": "",
+    "phonetic": "/kəˈnvɪkʃən/",
     "type": "수능 어휘",
-    "meaning": "확신해요, 확신해요",
+    "meaning": "확신; 신념; 유죄 판결",
     "definition": "수능·고등 영어 독해를 위한 948번째 핵심 어휘입니다.",
     "example": "The meaning of \"conviction\" becomes clear from the context of the passage.",
-    "translation": "지문의 문맥을 통해 '확신해요, 확신해요'라는 의미를 확인해 보세요.",
+    "translation": "지문의 문맥을 통해 '확신; 신념; 유죄 판결'이라는 의미를 확인해 보세요.",
     "source": "SAT Vocabulary",
     "sourceUrl": "https://github.com/KyleBing/english-vocabulary",
     "dictionaryUrl": "https://dictionary.cambridge.org/dictionary/english/conviction",
@@ -13275,7 +13275,7 @@ export const vocabularyWords = [
   },
   {
     "word": "prototype",
-    "phonetic": "",
+    "phonetic": "/ˈproʊtəˌtaɪp/",
     "type": "수능 어휘",
     "meaning": "프로토타입; 기준; 모델",
     "definition": "수능·고등 영어 독해를 위한 949번째 핵심 어휘입니다.",
@@ -13289,7 +13289,7 @@ export const vocabularyWords = [
   },
   {
     "word": "apparatus",
-    "phonetic": "",
+    "phonetic": "/ˌæpɚˈætəs/",
     "type": "수능 어휘",
     "meaning": "장치, 장비, 악기, 장치",
     "definition": "수능·고등 영어 독해를 위한 950번째 핵심 어휘입니다.",
@@ -13303,7 +13303,7 @@ export const vocabularyWords = [
   },
   {
     "word": "gossip",
-    "phonetic": "",
+    "phonetic": "/ˈɡɑsəp/",
     "type": "수능 어휘",
     "meaning": "가십을 퍼뜨리세요. 잡담; 가십, 채팅; 비난하다, 소문을 퍼뜨리다",
     "definition": "수능·고등 영어 독해를 위한 951번째 핵심 어휘입니다.",
@@ -13317,7 +13317,7 @@ export const vocabularyWords = [
   },
   {
     "word": "rotary",
-    "phonetic": "",
+    "phonetic": "/ˈroʊtɚi/",
     "type": "수능 어휘",
     "meaning": "회전",
     "definition": "수능·고등 영어 독해를 위한 952번째 핵심 어휘입니다.",
@@ -13331,7 +13331,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cubic",
-    "phonetic": "",
+    "phonetic": "/ˈkjubɪk/",
     "type": "수능 어휘",
     "meaning": "큐브; 큐빅",
     "definition": "수능·고등 영어 독해를 위한 953번째 핵심 어휘입니다.",
@@ -13345,7 +13345,7 @@ export const vocabularyWords = [
   },
   {
     "word": "remainder",
-    "phonetic": "",
+    "phonetic": "/rɪˈmeɪndɚ/",
     "type": "수능 어휘",
     "meaning": "나머지",
     "definition": "수능·고등 영어 독해를 위한 954번째 핵심 어휘입니다.",
@@ -13359,7 +13359,7 @@ export const vocabularyWords = [
   },
   {
     "word": "cardiac",
-    "phonetic": "",
+    "phonetic": "/ˈkɑrdiˌæk/",
     "type": "수능 어휘",
     "meaning": "심장의",
     "definition": "수능·고등 영어 독해를 위한 955번째 핵심 어휘입니다.",
@@ -13373,7 +13373,7 @@ export const vocabularyWords = [
   },
   {
     "word": "selective",
-    "phonetic": "",
+    "phonetic": "/səˈlɛktɪv/",
     "type": "수능 어휘",
     "meaning": "선택적, 선택적; 엄선된",
     "definition": "수능·고등 영어 독해를 위한 956번째 핵심 어휘입니다.",
@@ -13387,7 +13387,7 @@ export const vocabularyWords = [
   },
   {
     "word": "token",
-    "phonetic": "",
+    "phonetic": "/ˈtoʊkən/",
     "type": "수능 어휘",
     "meaning": "보조 동전",
     "definition": "수능·고등 영어 독해를 위한 957번째 핵심 어휘입니다.",
@@ -13401,7 +13401,7 @@ export const vocabularyWords = [
   },
   {
     "word": "sacrifice",
-    "phonetic": "",
+    "phonetic": "/ˈsækrəˌfaɪs/",
     "type": "수능 어휘",
     "meaning": "희생; 희생",
     "definition": "수능·고등 영어 독해를 위한 958번째 핵심 어휘입니다.",
@@ -13415,7 +13415,7 @@ export const vocabularyWords = [
   },
   {
     "word": "convergence",
-    "phonetic": "",
+    "phonetic": "/kəˈnvɝdʒəns/",
     "type": "수능 어휘",
     "meaning": "농축하다",
     "definition": "수능·고등 영어 독해를 위한 959번째 핵심 어휘입니다.",
@@ -13429,7 +13429,7 @@ export const vocabularyWords = [
   },
   {
     "word": "anthropology",
-    "phonetic": "",
+    "phonetic": "/ˌænθrəˈpɑlədʒi/",
     "type": "수능 어휘",
     "meaning": "인류학",
     "definition": "수능·고등 영어 독해를 위한 960번째 핵심 어휘입니다.",
@@ -13443,7 +13443,7 @@ export const vocabularyWords = [
   },
   {
     "word": "necessity",
-    "phonetic": "",
+    "phonetic": "/nəˈsɛsəti/",
     "type": "수능 어휘",
     "meaning": "필요성, 필요; 필수품",
     "definition": "수능·고등 영어 독해를 위한 961번째 핵심 어휘입니다.",
@@ -13457,7 +13457,7 @@ export const vocabularyWords = [
   },
   {
     "word": "obesity",
-    "phonetic": "",
+    "phonetic": "/oʊˈbisəti/",
     "type": "수능 어휘",
     "meaning": "비만, 과체중",
     "definition": "수능·고등 영어 독해를 위한 962번째 핵심 어휘입니다.",
@@ -13471,7 +13471,7 @@ export const vocabularyWords = [
   },
   {
     "word": "vertex",
-    "phonetic": "",
+    "phonetic": "/ˈvɝˌtɛks/",
     "type": "수능 어휘",
     "meaning": "정점",
     "definition": "수능·고등 영어 독해를 위한 963번째 핵심 어휘입니다.",
@@ -13485,7 +13485,7 @@ export const vocabularyWords = [
   },
   {
     "word": "introductory",
-    "phonetic": "",
+    "phonetic": "/ˌɪntrəˈdʌktɚi/",
     "type": "수능 어휘",
     "meaning": "안내, 소개",
     "definition": "수능·고등 영어 독해를 위한 964번째 핵심 어휘입니다.",
@@ -13499,7 +13499,7 @@ export const vocabularyWords = [
   },
   {
     "word": "reservoir",
-    "phonetic": "",
+    "phonetic": "/ˈrɛzəˌvwɑr/",
     "type": "수능 어휘",
     "meaning": "저수지, 저수지",
     "definition": "수능·고등 영어 독해를 위한 965번째 핵심 어휘입니다.",
@@ -13513,7 +13513,7 @@ export const vocabularyWords = [
   },
   {
     "word": "occurrence",
-    "phonetic": "",
+    "phonetic": "/əˈkɝəns/",
     "type": "수능 어휘",
     "meaning": "일어나다, 나타나다; 사건, 사고, 무슨 일이 있었는지",
     "definition": "수능·고등 영어 독해를 위한 966번째 핵심 어휘입니다.",
@@ -13527,7 +13527,7 @@ export const vocabularyWords = [
   },
   {
     "word": "demographic",
-    "phonetic": "",
+    "phonetic": "/ˌdɛməˈɡræfɪk/",
     "type": "수능 어휘",
     "meaning": "인구통계학적",
     "definition": "수능·고등 영어 독해를 위한 967번째 핵심 어휘입니다.",
@@ -13541,7 +13541,7 @@ export const vocabularyWords = [
   },
   {
     "word": "charming",
-    "phonetic": "",
+    "phonetic": "/ˈtʃɑrmɪŋ/",
     "type": "수능 어휘",
     "meaning": "유쾌한, 사랑스러운",
     "definition": "수능·고등 영어 독해를 위한 968번째 핵심 어휘입니다.",
@@ -13555,7 +13555,7 @@ export const vocabularyWords = [
   },
   {
     "word": "disclose",
-    "phonetic": "",
+    "phonetic": "/dɪˈskloʊz/",
     "type": "수능 어휘",
     "meaning": "누출; 폭로하다; 풀다",
     "definition": "수능·고등 영어 독해를 위한 969번째 핵심 어휘입니다.",
@@ -13569,7 +13569,7 @@ export const vocabularyWords = [
   },
   {
     "word": "affair",
-    "phonetic": "",
+    "phonetic": "/əˈfɛr/",
     "type": "수능 어휘",
     "meaning": "물건, 물건, 사건",
     "definition": "수능·고등 영어 독해를 위한 970번째 핵심 어휘입니다.",
@@ -13583,7 +13583,7 @@ export const vocabularyWords = [
   },
   {
     "word": "likelihood",
-    "phonetic": "",
+    "phonetic": "/ˈlaɪkliˌhʊd/",
     "type": "수능 어휘",
     "meaning": "가능성, 가능성",
     "definition": "수능·고등 영어 독해를 위한 971번째 핵심 어휘입니다.",
@@ -13597,7 +13597,7 @@ export const vocabularyWords = [
   },
   {
     "word": "compromise",
-    "phonetic": "",
+    "phonetic": "/ˈkɑmprəˌmaɪz/",
     "type": "수능 어휘",
     "meaning": "타협, 타협; 안전을 위협하다... 타협하다, 타협하다",
     "definition": "수능·고등 영어 독해를 위한 972번째 핵심 어휘입니다.",
@@ -13611,7 +13611,7 @@ export const vocabularyWords = [
   },
   {
     "word": "peripheral",
-    "phonetic": "",
+    "phonetic": "/pɚˈɪfɚəl/",
     "type": "수능 어휘",
     "meaning": "둘레, 주변, 외부, 가장자리",
     "definition": "수능·고등 영어 독해를 위한 973번째 핵심 어휘입니다.",
@@ -13625,7 +13625,7 @@ export const vocabularyWords = [
   },
   {
     "word": "crest",
-    "phonetic": "",
+    "phonetic": "/ˈkrɛst/",
     "type": "수능 어휘",
     "meaning": "문장",
     "definition": "수능·고등 영어 독해를 위한 974번째 핵심 어휘입니다.",
@@ -13639,7 +13639,7 @@ export const vocabularyWords = [
   },
   {
     "word": "triumph",
-    "phonetic": "",
+    "phonetic": "/ˈtraɪəmf/",
     "type": "수능 어휘",
     "meaning": "엑스터시; 승리, 성공",
     "definition": "수능·고등 영어 독해를 위한 975번째 핵심 어휘입니다.",
@@ -13653,7 +13653,7 @@ export const vocabularyWords = [
   },
   {
     "word": "alloy",
-    "phonetic": "",
+    "phonetic": "/ˈæˌlɔɪ/",
     "type": "수능 어휘",
     "meaning": "합금",
     "definition": "수능·고등 영어 독해를 위한 976번째 핵심 어휘입니다.",
@@ -13667,7 +13667,7 @@ export const vocabularyWords = [
   },
   {
     "word": "controversial",
-    "phonetic": "",
+    "phonetic": "/ˌkɑntrəˈvɝʃəl/",
     "type": "수능 어휘",
     "meaning": "논쟁의 여지가 있는, 논쟁의 여지가 있는",
     "definition": "수능·고등 영어 독해를 위한 977번째 핵심 어휘입니다.",
@@ -13681,7 +13681,7 @@ export const vocabularyWords = [
   },
   {
     "word": "justify",
-    "phonetic": "",
+    "phonetic": "/ˈdʒʌstəˌfaɪ/",
     "type": "수능 어휘",
     "meaning": "정당화...",
     "definition": "수능·고등 영어 독해를 위한 978번째 핵심 어휘입니다.",
@@ -13695,7 +13695,7 @@ export const vocabularyWords = [
   },
   {
     "word": "advert",
-    "phonetic": "",
+    "phonetic": "/ˈædvɚt/",
     "type": "수능 어휘",
     "meaning": "참고하다, 주의하다",
     "definition": "수능·고등 영어 독해를 위한 979번째 핵심 어휘입니다.",
@@ -13709,7 +13709,7 @@ export const vocabularyWords = [
   },
   {
     "word": "possess",
-    "phonetic": "",
+    "phonetic": "/pəˈzɛs/",
     "type": "수능 어휘",
     "meaning": "소유하다, 소유하다",
     "definition": "수능·고등 영어 독해를 위한 980번째 핵심 어휘입니다.",
@@ -13723,7 +13723,7 @@ export const vocabularyWords = [
   },
   {
     "word": "practitioner",
-    "phonetic": "",
+    "phonetic": "/præˈktɪʃənɚ/",
     "type": "수능 어휘",
     "meaning": "실무자; 개업의",
     "definition": "수능·고등 영어 독해를 위한 981번째 핵심 어휘입니다.",
@@ -13737,7 +13737,7 @@ export const vocabularyWords = [
   },
   {
     "word": "revelation",
-    "phonetic": "",
+    "phonetic": "/ˌrɛvəˈleɪʃən/",
     "type": "수능 어휘",
     "meaning": "보여주다, 드러내다",
     "definition": "수능·고등 영어 독해를 위한 982번째 핵심 어휘입니다.",
@@ -13751,7 +13751,7 @@ export const vocabularyWords = [
   },
   {
     "word": "orbit",
-    "phonetic": "",
+    "phonetic": "/ˈɔrbət/",
     "type": "수능 어휘",
     "meaning": "궤도",
     "definition": "수능·고등 영어 독해를 위한 983번째 핵심 어휘입니다.",
@@ -13765,7 +13765,7 @@ export const vocabularyWords = [
   },
   {
     "word": "missile",
-    "phonetic": "",
+    "phonetic": "/ˈmɪsəl/",
     "type": "수능 어휘",
     "meaning": "미사일, 미사일",
     "definition": "수능·고등 영어 독해를 위한 984번째 핵심 어휘입니다.",
@@ -13779,7 +13779,7 @@ export const vocabularyWords = [
   },
   {
     "word": "persistent",
-    "phonetic": "",
+    "phonetic": "/pɚˈsɪstənt/",
     "type": "수능 어휘",
     "meaning": "지속적이고 끈기 있는; 끈질긴",
     "definition": "수능·고등 영어 독해를 위한 985번째 핵심 어휘입니다.",
@@ -13793,7 +13793,7 @@ export const vocabularyWords = [
   },
   {
     "word": "oxide",
-    "phonetic": "",
+    "phonetic": "/ˈɑˌksaɪd/",
     "type": "수능 어휘",
     "meaning": "산화물",
     "definition": "수능·고등 영어 독해를 위한 986번째 핵심 어휘입니다.",
@@ -13807,7 +13807,7 @@ export const vocabularyWords = [
   },
   {
     "word": "colleague",
-    "phonetic": "",
+    "phonetic": "/ˈkɑliɡ/",
     "type": "수능 어휘",
     "meaning": "동료, 동료",
     "definition": "수능·고등 영어 독해를 위한 987번째 핵심 어휘입니다.",
@@ -13821,7 +13821,7 @@ export const vocabularyWords = [
   },
   {
     "word": "dividend",
-    "phonetic": "",
+    "phonetic": "/ˈdɪvɪˌdɛnd/",
     "type": "수능 어휘",
     "meaning": "배당금",
     "definition": "수능·고등 영어 독해를 위한 988번째 핵심 어휘입니다.",
@@ -13835,7 +13835,7 @@ export const vocabularyWords = [
   },
   {
     "word": "glucose",
-    "phonetic": "",
+    "phonetic": "/ˈɡluˌkoʊs/",
     "type": "수능 어휘",
     "meaning": "포도당",
     "definition": "수능·고등 영어 독해를 위한 989번째 핵심 어휘입니다.",
@@ -13849,7 +13849,7 @@ export const vocabularyWords = [
   },
   {
     "word": "absorption",
-    "phonetic": "",
+    "phonetic": "/əˈbzɔrpʃən/",
     "type": "수능 어휘",
     "meaning": "흡수하다",
     "definition": "수능·고등 영어 독해를 위한 990번째 핵심 어휘입니다.",
@@ -13863,7 +13863,7 @@ export const vocabularyWords = [
   },
   {
     "word": "neural",
-    "phonetic": "",
+    "phonetic": "/ˈnʊrəl/",
     "type": "수능 어휘",
     "meaning": "신경계",
     "definition": "수능·고등 영어 독해를 위한 991번째 핵심 어휘입니다.",
@@ -13877,7 +13877,7 @@ export const vocabularyWords = [
   },
   {
     "word": "fossil",
-    "phonetic": "",
+    "phonetic": "/ˈfɑsəl/",
     "type": "수능 어휘",
     "meaning": "화석",
     "definition": "수능·고등 영어 독해를 위한 992번째 핵심 어휘입니다.",
@@ -13891,7 +13891,7 @@ export const vocabularyWords = [
   },
   {
     "word": "temporal",
-    "phonetic": "",
+    "phonetic": "/ˈtɛmpɚəl/",
     "type": "수능 어휘",
     "meaning": "일시적인",
     "definition": "수능·고등 영어 독해를 위한 993번째 핵심 어휘입니다.",
@@ -13905,7 +13905,7 @@ export const vocabularyWords = [
   },
   {
     "word": "telescope",
-    "phonetic": "",
+    "phonetic": "/ˈtɛləˌskoʊp/",
     "type": "수능 어휘",
     "meaning": "압축 망원경",
     "definition": "수능·고등 영어 독해를 위한 994번째 핵심 어휘입니다.",
@@ -13919,7 +13919,7 @@ export const vocabularyWords = [
   },
   {
     "word": "savage",
-    "phonetic": "",
+    "phonetic": "/ˈsævədʒ/",
     "type": "수능 어휘",
     "meaning": "야만인, 미개한 사람, 원시인, 무례한 사람",
     "definition": "수능·고등 영어 독해를 위한 995번째 핵심 어휘입니다.",
@@ -13933,7 +13933,7 @@ export const vocabularyWords = [
   },
   {
     "word": "subtle",
-    "phonetic": "",
+    "phonetic": "/ˈsʌtəl/",
     "type": "수능 어휘",
     "meaning": "예리한; 미세하다, 미묘하다",
     "definition": "수능·고등 영어 독해를 위한 996번째 핵심 어휘입니다.",
@@ -13947,7 +13947,7 @@ export const vocabularyWords = [
   },
   {
     "word": "controversy",
-    "phonetic": "",
+    "phonetic": "/ˈkɑntrəˌvɝsi/",
     "type": "수능 어휘",
     "meaning": "논쟁하다, 토론하다",
     "definition": "수능·고등 영어 독해를 위한 997번째 핵심 어휘입니다.",
@@ -13961,7 +13961,7 @@ export const vocabularyWords = [
   },
   {
     "word": "choir",
-    "phonetic": "",
+    "phonetic": "/ˈkwaɪɚ/",
     "type": "수능 어휘",
     "meaning": "합창단; 합창단",
     "definition": "수능·고등 영어 독해를 위한 998번째 핵심 어휘입니다.",
@@ -13975,7 +13975,7 @@ export const vocabularyWords = [
   },
   {
     "word": "polymer",
-    "phonetic": "",
+    "phonetic": "/ˈpɑləmɚ/",
     "type": "수능 어휘",
     "meaning": "폴리머",
     "definition": "수능·고등 영어 독해를 위한 999번째 핵심 어휘입니다.",
@@ -13989,7 +13989,7 @@ export const vocabularyWords = [
   },
   {
     "word": "mandate",
-    "phonetic": "",
+    "phonetic": "/ˈmæˌndeɪt/",
     "type": "수능 어휘",
     "meaning": "주문; 지침; 요구",
     "definition": "수능·고등 영어 독해를 위한 1000번째 핵심 어휘입니다.",

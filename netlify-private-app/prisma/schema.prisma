@@ -29,6 +29,107 @@ enum ReviewSourceType {
   quiz_wrong
 }
 
+enum LearningContentType {
+  daily_sentence
+  ted_learning
+}
+
+enum LearningContentStatus {
+  draft
+  scheduled
+  published
+  hidden
+}
+
+model LearningContent {
+  id             String                @id @default(cuid())
+  type           LearningContentType
+  title          String
+  publishDate    DateTime              @map("publish_date") @db.Date
+  status         LearningContentStatus @default(draft)
+  estimatedTime  Int                   @default(1) @map("estimated_time")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+  dailyDetail    DailySentenceDetail?
+  tedDetail      TedLearningDetail?
+  examples       LearningExample[]
+  learningQuizzes LearningQuiz[]
+
+  @@index([type, status, publishDate])
+  @@map("learning_contents")
+}
+
+model DailySentenceDetail {
+  id                     String          @id @default(cuid())
+  contentId              String          @unique @map("content_id")
+  expressionEn           String          @map("expression_en")
+  expressionKo           String          @map("expression_ko")
+  expressionAudioUrl     String?         @map("expression_audio_url")
+  mainSentenceEn         String          @map("main_sentence_en")
+  mainSentenceKo         String          @map("main_sentence_ko")
+  mainSentenceAudioUrl   String?         @map("main_sentence_audio_url")
+  descriptionText        String          @map("description_text")
+  nuanceText             String          @map("nuance_text")
+  usageText              String          @map("usage_text")
+  content                LearningContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("daily_sentence_details")
+}
+
+model TedLearningDetail {
+  id                   String          @id @default(cuid())
+  contentId            String          @unique @map("content_id")
+  tedTitle             String          @map("ted_title")
+  tedSummary           String          @map("ted_summary")
+  speakerName          String          @map("speaker_name")
+  speakerDesc          String          @map("speaker_desc")
+  thumbnailUrl         String?         @map("thumbnail_url")
+  videoUrl             String?         @map("video_url")
+  contextText          String          @map("context_text")
+  keySentenceEn        String          @map("key_sentence_en")
+  keySentenceKo        String          @map("key_sentence_ko")
+  keySentenceAudioUrl  String?         @map("key_sentence_audio_url")
+  expressionNote       String          @map("expression_note")
+  messageNote          String          @map("message_note")
+  previousFlow         String?         @map("previous_flow")
+  nextFlow             String?         @map("next_flow")
+  takeawayText         String          @map("takeaway_text")
+  content              LearningContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("ted_learning_details")
+}
+
+model LearningExample {
+  id          String          @id @default(cuid())
+  contentId   String          @map("content_id")
+  sentenceEn  String          @map("sentence_en")
+  sentenceKo  String          @map("sentence_ko")
+  audioUrl    String?         @map("audio_url")
+  sortOrder   Int             @default(1) @map("sort_order")
+  content     LearningContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, sortOrder])
+  @@map("learning_examples")
+}
+
+model LearningQuiz {
+  id             String          @id @default(cuid())
+  contentId      String          @map("content_id")
+  quizType       String          @map("quiz_type")
+  questionText   String          @map("question_text")
+  choice1        String          @map("choice_1")
+  choice2        String          @map("choice_2")
+  choice3        String          @map("choice_3")
+  choice4        String?         @map("choice_4")
+  correctAnswer  Int             @map("correct_answer")
+  explanation   String
+  sortOrder      Int             @default(1) @map("sort_order")
+  content        LearningContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, sortOrder])
+  @@map("learning_content_quizzes")
+}
+
 model Expression {
   id               String                 @id @default(cuid())
   slug             String                 @unique

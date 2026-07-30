@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import valueTimeStylesUrl from "../../../styles/app.css?url";
 import UserSelectorModal from "./UserSelectorModal.jsx";
 import ArticleImportModal from "./ArticleImportModal.jsx";
+import SettingsModal from "./SettingsModal.jsx";
+import { applyStudyDisplayPreferences, loadUserSettings } from "../settings/settingsStorage.js";
+import { applyUiLanguage, observeUiLanguage } from "../settings/uiLanguage.js";
 import "../legacy-overrides.css";
 
 export default function ValueTimeApp({ page }) {
   const [loadError, setLoadError] = useState(false);
   const [selectorMode, setSelectorMode] = useState(null);
   const [articleImportRequest, setArticleImportRequest] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const stylesheet = document.createElement("link");
@@ -41,15 +45,24 @@ export default function ValueTimeApp({ page }) {
     });
     window.addEventListener("valuetime:request-user", openSelector);
     window.addEventListener("valuetime:request-article-import", openArticleImport);
+    const openSettings = () => setSettingsOpen(true);
+    window.addEventListener("valuetime:request-settings", openSettings);
+    applyStudyDisplayPreferences(loadUserSettings());
+    const stopLanguageObserver = observeUiLanguage(document.body);
+    const syncLanguage = () => applyUiLanguage(document.body);
+    window.addEventListener("valuetime:settings-changed", syncLanguage);
 
     return () => {
       window.removeEventListener("valuetime:request-user", openSelector);
       window.removeEventListener("valuetime:request-article-import", openArticleImport);
+      window.removeEventListener("valuetime:request-settings", openSettings);
+      window.removeEventListener("valuetime:settings-changed", syncLanguage);
+      stopLanguageObserver();
       observer.disconnect();
       stylesheet.remove();
     };
   }, [page]);
 
   if (loadError) return <div id="app" />;
-  return <><div id="app" /><UserSelectorModal mode={selectorMode} onClose={() => setSelectorMode(null)} /><ArticleImportModal open={Boolean(articleImportRequest)} request={articleImportRequest} onClose={() => setArticleImportRequest(null)} /></>;
+  return <><div id="app" /><UserSelectorModal mode={selectorMode} onClose={() => setSelectorMode(null)} /><ArticleImportModal open={Boolean(articleImportRequest)} request={articleImportRequest} onClose={() => setArticleImportRequest(null)} /><SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} /></>;
 }

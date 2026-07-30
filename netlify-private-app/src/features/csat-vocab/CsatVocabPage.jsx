@@ -851,12 +851,6 @@ function CsatReviewCoach({ progress, updateProgress }) {
   const question = useMemo(() => current ? buildQuestions([current.word], SERIES[current.word.series].words)[0] : null, [current?.word.id]);
 
   useEffect(() => {
-    if (!wrongEntries.length) return undefined;
-    const timer = window.setInterval(() => setOpen(true), 60000);
-    return () => window.clearInterval(timer);
-  }, [wrongEntries.length]);
-
-  useEffect(() => {
     if (current?.word.id && current.word.id !== currentWordId) setCurrentWordId(current.word.id);
   }, [current?.word.id, currentWordId]);
 
