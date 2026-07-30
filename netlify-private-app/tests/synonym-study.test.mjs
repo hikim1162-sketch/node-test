@@ -19,12 +19,10 @@ test("published curriculum contains one hundred curated words", () => {
 });
 
 test("each set has learning cards and three CSAT-style quiz items", () => {
-  const allowedTypes = new Set(["synonym_select", "blank", "context_match", "meaning_match"]);
   for (const set of synonymStudySets) {
     assert.ok(set.words.length >= 5);
     assert.equal(set.quiz.length, 3);
-    assert.ok(set.quiz.every((item) => allowedTypes.has(item.type)));
-    assert.ok(new Set(set.quiz.map((item) => item.type)).size >= 2);
+    assert.ok(set.quiz.every((item) => item.type === "synonym_select_all"));
   }
 });
 
@@ -45,11 +43,13 @@ test("every card has the required learning fields", () => {
   }
 });
 
-test("every quiz has distinct choices and one correct answer", () => {
+test("every quiz asks learners to select every synonym", () => {
   for (const question of synonymStudySets.flatMap((set) => set.quiz)) {
-    assert.equal(question.choices.length, 4);
-    assert.equal(new Set(question.choices).size, 4);
-    assert.equal(question.choices.filter((choice) => choice === question.answer).length, 1);
+    assert.match(question.prompt, /유의어를 모두 고르시오/);
+    assert.ok(question.answers.length >= 2);
+    assert.equal(new Set(question.choices).size, question.choices.length);
+    assert.ok(question.answers.every((answer) => question.choices.includes(answer)));
+    assert.ok(question.choices.some((choice) => !question.answers.includes(choice)));
   }
 });
 
@@ -68,6 +68,7 @@ test("stored state normalization preserves scalable arrays", () => {
   const state = normalizeSynonymStudyState({ ...getSynonymStudyInitialState(), wrongWordIds: null });
   assert.deepEqual(state.wrongWordIds, []);
   assert.deepEqual(state.dailyThemeAnswers, {});
+  assert.deepEqual(state.quizSelections, {});
 });
 
 test("daily theme calendar has thirty valid days", () => {
@@ -99,4 +100,6 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(tabs, />오답 복습 /);
   assert.doesNotMatch(tabs, /학습 세트|학습·문제/);
   assert.match(appSource, /const vocabulary = synonymStudySets\.flatMap/);
+  assert.match(appSource, /dailyVocabulary\.every\(\(\{ word \}\) => synonymStudyState\.learnedWordIds\.includes\(word\.id\)\)/);
+  assert.match(appSource, /data-synonym-submit/);
 });

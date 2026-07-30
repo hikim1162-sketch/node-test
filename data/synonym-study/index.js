@@ -42,7 +42,7 @@ export const synonymStudySets = [...setDefinitions, ...expandedSetDefinitions].m
 }));
 
 export function getSynonymStudyInitialState() {
-  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, vocabularyDay: 1, learnedWordIds: [], clearedRelatedExpressionIds: [], quizIndex: 0, answers: [], wrongWordIds: [], completedSetIds: [], dailyThemeAnswers: {} };
+  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, vocabularyDay: 1, learnedWordIds: [], clearedRelatedExpressionIds: [], quizIndex: 0, quizSelections: {}, answers: [], wrongWordIds: [], completedSetIds: [], dailyThemeAnswers: {} };
 }
 
 export function normalizeSynonymStudyState(value) {
@@ -52,6 +52,7 @@ export function normalizeSynonymStudyState(value) {
     if (!Array.isArray(state[key])) state[key] = [];
   });
   if (!state.dailyThemeAnswers || typeof state.dailyThemeAnswers !== "object" || Array.isArray(state.dailyThemeAnswers)) state.dailyThemeAnswers = {};
+  if (!state.quizSelections || typeof state.quizSelections !== "object" || Array.isArray(state.quizSelections)) state.quizSelections = {};
   state.vocabularyDay = Math.max(1, Math.min(30, Number(state.vocabularyDay) || 1));
   return state;
 }

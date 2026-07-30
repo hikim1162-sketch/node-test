@@ -667,6 +667,8 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-quiz>article>div{display:grid;gap:8px}
 .synonym-quiz>article>div>button{display:flex;align-items:center;gap:11px;min-height:50px;padding:10px 13px;border:1px solid #cfdae0;border-radius:10px;background:#fff;text-align:left}
 .synonym-quiz>article>div>button i{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#edf2f4;font-style:normal}
+.synonym-quiz>article>div>button.selected{border-color:#367d72;background:#edf8f5;box-shadow:0 0 0 2px #74c7b933}
+.synonym-quiz>article>div>button.selected i{background:#367d72;color:#fff}
 .synonym-quiz>article>div>button.correct{border-color:#4a9b7c;background:#e8f5ee;color:#176749}
 .synonym-quiz>article>div>button.wrong{border-color:#d66f6f;background:#fff0f0;color:#993d3d}
 .synonym-answer{margin-top:12px;padding:13px;border-radius:9px;background:#e7f4ed;color:#176448}

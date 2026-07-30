@@ -2006,6 +2006,7 @@ function findSynonymWord(wordId) {
 
 function synonymQuizTypeLabel(type) {
   return {
+    synonym_select_all: "유의어 모두 선택",
     synonym_select: "유의어 선택",
     blank: "빈칸 추론",
     context_match: "문맥상 유의어",
@@ -3159,12 +3160,13 @@ function synonymStudyPage() {
     const index = Math.min(synonymStudyState.quizIndex, set.quiz.length - 1);
     const question = set.quiz[index];
     const answer = synonymStudyState.answers.find(item => item.quizId === question.id);
+    const selectedAnswers = answer?.selectedAnswers || synonymStudyState.quizSelections?.[question.id] || [];
     content = `<section class="synonym-quiz"><header><div><span>CSAT VOCABULARY CHECK</span><h2>${escapeMarkup(set.title)}</h2></div><b>${index + 1} / ${set.quiz.length}</b></header><div class="synonym-quiz-type">${synonymQuizTypeLabel(question.type)}</div><article><p>${escapeMarkup(question.prompt)}</p><blockquote>${escapeMarkup(question.context)}</blockquote><div>${question.choices.map((choice, choiceIndex) => {
-      const selected = answer?.selectedAnswer === choice;
-      const correct = Boolean(answer) && choice === question.answer;
+      const selected = selectedAnswers.includes(choice);
+      const correct = Boolean(answer) && question.answers.includes(choice);
       const wrong = Boolean(answer) && selected && !answer.isCorrect;
-      return `<button class="${correct ? "correct" : ""} ${wrong ? "wrong" : ""}" type="button" data-synonym-answer="${choiceIndex}" ${answer ? "disabled" : ""}><i>${choiceIndex + 1}</i>${escapeMarkup(choice)}</button>`;
-    }).join("")}</div>${answer ? `<section class="synonym-answer ${answer.isCorrect ? "success" : "error"}"><b>${answer.isCorrect ? "정답입니다." : "오답입니다."}</b><p>${escapeMarkup(question.explanation)}</p></section>` : ""}</article>${answer ? `<footer><button class="primary" type="button" data-synonym-quiz-next>${index === set.quiz.length - 1 ? "결과 확인" : "다음 문제"} ${icon("arrow", 14)}</button></footer>` : ""}</section>`;
+      return `<button class="${selected ? "selected" : ""} ${correct ? "correct" : ""} ${wrong ? "wrong" : ""}" type="button" data-synonym-answer="${choiceIndex}" aria-pressed="${selected}" ${answer ? "disabled" : ""}><i>${choiceIndex + 1}</i>${escapeMarkup(choice)}</button>`;
+    }).join("")}</div>${answer ? `<section class="synonym-answer ${answer.isCorrect ? "success" : "error"}"><b>${answer.isCorrect ? "정답입니다." : "오답입니다."}</b><p>정답: ${question.answers.map(escapeMarkup).join(", ")}</p><p>${escapeMarkup(question.explanation)}</p></section>` : ""}</article>${answer ? `<footer><button class="primary" type="button" data-synonym-quiz-next>${index === set.quiz.length - 1 ? "결과 확인" : "다음 문제"} ${icon("arrow", 14)}</button></footer>` : `<footer><button class="primary" type="button" data-synonym-submit ${selectedAnswers.length ? "" : "disabled"}>선택 완료</button></footer>`}</section>`;
   } else if (view === "result") {
     const score = synonymStudyState.answers.filter(item => item.isCorrect).length;
     content = `<section class="synonym-result"><span>TEST COMPLETE</span><h2>${score}<small> / ${set.quiz.length}</small></h2><h3>유의어 테스트 완료</h3><p>${synonymStudyState.wrongWordIds.length ? "틀린 어휘는 오답 복습에 자동으로 저장했습니다." : "문제를 모두 정확히 풀었습니다."}</p><div><button type="button" data-synonym-view="sets">유의어 어휘</button><button class="primary" type="button" data-synonym-view="review">오답 복습</button></div></section>`;
@@ -5867,6 +5869,7 @@ function bindEvents(){
     const nextView = event.currentTarget.dataset.synonymView;
     if (nextView === "quiz" && !["quiz", "result"].includes(synonymStudyState.view)) {
       synonymStudyState.quizIndex = 0;
+      synonymStudyState.quizSelections = {};
       synonymStudyState.answers = [];
     }
     synonymStudyState.view = nextView;
@@ -5878,6 +5881,7 @@ function bindEvents(){
     synonymStudyState.view = "learn";
     synonymStudyState.cardIndex = 0;
     synonymStudyState.quizIndex = 0;
+    synonymStudyState.quizSelections = {};
     synonymStudyState.learnedWordIds = [];
     synonymStudyState.answers = [];
     saveSynonymStudyState();
@@ -5921,9 +5925,25 @@ function bindEvents(){
   }));
   document.querySelectorAll("[data-synonym-daily-learned]").forEach(button => button.addEventListener("click", event => {
     const wordId = event.currentTarget.dataset.synonymDailyLearned;
-    synonymStudyState.learnedWordIds = synonymStudyState.learnedWordIds.includes(wordId)
+    const wasLearned = synonymStudyState.learnedWordIds.includes(wordId);
+    synonymStudyState.learnedWordIds = wasLearned
       ? synonymStudyState.learnedWordIds.filter(id => id !== wordId)
       : [...synonymStudyState.learnedWordIds, wordId];
+    if (!wasLearned) {
+      const vocabulary = synonymStudySets.flatMap(sourceSet => sourceSet.words.map(word => ({ sourceSet, word })));
+      const day = Math.max(1, Math.min(30, Number(synonymStudyState.vocabularyDay) || 1));
+      const dayStart = day <= 10 ? (day - 1) * 4 : 40 + (day - 11) * 3;
+      const dayCount = day <= 10 ? 4 : 3;
+      const dailyVocabulary = vocabulary.slice(dayStart, dayStart + dayCount);
+      if (dailyVocabulary.length && dailyVocabulary.every(({ word }) => synonymStudyState.learnedWordIds.includes(word.id))) {
+        const currentEntry = dailyVocabulary.find(({ word }) => word.id === wordId) || dailyVocabulary[0];
+        synonymStudyState.activeSetId = currentEntry.sourceSet.id;
+        synonymStudyState.view = "quiz";
+        synonymStudyState.quizIndex = 0;
+        synonymStudyState.quizSelections = {};
+        synonymStudyState.answers = [];
+      }
+    }
     saveSynonymStudyState();
     render();
   }));
@@ -5943,6 +5963,7 @@ function bindEvents(){
     if (synonymStudyState.cardIndex >= set.words.length - 1) {
       synonymStudyState.view = "quiz";
       synonymStudyState.quizIndex = 0;
+      synonymStudyState.quizSelections = {};
       synonymStudyState.answers = [];
     } else {
       synonymStudyState.cardIndex += 1;
@@ -5955,12 +5976,25 @@ function bindEvents(){
     const question = set.quiz[synonymStudyState.quizIndex];
     if (!question || synonymStudyState.answers.some(item => item.quizId === question.id)) return;
     const selectedAnswer = question.choices[Number(event.currentTarget.dataset.synonymAnswer)];
-    const isCorrect = selectedAnswer === question.answer;
-    synonymStudyState.answers.push({ quizId: question.id, wordId: question.wordId, selectedAnswer, isCorrect });
-    if (!isCorrect && !synonymStudyState.wrongWordIds.includes(question.wordId)) synonymStudyState.wrongWordIds.push(question.wordId);
+    const selectedAnswers = synonymStudyState.quizSelections[question.id] || [];
+    synonymStudyState.quizSelections[question.id] = selectedAnswers.includes(selectedAnswer)
+      ? selectedAnswers.filter(choice => choice !== selectedAnswer)
+      : [...selectedAnswers, selectedAnswer];
     saveSynonymStudyState();
     render();
   }));
+  document.querySelector("[data-synonym-submit]")?.addEventListener("click", () => {
+    const set = getActiveSynonymSet();
+    const question = set.quiz[synonymStudyState.quizIndex];
+    if (!question || synonymStudyState.answers.some(item => item.quizId === question.id)) return;
+    const selectedAnswers = synonymStudyState.quizSelections[question.id] || [];
+    const isCorrect = selectedAnswers.length === question.answers.length
+      && question.answers.every(answer => selectedAnswers.includes(answer));
+    synonymStudyState.answers.push({ quizId: question.id, wordId: question.wordId, selectedAnswers, isCorrect });
+    if (!isCorrect && !synonymStudyState.wrongWordIds.includes(question.wordId)) synonymStudyState.wrongWordIds.push(question.wordId);
+    saveSynonymStudyState();
+    render();
+  });
   document.querySelector("[data-synonym-quiz-next]")?.addEventListener("click", () => {
     const set = getActiveSynonymSet();
     if (synonymStudyState.quizIndex >= set.quiz.length - 1) {
