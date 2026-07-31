@@ -722,7 +722,7 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-related-expression button:hover{background:#fff;color:#0d5148}
 .synonym-related-expression button:focus-visible{outline:2px solid #2d8276;outline-offset:2px}
 .synonym-related .synonym-related-expression{font-size:inherit;font-weight:inherit}
-.synonym-main-phonetic{color:#67808a;font-family:Georgia,serif;font-size:13px;font-weight:650;white-space:nowrap}
+.synonym-main-phonetic{color:#536b78;font-family:Arial,"Noto Sans",sans-serif;font-size:13px;font-weight:650;white-space:nowrap}
 .synonym-day-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;margin:20px 0;padding:14px;border-radius:14px;background:#edf4f6}
 .synonym-day-nav button{min-height:40px;padding:0 16px;border:1px solid #c8d8df;border-radius:9px;background:#fff;color:#345467;font-weight:800;cursor:pointer}
 .synonym-day-nav button:disabled{cursor:not-allowed;opacity:.4}
