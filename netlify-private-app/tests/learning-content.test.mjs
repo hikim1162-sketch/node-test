@@ -29,6 +29,9 @@ test("type-specific required fields are validated", () => {
 
 test("daily quick test rotates grammar questions by date", () => {
   const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+  assert.match(appSource, /selectedWords = seededShuffle\(todayWords, `\$\{dateKey\}-quick-words`\)\.slice\(0, 2\)/);
+  assert.match(appSource, /const reverse = \(dateSeed\(dateKey\) \+ index\) % 2 !== 0/);
+  assert.match(appSource, /sentenceQuestionBank[\s\S]*?sentence-types`\)\.slice\(0, 2\)/);
   assert.match(appSource, /const grammarBank = \[/);
   assert.match(appSource, /grammarBank\[Math\.abs\(dateSeed\(dateKey\)\) % grammarBank\.length\]/);
   const grammarBankSource = appSource.slice(appSource.indexOf("const grammarBank = ["), appSource.indexOf("const grammar =", appSource.indexOf("const grammarBank = [")));

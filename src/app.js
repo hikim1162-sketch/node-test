@@ -1518,13 +1518,67 @@ const dailyQuickTestState = { date: localDateKey(), graded: false, score: null }
 
 function getDailyQuickTestQuestions(dateKey = localDateKey()) {
   const todayWords = getTodayVocabWords(dateKey);
-  const word = todayWords[Math.abs(dateSeed(dateKey)) % todayWords.length];
-  const meaningPool = [...new Set(words.filter(item => item.word !== word.word && item.meaning !== word.meaning).map(item => item.meaning))];
-  const wordChoices = seededShuffle([word.meaning, ...seededShuffle(meaningPool, `${dateKey}-word-pool`).slice(0, 2)], `${dateKey}-word-choices`);
+  const selectedWords = seededShuffle(todayWords, `${dateKey}-quick-words`).slice(0, 2);
+  const meaningPool = [...new Set(words.map(item => item.meaning))];
+  const wordPool = [...new Set(words.map(item => item.word))];
+  const vocabQuestions = selectedWords.map((word, index) => {
+    const reverse = (dateSeed(dateKey) + index) % 2 !== 0;
+    const answerText = reverse ? word.word : word.meaning;
+    const distractorPool = reverse
+      ? wordPool.filter(item => item !== word.word)
+      : meaningPool.filter(item => item !== word.meaning);
+    const choices = seededShuffle(
+      [answerText, ...seededShuffle(distractorPool, `${dateKey}-vocab-pool-${index}`).slice(0, 2)],
+      `${dateKey}-vocab-choices-${index}`,
+    );
+    return {
+      category: reverse ? "뜻 보고 단어 찾기" : "오늘의 단어",
+      prompt: reverse ? word.meaning : word.word,
+      question: reverse ? "해당하는 영어 단어는?" : "뜻으로 가장 알맞은 것은?",
+      choices,
+      answer: choices.indexOf(answerText),
+      explanation: `${word.word}는 '${word.meaning}'라는 뜻입니다.`,
+    };
+  });
 
   const sentence = getDailySentenceLesson(dateKey);
+  const otherLessons = sentenceLessons.filter(item => item.en !== sentence.en);
   const patternMeaningPool = [...new Set(sentenceLessons.filter(item => item.pattern !== sentence.pattern).map(item => item.meaning))];
-  const sentenceChoices = seededShuffle([sentence.meaning, ...seededShuffle(patternMeaningPool, `${dateKey}-sentence-pool`).slice(0, 2)], `${dateKey}-sentence-choices`);
+  const sentenceTextPool = [...new Set(otherLessons.map(item => item.en))];
+  const patternPool = [...new Set(otherLessons.map(item => item.pattern).filter(item => item !== sentence.pattern))];
+  const sentenceQuestionBank = [
+    {
+      category: "표현 의미",
+      prompt: sentence.pattern,
+      question: "표현의 의미로 가장 알맞은 것은?",
+      answerText: sentence.meaning,
+      pool: patternMeaningPool,
+      explanation: `${sentence.pattern}은 '${sentence.meaning}'라는 의미입니다.`,
+    },
+    {
+      category: "한글 보고 문장 찾기",
+      prompt: sentence.ko,
+      question: "해당하는 영어 문장은?",
+      answerText: sentence.en,
+      pool: sentenceTextPool,
+      explanation: `오늘의 문장은 '${sentence.en}'입니다.`,
+    },
+    {
+      category: "문장 패턴 찾기",
+      prompt: sentence.en,
+      question: "이 문장의 핵심 패턴은?",
+      answerText: sentence.pattern,
+      pool: patternPool,
+      explanation: `핵심 패턴은 '${sentence.pattern}'입니다.`,
+    },
+  ];
+  const sentenceQuestions = seededShuffle(sentenceQuestionBank, `${dateKey}-sentence-types`).slice(0, 2).map((item, index) => {
+    const choices = seededShuffle(
+      [item.answerText, ...seededShuffle(item.pool, `${dateKey}-sentence-pool-${index}`).slice(0, 2)],
+      `${dateKey}-sentence-choices-${index}`,
+    );
+    return { ...item, choices, answer: choices.indexOf(item.answerText) };
+  });
   const grammarBank = [
     { prompt: "get used to + ?", question: "뒤에 가장 자연스럽게 오는 형태는?", answer: "동명사 또는 명사", distractors: ["동사원형만", "과거분사만"], explanation: "get used to 뒤에는 명사나 동명사를 씁니다. 예: get used to speaking English." },
     { prompt: "be interested in + ?", question: "뒤에 가장 자연스럽게 오는 형태는?", answer: "동명사 또는 명사", distractors: ["동사원형만", "to부정사만"], explanation: "전치사 in 뒤에는 명사나 동명사를 씁니다. 예: be interested in learning English." },
@@ -1538,8 +1592,8 @@ function getDailyQuickTestQuestions(dateKey = localDateKey()) {
   const grammarChoices = seededShuffle([grammar.answer, ...grammar.distractors], `${dateKey}-grammar-choices`);
 
   return [
-    { category: "오늘의 단어", prompt: word.word, question: "뜻으로 가장 알맞은 것은?", choices: wordChoices, answer: wordChoices.indexOf(word.meaning), explanation: `${word.word}는 '${word.meaning}'라는 뜻입니다.` },
-    { category: "매일 1문장", prompt: sentence.pattern, question: "표현의 의미로 가장 알맞은 것은?", choices: sentenceChoices, answer: sentenceChoices.indexOf(sentence.meaning), explanation: `${sentence.pattern}은 '${sentence.meaning}'라는 의미입니다.` },
+    ...vocabQuestions,
+    ...sentenceQuestions,
     { category: "문법 포인트", prompt: grammar.prompt, question: grammar.question, choices: grammarChoices, answer: grammarChoices.indexOf(grammar.answer), explanation: grammar.explanation },
   ];
 }
@@ -3886,7 +3940,7 @@ function dailyTestPage() {
   }
 
   return `${header("Daily Test")}<main class="daily-test-page">
-    <section class="daily-quick-test" aria-labelledby="quick-test-title"><div class="daily-quick-head"><div><p class="eyebrow">TODAY REVIEW CHECK · ${todayKey}</p><h2 id="quick-test-title">오늘 학습 확인용 퀵 테스트</h2><span>오늘 학습한 단어, 문장 표현, 문법 포인트를 가볍게 확인합니다.</span></div><b>${quickTotal} QUESTIONS</b></div><div class="daily-quick-scope"><span>오늘 학습 기반 ${quickTotal}문항</span><span>단어 / 문장 / 문법 복습 포함</span><span>${reviewCount ? `복습 대기 ${reviewCount}개 있음` : "복습 대기 없음"}</span></div><div class="daily-quick-status"><b class="${isDashboardDone ? "done" : "todo"}">${isDashboardDone ? icon("check",12) : ""}${isDashboardDone ? "완료됨" : "진행 전"}</b><span>${testMeta.lastStudiedAt ? `최근 학습 · ${testMeta.lastStudiedAt}` : "아직 테스트를 시작하지 않았어요"}</span><span data-daily-score-meta>${testMeta.score !== null && testMeta.score !== undefined ? `최근 점수 · ${testMeta.score}` : "최근 풀이 기록이 없어요"}</span><button type="button" data-daily-undo ${!isDashboardDone ? "disabled" : ""}>완료 해제</button></div><div class="daily-quick-grid">${quickQuestions.map((question, questionIndex) => `<fieldset><legend><small>${question.category}</small>${questionIndex + 1}. <strong>${question.prompt}</strong> ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<label><input type="radio" name="quick-q${questionIndex + 1}" value="${choiceIndex}"><span>${choice}</span></label>`).join("")}</fieldset>`).join("")}</div><div class="daily-quick-actions"><button type="button" data-quick-grade>오늘 테스트 채점하기</button><p class="${dailyQuickTestState.score === quickTotal ? "perfect" : ""}" data-quick-result role="status" aria-live="polite">${dailyQuickTestState.graded ? `점수: ${dailyQuickTestState.score} / ${quickTotal}` : ""}</p><button class="complete ${isDashboardDone ? "done" : ""}" type="button" data-daily-complete ${!dailyQuickTestState.graded && !isDashboardDone ? "hidden" : ""} ${isDashboardDone ? "disabled" : ""}>${icon("check",16)} ${isDashboardDone ? "Daily Test 완료됨" : "학습 완료 처리"}</button></div></section>
+    <section class="daily-quick-test" aria-labelledby="quick-test-title"><div class="daily-quick-head"><div><p class="eyebrow">TODAY REVIEW CHECK · ${todayKey}</p><h2 id="quick-test-title">오늘의 Daily Test</h2><span>다른 학습 없이도 단어, 문장 표현, 문법 문제를 매일 새로운 구성으로 풀 수 있습니다.</span></div><b>${quickTotal} QUESTIONS</b></div><div class="daily-quick-scope"><span>오늘의 독립 문제 세트 ${quickTotal}문항</span><span>단어 양방향 / 문장 유형 / 문법 포함</span><span>${reviewCount ? `복습 대기 ${reviewCount}개 있음` : "복습 대기 없음"}</span></div><div class="daily-quick-status"><b class="${isDashboardDone ? "done" : "todo"}">${isDashboardDone ? icon("check",12) : ""}${isDashboardDone ? "완료됨" : "진행 전"}</b><span>${testMeta.lastStudiedAt ? `최근 학습 · ${testMeta.lastStudiedAt}` : "아직 테스트를 시작하지 않았어요"}</span><span data-daily-score-meta>${testMeta.score !== null && testMeta.score !== undefined ? `최근 점수 · ${testMeta.score}` : "최근 풀이 기록이 없어요"}</span><button type="button" data-daily-undo ${!isDashboardDone ? "disabled" : ""}>완료 해제</button></div><div class="daily-quick-grid">${quickQuestions.map((question, questionIndex) => `<fieldset><legend><small>${question.category}</small>${questionIndex + 1}. <strong>${question.prompt}</strong> ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<label><input type="radio" name="quick-q${questionIndex + 1}" value="${choiceIndex}"><span>${choice}</span></label>`).join("")}</fieldset>`).join("")}</div><div class="daily-quick-actions"><button type="button" data-quick-grade>오늘 테스트 채점하기</button><p class="${dailyQuickTestState.score === quickTotal ? "perfect" : ""}" data-quick-result role="status" aria-live="polite">${dailyQuickTestState.graded ? `점수: ${dailyQuickTestState.score} / ${quickTotal}` : ""}</p><button class="complete ${isDashboardDone ? "done" : ""}" type="button" data-daily-complete ${!dailyQuickTestState.graded && !isDashboardDone ? "hidden" : ""} ${isDashboardDone ? "disabled" : ""}>${icon("check",16)} ${isDashboardDone ? "Daily Test 완료됨" : "학습 완료 처리"}</button></div></section>
 
     <nav class="test-tabs" aria-label="Daily Test 유형">${tabs.map(([key, label]) => `<button class="${type === key ? "active" : ""}" type="button" data-test-tab="${key}">${label}</button>`).join("")}</nav>
     ${pageContent}
