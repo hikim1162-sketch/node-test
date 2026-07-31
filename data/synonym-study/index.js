@@ -42,13 +42,13 @@ export const synonymStudySets = [...setDefinitions, ...expandedSetDefinitions].m
 }));
 
 export function getSynonymStudyInitialState() {
-  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, vocabularyDay: 1, learnedWordIds: [], clearedRelatedExpressionIds: [], quizIndex: 0, quizSelections: {}, answers: [], wrongWordIds: [], completedSetIds: [], dailyThemeAnswers: {} };
+  return { view: "sets", activeSetId: synonymStudySets[0].id, cardIndex: 0, vocabularyDay: 1, learnedWordIds: [], clearedRelatedExpressionIds: [], dailyQuizWordIds: [], quizIndex: 0, quizSelections: {}, answers: [], wrongWordIds: [], completedSetIds: [], dailyThemeAnswers: {} };
 }
 
 export function normalizeSynonymStudyState(value) {
   const initial = getSynonymStudyInitialState();
   const state = value && typeof value === "object" ? { ...initial, ...value } : initial;
-  ["learnedWordIds", "clearedRelatedExpressionIds", "answers", "wrongWordIds", "completedSetIds"].forEach((key) => {
+  ["learnedWordIds", "clearedRelatedExpressionIds", "dailyQuizWordIds", "answers", "wrongWordIds", "completedSetIds"].forEach((key) => {
     if (!Array.isArray(state[key])) state[key] = [];
   });
   if (!state.dailyThemeAnswers || typeof state.dailyThemeAnswers !== "object" || Array.isArray(state.dailyThemeAnswers)) state.dailyThemeAnswers = {};

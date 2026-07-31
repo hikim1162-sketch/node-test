@@ -77,6 +77,7 @@ test("stored state normalization preserves scalable arrays", () => {
   const state = normalizeSynonymStudyState({ ...getSynonymStudyInitialState(), wrongWordIds: null });
   assert.deepEqual(state.wrongWordIds, []);
   assert.deepEqual(state.dailyThemeAnswers, {});
+  assert.deepEqual(state.dailyQuizWordIds, []);
   assert.deepEqual(state.quizSelections, {});
 });
 
@@ -114,4 +115,6 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(appSource, /if \(!meaningsComplete \|\| !relatedExpressionsComplete\) return false/);
   assert.match(appSource, /Clear all related expressions before moving to the next day\./);
   assert.match(appSource, /data-synonym-submit/);
+  assert.match(appSource, /data-synonym-typing-form/);
+  assert.match(appSource, /dailyQuizWordIds = dailyVocabulary\.map/);
 });

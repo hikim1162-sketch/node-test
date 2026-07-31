@@ -1996,6 +1996,23 @@ function getActiveSynonymSet() {
   return synonymStudySets.find((set) => set.id === synonymStudyState.activeSetId) || synonymStudySets[0];
 }
 
+function getActiveSynonymQuizQuestions() {
+  const setQuestions = getActiveSynonymSet().quiz;
+  const typingQuestions = synonymStudyState.dailyQuizWordIds
+    .map(findSynonymWord)
+    .filter(Boolean)
+    .map(({ word }, index) => ({
+      id: `${word.id}-typing-${index + 1}`,
+      wordId: word.id,
+      type: "synonym_typing",
+      prompt: `"${word.baseExpression}"의 유의어를 하나 입력하시오.`,
+      context: word.exampleEn,
+      answers: [...new Set([word.targetWord, ...word.additionalSynonyms])],
+      explanation: word.nuance,
+    }));
+  return [...setQuestions, ...typingQuestions];
+}
+
 function findSynonymWord(wordId) {
   for (const set of synonymStudySets) {
     const word = set.words.find((item) => item.id === wordId);
@@ -2020,6 +2037,7 @@ function startDailySynonymQuizIfComplete(preferredWordId = null) {
   if (!meaningsComplete || !relatedExpressionsComplete) return false;
   const currentEntry = dailyVocabulary.find(({ word }) => word.id === preferredWordId) || dailyVocabulary[0];
   synonymStudyState.activeSetId = currentEntry.sourceSet.id;
+  synonymStudyState.dailyQuizWordIds = dailyVocabulary.map(({ word }) => word.id);
   synonymStudyState.view = "quiz";
   synonymStudyState.quizIndex = 0;
   synonymStudyState.quizSelections = {};
@@ -2030,6 +2048,7 @@ function startDailySynonymQuizIfComplete(preferredWordId = null) {
 function synonymQuizTypeLabel(type) {
   return {
     synonym_select_all: "유의어 모두 선택",
+    synonym_typing: "유의어 직접 입력",
     synonym_select: "유의어 선택",
     blank: "빈칸 추론",
     context_match: "문맥상 유의어",
@@ -3180,19 +3199,25 @@ function synonymStudyPage() {
     const learned = synonymStudyState.learnedWordIds.includes(word.id);
     content = `<section class="synonym-learning"><header><div><span>${escapeMarkup(set.category)} · ${escapeMarkup(set.title)}</span><b>WORD ${index + 1} / ${set.words.length}</b></div><i><em style="width:${((index + 1) / set.words.length) * 100}%"></em></i></header><article class="synonym-word-card"><div class="synonym-upgrade-line"><section><small>BASE</small><s>${escapeMarkup(word.baseExpression)}</s></section>${icon("arrow", 22)}<section><small>TARGET</small><div><h2>${escapeMarkup(word.targetWord)}</h2><button type="button" data-speak="${escapeMarkup(word.targetWord)}" aria-label="${escapeMarkup(word.targetWord)} 발음 듣기">${icon("volume", 18)}</button></div><strong>${escapeMarkup(word.meaningKo)}</strong></section></div><blockquote><div><b>${escapeMarkup(word.exampleEn)}</b><span>${escapeMarkup(word.exampleKo)}</span></div><button type="button" data-speak="${escapeMarkup(word.exampleEn)}">${icon("volume", 15)} 예문 듣기</button></blockquote><section class="synonym-related"><span>ADDITIONAL SYNONYMS</span><div>${word.additionalSynonyms.map(item => synonymRelatedExpression(item, word.id)).join("")}</div></section><section class="synonym-collocations"><span>COLLOCATIONS</span><div>${word.collocations.map(item => `<em>${escapeMarkup(item)}</em>`).join("")}</div></section><section class="synonym-nuance"><b>뉘앙스 차이</b><p>${escapeMarkup(word.nuance)}</p></section></article><footer><button type="button" data-synonym-prev ${index === 0 ? "disabled" : ""}>이전 단어</button>${learned ? `<button class="primary" type="button" data-synonym-next>${index === set.words.length - 1 ? "수능형 문제 시작" : "다음 단어"} ${icon("arrow", 14)}</button>` : `<button class="primary" type="button" data-synonym-learned="${word.id}">${icon("check", 14)} 학습 완료</button>`}</footer></section>`;
   } else if (view === "quiz") {
-    const index = Math.min(synonymStudyState.quizIndex, set.quiz.length - 1);
-    const question = set.quiz[index];
+    const questions = getActiveSynonymQuizQuestions();
+    const index = Math.min(synonymStudyState.quizIndex, questions.length - 1);
+    const question = questions[index];
     const answer = synonymStudyState.answers.find(item => item.quizId === question.id);
     const selectedAnswers = answer?.selectedAnswers || synonymStudyState.quizSelections?.[question.id] || [];
-    content = `<section class="synonym-quiz"><header><div><span>CSAT VOCABULARY CHECK</span><h2>${escapeMarkup(set.title)}</h2></div><b>${index + 1} / ${set.quiz.length}</b></header><div class="synonym-quiz-type">${synonymQuizTypeLabel(question.type)}</div><article><p>${escapeMarkup(question.prompt)}</p><blockquote>${escapeMarkup(question.context)}</blockquote><div>${question.choices.map((choice, choiceIndex) => {
+    const typingQuestion = question.type === "synonym_typing";
+    const questionControl = typingQuestion
+      ? `<form class="synonym-typing-answer" data-synonym-typing-form><label for="synonym-typing-input">유의어 입력</label><div><input id="synonym-typing-input" name="answer" type="text" value="${escapeMarkup(answer?.typedAnswer || "")}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type one synonym" ${answer ? "disabled" : ""}><button class="primary" type="submit" ${answer ? "disabled" : ""}>정답 확인</button></div></form>`
+      : `<div>${question.choices.map((choice, choiceIndex) => {
       const selected = selectedAnswers.includes(choice);
       const correct = Boolean(answer) && question.answers.includes(choice);
       const wrong = Boolean(answer) && selected && !answer.isCorrect;
       return `<button class="${selected ? "selected" : ""} ${correct ? "correct" : ""} ${wrong ? "wrong" : ""}" type="button" data-synonym-answer="${choiceIndex}" aria-pressed="${selected}" ${answer ? "disabled" : ""}><i>${choiceIndex + 1}</i>${escapeMarkup(choice)}</button>`;
-    }).join("")}</div>${answer ? `<section class="synonym-answer ${answer.isCorrect ? "success" : "error"}"><b>${answer.isCorrect ? "정답입니다." : "오답입니다."}</b><p>정답: ${question.answers.map(escapeMarkup).join(", ")}</p><p>${escapeMarkup(question.explanation)}</p></section>` : ""}</article>${answer ? `<footer><button class="primary" type="button" data-synonym-quiz-next>${index === set.quiz.length - 1 ? "결과 확인" : "다음 문제"} ${icon("arrow", 14)}</button></footer>` : `<footer><button class="primary" type="button" data-synonym-submit ${selectedAnswers.length ? "" : "disabled"}>선택 완료</button></footer>`}</section>`;
+    }).join("")}</div>`;
+    content = `<section class="synonym-quiz"><header><div><span>CSAT VOCABULARY CHECK</span><h2>${escapeMarkup(set.title)}</h2></div><b>${index + 1} / ${questions.length}</b></header><div class="synonym-quiz-type">${synonymQuizTypeLabel(question.type)}</div><article><p>${escapeMarkup(question.prompt)}</p><blockquote>${escapeMarkup(question.context)}</blockquote>${questionControl}${answer ? `<section class="synonym-answer ${answer.isCorrect ? "success" : "error"}"><b>${answer.isCorrect ? "정답입니다." : "오답입니다."}</b><p>정답 예시: ${question.answers.map(escapeMarkup).join(", ")}</p><p>${escapeMarkup(question.explanation)}</p></section>` : ""}</article>${answer ? `<footer><button class="primary" type="button" data-synonym-quiz-next>${index === questions.length - 1 ? "결과 확인" : "다음 문제"} ${icon("arrow", 14)}</button></footer>` : typingQuestion ? "" : `<footer><button class="primary" type="button" data-synonym-submit ${selectedAnswers.length ? "" : "disabled"}>선택 완료</button></footer>`}</section>`;
   } else if (view === "result") {
+    const questions = getActiveSynonymQuizQuestions();
     const score = synonymStudyState.answers.filter(item => item.isCorrect).length;
-    content = `<section class="synonym-result"><span>TEST COMPLETE</span><h2>${score}<small> / ${set.quiz.length}</small></h2><h3>유의어 테스트 완료</h3><p>${synonymStudyState.wrongWordIds.length ? "틀린 어휘는 오답 복습에 자동으로 저장했습니다." : "문제를 모두 정확히 풀었습니다."}</p><div><button type="button" data-synonym-view="sets">유의어 어휘</button><button class="primary" type="button" data-synonym-view="review">오답 복습</button></div></section>`;
+    content = `<section class="synonym-result"><span>TEST COMPLETE</span><h2>${score}<small> / ${questions.length}</small></h2><h3>유의어 테스트 완료</h3><p>${synonymStudyState.wrongWordIds.length ? "틀린 어휘는 오답 복습에 자동으로 저장했습니다." : "문제를 모두 정확히 풀었습니다."}</p><div><button type="button" data-synonym-view="sets">유의어 어휘</button><button class="primary" type="button" data-synonym-view="review">오답 복습</button></div></section>`;
   } else if (view === "review") {
     const wrongWords = synonymStudyState.wrongWordIds.map(findSynonymWord).filter(Boolean);
     content = `<section class="synonym-review"><header><span>WRONG ANSWER REVIEW</span><h2>다시 구별할 어휘</h2><p>정답만 외우지 말고 쉬운 표현과 뉘앙스를 함께 확인하세요.</p></header>${wrongWords.length ? `<div>${wrongWords.map(({ set: sourceSet, word }) => `<article><small>${escapeMarkup(sourceSet.category)} · ${escapeMarkup(word.level)} · ${escapeMarkup(word.examFrequency)}</small><div><s>${escapeMarkup(word.baseExpression)}</s>${icon("arrow", 14)}<h3>${escapeMarkup(word.targetWord)}</h3><button type="button" data-speak="${escapeMarkup(word.targetWord)}">${icon("volume", 15)}</button></div><strong>${escapeMarkup(word.meaningKo)}</strong><p>${escapeMarkup(word.nuance)}</p><button type="button" data-synonym-review-complete="${word.id}">${icon("check", 13)} 복습 완료</button></article>`).join("")}</div>` : `<div class="synonym-empty"><h3>복습할 오답이 없습니다.</h3><p>문제를 틀리면 해당 어휘가 이곳에 자동으로 모입니다.</p><button class="primary" type="button" data-synonym-view="sets">유의어 어휘 보기</button></div>`}</section>`;
@@ -5892,6 +5917,7 @@ function bindEvents(){
     const nextView = event.currentTarget.dataset.synonymView;
     if (nextView === "quiz" && !["quiz", "result"].includes(synonymStudyState.view)) {
       synonymStudyState.quizIndex = 0;
+      synonymStudyState.dailyQuizWordIds = [];
       synonymStudyState.quizSelections = {};
       synonymStudyState.answers = [];
     }
@@ -5904,6 +5930,7 @@ function bindEvents(){
     synonymStudyState.view = "learn";
     synonymStudyState.cardIndex = 0;
     synonymStudyState.quizIndex = 0;
+    synonymStudyState.dailyQuizWordIds = [];
     synonymStudyState.quizSelections = {};
     synonymStudyState.learnedWordIds = [];
     synonymStudyState.answers = [];
@@ -5983,8 +6010,7 @@ function bindEvents(){
     render();
   });
   document.querySelectorAll("[data-synonym-answer]").forEach(button => button.addEventListener("click", event => {
-    const set = getActiveSynonymSet();
-    const question = set.quiz[synonymStudyState.quizIndex];
+    const question = getActiveSynonymQuizQuestions()[synonymStudyState.quizIndex];
     if (!question || synonymStudyState.answers.some(item => item.quizId === question.id)) return;
     const selectedAnswer = question.choices[Number(event.currentTarget.dataset.synonymAnswer)];
     const selectedAnswers = synonymStudyState.quizSelections[question.id] || [];
@@ -5995,8 +6021,7 @@ function bindEvents(){
     render();
   }));
   document.querySelector("[data-synonym-submit]")?.addEventListener("click", () => {
-    const set = getActiveSynonymSet();
-    const question = set.quiz[synonymStudyState.quizIndex];
+    const question = getActiveSynonymQuizQuestions()[synonymStudyState.quizIndex];
     if (!question || synonymStudyState.answers.some(item => item.quizId === question.id)) return;
     const selectedAnswers = synonymStudyState.quizSelections[question.id] || [];
     const isCorrect = selectedAnswers.length === question.answers.length
@@ -6006,9 +6031,22 @@ function bindEvents(){
     saveSynonymStudyState();
     render();
   });
+  document.querySelector("[data-synonym-typing-form]")?.addEventListener("submit", event => {
+    event.preventDefault();
+    const question = getActiveSynonymQuizQuestions()[synonymStudyState.quizIndex];
+    if (!question || question.type !== "synonym_typing" || synonymStudyState.answers.some(item => item.quizId === question.id)) return;
+    const typedAnswer = String(new FormData(event.currentTarget).get("answer") || "").trim().toLowerCase();
+    if (!typedAnswer) return;
+    const isCorrect = question.answers.some(answer => answer.trim().toLowerCase() === typedAnswer);
+    synonymStudyState.answers.push({ quizId: question.id, wordId: question.wordId, typedAnswer, isCorrect });
+    if (!isCorrect && !synonymStudyState.wrongWordIds.includes(question.wordId)) synonymStudyState.wrongWordIds.push(question.wordId);
+    saveSynonymStudyState();
+    render();
+  });
   document.querySelector("[data-synonym-quiz-next]")?.addEventListener("click", () => {
     const set = getActiveSynonymSet();
-    if (synonymStudyState.quizIndex >= set.quiz.length - 1) {
+    const questions = getActiveSynonymQuizQuestions();
+    if (synonymStudyState.quizIndex >= questions.length - 1) {
       synonymStudyState.view = "result";
       if (!synonymStudyState.completedSetIds.includes(set.id)) synonymStudyState.completedSetIds.push(set.id);
       homeStudyState.checked.synonyms = true;
