@@ -137,6 +137,8 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(appSource, /bindSynonymPhonetics\(\)/);
   assert.doesNotMatch(appSource, /<p class="nav-label space">TRUST<\/p>/);
   assert.match(appSource, /class="suneung-copyright"/);
+  assert.match(appSource, /const copyright = `<footer class="suneung-copyright"/);
+  assert.doesNotMatch(appSource, /const copyright = isAcademicMode\(\) \?/);
   assert.match(appSource, /Copyright &amp; Source Policy/);
   assert.match(appSource, /대표이사 : kai/);
   assert.match(appSource, /개인정보처리방침/);
