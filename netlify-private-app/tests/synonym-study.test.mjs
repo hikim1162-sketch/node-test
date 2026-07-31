@@ -135,4 +135,7 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(appSource, /getSynonymPhonetic\(item\)/);
   assert.match(appSource, /fetch\(`\/api\/naver-dictionary\?word=/);
   assert.match(appSource, /bindSynonymPhonetics\(\)/);
+  assert.doesNotMatch(appSource, /<p class="nav-label space">TRUST<\/p>/);
+  assert.match(appSource, /class="suneung-copyright"/);
+  assert.match(appSource, /Copyright &amp; Source Policy/);
 });

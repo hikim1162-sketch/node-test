@@ -2565,7 +2565,7 @@ function sidebar() {
     ["blog", "최애 블로그", "heart"],
   ].map(item => visibleGeneralNavItem(...item)).join("");
   const generalNavigation = `${navItem("home", "오늘의 학습", "home")}${primaryItems}${mySpaceItems ? `<p class="nav-label space">MY SPACE</p>${mySpaceItems}` : ""}`;
-  const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", `${currentModeConfig().shortLabel} 단어장`, "dictionary")}${navItem("suneung-synonyms", "유의어 학습", "link")}${navItem("suneung-sentence", "매일 1문장", "quote")}${navItem("suneung-passage", `오늘의 ${currentModeConfig().shortLabel} 지문`, "article")}${navItem("suneung-types", "유형별 훈련", "target")}${navItem("suneung-vocab", "어휘 / 구문", "brackets")}<p class="nav-label space">MY SPACE</p>${navItem("suneung-journal", "나만의 학습장", "bookmark")}${navItem("suneung-calendar", "학습 캘린더", "calendar")}<p class="nav-label space">TRUST</p>${navItem("suneung-policy", "출처 정책", "clipboard")}`;
+  const suneungNavigation = `${navItem("suneung-home", "오늘의 학습", "home")}${navItem("suneung-wordmaster", `${currentModeConfig().shortLabel} 단어장`, "dictionary")}${navItem("suneung-synonyms", "유의어 학습", "link")}${navItem("suneung-sentence", "매일 1문장", "quote")}${navItem("suneung-passage", `오늘의 ${currentModeConfig().shortLabel} 지문`, "article")}${navItem("suneung-types", "유형별 훈련", "target")}${navItem("suneung-vocab", "어휘 / 구문", "brackets")}<p class="nav-label space">MY SPACE</p>${navItem("suneung-journal", "나만의 학습장", "bookmark")}${navItem("suneung-calendar", "학습 캘린더", "calendar")}`;
   return `<aside class="sidebar">
     <button class="brand" type="button" data-page="${isAcademicMode() ? "suneung-home" : "home"}" aria-label="ValueTime 메인 화면으로 이동"><span class="brand-mark">V</span><span class="brand-copy"><b>ValueTime</b><small>Small Steps Change the Future</small></span></button>
     <nav><div class="sidebar-nav-heading"><p class="nav-label">${isAcademicMode() ? (audienceMode === "middle" ? "MIDDLE ENGLISH" : "CSAT ENGLISH") : "LEARN"}</p><button type="button" data-open-settings aria-label="설정 열기" title="설정">${icon("settings",17)}</button></div>${audienceMode === "kids" ? kidsNavigation : isAcademicMode() ? suneungNavigation : generalNavigation}</nav>
@@ -5780,7 +5780,8 @@ function render() {
     robotsMeta.content = "noindex, nofollow, noarchive";
   }
   const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="upgrade"?expressionUpgradePage():state.page==="synonyms"?synonymStudyPage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
-  document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}</div>${reviewChatbotUi()}${selectionAssistantUi()}${vocabMonthlyTestModal()}</div>`;
+  const copyright = isAcademicMode() ? `<footer class="suneung-copyright"><span>© ${new Date().getFullYear()} ValueTime</span><a href="#suneung-policy" data-page="suneung-policy">Copyright &amp; Source Policy</a></footer>` : "";
+  document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}${copyright}</div>${reviewChatbotUi()}${selectionAssistantUi()}${vocabMonthlyTestModal()}</div>`;
   enhanceNewsEditorialReader();
   bindEvents();
 }
@@ -6714,7 +6715,8 @@ function bindEvents(){
     saveSuneungState();
     render();
   });
-  document.querySelectorAll("[data-page]").forEach(el=>el.addEventListener("click",()=>{
+  document.querySelectorAll("[data-page]").forEach(el=>el.addEventListener("click",event=>{
+    if (el.tagName === "A") event.preventDefault();
     if (el.dataset.page === "upgrade") {
       const set = ensureTodayExpressionUpgradeSet();
       logExpressionUpgradeEvent("home_view", { setId: set.id, metadata: { source: "general_home" } });
