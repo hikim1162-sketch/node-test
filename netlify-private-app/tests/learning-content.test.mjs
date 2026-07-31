@@ -81,4 +81,7 @@ test("monthly vocabulary test uses a meaning that matches the word part of speec
   assert.match(appSource, /vocabularyExamples\[term\]\?\.meanings\?\.\[part\]/);
   assert.match(appSource, /monthlyPool\.map\(vocabMonthlyTestMeaning\)/);
   assert.match(vocabularySource, /"word": "predict"[\s\S]*?"meaning": "예측하다, 예언하다"/);
+  assert.match(vocabularySource, /"word": "preceding"[\s\S]*?"meaning": "앞선, 이전의, 선행하는"/);
+  assert.match(appSource, /function vocabPartLabel\(part\)/);
+  assert.match(appSource, /vocabPartLabel\(question\.part\)/);
 });

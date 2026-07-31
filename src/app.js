@@ -2241,7 +2241,7 @@ function vocabMonthlyTestModal() {
   const nextAction = correct
     ? `<button class="primary" type="button" data-vocab-test-next>${index === questions.length - 1 ? "결과 보기" : "다음 문제"}</button>`
     : `<button class="primary" type="button" disabled>다음 문제</button>`;
-  return `<div class="vocab-test-backdrop"><section class="vocab-test-modal" role="dialog" aria-modal="true" aria-labelledby="vocab-test-title"><button class="vocab-test-close" type="button" data-vocab-test-close aria-label="닫기">×</button><header><div><span class="vocab-test-kicker">MONTHLY WORD TEST</span><h2 id="vocab-test-title">이번 달 단어 시험</h2></div><b>${index + 1} / ${questions.length}</b></header><div class="vocab-test-progress"><i style="width:${((index + 1) / questions.length) * 100}%"></i></div><p class="vocab-test-range">${new Date().getMonth() + 1}월 1일–오늘 · 저장 단어 우선 출제</p><article><span>${question.saved ? "저장한 단어" : "이번 달 학습 단어"}</span><h3>${escapeMarkup(question.word)}</h3><div class="vocab-test-phonetic">${vocabPhonetic(question)}</div><p>가장 알맞은 뜻을 고르세요.</p></article><div class="vocab-test-choices">${choices}</div>${feedback}<footer><button type="button" data-vocab-test-prev ${index === 0 ? "disabled" : ""}>이전</button>${nextAction}</footer></section></div>`;
+  return `<div class="vocab-test-backdrop"><section class="vocab-test-modal" role="dialog" aria-modal="true" aria-labelledby="vocab-test-title"><button class="vocab-test-close" type="button" data-vocab-test-close aria-label="닫기">×</button><header><div><span class="vocab-test-kicker">MONTHLY WORD TEST</span><h2 id="vocab-test-title">이번 달 단어 시험</h2></div><b>${index + 1} / ${questions.length}</b></header><div class="vocab-test-progress"><i style="width:${((index + 1) / questions.length) * 100}%"></i></div><p class="vocab-test-range">${new Date().getMonth() + 1}월 1일–오늘 · 저장 단어 우선 출제</p><article><span>${question.saved ? "저장한 단어" : "이번 달 학습 단어"} · ${vocabPartLabel(question.part)}</span><h3>${escapeMarkup(question.word)}</h3><div class="vocab-test-phonetic">${vocabPhonetic(question)}</div><p>가장 알맞은 뜻을 고르세요.</p></article><div class="vocab-test-choices">${choices}</div>${feedback}<footer><button type="button" data-vocab-test-prev ${index === 0 ? "disabled" : ""}>이전</button>${nextAction}</footer></section></div>`;
 }
 
 let activeBlogPostId = null;
@@ -2801,7 +2801,7 @@ function buildMonthlyVocabularyTest(dateKey = localDateKey()) {
     const meaning = vocabMonthlyTestMeaning(word);
     const distractors = randomShuffle(meaningPool.filter(candidate => candidate !== meaning)).slice(0, 3);
     const choices = randomShuffle([meaning, ...distractors]);
-    return { word: word.word, phonetic: word.phonetic, meaning, choices, answer: choices.indexOf(meaning), saved: savedSet.has(word.word) };
+    return { word: word.word, phonetic: word.phonetic, part: vocabPartHint(word), meaning, choices, answer: choices.indexOf(meaning), saved: savedSet.has(word.word) };
   });
 }
 
@@ -2810,6 +2810,10 @@ function vocabMonthlyTestMeaning(word) {
   const part = vocabPartHint(word);
   const dictionaryMeanings = vocabularyExamples[term]?.meanings?.[part];
   return firstNonEmptyVocabValue(dictionaryMeanings?.[0], word.meaning);
+}
+
+function vocabPartLabel(part) {
+  return { noun: "명사", verb: "동사", adjective: "형용사", adverb: "부사" }[part] || "";
 }
 
 function vocabPhonetic(word) {
