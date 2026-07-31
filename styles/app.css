@@ -411,6 +411,7 @@ html[data-theme="dark"] .audience-mode-switch{border-color:#435158;background:#2
 
 /* Daily Test: keep layout, clarify quick-review role */
 .daily-quick-scope{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 12px}.daily-quick-scope span{padding:7px 9px;border:1px solid #dfe9e5;border-radius:999px;background:#f7fbf9;color:#516b64;font-size:9px;font-weight:800}.test-score-card .test-card-head>span{padding:6px 9px;border-radius:999px;background:#e7f2ef;color:#216b5d;font-size:10px;font-weight:900}
+.daily-quick-date-nav{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px}.daily-quick-date-nav button{display:flex;align-items:center;gap:5px;padding:8px 10px;border:1px solid #d7e3df;border-radius:9px;background:#fff;color:#45675e;font-size:9px;font-weight:850;cursor:pointer}.daily-quick-date-nav button:first-child svg{transform:rotate(180deg)}.daily-quick-date-nav button:disabled{cursor:default;opacity:.45}.daily-quick-date-nav>b{width:100%;margin-top:4px;color:#91a09c;text-align:right;font-size:8px;letter-spacing:1px}
 html[data-theme="dark"] .daily-quick-scope span{border-color:#304149;background:#1a2931;color:#9dada9}html[data-theme="dark"] .quiz-mix-line,html[data-theme="dark"] .quiz-passage{border-color:#31454b;background:#1b2a32;color:#9cadab}
 
 /* Quiz objective-only flow */
