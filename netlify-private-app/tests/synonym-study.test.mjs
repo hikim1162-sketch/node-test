@@ -12,7 +12,7 @@ import {
   getTodaySynonymTheme,
 } from "../../data/synonym-study/index.js";
 import { buildSynonymQuiz } from "../../data/synonym-study/quiz-templates.js";
-import { formatSynonymPhonetic, getSynonymPhonetic } from "../../data/synonym-study/phonetics.js";
+import { getSynonymPhonetic } from "../../data/synonym-study/phonetics.js";
 
 test("published curriculum contains one hundred curated words", () => {
   assert.equal(synonymStudySets.length, 12);
@@ -54,11 +54,6 @@ test("every main synonym and related synonym has an IPA transcription", () => {
       assert.notEqual(getSynonymPhonetic(relatedWord), "/—/");
     }
   }
-});
-
-test("phonetics use the requested Naver-style brackets and stress separator", () => {
-  assert.match(formatSynonymPhonetic("astonished"), /^\[[^/]*\|[^/]*\]$/);
-  assert.doesNotMatch(formatSynonymPhonetic("astonished"), /[ˈˌɹɫ]/);
 });
 
 test("every quiz asks learners to select every synonym", () => {
@@ -136,6 +131,8 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(appSource, /dailyQuizWordIds = dailyVocabulary\.map/);
   assert.match(appSource, /data-synonym-retry/);
   assert.match(appSource, /const answerMeanings = question\.answers/);
-  assert.match(appSource, /formatSynonymPhonetic\(word\.targetWord\)/);
-  assert.match(appSource, /formatSynonymPhonetic\(item\)/);
+  assert.match(appSource, /getSynonymPhonetic\(word\.targetWord\)/);
+  assert.match(appSource, /getSynonymPhonetic\(item\)/);
+  assert.match(appSource, /fetch\(`\/api\/naver-dictionary\?word=/);
+  assert.match(appSource, /bindSynonymPhonetics\(\)/);
 });

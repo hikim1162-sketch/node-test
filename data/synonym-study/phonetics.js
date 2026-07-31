@@ -214,17 +214,3 @@ const synonymPhonetics = Object.freeze({
 export function getSynonymPhonetic(word) {
   return synonymPhonetics[String(word || "").trim().toLowerCase()] || "/?/";
 }
-
-export function formatSynonymPhonetic(word) {
-  const ipa = getSynonymPhonetic(word);
-  if (ipa === "/?/") return "[?]";
-  const naverStyle = ipa
-    .replace(/^\/|\/$/g, "")
-    .replaceAll("ˈ", "|")
-    .replaceAll("ˌ", "")
-    .replaceAll("ɹ", "r")
-    .replaceAll("ɫ", "l")
-    .replaceAll("ɚ", "ər")
-    .replaceAll("ɝ", "əːr");
-  return `[${naverStyle}]`;
-}
