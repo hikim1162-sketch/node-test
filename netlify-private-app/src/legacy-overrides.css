@@ -2636,8 +2636,7 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
 }
 
 #app .content > header .mini-streak {
-  position: absolute;
-  left: 5.2vw;
+  display: none;
 }
 
 #app .suneung-wordmaster-page {
