@@ -53,4 +53,5 @@ test("TOEIC RC questions live in the daily TOEIC area, not Daily Test tabs", () 
   assert.match(dailyTestSource, /class="test-question-nav"/);
   assert.match(dailyTestSource, /data-test-prev/);
   assert.match(dailyTestSource, /data-test-next/);
+  assert.match(dailyTestSource, /class="test-question-prompt"/);
 });

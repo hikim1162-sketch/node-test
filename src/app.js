@@ -3930,6 +3930,7 @@ function dailyTestPage() {
       <section class="test-question-card panel" aria-labelledby="test-question-title">
         <div class="test-card-head"><div><p class="eyebrow">${current.type}</p><h2 id="test-question-title">${tabs.find(([key]) => key === type)[1]}</h2></div><nav class="test-question-nav" aria-label="문제 이동"><button type="button" data-test-prev>${icon("chevron", 13)} 이전 문제</button><span>문제 ${index + 1} / ${questions.length}</span><button type="button" data-test-next>다음 문제 ${icon("chevron", 13)}</button></nav></div>
         <div class="test-question-body">
+          ${current.prompt ? `<strong class="test-question-prompt">${escapeMarkup(current.prompt)}</strong>` : ""}
           <h3>${current.question}</h3>
           ${current.passage ? `<div class="test-passage">${current.passage}</div>` : ""}
           <fieldset class="test-choices"><legend class="sr-only">답안 선택</legend>${current.choices.map((choice, choiceIndex) => `<label data-choice-index="${choiceIndex}"><input type="radio" name="daily-test-choice" value="${choiceIndex}"><span><i>${choiceIndex + 1}</i>${choice}</span></label>`).join("")}</fieldset>
