@@ -1417,12 +1417,6 @@ function localDateKey(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-function offsetQuickTestDateKey(dateKey, offset) {
-  const date = new Date(`${dateKey}T12:00:00`);
-  date.setDate(date.getDate() + offset);
-  return localDateKey(date);
-}
-
 function readStoredJSON(key, fallback) {
   try { return JSON.parse(profileStorage.getItem(key) || "null") || fallback; }
   catch { return fallback; }
@@ -1520,7 +1514,7 @@ const dailyTestState = {
   wrongFilter: "rc",
   historyFilter: "today",
 };
-const dailyQuickTestState = { date: localDateKey(), viewDate: localDateKey(), graded: false, score: null };
+const dailyQuickTestState = { date: localDateKey(), graded: false, score: null };
 
 function getDailyQuickTestQuestions(dateKey = localDateKey()) {
   const todayWords = getTodayVocabWords(dateKey);
@@ -3881,11 +3875,9 @@ function dailyTestPage() {
     dailyTestQuestions = buildDailyTestQuestionOrder(todayKey);
   }
   if (dailyQuickTestState.date !== todayKey) {
-    Object.assign(dailyQuickTestState, { date: todayKey, viewDate: todayKey, graded: false, score: null });
+    Object.assign(dailyQuickTestState, { date: todayKey, graded: false, score: null });
   }
-  const quickDate = dailyQuickTestState.viewDate || todayKey;
-  const isTodayQuickTest = quickDate === todayKey;
-  const quickQuestions = getDailyQuickTestQuestions(quickDate);
+  const quickQuestions = getDailyQuickTestQuestions(todayKey);
   const quickTotal = quickQuestions.length;
   const type = dailyTestState.active;
   const scores = dailyTestState.scores;
@@ -3948,7 +3940,7 @@ function dailyTestPage() {
   }
 
   return `${header("Daily Test")}<main class="daily-test-page">
-    <section class="daily-quick-test" aria-labelledby="quick-test-title"><div class="daily-quick-head"><div><p class="eyebrow">DAILY TEST · ${quickDate}</p><h2 id="quick-test-title">${isTodayQuickTest ? "오늘의" : `${Number(quickDate.slice(5, 7))}월 ${Number(quickDate.slice(8))}일`} Daily Test</h2><span>다른 학습 없이도 단어, 문장 표현, 문법 문제를 매일 새로운 구성으로 풀 수 있습니다.</span></div><div class="daily-quick-date-nav"><button type="button" data-quick-date="-1" aria-label="이전 날 문제">${icon("chevron", 14)} 이전 날</button><button type="button" data-quick-today ${isTodayQuickTest ? "disabled" : ""}>오늘</button><button type="button" data-quick-date="1">다음 날 ${icon("chevron", 14)}</button><b>${quickTotal} QUESTIONS</b></div></div><div class="daily-quick-scope"><span>${isTodayQuickTest ? "오늘의" : quickDate} 독립 문제 세트 ${quickTotal}문항</span><span>단어 양방향 / 문장 유형 / 문법 포함</span><span>${reviewCount ? `복습 대기 ${reviewCount}개 있음` : "복습 대기 없음"}</span></div><div class="daily-quick-status"><b class="${isTodayQuickTest && isDashboardDone ? "done" : "todo"}">${isTodayQuickTest && isDashboardDone ? icon("check",12) : ""}${isTodayQuickTest ? (isDashboardDone ? "완료됨" : "진행 전") : (quickDate > todayKey ? "미리 풀기" : "지난 문제")}</b><span>${isTodayQuickTest && testMeta.lastStudiedAt ? `최근 학습 · ${testMeta.lastStudiedAt}` : `${quickDate} 문제 세트`}</span><span data-daily-score-meta>${isTodayQuickTest && testMeta.score !== null && testMeta.score !== undefined ? `최근 점수 · ${testMeta.score}` : "풀이 기록 없음"}</span>${isTodayQuickTest ? `<button type="button" data-daily-undo ${!isDashboardDone ? "disabled" : ""}>완료 해제</button>` : ""}</div><div class="daily-quick-grid">${quickQuestions.map((question, questionIndex) => `<fieldset><legend><small>${question.category}</small>${questionIndex + 1}. <strong>${question.prompt}</strong> ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<label><input type="radio" name="quick-q${questionIndex + 1}" value="${choiceIndex}"><span>${choice}</span></label>`).join("")}</fieldset>`).join("")}</div><div class="daily-quick-actions"><button type="button" data-quick-grade>${isTodayQuickTest ? "오늘" : quickDate} 테스트 채점하기</button><p class="${dailyQuickTestState.score === quickTotal ? "perfect" : ""}" data-quick-result role="status" aria-live="polite">${dailyQuickTestState.graded ? `점수: ${dailyQuickTestState.score} / ${quickTotal}` : ""}</p>${isTodayQuickTest ? `<button class="complete ${isDashboardDone ? "done" : ""}" type="button" data-daily-complete ${!dailyQuickTestState.graded && !isDashboardDone ? "hidden" : ""} ${isDashboardDone ? "disabled" : ""}>${icon("check",16)} ${isDashboardDone ? "Daily Test 완료됨" : "학습 완료 처리"}</button>` : ""}</div></section>
+    <section class="daily-quick-test" aria-labelledby="quick-test-title"><div class="daily-quick-head"><div><p class="eyebrow">TODAY REVIEW CHECK · ${todayKey}</p><h2 id="quick-test-title">오늘의 Daily Test</h2><span>다른 학습 없이도 단어, 문장 표현, 문법 문제를 매일 새로운 구성으로 풀 수 있습니다.</span></div><b>${quickTotal} QUESTIONS</b></div><div class="daily-quick-scope"><span>오늘의 독립 문제 세트 ${quickTotal}문항</span><span>단어 양방향 / 문장 유형 / 문법 포함</span><span>${reviewCount ? `복습 대기 ${reviewCount}개 있음` : "복습 대기 없음"}</span></div><div class="daily-quick-status"><b class="${isDashboardDone ? "done" : "todo"}">${isDashboardDone ? icon("check",12) : ""}${isDashboardDone ? "완료됨" : "진행 전"}</b><span>${testMeta.lastStudiedAt ? `최근 학습 · ${testMeta.lastStudiedAt}` : "아직 테스트를 시작하지 않았어요"}</span><span data-daily-score-meta>${testMeta.score !== null && testMeta.score !== undefined ? `최근 점수 · ${testMeta.score}` : "최근 풀이 기록이 없어요"}</span><button type="button" data-daily-undo ${!isDashboardDone ? "disabled" : ""}>완료 해제</button></div><div class="daily-quick-grid">${quickQuestions.map((question, questionIndex) => `<fieldset><legend><small>${question.category}</small>${questionIndex + 1}. <strong>${question.prompt}</strong> ${question.question}</legend>${question.choices.map((choice, choiceIndex) => `<label><input type="radio" name="quick-q${questionIndex + 1}" value="${choiceIndex}"><span>${choice}</span></label>`).join("")}</fieldset>`).join("")}</div><div class="daily-quick-actions"><button type="button" data-quick-grade>오늘 테스트 채점하기</button><p class="${dailyQuickTestState.score === quickTotal ? "perfect" : ""}" data-quick-result role="status" aria-live="polite">${dailyQuickTestState.graded ? `점수: ${dailyQuickTestState.score} / ${quickTotal}` : ""}</p><button class="complete ${isDashboardDone ? "done" : ""}" type="button" data-daily-complete ${!dailyQuickTestState.graded && !isDashboardDone ? "hidden" : ""} ${isDashboardDone ? "disabled" : ""}>${icon("check",16)} ${isDashboardDone ? "Daily Test 완료됨" : "학습 완료 처리"}</button></div></section>
 
     <nav class="test-tabs" aria-label="Daily Test 유형">${tabs.map(([key, label]) => `<button class="${type === key ? "active" : ""}" type="button" data-test-tab="${key}">${label}</button>`).join("")}</nav>
     ${pageContent}
@@ -7622,21 +7614,9 @@ function bindEvents(){
   document.querySelectorAll("[data-word-nav]").forEach(el=>el.addEventListener("click",()=>{state.wordIndex=(state.wordIndex+Number(el.dataset.wordNav)+words.length)%words.length;render();}));
   document.querySelectorAll("[data-jump-word]").forEach(el=>el.addEventListener("click",()=>{const index=words.findIndex(word=>word.word===el.dataset.jumpWord);if(index>=0){state.wordIndex=index;render();}}));
   document.querySelector(".mobile-menu")?.addEventListener("click",()=>document.querySelector(".sidebar").classList.toggle("open"));
-  document.querySelectorAll("[data-quick-date]").forEach(button => button.addEventListener("click", () => {
-    dailyQuickTestState.viewDate = offsetQuickTestDateKey(dailyQuickTestState.viewDate || localDateKey(), Number(button.dataset.quickDate));
-    dailyQuickTestState.graded = false;
-    dailyQuickTestState.score = null;
-    render();
-  }));
-  document.querySelector("[data-quick-today]")?.addEventListener("click", () => {
-    dailyQuickTestState.viewDate = localDateKey();
-    dailyQuickTestState.graded = false;
-    dailyQuickTestState.score = null;
-    render();
-  });
   document.querySelector("[data-quick-grade]")?.addEventListener("click", () => {
     const result = document.querySelector("[data-quick-result]");
-    const questions = getDailyQuickTestQuestions(dailyQuickTestState.viewDate || localDateKey());
+    const questions = getDailyQuickTestQuestions();
     const selectedAnswers = questions.map((_, index) => document.querySelector(`input[name="quick-q${index + 1}"]:checked`));
     if (selectedAnswers.some(input => !input)) {
       result.className = "error";
@@ -7647,7 +7627,7 @@ function bindEvents(){
     const total = questions.length;
     dailyQuickTestState.score = answerIndexes.reduce((score, selected, index) => score + Number(selected === questions[index].answer), 0);
     dailyQuickTestState.graded = true;
-    if ((dailyQuickTestState.viewDate || localDateKey()) === localDateKey()) syncHomeAppState("test", `${dailyQuickTestState.score} / ${total}`);
+    syncHomeAppState("test", `${dailyQuickTestState.score} / ${total}`);
     result.className = dailyQuickTestState.score === total ? "perfect" : "";
     const wrongExplanations = questions.filter((question, index) => answerIndexes[index] !== question.answer).map(question => question.explanation);
     result.textContent = `점수: ${dailyQuickTestState.score} / ${total}${wrongExplanations.length ? `\n${wrongExplanations.join("\n")}` : "\n오늘 배운 내용을 정확히 기억했어요!"}`;
@@ -7662,12 +7642,12 @@ function bindEvents(){
         input.disabled = true;
       });
     });
-    if ((dailyQuickTestState.viewDate || localDateKey()) === localDateKey()) document.querySelector("[data-daily-complete]")?.removeAttribute("hidden");
+    document.querySelector("[data-daily-complete]")?.removeAttribute("hidden");
   });
   document.querySelector("[data-daily-complete]")?.addEventListener("click", () => {
     if (!dailyQuickTestState.graded && !homeStudyState.checked.test) return;
     homeStudyState.checked.test = true;
-    saveHomeStudyState("test", dailyQuickTestState.graded ? `${dailyQuickTestState.score} / ${getDailyQuickTestQuestions(dailyQuickTestState.viewDate || localDateKey()).length}` : undefined);
+    saveHomeStudyState("test", dailyQuickTestState.graded ? `${dailyQuickTestState.score} / ${getDailyQuickTestQuestions().length}` : undefined);
     render();
   });
   document.querySelector("[data-daily-undo]")?.addEventListener("click", () => {
