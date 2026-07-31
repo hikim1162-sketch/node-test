@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { seedLearningContents, validateLearningContent } from "../src/learning/contentStorage.js";
 import { todayOrLatest, visibleContents } from "../api/learning-catalog.js";
+import { vocabularyWords } from "../../data/vocabulary.js";
+import { vocabularyPartOfSpeech } from "../../data/vocabulary-pos.js";
+import { vocabularyExamples } from "../../data/vocabulary-examples.js";
+import { vocabularyTestOverrides } from "../../data/vocabulary-test-overrides.js";
 
 test("seed includes both independent learning modes", () => {
   assert.ok(seedLearningContents.some((item) => item.type === "daily_sentence"));
@@ -84,4 +88,19 @@ test("monthly vocabulary test uses a meaning that matches the word part of speec
   assert.match(vocabularySource, /"word": "preceding"[\s\S]*?"meaning": "앞선, 이전의, 선행하는"/);
   assert.match(appSource, /function vocabPartLabel\(part\)/);
   assert.match(appSource, /vocabPartLabel\(question\.part\)/);
+});
+
+test("all one thousand monthly-test words have a reviewed part of speech and meaning", () => {
+  const supportedParts = new Set(["noun", "verb", "adjective", "adverb", "preposition", "conjunction"]);
+  assert.equal(vocabularyWords.length, 1000);
+  for (const word of vocabularyWords) {
+    const term = word.word.toLowerCase();
+    const override = vocabularyTestOverrides[term];
+    const parts = override?.part ? [override.part] : (vocabularyPartOfSpeech[term] || []);
+    assert.ok(parts.some(part => supportedParts.has(part)), `${word.word}: 품사 없음`);
+    const meaning = override?.meaning || parts
+      .map(part => vocabularyExamples[term]?.meanings?.[part]?.[0])
+      .find(Boolean) || word.meaning;
+    assert.ok(typeof meaning === "string" && meaning.trim(), `${word.word}: 뜻 없음`);
+  }
 });

@@ -1,6 +1,7 @@
 ﻿import { vocabularyWords } from "../data/vocabulary.js";
 import { vocabularyPartOfSpeech } from "../data/vocabulary-pos.js";
 import { vocabularyExamples } from "../data/vocabulary-examples.js";
+import { vocabularyTestOverrides } from "../data/vocabulary-test-overrides.js";
 import { tedLessons, tedSettings } from "../data/ted-lessons.js";
 import { toeicSentences } from "../data/toeic-sentences.js";
 import { favoriteBlogArticles, favoriteBlogSources, vocabularyExpansionSourcePriority } from "../data/favorite-blogs.js";
@@ -2801,19 +2802,26 @@ function buildMonthlyVocabularyTest(dateKey = localDateKey()) {
     const meaning = vocabMonthlyTestMeaning(word);
     const distractors = randomShuffle(meaningPool.filter(candidate => candidate !== meaning)).slice(0, 3);
     const choices = randomShuffle([meaning, ...distractors]);
-    return { word: word.word, phonetic: word.phonetic, part: vocabPartHint(word), meaning, choices, answer: choices.indexOf(meaning), saved: savedSet.has(word.word) };
+    return { word: word.word, phonetic: word.phonetic, part: vocabMonthlyTestPart(word), meaning, choices, answer: choices.indexOf(meaning), saved: savedSet.has(word.word) };
   });
 }
 
 function vocabMonthlyTestMeaning(word) {
   const term = String(word.word || "").toLowerCase();
-  const part = vocabPartHint(word);
+  const override = vocabularyTestOverrides[term];
+  if (override?.meaning) return override.meaning;
+  const part = vocabMonthlyTestPart(word);
   const dictionaryMeanings = vocabularyExamples[term]?.meanings?.[part];
   return firstNonEmptyVocabValue(dictionaryMeanings?.[0], word.meaning);
 }
 
+function vocabMonthlyTestPart(word) {
+  const term = String(word.word || "").toLowerCase();
+  return vocabularyTestOverrides[term]?.part || vocabPartHint(word);
+}
+
 function vocabPartLabel(part) {
-  return { noun: "명사", verb: "동사", adjective: "형용사", adverb: "부사" }[part] || "";
+  return { noun: "명사", verb: "동사", adjective: "형용사", adverb: "부사", preposition: "전치사", conjunction: "접속사" }[part] || "";
 }
 
 function vocabPhonetic(word) {
