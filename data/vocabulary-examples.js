@@ -16160,7 +16160,7 @@ export const vocabularyExamples = {
                                                          "영구[영속]적인 (↔impermanent, temporary)"
                                                      ],
                                        "noun":  [
-                                                    "(=perm)"
+                                                    "파마, 파마한 머리 (=perm)"
                                                 ]
                                    },
                       "examples":  [
