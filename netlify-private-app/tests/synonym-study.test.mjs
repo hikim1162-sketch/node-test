@@ -143,3 +143,9 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.doesNotMatch(appSource, /30-DAY SYNONYM COURSE|하루 3~4개씩 정확하게|100개를 한꺼번에 외우지 않고/);
   assert.match(appSource, /class="synonym-course-compact-head"/);
 });
+
+test("CSAT home includes the same recommended learning links", () => {
+  const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+  assert.match(appSource, /if \(!\["general", "suneung"\]\.includes\(audienceMode\)\) return ""/);
+  assert.match(appSource, /function suneungHomePage\(\)[\s\S]*?class="home-dashboard-page suneung-today-home"[\s\S]*?\$\{homeQuickLinks\(\)\}/);
+});

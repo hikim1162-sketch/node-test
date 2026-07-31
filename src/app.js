@@ -2579,11 +2579,12 @@ function header(title = "오늘의 학습") {
 }
 
 function homeQuickLinks() {
-  if (audienceMode !== "general") return "";
+  if (!["general", "suneung"].includes(audienceMode)) return "";
+  const isSuneung = audienceMode === "suneung";
   const links = [
     { className: "quick-drama", label: "매일미드한문장", badge: "SHORTS", href: "https://www.youtube.com/@Englishlamp2024/shorts", page: "shorts", aria: "매일미드한문장 YouTube 쇼츠 채널 새 창에서 열기" },
     { className: "quick-rc", label: "매일 토익 RC 풀기", badge: "RC", href: "https://www.hackers.co.kr/?c=s_toeic/toeic_study/drc", page: "quiz", aria: "해커스 매일 토익 RC 풀기 새 창에서 열기" },
-    { className: "quick-ted", label: "TED 바로가기", badge: "TED", page: "ted", aria: "TED 학습 바로가기" },
+    { className: "quick-ted", label: "TED 바로가기", badge: "TED", href: isSuneung ? "https://www.ted.com/talks" : "", page: "ted", aria: isSuneung ? "TED Talks 새 창에서 열기" : "TED 학습 바로가기" },
     { className: "quick-bbc", label: "BBC Learning", badge: "BBC", href: "https://www.bbc.co.uk/learningenglish/english/course/towards-advanced", page: "news", aria: "BBC Learning English Towards Advanced 새 창에서 열기" },
   ];
   return `<section class="home-quick-links" aria-label="학습 보조 링크"><span>${icon("spark", 14)} 추천 학습 링크</span><div>${links.map(link => link.href ? `<a class="${link.className}" href="${link.href}" target="_blank" rel="noopener noreferrer" aria-label="${link.aria}" data-related-page="${link.page}"><em>${link.badge}</em><b>${link.label}</b>${icon("arrow", 13)}</a>` : `<button class="${link.className}" type="button" data-page="${link.page}" aria-label="${link.aria}" data-related-page="${link.page}"><em>${link.badge}</em><b>${link.label}</b>${icon("arrow", 13)}</button>`).join("")}</div></section>`;
@@ -5289,6 +5290,7 @@ function suneungHomePage() {
   const progress = Math.round((completed / suneungHomeStudyItems.length) * 100);
   const pending = suneungHomeStudyItems.filter(item => !suneungState.dailyChecks[item.id]).slice(0, 2);
   return `${header("오늘의 학습")}<main class="home-dashboard-page suneung-today-home">
+    ${homeQuickLinks()}
     <div class="home-dashboard-layout">
       <section class="home-study-section" aria-labelledby="suneung-home-study-title">
         <div class="home-study-heading"><div><p class="eyebrow">${currentModeConfig().eyebrow}</p><h3 id="suneung-home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${suneungHomeStudyItems.length} 완료</span></div>
