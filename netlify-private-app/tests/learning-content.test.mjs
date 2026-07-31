@@ -36,6 +36,8 @@ test("daily quick test rotates grammar questions by date", () => {
   assert.match(appSource, /grammarBank\[Math\.abs\(dateSeed\(dateKey\)\) % grammarBank\.length\]/);
   assert.match(appSource, /data-quick-date="-1"/);
   assert.match(appSource, /data-quick-date="1"/);
+  assert.match(appSource, /daily-quick-bottom-nav/);
+  assert.match(appSource, /다음 날 문제/);
   assert.match(appSource, /dailyQuickTestState\.viewDate = offsetQuickTestDateKey/);
   const grammarBankSource = appSource.slice(appSource.indexOf("const grammarBank = ["), appSource.indexOf("const grammar =", appSource.indexOf("const grammarBank = [")));
   assert.ok((grammarBankSource.match(/prompt:/g) || []).length >= 7);
