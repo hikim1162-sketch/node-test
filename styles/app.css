@@ -469,7 +469,7 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .suneung-footer-content nav{display:flex;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 .suneung-footer-content nav a{padding:0 14px;border-left:1px solid #cfd3d5;color:#4f565a;font-weight:650;text-decoration:none}
 .suneung-footer-content nav a:first-child{padding-left:0;border-left:0}
-.suneung-footer-content nav a.privacy{padding-block:3px;background:#fff200;color:#222;font-weight:900}
+.suneung-footer-content nav a.privacy{color:inherit;font-weight:900}
 .suneung-footer-content nav a:hover{text-decoration:underline}
 .suneung-footer-content nav a:focus-visible{outline:2px solid #526d82;outline-offset:3px}
 .suneung-footer-content p{margin:5px 0;color:#848b8f;line-height:1.6}
