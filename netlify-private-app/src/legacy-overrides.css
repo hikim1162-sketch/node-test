@@ -4460,5 +4460,6 @@ html[data-theme="dark"] .vocab-test-launch-bar { border-color: #365149; backgrou
 
   #app .daily-test-page {
     max-width: 944px;
+    margin-inline: auto;
   }
 }
