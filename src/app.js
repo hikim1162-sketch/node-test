@@ -3360,7 +3360,9 @@ function homePage() {
   }
   const homeAppState = syncHomeAppState();
   const hiddenHomeMenuIds = new Set(loadUserSettings().navigation.hiddenMenuIds);
-  const visibleHomeStudyItems = homeStudyItems.filter(item => !hiddenHomeMenuIds.has(item.id));
+  const visibleHomeStudyItems = homeStudyItems
+    .filter(item => !hiddenHomeMenuIds.has(item.id))
+    .map((item, index) => ({ ...item, number: String(index + 1).padStart(2, "0") }));
   const completed = visibleHomeStudyItems.filter(item => homeStudyState.checked[item.id]).length;
   const progress = Math.round((completed / Math.max(1, visibleHomeStudyItems.length)) * 100);
   const isSilentMode = learningMode !== "speaking";
