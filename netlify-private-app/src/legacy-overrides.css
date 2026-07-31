@@ -4441,3 +4441,11 @@ html[data-theme="dark"] .vocab-test-launch-bar { border-color: #365149; backgrou
     gap: 3px;
   }
 }
+
+@media (min-width: 701px) {
+  #app csat-wordmaster-mode .csat-vocab-header,
+  #app csat-wordmaster-mode .csat-vocab-toolbar,
+  #app csat-wordmaster-mode .csat-tabs {
+    max-width: 944px;
+  }
+}
