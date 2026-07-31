@@ -117,4 +117,6 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(appSource, /data-synonym-submit/);
   assert.match(appSource, /data-synonym-typing-form/);
   assert.match(appSource, /dailyQuizWordIds = dailyVocabulary\.map/);
+  assert.match(appSource, /data-synonym-retry/);
+  assert.match(appSource, /const answerMeanings = question\.answers/);
 });

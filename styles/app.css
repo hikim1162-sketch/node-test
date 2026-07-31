@@ -679,6 +679,10 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-answer{margin-top:12px;padding:13px;border-radius:9px;background:#e7f4ed;color:#176448}
 .synonym-answer.error{background:#fff0f0;color:#933d3d}
 .synonym-answer p{margin:5px 0 0;font-size:10px}
+.synonym-answer ul{display:grid;gap:5px;margin:9px 0 0;padding:0;list-style:none}
+.synonym-answer li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 9px;border-radius:7px;background:#ffffffa8}
+.synonym-answer li b{font-size:13px}
+.synonym-answer li span{font-size:12px;font-weight:750;text-align:right}
 .synonym-result{padding:48px 22px;text-align:center}
 .synonym-result h2{margin:12px 0;color:#1c6d64;font:700 68px Georgia}
 .synonym-result h2 small{font-size:23px}
