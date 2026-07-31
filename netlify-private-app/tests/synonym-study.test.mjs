@@ -12,6 +12,7 @@ import {
   getTodaySynonymTheme,
 } from "../../data/synonym-study/index.js";
 import { buildSynonymQuiz } from "../../data/synonym-study/quiz-templates.js";
+import { getSynonymPhonetic } from "../../data/synonym-study/phonetics.js";
 
 test("published curriculum contains one hundred curated words", () => {
   assert.equal(synonymStudySets.length, 12);
@@ -41,6 +42,17 @@ test("every card has the required learning fields", () => {
     assert.ok(word.collocations.length >= 1);
     assert.ok(word.quizTypes.length >= 2);
     assert.deepEqual(word.sourcePriority, ["site", "espresso", "naver"]);
+  }
+});
+
+test("every main synonym and related synonym has an IPA transcription", () => {
+  for (const word of synonymStudySets.flatMap((set) => set.words)) {
+    assert.match(getSynonymPhonetic(word.targetWord), /^\/.+\/$/);
+    assert.notEqual(getSynonymPhonetic(word.targetWord), "/—/");
+    for (const relatedWord of word.additionalSynonyms) {
+      assert.match(getSynonymPhonetic(relatedWord), /^\/.+\/$/);
+      assert.notEqual(getSynonymPhonetic(relatedWord), "/—/");
+    }
   }
 });
 
@@ -119,4 +131,6 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.match(appSource, /dailyQuizWordIds = dailyVocabulary\.map/);
   assert.match(appSource, /data-synonym-retry/);
   assert.match(appSource, /const answerMeanings = question\.answers/);
+  assert.match(appSource, /getSynonymPhonetic\(word\.targetWord\)/);
+  assert.match(appSource, /getSynonymPhonetic\(item\)/);
 });

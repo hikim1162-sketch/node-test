@@ -716,10 +716,13 @@ html[data-theme="dark"] .quiz-entry-hero,html[data-theme="dark"] .quiz-entry-car
 .synonym-vocabulary article aside em{padding:7px 12px;border-radius:20px;background:#dcefe9;color:#103f39;font:700 16px Georgia,serif}
 .synonym-related-expression{display:inline-flex!important;align-items:center;gap:3px;padding:0!important;border-radius:20px;background:#dcefe9;color:#103f39;letter-spacing:normal!important}
 .synonym-related-expression em{padding:7px 4px 7px 12px!important;background:transparent!important}
+.synonym-related-expression small{padding-right:4px;color:#52736d;font-size:11px;font-weight:700;white-space:nowrap}
+.synonym-related-expression.cleared small{color:#d8f2eb}
 .synonym-related-expression button{display:grid;place-items:center;width:29px;height:29px;margin-right:3px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.72);color:#17695d;cursor:pointer}
 .synonym-related-expression button:hover{background:#fff;color:#0d5148}
 .synonym-related-expression button:focus-visible{outline:2px solid #2d8276;outline-offset:2px}
 .synonym-related .synonym-related-expression{font-size:inherit;font-weight:inherit}
+.synonym-main-phonetic{color:#67808a;font-family:Georgia,serif;font-size:13px;font-weight:650;white-space:nowrap}
 .synonym-day-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;margin:20px 0;padding:14px;border-radius:14px;background:#edf4f6}
 .synonym-day-nav button{min-height:40px;padding:0 16px;border:1px solid #c8d8df;border-radius:9px;background:#fff;color:#345467;font-weight:800;cursor:pointer}
 .synonym-day-nav button:disabled{cursor:not-allowed;opacity:.4}
