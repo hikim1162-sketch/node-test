@@ -138,4 +138,6 @@ test("synonym UI exposes only vocabulary, test, and wrong-answer review menus", 
   assert.doesNotMatch(appSource, /<p class="nav-label space">TRUST<\/p>/);
   assert.match(appSource, /class="suneung-copyright"/);
   assert.match(appSource, /Copyright &amp; Source Policy/);
+  assert.doesNotMatch(appSource, /30-DAY SYNONYM COURSE|하루 3~4개씩 정확하게|100개를 한꺼번에 외우지 않고/);
+  assert.match(appSource, /class="synonym-course-compact-head"/);
 });

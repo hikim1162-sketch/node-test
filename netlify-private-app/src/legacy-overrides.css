@@ -4404,6 +4404,15 @@ html[data-theme="dark"] .vocab-test-launch-bar { border-color: #365149; backgrou
   padding-block: 0;
 }
 
+#app .synonym-page .synonym-vocabulary > .synonym-course-compact-head {
+  justify-content: flex-end;
+  line-height: .7;
+}
+
+#app .synonym-page .synonym-vocabulary > .synonym-course-compact-head > b {
+  padding-block: 3px;
+}
+
 #app .synonym-page .synonym-vocabulary > header > div {
   display: flex;
   align-items: baseline;
