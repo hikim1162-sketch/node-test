@@ -3455,9 +3455,16 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
   background: #f6f5fa;
 }
 
+#app .audience-mode-group.school button + button {
+  border-left: 1px solid #d4d3e3;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 html[data-theme="dark"] #app .audience-mode-switch { border: 0; background: transparent; }
 html[data-theme="dark"] #app .audience-mode-group { border-color: #435158; background: #253138; }
 html[data-theme="dark"] #app .audience-mode-group.school { border-color: #4d4c61; background: #2c2b3a; }
+html[data-theme="dark"] #app .audience-mode-group.school button + button { border-left-color: #4d4c61; }
 
 @media (max-width: 600px) {
   #app .audience-mode-switch { gap: 6px; }
