@@ -66,11 +66,11 @@ test("hidden navigation items are also hidden from today's learning dashboard", 
   assert.match(appSource, /silentHomeCoach\(homeAppState, completed, visibleHomeStudyItems\)/);
 });
 
-test("monthly vocabulary test hides wrong answers and requires an immediate retry", () => {
+test("monthly vocabulary test immediately refreshes an incorrect question without a retry click", () => {
   const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
-  assert.match(appSource, /정답을 공개하지 않습니다\. 바로 다시 풀어보세요\./);
-  assert.match(appSource, /data-vocab-test-question-retry>다시 풀기/);
-  assert.match(appSource, /delete vocabMonthlyTestState\.answers\[vocabMonthlyTestState\.index\]/);
+  assert.match(appSource, /다른 보기를 바로 선택하세요\./);
+  assert.match(appSource, /wrongSelection = \{ index: vocabMonthlyTestState\.index, choice: selectedAnswer \}/);
+  assert.doesNotMatch(appSource, /data-vocab-test-question-retry/);
   assert.match(appSource, /correct && choiceIndex === question\.answer/);
 });
 

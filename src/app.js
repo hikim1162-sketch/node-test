@@ -2191,7 +2191,7 @@ function ensureTodayExpressionUpgradeSet() {
   }
   return getActiveExpressionUpgradeSet();
 }
-let vocabMonthlyTestState = { open: false, questions: [], index: 0, answers: [], submitted: false };
+let vocabMonthlyTestState = { open: false, questions: [], index: 0, answers: [], submitted: false, wrongSelection: null };
 
 function openMonthlyVocabularyTest() {
   vocabMonthlyTestState = {
@@ -2200,6 +2200,7 @@ function openMonthlyVocabularyTest() {
     index: 0,
     answers: [],
     submitted: false,
+    wrongSelection: null,
   };
 }
 
@@ -2221,22 +2222,25 @@ function vocabMonthlyTestModal() {
   const selected = answers[index];
   const answered = Number.isInteger(selected);
   const correct = answered && selected === question.answer;
+  const wrongSelection = vocabMonthlyTestState.wrongSelection?.index === index
+    ? vocabMonthlyTestState.wrongSelection.choice
+    : null;
   const choices = question.choices.map((choice, choiceIndex) => {
     const className = [
       selected === choiceIndex ? "selected" : "",
       correct && choiceIndex === question.answer ? "correct" : "",
-      answered && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : "",
+      wrongSelection === choiceIndex ? "wrong" : "",
     ].filter(Boolean).join(" ");
     return `<button class="${className}" type="button" data-vocab-test-answer="${choiceIndex}" ${answered ? "disabled" : ""}><i>${choiceIndex + 1}</i>${escapeMarkup(choice)}</button>`;
   }).join("");
-  const feedback = answered
-    ? `<div class="vocab-test-answer-feedback ${correct ? "correct" : "wrong"}" role="status"><b>${correct ? "정답입니다." : "오답입니다."}</b>${correct ? `<p><span>정답</span>${escapeMarkup(question.meaning)}</p>` : "<p>정답을 공개하지 않습니다. 바로 다시 풀어보세요.</p>"}</div>`
-    : "";
+  const feedback = correct
+    ? `<div class="vocab-test-answer-feedback correct" role="status"><b>정답입니다.</b><p><span>정답</span>${escapeMarkup(question.meaning)}</p></div>`
+    : Number.isInteger(wrongSelection)
+      ? `<div class="vocab-test-answer-feedback wrong" role="status"><b>오답입니다.</b><p>다른 보기를 바로 선택하세요.</p></div>`
+      : "";
   const nextAction = correct
     ? `<button class="primary" type="button" data-vocab-test-next>${index === questions.length - 1 ? "결과 보기" : "다음 문제"}</button>`
-    : answered
-      ? `<button class="primary" type="button" data-vocab-test-question-retry>다시 풀기</button>`
-      : `<button class="primary" type="button" disabled>다음 문제</button>`;
+    : `<button class="primary" type="button" disabled>다음 문제</button>`;
   return `<div class="vocab-test-backdrop"><section class="vocab-test-modal" role="dialog" aria-modal="true" aria-labelledby="vocab-test-title"><button class="vocab-test-close" type="button" data-vocab-test-close aria-label="닫기">×</button><header><div><span class="vocab-test-kicker">MONTHLY WORD TEST</span><h2 id="vocab-test-title">이번 달 단어 시험</h2></div><b>${index + 1} / ${questions.length}</b></header><div class="vocab-test-progress"><i style="width:${((index + 1) / questions.length) * 100}%"></i></div><p class="vocab-test-range">${new Date().getMonth() + 1}월 1일–오늘 · 저장 단어 우선 출제</p><article><span>${question.saved ? "저장한 단어" : "이번 달 학습 단어"}</span><h3>${escapeMarkup(question.word)}</h3><div class="vocab-test-phonetic">${vocabPhonetic(question)}</div><p>가장 알맞은 뜻을 고르세요.</p></article><div class="vocab-test-choices">${choices}</div>${feedback}<footer><button type="button" data-vocab-test-prev ${index === 0 ? "disabled" : ""}>이전</button>${nextAction}</footer></section></div>`;
 }
 
@@ -6378,19 +6382,17 @@ function bindEvents(){
     if (Number.isInteger(vocabMonthlyTestState.answers[vocabMonthlyTestState.index])) return;
     const selectedAnswer = Number(event.currentTarget.dataset.vocabTestAnswer);
     const question = vocabMonthlyTestState.questions[vocabMonthlyTestState.index];
-    vocabMonthlyTestState.answers[vocabMonthlyTestState.index] = selectedAnswer;
     if (question && selectedAnswer === question.answer) {
+      vocabMonthlyTestState.answers[vocabMonthlyTestState.index] = selectedAnswer;
+      vocabMonthlyTestState.wrongSelection = null;
       state.monthlyTestMasteredWords = [...new Set([...state.monthlyTestMasteredWords, question.word])];
       profileStorage.setItem("value_time_monthly_test_mastered_words_v1", JSON.stringify(state.monthlyTestMasteredWords));
-    }
+    } else vocabMonthlyTestState.wrongSelection = { index: vocabMonthlyTestState.index, choice: selectedAnswer };
     render();
   }));
   document.querySelector("[data-vocab-test-prev]")?.addEventListener("click", () => {
     vocabMonthlyTestState.index = Math.max(0, vocabMonthlyTestState.index - 1);
-    render();
-  });
-  document.querySelector("[data-vocab-test-question-retry]")?.addEventListener("click", () => {
-    delete vocabMonthlyTestState.answers[vocabMonthlyTestState.index];
+    vocabMonthlyTestState.wrongSelection = null;
     render();
   });
   document.querySelector("[data-vocab-test-next]")?.addEventListener("click", () => {
@@ -6402,7 +6404,10 @@ function bindEvents(){
         .map(question => question.word);
       state.monthlyTestMasteredWords = [...new Set([...state.monthlyTestMasteredWords, ...correctlyAnsweredWords])];
       profileStorage.setItem("value_time_monthly_test_mastered_words_v1", JSON.stringify(state.monthlyTestMasteredWords));
-    } else vocabMonthlyTestState.index += 1;
+    } else {
+      vocabMonthlyTestState.index += 1;
+      vocabMonthlyTestState.wrongSelection = null;
+    }
     render();
   });
   document.querySelector("[data-vocab-test-retry]")?.addEventListener("click", () => {
