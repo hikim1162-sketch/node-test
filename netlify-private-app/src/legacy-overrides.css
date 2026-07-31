@@ -4448,4 +4448,8 @@ html[data-theme="dark"] .vocab-test-launch-bar { border-color: #365149; backgrou
   #app csat-wordmaster-mode .csat-tabs {
     max-width: 944px;
   }
+
+  #app .synonym-page {
+    max-width: 832px;
+  }
 }
