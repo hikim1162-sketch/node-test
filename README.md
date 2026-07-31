@@ -1,5 +1,7 @@
 # Worthy Life
 
+제품 전반의 화면 및 기능 기준은 [ValueTime 제품 표준 요구사항](docs/valuetime-product-standard.md)을 따른다.
+
 매일의 단어, 문장, 영어 뉴스, 미드 표현을 학습하고 날짜별 완료 이력을 관리하는 개인 영어 학습 사이트입니다.
 
 ## 실행
