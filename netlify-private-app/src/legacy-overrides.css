@@ -2631,7 +2631,13 @@ html[data-theme="dark"] #app .csat-question-passage section > p {
 #app .content > header {
   height: 64px;
   min-height: 64px;
+  position: relative;
   padding-block: 0;
+}
+
+#app .content > header .mini-streak {
+  position: absolute;
+  left: 5.2vw;
 }
 
 #app .suneung-wordmaster-page {
