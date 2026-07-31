@@ -5784,6 +5784,8 @@ function render() {
   const content=audienceMode==="kids"?kidsPage(state.page):isAcademicMode()?suneungPage(state.page):state.page==="home"?homePage():state.page==="upgrade"?expressionUpgradePage():state.page==="synonyms"?synonymStudyPage():state.page==="words"?vocabularyPage():state.page==="sentence"?sentencePage():state.page==="calendar"?calendarPage():state.page==="news"?newsPage():state.page==="blog"?blogPage():state.page==="drama"?homePage():state.page==="test"?dailyTestPage():state.page==="quiz"?quizPage():state.page==="ted"?tedStudyPage():state.page==="journal"?journalPage():placeholderPage();
   const copyright = isAcademicMode() ? `<footer class="suneung-copyright"><div class="suneung-footer-brand"><span>V</span><div><b>ValueTime</b><small>ENGLISH LEARNING</small></div></div><div class="suneung-footer-content"><nav aria-label="하단 정책 메뉴"><a href="#suneung-home" data-page="suneung-home">ValueTime 소개</a><a href="#terms">이용약관</a><a href="#report">불편사항 신고</a><a class="privacy" href="#privacy">개인정보처리방침</a><a href="#suneung-policy" data-page="suneung-policy">Copyright &amp; Source Policy</a><a href="#sitemap">사이트맵</a></nav><p>ValueTime 영어학습 서비스 <i></i> 대표이사 : kai</p><p>Copyright © ${new Date().getFullYear()} ValueTime. All rights reserved.</p></div></footer>` : "";
   document.querySelector("#app").innerHTML=`<div class="app-shell">${sidebar()}<div class="content">${content}${copyright}</div>${reviewChatbotUi()}${selectionAssistantUi()}${vocabMonthlyTestModal()}</div>`;
+  const miniStreak = document.querySelector(".mini-streak");
+  if (miniStreak && audienceMode !== "kids") miniStreak.innerHTML = `${icon("flame",18)} <b>${isAcademicMode() ? "5일" : "12일"}</b> 연속 학습`;
   enhanceNewsEditorialReader();
   bindEvents();
 }
