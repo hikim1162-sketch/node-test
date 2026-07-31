@@ -50,4 +50,7 @@ test("TOEIC RC questions live in the daily TOEIC area, not Daily Test tabs", () 
   const dailyTestSource = appSource.slice(appSource.indexOf("function dailyTestPage()"), appSource.indexOf("function dailyTestScoreCard"));
   assert.doesNotMatch(dailyTestSource, /\["rc", "RC 문제"\]/);
   assert.match(dailyTestSource, /토익 RC 문제는 ‘매일 토익 풀기’에서 제공합니다/);
+  assert.match(dailyTestSource, /class="test-question-nav"/);
+  assert.match(dailyTestSource, /data-test-prev/);
+  assert.match(dailyTestSource, /data-test-next/);
 });

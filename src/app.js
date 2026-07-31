@@ -3928,12 +3928,12 @@ function dailyTestPage() {
     const current = questions[index];
     pageContent = `<div class="test-layout">
       <section class="test-question-card panel" aria-labelledby="test-question-title">
-        <div class="test-card-head"><div><p class="eyebrow">${current.type}</p><h2 id="test-question-title">${tabs.find(([key]) => key === type)[1]}</h2></div><span>문제 ${index + 1} / ${questions.length}</span></div>
+        <div class="test-card-head"><div><p class="eyebrow">${current.type}</p><h2 id="test-question-title">${tabs.find(([key]) => key === type)[1]}</h2></div><nav class="test-question-nav" aria-label="문제 이동"><button type="button" data-test-prev>${icon("chevron", 13)} 이전 문제</button><span>문제 ${index + 1} / ${questions.length}</span><button type="button" data-test-next>다음 문제 ${icon("chevron", 13)}</button></nav></div>
         <div class="test-question-body">
           <h3>${current.question}</h3>
           ${current.passage ? `<div class="test-passage">${current.passage}</div>` : ""}
           <fieldset class="test-choices"><legend class="sr-only">답안 선택</legend>${current.choices.map((choice, choiceIndex) => `<label data-choice-index="${choiceIndex}"><input type="radio" name="daily-test-choice" value="${choiceIndex}"><span><i>${choiceIndex + 1}</i>${choice}</span></label>`).join("")}</fieldset>
-          <div class="test-actions"><button type="button" data-test-check>정답 확인</button><button class="secondary" type="button" data-test-next>다음 문제</button></div>
+          <div class="test-actions"><button type="button" data-test-check>정답 확인</button><button class="secondary" type="button" data-test-prev>이전 문제</button><button class="secondary" type="button" data-test-next>다음 문제</button></div>
           <div id="test-result" class="test-result" role="status" aria-live="polite"></div>
         </div>
       </section>
@@ -7725,11 +7725,16 @@ function bindEvents(){
     result.className = `test-result show ${isCorrect ? "correct" : "incorrect"}`;
     result.textContent = `${isCorrect ? "정답입니다." : "오답입니다."}\n정답: ${current.choices[current.answer]}\n해설: ${current.explanation}`;
   });
-  document.querySelector("[data-test-next]")?.addEventListener("click", () => {
+  document.querySelectorAll("[data-test-next]").forEach(button => button.addEventListener("click", () => {
     const type = dailyTestState.active;
     dailyTestState.indices[type] = (dailyTestState.indices[type] + 1) % dailyTestQuestions[type].length;
     render();
-  });
+  }));
+  document.querySelectorAll("[data-test-prev]").forEach(button => button.addEventListener("click", () => {
+    const type = dailyTestState.active;
+    dailyTestState.indices[type] = (dailyTestState.indices[type] - 1 + dailyTestQuestions[type].length) % dailyTestQuestions[type].length;
+    render();
+  }));
   document.querySelector("[data-test-reset]")?.addEventListener("click", () => {
     Object.assign(dailyTestState.scores, emptyTestScores());
     const history = getTestHistory();
