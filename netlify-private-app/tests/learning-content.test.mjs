@@ -73,3 +73,12 @@ test("monthly vocabulary test hides wrong answers and requires an immediate retr
   assert.match(appSource, /delete vocabMonthlyTestState\.answers\[vocabMonthlyTestState\.index\]/);
   assert.match(appSource, /correct && choiceIndex === question\.answer/);
 });
+
+test("monthly vocabulary test uses a meaning that matches the word part of speech", () => {
+  const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+  const vocabularySource = readFileSync(new URL("../../data/vocabulary.js", import.meta.url), "utf8");
+  assert.match(appSource, /function vocabMonthlyTestMeaning\(word\)/);
+  assert.match(appSource, /vocabularyExamples\[term\]\?\.meanings\?\.\[part\]/);
+  assert.match(appSource, /monthlyPool\.map\(vocabMonthlyTestMeaning\)/);
+  assert.match(vocabularySource, /"word": "predict"[\s\S]*?"meaning": "예측하다, 예언하다"/);
+});

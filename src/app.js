@@ -2792,12 +2792,20 @@ function buildMonthlyVocabularyTest(dateKey = localDateKey()) {
   if (selected.length < 20) {
     selected.push(...randomShuffle(words.filter(item => item?.word && !selected.some(selectedWord => selectedWord.word === item.word))).slice(0, 20 - selected.length));
   }
-  const meaningPool = monthlyPool.map(item => item.meaning).filter(Boolean);
+  const meaningPool = monthlyPool.map(vocabMonthlyTestMeaning).filter(Boolean);
   return randomShuffle(selected).map(word => {
-    const distractors = randomShuffle(meaningPool.filter(meaning => meaning !== word.meaning)).slice(0, 3);
-    const choices = randomShuffle([word.meaning, ...distractors]);
-    return { word: word.word, phonetic: word.phonetic, meaning: word.meaning, choices, answer: choices.indexOf(word.meaning), saved: savedSet.has(word.word) };
+    const meaning = vocabMonthlyTestMeaning(word);
+    const distractors = randomShuffle(meaningPool.filter(candidate => candidate !== meaning)).slice(0, 3);
+    const choices = randomShuffle([meaning, ...distractors]);
+    return { word: word.word, phonetic: word.phonetic, meaning, choices, answer: choices.indexOf(meaning), saved: savedSet.has(word.word) };
   });
+}
+
+function vocabMonthlyTestMeaning(word) {
+  const term = String(word.word || "").toLowerCase();
+  const part = vocabPartHint(word);
+  const dictionaryMeanings = vocabularyExamples[term]?.meanings?.[part];
+  return firstNonEmptyVocabValue(dictionaryMeanings?.[0], word.meaning);
 }
 
 function vocabPhonetic(word) {
