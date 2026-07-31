@@ -2224,13 +2224,20 @@ function vocabMonthlyTestModal() {
   const choices = question.choices.map((choice, choiceIndex) => {
     const className = [
       selected === choiceIndex ? "selected" : "",
-      answered && choiceIndex === question.answer ? "correct" : "",
+      correct && choiceIndex === question.answer ? "correct" : "",
       answered && selected === choiceIndex && choiceIndex !== question.answer ? "wrong" : "",
     ].filter(Boolean).join(" ");
     return `<button class="${className}" type="button" data-vocab-test-answer="${choiceIndex}" ${answered ? "disabled" : ""}><i>${choiceIndex + 1}</i>${escapeMarkup(choice)}</button>`;
   }).join("");
-  const feedback = answered ? `<div class="vocab-test-answer-feedback ${correct ? "correct" : "wrong"}" role="status"><b>${correct ? "정답입니다." : "오답입니다."}</b><p><span>정답</span>${escapeMarkup(question.meaning)}</p></div>` : "";
-  return `<div class="vocab-test-backdrop"><section class="vocab-test-modal" role="dialog" aria-modal="true" aria-labelledby="vocab-test-title"><button class="vocab-test-close" type="button" data-vocab-test-close aria-label="닫기">×</button><header><div><span class="vocab-test-kicker">MONTHLY WORD TEST</span><h2 id="vocab-test-title">이번 달 단어 시험</h2></div><b>${index + 1} / ${questions.length}</b></header><div class="vocab-test-progress"><i style="width:${((index + 1) / questions.length) * 100}%"></i></div><p class="vocab-test-range">${new Date().getMonth() + 1}월 1일–오늘 · 저장 단어 우선 출제</p><article><span>${question.saved ? "저장한 단어" : "이번 달 학습 단어"}</span><h3>${escapeMarkup(question.word)}</h3><div class="vocab-test-phonetic">${vocabPhonetic(question)}</div><p>가장 알맞은 뜻을 고르세요.</p></article><div class="vocab-test-choices">${choices}</div>${feedback}<footer><button type="button" data-vocab-test-prev ${index === 0 ? "disabled" : ""}>이전</button><button class="primary" type="button" data-vocab-test-next ${!answered ? "disabled" : ""}>${index === questions.length - 1 ? "결과 보기" : "다음 문제"}</button></footer></section></div>`;
+  const feedback = answered
+    ? `<div class="vocab-test-answer-feedback ${correct ? "correct" : "wrong"}" role="status"><b>${correct ? "정답입니다." : "오답입니다."}</b>${correct ? `<p><span>정답</span>${escapeMarkup(question.meaning)}</p>` : "<p>정답을 공개하지 않습니다. 바로 다시 풀어보세요.</p>"}</div>`
+    : "";
+  const nextAction = correct
+    ? `<button class="primary" type="button" data-vocab-test-next>${index === questions.length - 1 ? "결과 보기" : "다음 문제"}</button>`
+    : answered
+      ? `<button class="primary" type="button" data-vocab-test-question-retry>다시 풀기</button>`
+      : `<button class="primary" type="button" disabled>다음 문제</button>`;
+  return `<div class="vocab-test-backdrop"><section class="vocab-test-modal" role="dialog" aria-modal="true" aria-labelledby="vocab-test-title"><button class="vocab-test-close" type="button" data-vocab-test-close aria-label="닫기">×</button><header><div><span class="vocab-test-kicker">MONTHLY WORD TEST</span><h2 id="vocab-test-title">이번 달 단어 시험</h2></div><b>${index + 1} / ${questions.length}</b></header><div class="vocab-test-progress"><i style="width:${((index + 1) / questions.length) * 100}%"></i></div><p class="vocab-test-range">${new Date().getMonth() + 1}월 1일–오늘 · 저장 단어 우선 출제</p><article><span>${question.saved ? "저장한 단어" : "이번 달 학습 단어"}</span><h3>${escapeMarkup(question.word)}</h3><div class="vocab-test-phonetic">${vocabPhonetic(question)}</div><p>가장 알맞은 뜻을 고르세요.</p></article><div class="vocab-test-choices">${choices}</div>${feedback}<footer><button type="button" data-vocab-test-prev ${index === 0 ? "disabled" : ""}>이전</button>${nextAction}</footer></section></div>`;
 }
 
 let activeBlogPostId = null;
@@ -6372,6 +6379,10 @@ function bindEvents(){
   }));
   document.querySelector("[data-vocab-test-prev]")?.addEventListener("click", () => {
     vocabMonthlyTestState.index = Math.max(0, vocabMonthlyTestState.index - 1);
+    render();
+  });
+  document.querySelector("[data-vocab-test-question-retry]")?.addEventListener("click", () => {
+    delete vocabMonthlyTestState.answers[vocabMonthlyTestState.index];
     render();
   });
   document.querySelector("[data-vocab-test-next]")?.addEventListener("click", () => {
