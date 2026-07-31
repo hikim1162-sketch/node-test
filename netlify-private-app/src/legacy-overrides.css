@@ -4458,4 +4458,8 @@ html[data-theme="dark"] .vocab-test-launch-bar { border-color: #365149; backgrou
   #app .synonym-page {
     max-width: 832px;
   }
+
+  #app .daily-test-page {
+    max-width: 944px;
+  }
 }
