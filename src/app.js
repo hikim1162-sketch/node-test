@@ -3166,8 +3166,8 @@ function silentHomeCardDetails(item, isDone, itemMeta) {
   return { ...(map[item.id] || {}), status, score };
 }
 
-function silentHomeCoach(homeAppState, completed) {
-  const pending = homeStudyItems.filter(item => !homeStudyState.checked[item.id]).slice(0, 2);
+function silentHomeCoach(homeAppState, completed, studyItems = homeStudyItems) {
+  const pending = studyItems.filter(item => !homeStudyState.checked[item.id]).slice(0, 2);
   const quiz = quizSummaryStats();
   const test = dailyTestSummaryStats();
   const reviewText = quiz.reviewNeeded
@@ -3359,12 +3359,14 @@ function homePage() {
     saveHomeStudyState();
   }
   const homeAppState = syncHomeAppState();
-  const completed = homeStudyItems.filter(item => homeStudyState.checked[item.id]).length;
-  const progress = Math.round((completed / homeStudyItems.length) * 100);
+  const hiddenHomeMenuIds = new Set(loadUserSettings().navigation.hiddenMenuIds);
+  const visibleHomeStudyItems = homeStudyItems.filter(item => !hiddenHomeMenuIds.has(item.id));
+  const completed = visibleHomeStudyItems.filter(item => homeStudyState.checked[item.id]).length;
+  const progress = Math.round((completed / Math.max(1, visibleHomeStudyItems.length)) * 100);
   const isSilentMode = learningMode !== "speaking";
-  const silentCoach = silentHomeCoach(homeAppState, completed);
+  const silentCoach = silentHomeCoach(homeAppState, completed, visibleHomeStudyItems);
   const todayLabel = new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date());
-  const encouragement = completed === homeStudyItems.length
+  const encouragement = completed === visibleHomeStudyItems.length
     ? "오늘의 학습을 모두 마쳤어요. 정말 멋진 하루예요!"
     : completed >= 3
       ? "절반 이상 완료했어요. 조금만 더 힘내볼까요?"
@@ -3378,7 +3380,7 @@ function homePage() {
   ${homeQuickLinks()}
   <div class="home-dashboard-layout">
     <section class="home-study-section" aria-labelledby="home-study-title"><div class="home-study-heading"><div><p class="eyebrow">DAILY ROUTINE</p><h3 id="home-study-title">오늘 무엇을 공부할까요?</h3></div><span>${completed} / ${homeStudyItems.length} 완료</span></div>
-      <div class="home-study-grid">${homeStudyItems.map(item => {
+      <div class="home-study-grid">${visibleHomeStudyItems.map(item => {
         const isDone = Boolean(homeStudyState.checked[item.id]);
         const itemMeta = homeAppState.items[homeAppItemId(item.id)] || {};
         const details = silentHomeCardDetails(item, isDone, itemMeta);
@@ -3394,10 +3396,10 @@ function homePage() {
       }).join("")}</div>
     </section>
     <aside class="home-dashboard-side"><section class="home-progress-card" aria-labelledby="home-progress-title">
-      <p class="eyebrow">${isSilentMode ? "TODAY'S COACH" : "TODAY'S PROGRESS"}</p><div class="home-progress-title"><h3 id="home-progress-title">${isSilentMode ? "오늘의 학습 코치" : "오늘의 학습 체크"}</h3><strong>${completed}<small> / ${homeStudyItems.length}</small></strong></div><p class="home-progress-desc">${isSilentMode ? "완료한 항목과 바로 이어갈 복습을 기준으로 다음 행동을 제안합니다." : "완료 여부와 오늘의 전체 달성률을 한눈에 확인해보세요."}</p>
-      <div class="home-progress-track" role="progressbar" aria-label="오늘의 학습 진도" aria-valuemin="0" aria-valuemax="${homeStudyItems.length}" aria-valuenow="${completed}"><i style="width:${progress}%"></i></div><span class="home-progress-percent">${progress}% 완료</span>
+      <p class="eyebrow">${isSilentMode ? "TODAY'S COACH" : "TODAY'S PROGRESS"}</p><div class="home-progress-title"><h3 id="home-progress-title">${isSilentMode ? "오늘의 학습 코치" : "오늘의 학습 체크"}</h3><strong>${completed}<small> / ${visibleHomeStudyItems.length}</small></strong></div><p class="home-progress-desc">${isSilentMode ? "완료한 항목과 바로 이어갈 복습을 기준으로 다음 행동을 제안합니다." : "완료 여부와 오늘의 전체 달성률을 한눈에 확인해보세요."}</p>
+      <div class="home-progress-track" role="progressbar" aria-label="오늘의 학습 진도" aria-valuemin="0" aria-valuemax="${visibleHomeStudyItems.length}" aria-valuenow="${completed}"><i style="width:${progress}%"></i></div><span class="home-progress-percent">${progress}% 완료</span>
       ${isSilentMode ? `<div class="home-coach-box"><b>다음 추천</b>${silentCoach.pending.length ? silentCoach.pending.map(item => `<button type="button" data-page="${item.page}">${item.title} · ${item.cta || "시작"} ${icon("arrow", 12)}</button>`).join("") : `<span>오늘 주요 학습을 모두 끝냈어요.</span>`}<b>복습 필요</b><p>${silentCoach.reviewText}</p><b>약점 신호</b><p>${silentCoach.weakText}</p></div>` : ""}
-      <ul>${homeStudyItems.map(item => `<li class="${homeStudyState.checked[item.id] ? "done" : ""}"><i>${homeStudyState.checked[item.id] ? icon("check", 12) : ""}</i><span>${item.number}. ${item.title}</span><em>${homeStudyState.checked[item.id] ? "완료" : "진행 전"}</em></li>`).join("")}</ul>
+      <ul>${visibleHomeStudyItems.map(item => `<li class="${homeStudyState.checked[item.id] ? "done" : ""}"><i>${homeStudyState.checked[item.id] ? icon("check", 12) : ""}</i><span>${item.number}. ${item.title}</span><em>${homeStudyState.checked[item.id] ? "완료" : "진행 전"}</em></li>`).join("")}</ul>
       <p class="home-progress-message">${isSilentMode ? silentCoach.doneText : encouragement}</p><button class="home-progress-reset" type="button" data-home-study-reset>오늘의 체크 초기화</button>
     </section></aside>
   </div>${homeTedCard()}</main>`;

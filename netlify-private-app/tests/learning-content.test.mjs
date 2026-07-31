@@ -57,3 +57,10 @@ test("TOEIC RC questions live in the daily TOEIC area, not Daily Test tabs", () 
   assert.doesNotMatch(dailyTestSource, /<nav class="test-tabs"/);
   assert.doesNotMatch(dailyTestSource, /\$\{pageContent\}/);
 });
+
+test("hidden navigation items are also hidden from today's learning dashboard", () => {
+  const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+  assert.match(appSource, /hiddenHomeMenuIds = new Set\(loadUserSettings\(\)\.navigation\.hiddenMenuIds\)/);
+  assert.match(appSource, /visibleHomeStudyItems = homeStudyItems\.filter\(item => !hiddenHomeMenuIds\.has\(item\.id\)\)/);
+  assert.match(appSource, /silentHomeCoach\(homeAppState, completed, visibleHomeStudyItems\)/);
+});
