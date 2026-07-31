@@ -1247,6 +1247,25 @@ const rcQuestionsBase = [
       { id: "rc20", type: "RC", question: "빈칸에 들어갈 가장 적절한 것은?", passage: "Applicants are encouraged to apply early, as positions may be filled ______ the deadline.", choices: ["before", "among", "through", "beside"], answer: 0, explanation: "마감 전에 채용이 완료될 수 있으므로 before가 정답입니다." }
     ];
 
+function ensureDailyRcQuestionsInToeic() {
+  const existingIds = new Set(quizState.questions.map(question => question.id));
+  const additions = rcQuestionsBase
+    .filter(question => !existingIds.has(`daily-${question.id}`))
+    .map(question => normalizeQuizQuestion({
+      ...question,
+      id: `daily-${question.id}`,
+      type: question.passage ? "TOEIC Vocabulary & Reading" : "TOEIC Grammar",
+      category: "TOEIC RC",
+      difficulty: "Intermediate",
+      estimatedTime: "45 sec",
+      learningPoint: "토익 RC 문맥과 문법을 빠르게 판단하세요.",
+      detailedExplanation: question.explanation,
+    }));
+  if (!additions.length) return;
+  quizState.questions.push(...additions);
+  quizState.dailyPlan = null;
+}
+
     const vocabWordBank = [
       { word: "allocate", meaning: "할당하다" },
       { word: "improve", meaning: "개선하다" },
@@ -1514,10 +1533,10 @@ function getWrongNotes() {
 
 const dailyTestState = {
   date: localDateKey(),
-  active: "rc",
+  active: "vocab",
   indices: { rc: 0, vocab: 0, sentence: 0 },
   scores: getTodayTestScores(),
-  wrongFilter: "rc",
+  wrongFilter: "vocab",
   historyFilter: "today",
 };
 const dailyQuickTestState = { date: localDateKey(), viewDate: localDateKey(), graded: false, score: null };
@@ -3874,6 +3893,7 @@ function completeDramaStudyIfAllCardsDone() {
 
 function dailyTestPage() {
   const todayKey = localDateKey();
+  if (dailyTestState.active === "rc") dailyTestState.active = "vocab";
   if (dailyTestState.date !== todayKey) {
     dailyTestState.date = todayKey;
     dailyTestState.indices = { rc: 0, vocab: 0, sentence: 0 };
@@ -3894,7 +3914,6 @@ function dailyTestPage() {
   const wrongNotes = getWrongNotes();
   const reviewCount = Object.values(wrongNotes).reduce((sum, list) => sum + (Array.isArray(list) ? list.length : 0), 0);
   const tabs = [
-    ["rc", "RC 문제"],
     ["vocab", "단어장 테스트"],
     ["sentence", "오늘의 한 문장"],
     ["wrong", "오답노트"],
@@ -3903,7 +3922,7 @@ function dailyTestPage() {
 
   let pageContent = "";
 
-  if (["rc", "vocab", "sentence"].includes(type)) {
+  if (["vocab", "sentence"].includes(type)) {
     const questions = dailyTestQuestions[type];
     const index = dailyTestState.indices[type];
     const current = questions[index];
@@ -3920,13 +3939,13 @@ function dailyTestPage() {
       </section>
 
       <aside class="test-side-stack">${dailyTestScoreCard(scores)}
-        <section class="panel test-guide-card"><p class="eyebrow">STUDY GUIDE</p><h3>Daily Test 안내</h3><ul><li><b>RC 문제</b><span>20문제 은행을 날짜별 새 순서로 점검</span></li><li><b>단어 테스트</b><span>오늘의 단어 10개에서 출제</span></li><li><b>문장 학습</b><span>오늘의 한 문장으로 의미·패턴·활용 점검</span></li></ul><small>같은 날에는 문제와 순서가 유지되고, 날짜가 바뀌면 새로운 세트가 준비됩니다.</small></section>
+        <section class="panel test-guide-card"><p class="eyebrow">STUDY GUIDE</p><h3>Daily Test 안내</h3><ul><li><b>단어 테스트</b><span>오늘의 단어 10개에서 출제</span></li><li><b>문장 학습</b><span>오늘의 한 문장으로 의미·패턴·활용 점검</span></li></ul><small>토익 RC 문제는 ‘매일 토익 풀기’에서 제공합니다.</small></section>
       </aside>
     </div>`;
   } else if (type === "wrong") {
     const notes = getWrongNotes();
     const category = dailyTestState.wrongFilter;
-    const labels = { rc: "RC", vocab: "단어", sentence: "문장" };
+    const labels = { vocab: "단어", sentence: "문장" };
     const items = notes[category] || [];
     pageContent = `<section class="panel test-library-card"><div class="test-card-head"><div><p class="eyebrow">REVIEW AGAIN</p><h2>오답노트</h2></div><span>${items.length}문제 저장됨</span></div><div class="test-library-body">
       <div class="test-sub-toolbar">${Object.entries(labels).map(([key, label]) => `<button class="${category === key ? "active" : ""}" type="button" data-wrong-filter="${key}">${label} 오답</button>`).join("")}<button class="danger" type="button" data-wrong-clear>전체 삭제</button></div>
@@ -4084,6 +4103,7 @@ function quizLandingPage(plan) {
 }
 
 function quizPage() {
+  ensureDailyRcQuestionsInToeic();
   const plan = ensureQuizDailyPlan();
   if (!quizState.activeGroup) return quizLandingPage(plan);
   const filtered = getFilteredQuizIndexes();

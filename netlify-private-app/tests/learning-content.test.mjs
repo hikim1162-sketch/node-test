@@ -42,3 +42,12 @@ test("daily quick test rotates grammar questions by date", () => {
   const grammarBankSource = appSource.slice(appSource.indexOf("const grammarBank = ["), appSource.indexOf("const grammar =", appSource.indexOf("const grammarBank = [")));
   assert.ok((grammarBankSource.match(/prompt:/g) || []).length >= 7);
 });
+
+test("TOEIC RC questions live in the daily TOEIC area, not Daily Test tabs", () => {
+  const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+  assert.match(appSource, /function ensureDailyRcQuestionsInToeic\(\)/);
+  assert.match(appSource, /category: "TOEIC RC"/);
+  const dailyTestSource = appSource.slice(appSource.indexOf("function dailyTestPage()"), appSource.indexOf("function dailyTestScoreCard"));
+  assert.doesNotMatch(dailyTestSource, /\["rc", "RC 문제"\]/);
+  assert.match(dailyTestSource, /토익 RC 문제는 ‘매일 토익 풀기’에서 제공합니다/);
+});
