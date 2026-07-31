@@ -1525,13 +1525,22 @@ function getDailyQuickTestQuestions(dateKey = localDateKey()) {
   const sentence = getDailySentenceLesson(dateKey);
   const patternMeaningPool = [...new Set(sentenceLessons.filter(item => item.pattern !== sentence.pattern).map(item => item.meaning))];
   const sentenceChoices = seededShuffle([sentence.meaning, ...seededShuffle(patternMeaningPool, `${dateKey}-sentence-pool`).slice(0, 2)], `${dateKey}-sentence-choices`);
-  const grammarAnswer = "동명사 또는 명사";
-  const grammarChoices = seededShuffle([grammarAnswer, "동사원형만", "과거분사만"], `${dateKey}-grammar-choices`);
+  const grammarBank = [
+    { prompt: "get used to + ?", question: "뒤에 가장 자연스럽게 오는 형태는?", answer: "동명사 또는 명사", distractors: ["동사원형만", "과거분사만"], explanation: "get used to 뒤에는 명사나 동명사를 씁니다. 예: get used to speaking English." },
+    { prompt: "be interested in + ?", question: "뒤에 가장 자연스럽게 오는 형태는?", answer: "동명사 또는 명사", distractors: ["동사원형만", "to부정사만"], explanation: "전치사 in 뒤에는 명사나 동명사를 씁니다. 예: be interested in learning English." },
+    { prompt: "want + 목적어 + ?", question: "목적격 보어로 가장 자연스러운 형태는?", answer: "to부정사", distractors: ["동명사만", "과거형 동사"], explanation: "want + 목적어 뒤에는 to부정사를 씁니다. 예: I want you to join us." },
+    { prompt: "have + 목적어 + ?", question: "완료 상태를 나타낼 때 가장 알맞은 형태는?", answer: "과거분사", distractors: ["동사원형만", "현재분사만"], explanation: "have + 목적어 + 과거분사는 어떤 일이 완료된 상태를 나타냅니다. 예: I had my laptop repaired." },
+    { prompt: "It is important + ?", question: "뒤에 가장 자연스럽게 이어지는 형태는?", answer: "to부정사", distractors: ["과거분사만", "동사원형만"], explanation: "It is important 뒤에는 보통 to부정사가 이어집니다. 예: It is important to practice daily." },
+    { prompt: "avoid + ?", question: "목적어로 가장 자연스러운 형태는?", answer: "동명사", distractors: ["to부정사만", "과거형 동사"], explanation: "avoid는 목적어로 동명사를 취합니다. 예: Avoid making the same mistake." },
+    { prompt: "had better + ?", question: "뒤에 가장 자연스럽게 오는 형태는?", answer: "동사원형", distractors: ["to부정사", "동명사"], explanation: "had better 뒤에는 동사원형을 씁니다. 예: You had better leave now." },
+  ];
+  const grammar = grammarBank[Math.abs(dateSeed(dateKey)) % grammarBank.length];
+  const grammarChoices = seededShuffle([grammar.answer, ...grammar.distractors], `${dateKey}-grammar-choices`);
 
   return [
     { category: "오늘의 단어", prompt: word.word, question: "뜻으로 가장 알맞은 것은?", choices: wordChoices, answer: wordChoices.indexOf(word.meaning), explanation: `${word.word}는 '${word.meaning}'라는 뜻입니다.` },
     { category: "매일 1문장", prompt: sentence.pattern, question: "표현의 의미로 가장 알맞은 것은?", choices: sentenceChoices, answer: sentenceChoices.indexOf(sentence.meaning), explanation: `${sentence.pattern}은 '${sentence.meaning}'라는 의미입니다.` },
-    { category: "문법 포인트", prompt: "get used to + ?", question: "뒤에 가장 자연스럽게 오는 형태는?", choices: grammarChoices, answer: grammarChoices.indexOf(grammarAnswer), explanation: "get used to 뒤에는 명사나 동명사를 씁니다. 예: get used to speaking English." },
+    { category: "문법 포인트", prompt: grammar.prompt, question: grammar.question, choices: grammarChoices, answer: grammarChoices.indexOf(grammar.answer), explanation: grammar.explanation },
   ];
 }
 

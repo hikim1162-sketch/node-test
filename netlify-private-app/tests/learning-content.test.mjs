@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { seedLearningContents, validateLearningContent } from "../src/learning/contentStorage.js";
 import { todayOrLatest, visibleContents } from "../api/learning-catalog.js";
 
@@ -24,4 +25,12 @@ test("type-specific required fields are validated", () => {
   assert.ok(dailyErrors.expressionEn);
   const tedErrors = validateLearningContent({ type: "ted_learning", title: "a", publishDate: "2026-07-29", status: "draft" });
   assert.ok(tedErrors.contextText);
+});
+
+test("daily quick test rotates grammar questions by date", () => {
+  const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+  assert.match(appSource, /const grammarBank = \[/);
+  assert.match(appSource, /grammarBank\[Math\.abs\(dateSeed\(dateKey\)\) % grammarBank\.length\]/);
+  const grammarBankSource = appSource.slice(appSource.indexOf("const grammarBank = ["), appSource.indexOf("const grammar =", appSource.indexOf("const grammarBank = [")));
+  assert.ok((grammarBankSource.match(/prompt:/g) || []).length >= 7);
 });
