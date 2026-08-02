@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Git: 사전 점검 및 자동 푸시",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\..\\scripts\\auto-git-push.ps1"
+      ],
+      "isBackground": true,
+      "runOptions": { "runOn": "folderOpen", "instanceLimit": 1 },
+      "problemMatcher": {
+        "owner": "auto-git-push",
+        "pattern": { "regexp": "^(.*)$", "message": 1 },
+        "background": { "activeOnStart": true, "beginsPattern": ".*", "endsPattern": "AUTO_PUSH_READY" }
+      },
+      "presentation": { "reveal": "never", "panel": "dedicated", "close": true }
+    }
+  ]
+}
