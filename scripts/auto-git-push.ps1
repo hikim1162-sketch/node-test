@@ -92,9 +92,10 @@ while ($true) {
     }
 
     $staged = (Invoke-Git @("diff", "--cached", "--name-only")) -join "`n"
+    $stagedDiff = (Invoke-Git @("diff", "--cached", "--binary")) -join "`n"
     $fingerprint = if ($staged) {
       $hasher = [Security.Cryptography.SHA256]::Create()
-      $hash = [BitConverter]::ToString($hasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($staged))).Replace("-", "")
+      $hash = [BitConverter]::ToString($hasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($stagedDiff))).Replace("-", "")
       $hasher.Dispose()
       $hash
     } else { "" }
