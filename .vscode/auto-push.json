@@ -1,0 +1,8 @@
+{
+  "exclude": [
+    ".logs/**",
+    ".dev-server/**",
+    "**/*.db",
+    "**/*.db-journal"
+  ]
+}
