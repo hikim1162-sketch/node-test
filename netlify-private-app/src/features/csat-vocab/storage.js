@@ -32,7 +32,7 @@ export function deriveCompletedDays(statuses = {}) {
   const completedDays = {};
   Object.values(SERIES).forEach((series) => {
     getDays(series.key).forEach((day) => {
-      const targetWords = getDayWords(series.key, day).slice(0, 10);
+      const targetWords = getDayWords(series.key, day);
       if (!targetWords.length || !targetWords.every((word) => statuses[word.id])) return;
       completedDays[dayCompletionKey(series.key, day)] = {
         series: series.key,

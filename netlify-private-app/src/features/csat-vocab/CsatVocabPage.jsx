@@ -307,8 +307,8 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
         ))}
       </nav>
 
-      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords.slice(0, 10)} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} />}
-      {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords.slice(0, 10)} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
+      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} />}
+      {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
       {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} />}
       {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} />}
       {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} mode={mode} currentSeriesKey={seriesKey} currentDay={day} cloudProgress={cloudProgress} />}
@@ -422,7 +422,7 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
   return (
     <section className="csat-workspace">
       <div className="csat-section-head">
-        <div><span>QUICK STUDY</span><h2>오늘의 10단어</h2></div>
+        <div><span>QUICK STUDY</span><h2>오늘의 {words.length}단어</h2></div>
         <b>{completed} / {words.length}</b>
       </div>
       <div className="csat-progress-track"><i style={{ width: `${words.length ? (completed / words.length) * 100 : 0}%` }} /></div>

@@ -1025,6 +1025,7 @@ const DYNAMIC_TRANSLATIONS = [
   [/^오답 복습\s*(\d+)$/, "Wrong Answer Review $1"],
   [/^일반 모드\s*·\s*(.+)$/, "General Mode · $1"],
   [/^수능 모드\s*·\s*(.+)$/, "CSAT Mode · $1"],
+  [/^오늘의\s*(\d+)단어$/, "Today's $1 Words"],
   [/^(\d+)개 남음\s*·\s*전체\s*(\d+)개$/, "$1 remaining · $2 total"],
   [/^DAY\s+(\d+)\s*·\s*WORD\s+(\d+)\s*·\s*형용사$/, "DAY $1 · WORD $2 · ADJECTIVE"],
   [/^DAY\s+(\d+)\s*·\s*WORD\s+(\d+)\s*·\s*동사$/, "DAY $1 · WORD $2 · VERB"],
