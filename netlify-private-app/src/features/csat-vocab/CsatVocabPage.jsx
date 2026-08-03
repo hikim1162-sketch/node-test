@@ -815,8 +815,11 @@ function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "s
       percent: remoteSeries?.percent ?? (series.words.length ? Math.round((masteredCount / series.words.length) * 1000) / 10 : 0),
     };
   });
-  const masteredCount = seriesProgress.reduce((sum, item) => sum + item.masteredCount, 0);
-  const totalWordCount = seriesProgress.reduce((sum, item) => sum + item.totalWords, 0);
+  const overallSeriesProgress = mode === "kids" || mode === "elementary"
+    ? seriesProgress.filter((item) => item.series.key === "elementary500")
+    : seriesProgress;
+  const masteredCount = overallSeriesProgress.reduce((sum, item) => sum + item.masteredCount, 0);
+  const totalWordCount = overallSeriesProgress.reduce((sum, item) => sum + item.totalWords, 0);
   const overallPercent = totalWordCount ? Math.round((masteredCount / totalWordCount) * 1000) / 10 : 0;
 
   useEffect(() => {
