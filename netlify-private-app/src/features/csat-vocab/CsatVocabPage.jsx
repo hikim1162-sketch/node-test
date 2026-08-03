@@ -391,6 +391,19 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
       if (wrong[word.id]?.reviewedAt) {
         wrong[word.id] = { ...wrong[word.id], reviewedAt: null };
       }
+      if (status === "unknown") {
+        wrong[word.id] = {
+          ...wrong[word.id],
+          count: (wrong[word.id]?.count || 0) + 1,
+          source: "quick-study",
+          lastWrongAt: new Date().toISOString(),
+          resolvedAt: null,
+          word: word.word_display,
+          meaning: word.meaning_display,
+          series: word.series,
+          day: word.day,
+        };
+      }
     }
     let nextProgress = {
       ...progress,
