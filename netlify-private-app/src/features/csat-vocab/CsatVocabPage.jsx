@@ -2,19 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
 import { getVocabModeConfig } from "./modeConfig.js";
-import { dayCompletionKey, loadProgress, markDayComplete, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
+import { calculateDayStudyProgress, dayCompletionKey, loadProgress, markDayComplete, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
 import { speakEnglishDebug } from "./speech.js";
 import { createProgressSummary, queueCloudProgressSave, saveCloudProgress } from "./cloudProgress.js";
 import "./csat-vocab.css";
-
-const TABS = [
-  ["study", "① 빠른 학습"],
-  ["saved", "② 저장 단어"],
-  ["test", "③ 테스트"],
-  ["review", "④ 오답 복습"],
-  ["progress", "⑤ 진도/기록"],
-];
 
 const bundledNaverExamples = {
   emotion: ["He lost control of his emotions.", "그는 감정을 억제하지 못했다."],
@@ -115,11 +107,13 @@ function ExampleSpeaker({ text }) {
 export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
   const modeConfig = getVocabModeConfig(mode);
   const modeLabel = modeConfig.label;
+  const labels = modeConfig.labels;
+  const tabs = labels.tabs;
   const initialSeries = modeConfig.initialSeries;
   const requestedTab = new URLSearchParams(window.location.search).get("tab");
   const [seriesKey, setSeriesKey] = useState(initialSeries);
   const [day, setDay] = useState(() => resolveDailyDay(initialSeries, getDays(initialSeries), mode));
-  const [tab, setTab] = useState(TABS.some(([key]) => key === requestedTab) ? requestedTab : "study");
+  const [tab, setTab] = useState(tabs.some(([key]) => key === requestedTab) ? requestedTab : "study");
   const [progress, setProgress] = useState(() => loadProgress(mode));
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [monthlyTest, setMonthlyTest] = useState(null);
@@ -129,7 +123,8 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
   const days = useMemo(() => getDays(seriesKey), [seriesKey]);
   const availableSeries = useMemo(() => modeConfig.seriesKeys.map((key) => SERIES[key]), [modeConfig]);
   const dayWords = useMemo(() => getDayWords(seriesKey, day), [seriesKey, day]);
-  const pendingWrongCount = Object.values(progress.wrong).filter((history) => !history.resolvedAt).length;
+  const allowedWordIds = useMemo(() => new Set(availableSeries.flatMap((series) => series.words.map((word) => word.id))), [availableSeries]);
+  const pendingWrongCount = Object.entries(progress.wrong).filter(([id, history]) => allowedWordIds.has(id) && !history.resolvedAt).length;
 
   useEffect(() => {
     updateProgress((current) => {
@@ -246,7 +241,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
       return;
     }
     setMonthlyTest({
-      questions: buildQuestions(shuffle(targets), sourceWords),
+      questions: buildQuestions(shuffle(targets), sourceWords, { questionTypes: modeConfig.questionTypes, labels: labels.testLabels }),
       index: 0,
       answers: [],
       selected: null,
@@ -270,8 +265,8 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
     <main className="csat-vocab-app">
       <header className="csat-vocab-header">
         <div>
-          {embedded ? <span className="csat-back">{modeLabel} 영어 · 단어장</span> : <Link to="/" className="csat-back">← {modeLabel}모드</Link>}
-          <span className="csat-mode-label">{modeLabel}모드</span>
+          {embedded ? <span className="csat-back">{labels.pageTitle}</span> : <Link to="/" className="csat-back">← {labels.modeBadge}</Link>}
+          <span className="csat-mode-label">{labels.modeBadge}</span>
         </div>
         <div className="csat-series" aria-label="단어 시리즈 선택">
           {availableSeries.map((series) => (
@@ -301,7 +296,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
       </section>
 
       <nav className="csat-tabs" aria-label={`${modeLabel} 단어 훈련 메뉴`}>
-        {TABS.map(([key, label]) => (
+        {tabs.map(([key, label]) => (
           <button type="button" className={tab === key ? "active" : ""} onClick={() => setTab(key)} aria-current={tab === key ? "page" : undefined} key={key}>
             {label}
             {key === "review" && pendingWrongCount > 0 ? <em>{pendingWrongCount}</em> : null}
@@ -309,11 +304,11 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
         ))}
       </nav>
 
-      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} ratingLabels={modeConfig.ratingLabels} />}
-      {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
-      {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} />}
-      {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} />}
-      {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} mode={mode} currentSeriesKey={seriesKey} currentDay={day} cloudProgress={cloudProgress} />}
+      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords} seriesKey={seriesKey} day={day} mode={modeConfig.key} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} labels={labels} />}
+      {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} mode={modeConfig.key} questionTypes={modeConfig.questionTypes} labels={labels} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
+      {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} labels={labels} />}
+      {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} labels={labels} />}
+      {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} mode={mode} currentSeriesKey={seriesKey} currentDay={day} cloudProgress={cloudProgress} labels={labels} canonicalSeries={modeConfig.canonicalProgressSeries} />}
       {(["study", "test"].includes(tab)) ? <DayPagination days={days} day={day} onChange={changeDay} /> : null}
       {resetConfirmOpen ? (
         <div className="csat-reset-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setResetConfirmOpen(false)}>
@@ -328,7 +323,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
           </section>
         </div>
       ) : null}
-      {monthlyTest ? <MonthlyVocabularyTest test={monthlyTest} setTest={setMonthlyTest} progress={progress} updateProgress={updateProgress} seriesKey={seriesKey} day={day} retry={() => openMonthlyTest(progress)} completeFlow={completeMonthlyTestFlow} /> : null}
+      {monthlyTest ? <MonthlyVocabularyTest test={monthlyTest} setTest={setMonthlyTest} progress={progress} updateProgress={updateProgress} seriesKey={seriesKey} day={day} learningMode={modeConfig.key} retry={() => openMonthlyTest(progress)} completeFlow={completeMonthlyTestFlow} /> : null}
     </main>
   );
 }
@@ -361,12 +356,13 @@ function DayPagination({ days, day, onChange }) {
   );
 }
 
-function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest, onDayComplete, ratingLabels }) {
+function QuickStudy({ words, seriesKey, day, mode, progress, updateProgress, startTest, onDayComplete, labels }) {
   const [index, setIndex] = useState(0);
   const [meaningVisible, setMeaningVisible] = useState(false);
   const [exampleMeaningVisible, setExampleMeaningVisible] = useState(false);
   const word = words[index];
-  const completed = words.filter((item) => progress.statuses[item.id]).length;
+  const dayProgress = calculateDayStudyProgress(words, progress.statuses);
+  const completed = dayProgress.completed;
   const saved = progress.savedWords.includes(word?.id);
   const example = useNaverWordExample(word);
 
@@ -396,6 +392,9 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
           ...wrong[word.id],
           count: (wrong[word.id]?.count || 0) + 1,
           source: "quick-study",
+          wordId: word.id,
+          mode,
+          course: seriesKey,
           lastWrongAt: new Date().toISOString(),
           resolvedAt: null,
           word: word.word_display,
@@ -407,7 +406,7 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
     }
     let nextProgress = {
       ...progress,
-      statuses: { ...progress.statuses, [word.id]: { status, date: todayKey(), updatedAt: new Date().toISOString() } },
+      statuses: { ...progress.statuses, [word.id]: { status, mode, course: seriesKey, day, date: todayKey(), updatedAt: new Date().toISOString() } },
       wrong,
       masteredWords,
       savedWords: status === "known" || progress.savedWords.includes(word.id)
@@ -437,10 +436,10 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
   return (
     <section className="csat-workspace">
       <div className="csat-section-head">
-        <div><span>QUICK STUDY</span><h2>오늘의 {words.length}단어</h2></div>
+        <div><span>QUICK STUDY</span><h2>{labels.todayWords(words.length)}</h2></div>
         <b>{completed} / {words.length}</b>
       </div>
-      <div className="csat-progress-track"><i style={{ width: `${words.length ? (completed / words.length) * 100 : 0}%` }} /></div>
+      <div className="csat-progress-track"><i style={{ width: `${dayProgress.percent}%` }} /></div>
       <article className="csat-word-card">
         <div className="csat-word-card-top"><small>{index + 1} / {words.length}</small><button type="button" className={`csat-save-word ${saved ? "saved" : ""}`} onClick={toggleSaved} aria-pressed={saved}>{saved ? "✓ 저장됨" : "＋ 저장"}</button></div>
         <PronounceableWord text={word.word_display} />
@@ -451,9 +450,9 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
         {meaningVisible ? <p>{word.meaning_display}</p> : <p className="csat-meaning-covered">먼저 단어의 뜻을 떠올려 보세요.</p>}
         {example.sentence ? <blockquote className="csat-quick-example"><span>EXAMPLE · {example.source}</span><div className="csat-example-sentence"><b>{example.sentence}</b><ExampleSpeaker text={example.sentence} /></div>{example.translation ? <button type="button" onClick={() => setExampleMeaningVisible((visible) => !visible)} aria-expanded={exampleMeaningVisible}>{exampleMeaningVisible ? "해석 숨기기" : "해석 보기"}</button> : null}{exampleMeaningVisible && example.translation ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : <p className="csat-example-empty">네이버 사전에 등록된 예문이 없습니다.</p>}
         <div className="csat-rating-actions">
-          <button type="button" onClick={() => rate("known")}>{ratingLabels.known}</button>
-          <button type="button" onClick={() => rate("confused")}>{ratingLabels.confused}</button>
-          <button type="button" onClick={() => rate("unknown")}>{ratingLabels.unknown}</button>
+          <button type="button" onClick={() => rate("known")}>{labels.rating.known}</button>
+          <button type="button" onClick={() => rate("confused")}>{labels.rating.confused}</button>
+          <button type="button" onClick={() => rate("unknown")}>{labels.rating.unknown}</button>
         </div>
       </article>
       <div className="csat-card-navigation">
@@ -465,7 +464,7 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
   );
 }
 
-function MonthlyVocabularyTest({ test, setTest, progress, updateProgress, seriesKey, day, retry, completeFlow }) {
+function MonthlyVocabularyTest({ test, setTest, progress, updateProgress, seriesKey, day, learningMode, retry, completeFlow }) {
   const question = test.questions[test.index];
   const score = test.answers.filter((answer) => answer.correct).length;
 
@@ -482,6 +481,10 @@ function MonthlyVocabularyTest({ test, setTest, progress, updateProgress, series
           ...current.wrong,
           [question.word.id]: {
             ...current.wrong[question.word.id],
+            wordId: question.word.id,
+            mode: learningMode,
+            course: seriesKey,
+            source: "test",
             count: (current.wrong[question.word.id]?.count || 0) + 1,
             lastWrongAt: new Date().toISOString(),
             resolvedAt: null,
@@ -503,7 +506,7 @@ function MonthlyVocabularyTest({ test, setTest, progress, updateProgress, series
       const finalScore = test.answers.filter((answer) => answer.correct).length;
       updateProgress((current) => ({
         ...current,
-        tests: [...current.tests, { date: todayKey(), series: seriesKey, day, score: finalScore, total: test.questions.length, mode: "monthly-auto" }].slice(-100),
+        tests: [...current.tests, { date: todayKey(), series: seriesKey, day, score: finalScore, total: test.questions.length, mode: learningMode, testMode: "monthly-auto", completed: true }].slice(-100),
       }));
       completeFlow({ ...test, finished: true });
       return;
@@ -551,13 +554,14 @@ function MonthlyVocabularyTest({ test, setTest, progress, updateProgress, series
   );
 }
 
-function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgress, openReview }) {
-  const reviewWords = Object.entries(progress.wrong).filter(([, history]) => !history.resolvedAt).map(([id]) => getWordById(id)).filter(Boolean);
+function TestPanel({ words, sourceWords, seriesKey, day, mode: learningMode, questionTypes, labels, progress, updateProgress, openReview }) {
+  const sourceIds = new Set(sourceWords.map((word) => word.id));
+  const reviewWords = Object.entries(progress.wrong).filter(([id, history]) => sourceIds.has(id) && !history.resolvedAt).map(([id]) => getWordById(id)).filter(Boolean);
   const studiedToday = sourceWords.filter((word) => progress.statuses[word.id]?.date === todayKey()).slice(0, 10);
   const randomWords = useMemo(() => [...sourceWords].sort((a, b) => ((a.index * 37) % 101) - ((b.index * 37) % 101)).slice(0, 10), [sourceWords]);
   const [mode, setMode] = useState("day");
   const targets = mode === "wrong" ? reviewWords.slice(0, 10) : mode === "learned" ? studiedToday : mode === "random" ? randomWords : words;
-  const questions = useMemo(() => buildQuestions(targets, sourceWords), [targets.map((word) => word.id).join("|"), sourceWords]);
+  const questions = useMemo(() => buildQuestions(targets, sourceWords, { questionTypes, labels: labels.testLabels }), [targets.map((word) => word.id).join("|"), sourceWords, questionTypes, labels.testLabels]);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -606,6 +610,11 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
         wrong: {
           ...current.wrong,
           [question.word.id]: {
+            ...current.wrong[question.word.id],
+            wordId: question.word.id,
+            mode: learningMode,
+            course: seriesKey,
+            source: "test",
             count: (current.wrong[question.word.id]?.count || 0) + 1,
             lastWrongAt: new Date().toISOString(),
             resolvedAt: null,
@@ -635,7 +644,7 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
         };
       }
       const tests = nextAnswers.length === questions.length
-        ? [...current.tests, { date: todayKey(), series: seriesKey, day, score: nextAnswers.filter((answer) => answer.correct).length, total: questions.length, mode }].slice(-100)
+        ? [...current.tests, { date: todayKey(), series: seriesKey, day, score: nextAnswers.filter((answer) => answer.correct).length, total: questions.length, mode: learningMode, testMode: mode, completed: true }].slice(-100)
         : current.tests;
       return { ...current, wrong, tests };
     });
@@ -705,7 +714,7 @@ function TestModeSwitch({ mode, reset, hasWrong }) {
   return <div className="csat-test-switch"><button type="button" className={mode === "day" ? "active" : ""} onClick={() => reset("day")}>현재 Day</button><button type="button" className={mode === "learned" ? "active" : ""} onClick={() => reset("learned")}>오늘 학습</button><button type="button" className={mode === "wrong" ? "active" : ""} onClick={() => reset("wrong")} disabled={!hasWrong}>오답</button><button type="button" className={mode === "random" ? "active" : ""} onClick={() => reset("random")}>랜덤</button></div>;
 }
 
-function SavedWordsPanel({ progress, updateProgress, onComplete }) {
+function SavedWordsPanel({ progress, updateProgress, onComplete, labels }) {
   const savedWords = progress.savedWords.map(getWordById).filter(Boolean);
   const [openMeanings, setOpenMeanings] = useState(() => new Set());
   const [openExamples, setOpenExamples] = useState(() => new Set());
@@ -721,10 +730,10 @@ function SavedWordsPanel({ progress, updateProgress, onComplete }) {
 
   return (
     <section className="csat-workspace">
-      <div className="csat-section-head"><div><span>MY SAVED WORDS</span><h2>저장한 단어</h2></div><b>{savedWords.length}개</b></div>
+      <div className="csat-section-head"><div><span>MY SAVED WORDS</span><h2>{labels.savedWordsTitle}</h2></div><b>{savedWords.length}개</b></div>
       {savedWords.length ? <div className="csat-saved-word-list">{savedWords.map((word) => (
         <SavedWordCard key={word.id} word={word} updateProgress={updateProgress} openMeanings={openMeanings} openExamples={openExamples} toggleSet={toggleSet} setOpenMeanings={setOpenMeanings} setOpenExamples={setOpenExamples} />
-      ))}</div> : <EmptyState title="저장한 단어가 없습니다." description="이번 Day를 모두 기억한 경우 바로 테스트로 진행할 수 있습니다." />}
+      ))}</div> : <EmptyState title={labels.savedWordsEmpty} description={labels.savedWordsEmptyDescription} />}
       <section className="csat-saved-complete"><div><b>저장 단어 확인을 마쳤나요?</b><p>학습 완료를 누르면 이번 달 누적 단어 테스트가 시작됩니다.</p></div><button type="button" className="primary" onClick={onComplete}>저장 단어 학습 완료</button></section>
     </section>
   );
@@ -743,7 +752,7 @@ function SavedWordCard({ word, updateProgress, openMeanings, openExamples, toggl
   );
 }
 
-function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, focusIds = [], onReviewComplete }) {
+function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, focusIds = [], onReviewComplete, labels }) {
   const reviewWords = Object.keys(progress.wrong).map(getWordById).filter(Boolean);
   const statusWords = Object.entries(progress.statuses).filter(([, value]) => value.status !== "known").map(([id]) => getWordById(id)).filter(Boolean);
   const allReviewWords = [...reviewWords, ...statusWords].filter((word, index, words) => words.findIndex((item) => item.id === word.id) === index);
@@ -784,11 +793,11 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, fo
     });
   }
 
-  if (!combined.length) return <section className="csat-workspace"><EmptyState title="아직 복습할 단어가 없습니다." description="테스트 오답과 ‘헷갈림·모름’ 단어가 여기에 자동으로 모입니다." /></section>;
+  if (!combined.length) return <section className="csat-workspace"><EmptyState title={labels.reviewEmpty} description={labels.reviewEmptyDescription} /></section>;
 
   return (
     <section className="csat-workspace">
-      <div className="csat-section-head"><div><span>WEAK WORDS</span><h2>오답과 헷갈린 단어</h2></div><b>{combined.length}개</b></div>
+      <div className="csat-section-head"><div><span>WEAK WORDS</span><h2>{labels.reviewTitle}</h2></div><b>{combined.length}개</b></div>
       <div className="csat-review-list">{combined.map((word) => (
         <article className={`${progress.wrong[word.id]?.reviewedAt ? "reviewed" : ""} ${progress.wrong[word.id]?.resolvedAt ? "resolved" : ""}`} key={word.id}><div><span>{SERIES[word.series].label} · Day {word.day}</span><PronounceableWord text={word.word_display} /><div className="csat-review-meaning"><p className={visibleMeanings.has(word.id) ? "" : "covered"}>{visibleMeanings.has(word.id) ? word.meaning_display : "뜻을 먼저 떠올려 보세요."}</p><button type="button" onClick={() => toggleMeaning(word.id)} aria-expanded={visibleMeanings.has(word.id)}>{visibleMeanings.has(word.id) ? "뜻 숨기기" : "뜻 보기"}</button></div></div><em>{progress.wrong[word.id]?.resolvedAt ? `해결됨 · 오답 ${progress.wrong[word.id].count}회` : progress.wrong[word.id] ? `오답 ${progress.wrong[word.id].count}회` : progress.statuses[word.id]?.status === "unknown" ? "모름" : "헷갈림"}</em><button type="button" aria-pressed={Boolean(progress.wrong[word.id]?.reviewedAt)} onClick={() => toggleReviewed(word)}>{progress.wrong[word.id]?.reviewedAt ? "복습 확인됨" : "복습 완료"}</button></article>
       ))}</div>
@@ -796,7 +805,7 @@ function ReviewPanel({ progress, sourceWords, seriesKey, day, updateProgress, fo
   );
 }
 
-function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "suneung", currentSeriesKey, currentDay, cloudProgress }) {
+function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "suneung", currentSeriesKey, currentDay, cloudProgress, labels, canonicalSeries = null }) {
   const today = todayKey();
   const masteredWords = progress.masteredWords || {};
   const learnedToday = Object.values(masteredWords).filter((item) => item.masteredAt?.startsWith(today)).length;
@@ -815,8 +824,8 @@ function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "s
       percent: remoteSeries?.percent ?? (series.words.length ? Math.round((masteredCount / series.words.length) * 1000) / 10 : 0),
     };
   });
-  const overallSeriesProgress = mode === "kids" || mode === "elementary"
-    ? seriesProgress.filter((item) => item.series.key === "elementary500")
+  const overallSeriesProgress = canonicalSeries
+    ? seriesProgress.filter((item) => item.series.key === canonicalSeries)
     : seriesProgress;
   const masteredCount = overallSeriesProgress.reduce((sum, item) => sum + item.masteredCount, 0);
   const totalWordCount = overallSeriesProgress.reduce((sum, item) => sum + item.totalWords, 0);
@@ -843,7 +852,7 @@ function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "s
 
   return (
     <section className="csat-workspace">
-      <div className="csat-section-head"><div><span>MY PROGRESS</span><h2>오늘의 훈련 기록</h2></div></div>
+      <div className="csat-section-head"><div><span>MY PROGRESS</span><h2>{labels.progressTitle}</h2></div></div>
       <section className={`csat-cloud-progress ${cloudProgress?.status || "loading"}`}>
         <div>
           <b>{hasCloudSummary ? "가족 공유 진도" : "이 기기 진도"}</b>
@@ -851,7 +860,7 @@ function ProgressPanel({ progress, seriesList = Object.values(SERIES), mode = "s
         </div>
       </section>
       <div className="csat-stats"><article><span>오늘 학습</span><b>{learnedToday}</b><small>단어</small></article><article><span>최근 점수</span><b>{latest ? `${latest.score}/${latest.total}` : "-"}</b><small>오늘 테스트</small></article><article><span>오답</span><b>{Object.values(progress.wrong).filter((history) => !history.resolvedAt).length}</b><small>복습 대기</small></article></div>
-      <h3 className="csat-progress-title">전체 암기 진도율 · {masteredCount} / {totalWordCount} 단어 · {overallPercent}%</h3>
+      <h3 className="csat-progress-title">{labels.overallProgress} · {masteredCount} / {totalWordCount} 단어 · {overallPercent}%</h3>
       <div className="csat-series-progress">{seriesProgress.map(({ series, masteredCount: seriesMasteredCount, totalWords, percent }) => <article key={series.key}><div><b>{series.label}</b><span>{seriesMasteredCount} / {totalWords} 단어</span></div><i><b style={{ width: `${percent}%` }} /></i><small>{percent}%</small></article>)}</div>
       <h3 className="csat-progress-title">최근 테스트</h3>
       {progress.tests.length ? <ul className="csat-history">{[...progress.tests].reverse().slice(0, 8).map((test, index) => <li key={`${test.date}-${index}`}><span>{test.date}</span><b>{SERIES[test.series]?.label || test.series} · Day {test.day}</b><em>{test.score} / {test.total}</em></li>)}</ul> : <EmptyState title="아직 테스트 기록이 없습니다." />}

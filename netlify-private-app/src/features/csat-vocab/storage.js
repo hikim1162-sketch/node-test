@@ -17,6 +17,36 @@ export function dayCompletionKey(seriesKey, day) {
   return `${seriesKey}:${Number(day)}`;
 }
 
+export function calculateCardProgress(index, total) {
+  return { current: total ? Math.min(index + 1, total) : 0, total, percent: total ? ((index + 1) / total) * 100 : 0 };
+}
+
+export function calculateDayStudyProgress(words, statuses = {}) {
+  const completed = words.filter((word) => statuses[word.id]).length;
+  return { completed, total: words.length, percent: words.length ? (completed / words.length) * 100 : 0 };
+}
+
+export function isDayComplete(words, statuses = {}) {
+  return Boolean(words.length) && words.every((word) => statuses[word.id]);
+}
+
+export function calculateOverallProgress(words, masteredWords = {}) {
+  const mastered = words.filter((word) => masteredWords[word.id]).length;
+  return { mastered, total: words.length, percent: words.length ? Math.round((mastered / words.length) * 1000) / 10 : 0 };
+}
+
+export function countSavedWords(progress, allowedIds = null) {
+  return progress.savedWords.filter((id) => !allowedIds || allowedIds.has(id)).length;
+}
+
+export function countUnresolvedWrong(progress, allowedIds = null) {
+  return Object.entries(progress.wrong).filter(([id, history]) => (!allowedIds || allowedIds.has(id)) && !history.resolvedAt).length;
+}
+
+export function calculateTestProgress(index, total, finished = false) {
+  return { current: finished ? total : Math.min(index + 1, total), total, completed: finished, percent: total ? ((finished ? total : index + 1) / total) * 100 : 0 };
+}
+
 function normalizeCompletedDays(value) {
   if (Array.isArray(value)) {
     return Object.fromEntries(value.map((item) => {
