@@ -44,7 +44,9 @@ export function getWordById(id) {
 
 export function buildQuestions(targetWords, sourceWords) {
   return targetWords.map((word, index) => {
-    const direction = index % 2 === 0 ? "word-to-meaning" : "meaning-to-word";
+    const elementary = String(word.series || "").startsWith("elementary");
+    const elementaryType = ["word-to-meaning", "meaning-to-word", word.image_url ? "image-to-word" : "sentence-blank", "sentence-blank"][index % 4];
+    const direction = elementary ? elementaryType : index % 2 === 0 ? "word-to-meaning" : "meaning-to-word";
     const answer = direction === "word-to-meaning" ? word.meaning_display : word.word_display;
     const candidates = sourceWords
       .filter((candidate) => candidate.id !== word.id)
@@ -60,8 +62,15 @@ export function buildQuestions(targetWords, sourceWords) {
       id: `${word.id}-${direction}`,
       word,
       direction,
-      prompt: direction === "word-to-meaning" ? word.word_display : word.meaning_display,
-      label: direction === "word-to-meaning" ? "가장 알맞은 뜻을 고르세요." : "가장 알맞은 단어를 고르세요.",
+      prompt: direction === "sentence-blank"
+        ? String(word.example || "").replace(new RegExp(`\\b${String(word.word_display).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"), "____")
+        : direction === "image-to-word"
+          ? "그림에 알맞은 영어 단어를 고르세요."
+          : direction === "word-to-meaning" ? word.word_display : word.meaning_display,
+      label: direction === "sentence-blank" ? "빈칸에 들어갈 단어를 고르세요."
+        : direction === "image-to-word" ? "그림을 보고 단어를 고르세요."
+          : direction === "word-to-meaning" ? "가장 알맞은 뜻을 고르세요." : "가장 알맞은 단어를 고르세요.",
+      imageUrl: direction === "image-to-word" ? word.image_url : null,
       choices,
       answerIndex,
     };

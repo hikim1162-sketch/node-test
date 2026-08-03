@@ -656,7 +656,10 @@ function TestPanel({ words, sourceWords, seriesKey, day, progress, updateProgres
         </div>
       </div>
       <article className="csat-question">
-        <PronounceableWord text={question.prompt} as="h2" />
+        {question.imageUrl ? <img className="csat-question-image" src={question.imageUrl} alt="영어 단어를 고르기 위한 그림" /> : null}
+        {question.direction === "word-to-meaning" || question.direction === "meaning-to-word"
+          ? <PronounceableWord text={question.prompt} as="h2" />
+          : <h2>{question.prompt}</h2>}
         <div>{question.choices.map((choice, choiceIndex) => {
           const isCorrectChoice = revealed?.correct && choiceIndex === question.answerIndex;
           const isWrongChoice = revealed && choiceIndex === revealed.selected && !revealed.correct;

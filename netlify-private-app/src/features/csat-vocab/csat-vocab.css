@@ -238,3 +238,4 @@
 .csat-coach-choices button.correct{border-color:#4e9b76;background:#e8f6ef;color:#176553;font-weight:900}
 .csat-coach-choices button.wrong{border-color:#d4837d;background:#fff0ef;color:#9a413e;font-weight:900}
 .csat-coach-choices button:disabled{cursor:default;opacity:1}
+.csat-question-image{display:block;width:min(100%,420px);max-height:280px;margin:0 auto 20px;border-radius:18px;object-fit:contain;background:#f4f8f6}
