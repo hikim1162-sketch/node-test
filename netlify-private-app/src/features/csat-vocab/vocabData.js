@@ -26,8 +26,6 @@ export const SERIES = {
   elementaryA2: { key: "elementaryA2", label: "A2 도전", description: "한 단계 높게", words: elementaryA2 },
 };
 
-export const ELEMENTARY_SERIES = [SERIES.elementary500, SERIES.elementaryA1, SERIES.elementaryA2];
-
 export function getDays(seriesKey) {
   return [...new Set(SERIES[seriesKey].words.map((word) => word.day))].filter(Boolean).sort((a, b) => a - b);
 }

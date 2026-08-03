@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { buildQuestions, ELEMENTARY_SERIES, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
+import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
+import { getVocabModeConfig } from "./modeConfig.js";
 import { dayCompletionKey, loadProgress, markDayComplete, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
 import { speakEnglishDebug } from "./speech.js";
@@ -112,10 +113,9 @@ function ExampleSpeaker({ text }) {
 }
 
 export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
-  const isMiddle = mode === "middle";
-  const isElementary = mode === "kids" || mode === "elementary";
-  const modeLabel = isElementary ? "초등" : isMiddle ? "중등" : "수능";
-  const initialSeries = isElementary ? "elementary500" : isMiddle ? "basic" : "csat2000";
+  const modeConfig = getVocabModeConfig(mode);
+  const modeLabel = modeConfig.label;
+  const initialSeries = modeConfig.initialSeries;
   const requestedTab = new URLSearchParams(window.location.search).get("tab");
   const [seriesKey, setSeriesKey] = useState(initialSeries);
   const [day, setDay] = useState(() => resolveDailyDay(initialSeries, getDays(initialSeries), mode));
@@ -127,10 +127,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
   const [cloudProgress, setCloudProgress] = useState({ status: "loading", summary: null, error: null });
 
   const days = useMemo(() => getDays(seriesKey), [seriesKey]);
-  const availableSeries = useMemo(
-    () => isElementary ? ELEMENTARY_SERIES : isMiddle ? [SERIES.basic] : [SERIES.basic, SERIES.csat2000, SERIES.hyper1000],
-    [isElementary, isMiddle],
-  );
+  const availableSeries = useMemo(() => modeConfig.seriesKeys.map((key) => SERIES[key]), [modeConfig]);
   const dayWords = useMemo(() => getDayWords(seriesKey, day), [seriesKey, day]);
   const pendingWrongCount = Object.values(progress.wrong).filter((history) => !history.resolvedAt).length;
 
@@ -312,7 +309,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
         ))}
       </nav>
 
-      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} elementary={isElementary} />}
+      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} ratingLabels={modeConfig.ratingLabels} />}
       {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
       {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} />}
       {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} />}
@@ -364,7 +361,7 @@ function DayPagination({ days, day, onChange }) {
   );
 }
 
-function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest, onDayComplete, elementary = false }) {
+function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest, onDayComplete, ratingLabels }) {
   const [index, setIndex] = useState(0);
   const [meaningVisible, setMeaningVisible] = useState(false);
   const [exampleMeaningVisible, setExampleMeaningVisible] = useState(false);
@@ -441,9 +438,9 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
         {meaningVisible ? <p>{word.meaning_display}</p> : <p className="csat-meaning-covered">먼저 단어의 뜻을 떠올려 보세요.</p>}
         {example.sentence ? <blockquote className="csat-quick-example"><span>EXAMPLE · {example.source}</span><div className="csat-example-sentence"><b>{example.sentence}</b><ExampleSpeaker text={example.sentence} /></div>{example.translation ? <button type="button" onClick={() => setExampleMeaningVisible((visible) => !visible)} aria-expanded={exampleMeaningVisible}>{exampleMeaningVisible ? "해석 숨기기" : "해석 보기"}</button> : null}{exampleMeaningVisible && example.translation ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : <p className="csat-example-empty">네이버 사전에 등록된 예문이 없습니다.</p>}
         <div className="csat-rating-actions">
-          <button type="button" onClick={() => rate("known")}>{elementary ? "알아요" : "암기함"}</button>
-          <button type="button" onClick={() => rate("confused")}>{elementary ? "헷갈려요" : "헷갈림"}</button>
-          <button type="button" onClick={() => rate("unknown")}>{elementary ? "몰라요" : "모름"}</button>
+          <button type="button" onClick={() => rate("known")}>{ratingLabels.known}</button>
+          <button type="button" onClick={() => rate("confused")}>{ratingLabels.confused}</button>
+          <button type="button" onClick={() => rate("unknown")}>{ratingLabels.unknown}</button>
         </div>
       </article>
       <div className="csat-card-navigation">
