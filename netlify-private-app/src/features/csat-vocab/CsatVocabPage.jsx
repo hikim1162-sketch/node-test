@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { buildQuestions, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
+import { buildQuestions, ELEMENTARY_SERIES, getDayWords, getDays, getWordById, SERIES } from "./vocabData.js";
 import { dayCompletionKey, loadProgress, markDayComplete, resetLearningData, resolveDailyDay, saveProgress, setDailyDay, todayKey } from "./storage.js";
 import { vocabularyExamples } from "../../../../data/vocabulary-examples.js";
 import { speakEnglishDebug } from "./speech.js";
@@ -32,12 +32,13 @@ function getNaverWordExample(word) {
   const examples = Array.isArray(entry?.examples) ? entry.examples.filter((item) => item?.exampleSentence) : [];
   const selected = examples.length ? examples[Math.abs(Number(word?.index) || 0) % examples.length] : null;
   const bundled = bundledNaverExamples[term];
-  const originalSentence = selected?.exampleSentence || bundled?.[0] || word?.example || "";
+  const isElementary = String(word?.series || "").startsWith("elementary");
+  const originalSentence = isElementary ? word?.example || "" : selected?.exampleSentence || bundled?.[0] || word?.example || "";
   const generated = !originalSentence && Boolean(term);
   return {
     sentence: originalSentence || `The meaning of "${term}" becomes clear from the context.`,
-    translation: selected?.exampleTranslation || bundled?.[1] || word?.exampleMeaning || (generated ? `문맥을 통해 "${term}"의 의미를 분명하게 이해할 수 있습니다.` : ""),
-    source: selected || bundled ? "네이버 영어사전" : word?.example ? "단어장 기본 예문" : generated ? "수능 단어장 보조 예문" : "",
+    translation: isElementary ? word?.exampleMeaning || "" : selected?.exampleTranslation || bundled?.[1] || word?.exampleMeaning || (generated ? `문맥을 통해 "${term}"의 의미를 분명하게 이해할 수 있습니다.` : ""),
+    source: isElementary ? "기초500 쉬운 예문" : selected || bundled ? "네이버 영어사전" : word?.example ? "단어장 기본 예문" : generated ? "수능 단어장 보조 예문" : "",
     sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(term)}`,
     generated,
   };
@@ -112,8 +113,9 @@ function ExampleSpeaker({ text }) {
 
 export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
   const isMiddle = mode === "middle";
-  const modeLabel = isMiddle ? "중등" : "수능";
-  const initialSeries = isMiddle ? "basic" : "csat2000";
+  const isElementary = mode === "kids" || mode === "elementary";
+  const modeLabel = isElementary ? "초등" : isMiddle ? "중등" : "수능";
+  const initialSeries = isElementary ? "elementary500" : isMiddle ? "basic" : "csat2000";
   const requestedTab = new URLSearchParams(window.location.search).get("tab");
   const [seriesKey, setSeriesKey] = useState(initialSeries);
   const [day, setDay] = useState(() => resolveDailyDay(initialSeries, getDays(initialSeries), mode));
@@ -125,7 +127,10 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
   const [cloudProgress, setCloudProgress] = useState({ status: "loading", summary: null, error: null });
 
   const days = useMemo(() => getDays(seriesKey), [seriesKey]);
-  const availableSeries = useMemo(() => isMiddle ? [SERIES.basic] : Object.values(SERIES), [isMiddle]);
+  const availableSeries = useMemo(
+    () => isElementary ? ELEMENTARY_SERIES : isMiddle ? [SERIES.basic] : [SERIES.basic, SERIES.csat2000, SERIES.hyper1000],
+    [isElementary, isMiddle],
+  );
   const dayWords = useMemo(() => getDayWords(seriesKey, day), [seriesKey, day]);
   const pendingWrongCount = Object.values(progress.wrong).filter((history) => !history.resolvedAt).length;
 
@@ -307,7 +312,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
         ))}
       </nav>
 
-      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} />}
+      {tab === "study" && <QuickStudy key={`${seriesKey}-${day}`} words={dayWords} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} startTest={() => setTab("test")} onDayComplete={completeQuickStudy} elementary={isElementary} />}
       {tab === "test" && <TestPanel key={`${seriesKey}-${day}`} words={dayWords} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} progress={progress} updateProgress={updateProgress} openReview={() => setTab("review")} />}
       {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} />}
       {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} />}
@@ -359,7 +364,7 @@ function DayPagination({ days, day, onChange }) {
   );
 }
 
-function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest, onDayComplete }) {
+function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest, onDayComplete, elementary = false }) {
   const [index, setIndex] = useState(0);
   const [meaningVisible, setMeaningVisible] = useState(false);
   const [exampleMeaningVisible, setExampleMeaningVisible] = useState(false);
@@ -436,9 +441,9 @@ function QuickStudy({ words, seriesKey, day, progress, updateProgress, startTest
         {meaningVisible ? <p>{word.meaning_display}</p> : <p className="csat-meaning-covered">먼저 단어의 뜻을 떠올려 보세요.</p>}
         {example.sentence ? <blockquote className="csat-quick-example"><span>EXAMPLE · {example.source}</span><div className="csat-example-sentence"><b>{example.sentence}</b><ExampleSpeaker text={example.sentence} /></div>{example.translation ? <button type="button" onClick={() => setExampleMeaningVisible((visible) => !visible)} aria-expanded={exampleMeaningVisible}>{exampleMeaningVisible ? "해석 숨기기" : "해석 보기"}</button> : null}{exampleMeaningVisible && example.translation ? <p>{example.translation}</p> : null}<a href={example.sourceUrl} target="_blank" rel="noopener noreferrer">네이버에서 더 보기</a></blockquote> : <p className="csat-example-empty">네이버 사전에 등록된 예문이 없습니다.</p>}
         <div className="csat-rating-actions">
-          <button type="button" onClick={() => rate("known")}>암기함</button>
-          <button type="button" onClick={() => rate("confused")}>헷갈림</button>
-          <button type="button" onClick={() => rate("unknown")}>모름</button>
+          <button type="button" onClick={() => rate("known")}>{elementary ? "알아요" : "암기함"}</button>
+          <button type="button" onClick={() => rate("confused")}>{elementary ? "헷갈려요" : "헷갈림"}</button>
+          <button type="button" onClick={() => rate("unknown")}>{elementary ? "몰라요" : "모름"}</button>
         </div>
       </article>
       <div className="csat-card-navigation">

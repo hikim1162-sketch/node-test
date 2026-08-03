@@ -5275,7 +5275,7 @@ function kidsCalendarPage() {
 }
 function kidsPage(page) {
   return page === "home" ? kidsHomePage()
-    : page === "words" ? kidsVocabularyPage()
+    : page === "words" ? suneungWordmasterPage()
     : page === "sentence" ? kidsSentencePage()
     : page === "news" ? kidsReadingPage()
     : page === "ted" ? kidsStoryPage()

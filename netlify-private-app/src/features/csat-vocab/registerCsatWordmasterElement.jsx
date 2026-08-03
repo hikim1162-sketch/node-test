@@ -3,9 +3,20 @@ import ReactDOM from "react-dom/client";
 import CsatVocabPage from "./CsatVocabPage.jsx";
 
 class CsatWordmasterElement extends HTMLElement {
+  static get observedAttributes() {
+    return ["mode"];
+  }
+
   connectedCallback() {
-    if (this.root) return;
-    this.root = ReactDOM.createRoot(this);
+    if (!this.root) this.root = ReactDOM.createRoot(this);
+    this.renderPage();
+  }
+
+  attributeChangedCallback() {
+    if (this.isConnected && this.root) this.renderPage();
+  }
+
+  renderPage() {
     this.root.render(<CsatVocabPage embedded mode={this.getAttribute("mode") || "suneung"} />);
   }
 

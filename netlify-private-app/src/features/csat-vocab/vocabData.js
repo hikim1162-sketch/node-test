@@ -1,12 +1,32 @@
 import basic from "./data/basic.json";
 import csat2000 from "./data/csat2000.json";
 import hyper1000 from "./data/hyper1000.json";
+import elementary500 from "./data/elementary500.json";
+
+function buildElementaryLevelSeries(level, series) {
+  return elementary500
+    .filter((word) => word.level === level)
+    .map((word, index) => ({
+      ...word,
+      series,
+      day: Math.ceil((index + 1) / 20),
+      order: (index % 20) + 1,
+    }));
+}
+
+const elementaryA1 = buildElementaryLevelSeries("A1", "elementaryA1");
+const elementaryA2 = buildElementaryLevelSeries("A2", "elementaryA2");
 
 export const SERIES = {
   basic: { key: "basic", label: "Basic", description: "수능 기초", words: basic },
   csat2000: { key: "csat2000", label: "수능2000", description: "수능 핵심", words: csat2000 },
   hyper1000: { key: "hyper1000", label: "Hyper1000", description: "고난도", words: hyper1000 },
+  elementary500: { key: "elementary500", label: "기초500", description: "초등 전체", words: elementary500 },
+  elementaryA1: { key: "elementaryA1", label: "A1 기초", description: "먼저 배워요", words: elementaryA1 },
+  elementaryA2: { key: "elementaryA2", label: "A2 도전", description: "한 단계 높게", words: elementaryA2 },
 };
+
+export const ELEMENTARY_SERIES = [SERIES.elementary500, SERIES.elementaryA1, SERIES.elementaryA2];
 
 export function getDays(seriesKey) {
   return [...new Set(SERIES[seriesKey].words.map((word) => word.day))].filter(Boolean).sort((a, b) => a - b);

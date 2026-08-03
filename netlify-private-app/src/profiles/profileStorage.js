@@ -1,5 +1,5 @@
 export const LEARNING_USERS = ["kai", "rachel", "hyuk"];
-export const LEARNING_MODES = ["normal", "middle", "suneung"];
+export const LEARNING_MODES = ["normal", "middle", "suneung", "kids"];
 
 const CURRENT_USER_PREFIX = "valuetime_current_user_v1";
 const PROFILE_PREFIX = "valuetime_profile_v1";
@@ -15,7 +15,7 @@ function validUser(user) {
 }
 
 export function modeFromAudience(audience) {
-  return audience === "suneung" ? "suneung" : audience === "middle" ? "middle" : "normal";
+  return audience === "suneung" ? "suneung" : audience === "middle" ? "middle" : audience === "kids" || audience === "elementary" ? "kids" : "normal";
 }
 
 export function getStoredAudienceMode() {
