@@ -57,7 +57,7 @@ export function getProfileItem(mode, key, fallbackToLegacy = true) {
   }
 
   const migrationKey = `${MIGRATION_PREFIX}:${safeMode}:${key}`;
-  const legacy = fallbackToLegacy && safeMode !== "middle" && !window.localStorage.getItem(migrationKey)
+  const legacy = fallbackToLegacy && safeMode !== "middle" && safeMode !== "kids" && !window.localStorage.getItem(migrationKey)
     ? window.localStorage.getItem(key)
     : null;
   if (legacy !== null) {
