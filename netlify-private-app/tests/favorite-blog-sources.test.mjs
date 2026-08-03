@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   favoriteBlogSources,
+  favoriteBlogHeroQuotes,
   vocabularyExpansionSourcePriority,
 } from "../../data/favorite-blogs.js";
 
@@ -16,6 +17,11 @@ test("favorite blog directory contains the requested six clickable sources", () 
   ]);
   assert.ok(favoriteBlogSources.every((source) => /^https:\/\//.test(source.url)));
   assert.equal(favoriteBlogSources.at(-1).url, "https://blog.naver.com/fdbdd");
+});
+
+test("favorite blog hero shows five linked sentences from learning blogs", () => {
+  assert.equal(favoriteBlogHeroQuotes.length, 5);
+  assert.ok(favoriteBlogHeroQuotes.every((quote) => quote.text && quote.source && /^https:\/\//.test(quote.url)));
 });
 
 test("Espresso English is first and marked as recommended", () => {

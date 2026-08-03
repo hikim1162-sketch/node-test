@@ -62,6 +62,34 @@ export const vocabularyExpansionSourcePriority = [
   },
 ];
 
+export const favoriteBlogHeroQuotes = [
+  {
+    text: "There's always more than one way to solve a problem.",
+    source: "Espresso English",
+    url: "https://www.espressoenglish.net/the-100-most-common-words-in-english/",
+  },
+  {
+    text: "Could you repeat that please?",
+    source: "FluentU English Blog",
+    url: "https://www.fluentu.com/blog/english/common-english-phrases/",
+  },
+  {
+    text: "Warm-up questions activate prior knowledge.",
+    source: "Ellii Blog",
+    url: "https://ellii.com/blog/instructional-scaffolding-how-ellii-supports-student-learning",
+  },
+  {
+    text: "Use simple phrases and sentences to describe where I live and people I know.",
+    source: "Oxford House Barcelona",
+    url: "https://oxfordhousebcn.com/wp-content/uploads/Starter-English.pdf",
+  },
+  {
+    text: "Speak English With Confidence!",
+    source: "Speak English With Vanessa",
+    url: "https://speakenglishwithvanessa.com/",
+  },
+];
+
 export const favoriteBlogArticles = [
   {
     id: "blog-small-talk", color: "sage", category: "CONVERSATION", date: "JUL 13", title: "Small talk that opens a conversation", phrase: "How have you been?", meaning: "그동안 어떻게 지냈어요?", sourceTitle: "렛츠링글리쉬어학원", sourceUrl: "https://blog.naver.com/letsleenglish",
