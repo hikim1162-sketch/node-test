@@ -4880,18 +4880,18 @@ function placeholderPage() {
 }
 
 const KIDS_BASE_WORDS = [
-  { word:"apple", meaning:"사과", example:"I like apples.", emoji:"🍎", category:"fruit" },
-  { word:"happy", meaning:"행복한", example:"I am happy today.", emoji:"😊", imageType:"illustration", imageReviewed:false },
-  { word:"school", meaning:"학교", example:"I go to school.", emoji:"🏫", category:"school" },
-  { word:"rabbit", meaning:"토끼", example:"The rabbit can jump.", emoji:"🐰", category:"animal" },
-  { word:"blue", meaning:"파란색", example:"The sky is blue.", emoji:"💙", imageType:"illustration", imageReviewed:false },
-  { word:"family", meaning:"가족", example:"I love my family.", emoji:"👨‍👩‍👧", category:"people" },
-  { word:"book", meaning:"책", example:"This is my book.", emoji:"📘", category:"school" },
-  { word:"friend", meaning:"친구", example:"You are my friend.", emoji:"🤝", category:"people" },
-  { word:"water", meaning:"물", example:"I drink water.", emoji:"💧", category:"food" },
-  { word:"star", meaning:"별", example:"I see a star.", emoji:"⭐", category:"nature" },
-  { word:"run", meaning:"달리다", example:"I can run fast.", emoji:"🏃", imageType:"illustration", imageReviewed:false },
-  { word:"music", meaning:"음악", example:"I like music.", emoji:"🎵", imageType:"illustration", imageReviewed:false },
+  { word:"apple", meaning:"사과", example:"I like apples.", category:"fruit", cardType:"image-noun", promptType:"sentence-blank", imageSuitability:"blocked", status:"needs_image" },
+  { word:"happy", meaning:"행복한", example:"I am happy today.", category:"feeling", cardType:"emotion-context", promptType:"sentence-blank", imageSuitability:"blocked", status:"sentence_assisted" },
+  { word:"school", meaning:"학교", example:"I go to school.", category:"school", cardType:"sentence-assisted", promptType:"sentence-blank", imageSuitability:"blocked", status:"exclude_from_image_only" },
+  { word:"rabbit", meaning:"토끼", example:"The rabbit can jump.", category:"animal", cardType:"image-noun", promptType:"sentence-blank", imageSuitability:"blocked", status:"needs_image" },
+  { word:"blue", meaning:"파란색", example:"The sky is blue.", category:"color", cardType:"attribute-contrast", promptType:"visual-choice", imageSuitability:"high", status:"ready" },
+  { word:"family", meaning:"가족", example:"I love my family.", category:"people", cardType:"sentence-assisted", promptType:"sentence-blank", imageSuitability:"blocked", status:"exclude_from_image_only" },
+  { word:"book", meaning:"책", example:"This is my book.", category:"school", cardType:"image-noun", promptType:"sentence-blank", imageSuitability:"blocked", status:"needs_image" },
+  { word:"friend", meaning:"친구", example:"You are my friend.", category:"people", cardType:"sentence-assisted", promptType:"sentence-blank", imageSuitability:"blocked", status:"exclude_from_image_only" },
+  { word:"water", meaning:"물", example:"I drink water.", category:"food", cardType:"image-noun", promptType:"sentence-blank", imageSuitability:"blocked", status:"needs_image" },
+  { word:"star", meaning:"별", example:"I see a star.", category:"nature", cardType:"image-noun", promptType:"sentence-blank", imageSuitability:"blocked", status:"needs_image" },
+  { word:"run", meaning:"달리다", example:"I can run fast.", category:"action", cardType:"action-scene", promptType:"sentence-blank", imageSuitability:"blocked", status:"sentence_assisted" },
+  { word:"music", meaning:"음악", example:"I like music.", category:"art", cardType:"sentence-assisted", promptType:"sentence-blank", imageSuitability:"blocked", status:"exclude_from_image_only" },
 ];
 
 const kidsIllustrationAsset = (codepoint, category = "object") => ({
@@ -5006,11 +5006,14 @@ function buildKidsWordBank() {
       word,
       meaning: item.meaning || "뜻 확인",
       example: item.example || `I can use ${word}.`,
-      emoji: item.emoji || "📗",
       category: item.category || photoAsset.category || "object",
       imageUrl: item.imageUrl || photoAsset.imageUrl || "",
       imageType: item.imageType || photoAsset.imageType || "illustration",
       imageReviewed: Boolean(item.imageReviewed || photoAsset.imageReviewed),
+      cardType: item.cardType || "sentence-assisted",
+      promptType: item.promptType || "sentence-blank",
+      imageSuitability: item.imageSuitability || "blocked",
+      status: item.status || "exclude_from_image_only",
     };
   };
   const base = KIDS_BASE_WORDS.map(addWord).filter(Boolean);
@@ -5019,7 +5022,6 @@ function buildKidsWordBank() {
     .map(item => addWord({
       ...item,
       example: item.example && !item.example.includes('"') ? item.example : `Let's learn ${item.word}.`,
-      emoji: "📘",
     }))
     .filter(Boolean);
   return base.concat(extra).slice(0, 500);
@@ -5105,11 +5107,12 @@ function kidsStatusActions(id, done, completeText = "오늘 학습 완료", revi
 }
 
 function getVocabCardImage(card) {
-  const fallback = KIDS_IMAGE_CATEGORY_FALLBACKS[card.category] || KIDS_IMAGE_CATEGORY_FALLBACKS.object;
+  const isSymbolAsset = /twemoji|emoji/i.test(card.imageUrl || "");
+  const approved = Boolean(card.imageUrl && card.imageReviewed && card.imageSuitability === "high" && !isSymbolAsset);
   return {
-    src: card.imageUrl || fallback.imageUrl || "",
-    type: card.imageUrl ? card.imageType || "illustration" : fallback.imageType || "illustration",
-    reviewed: Boolean(card.imageUrl ? card.imageReviewed : fallback.imageReviewed),
+    src: approved ? card.imageUrl : "",
+    type: approved ? card.imageType || "illustration" : "none",
+    reviewed: approved,
     alt: `${card.meaning || card.word} 그림`,
   };
 }
@@ -5119,16 +5122,37 @@ function kidsWordPhoto(word) {
   const image = cardImage.src
     ? `<img src="${cardImage.src}" alt="${cardImage.alt}" loading="lazy" onerror="this.closest('figure').classList.add('image-failed');this.remove();">`
     : "";
-  return `<figure class="kids-word-photo ${cardImage.type === "photo" ? "photo" : "illustration"}" data-image-reviewed="${cardImage.reviewed ? "true" : "false"}">${image}<figcaption>${word.emoji || "📗"}</figcaption></figure>`;
+  return image ? `<figure class="kids-word-photo ${cardImage.type === "photo" ? "photo" : "illustration"}" data-image-reviewed="true">${image}</figure>` : "";
+}
+
+function kidsCardTypeLabel(word) {
+  const labels = { "image-noun":"사물 단어", "action-scene":"동작 단어", "emotion-context":"기분 단어", "attribute-contrast":"색깔·비교 단어", "sentence-assisted":"문장 단어" };
+  return labels[word.cardType] || "문장 단어";
+}
+
+function kidsSentencePrompt(word) {
+  const escaped = String(word.word).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const masked = String(word.example || "").replace(new RegExp(`\\b${escaped}s?\\b`, "i"), "____");
+  return masked.includes("____") ? masked : `Which word means “${word.meaning}”?`;
+}
+
+function kidsCardFront(word, index) {
+  const photo = kidsWordPhoto(word);
+  const badge = `<span class="kids-card-type">${kidsCardTypeLabel(word)}</span><b>${index + 1}번 카드</b>`;
+  if (word.cardType === "attribute-contrast" && word.word === "blue") {
+    return `${badge}<div class="kids-color-contrast" aria-label="빨강, 파랑, 노랑 색깔 비교"><i class="red"></i><i class="blue"></i><i class="yellow"></i></div><p>파란색을 찾아 영어 단어를 생각해 보세요.</p><button type="button" data-kids-flip="${word.word}">정답 확인</button>`;
+  }
+  if (photo) return `${photo}${badge}<p>그림에 알맞은 영어 단어를 생각해 보세요.</p><button type="button" data-kids-flip="${word.word}">정답 확인</button>`;
+  return `${badge}<div class="kids-sentence-assisted"><small>문장을 읽고 빈칸을 생각해 보세요.</small><p>${kidsSentencePrompt(word)}</p></div><button type="button" data-kids-flip="${word.word}">정답 확인</button>`;
 }
 
 function kidsWordCards(todayWords, wordProgress) {
-  return `<section class="kids-word-grid">${todayWords.map((word, index) => { const flipped = kidsFlippedWords.includes(word.word) || wordProgress.words.includes(word.word) || wordProgress.completed; const done = wordProgress.words.includes(word.word); const photo = kidsWordPhoto(word); return `<article class="kids-word-card ${flipped ? "flipped" : ""} ${done ? "done" : ""}"><div class="kids-card-front">${photo}<b>${index + 1}번 카드</b><p>그림을 보고 단어를 맞혀보세요.</p><button type="button" data-kids-flip="${word.word}">카드 열기</button></div><div class="kids-card-back">${photo}<h3>${word.word}</h3><strong>${word.meaning}</strong><button type="button" data-speak="${word.word}">${icon("volume",15)} 듣기</button><p>${word.example}</p><button class="primary" type="button" data-kids-word-done="${word.word}" ${done ? "disabled" : ""}>${icon("check",14)} ${done ? "찾았어요!" : "알겠어요"}</button></div></article>`; }).join("")}</section>`;
+  return `<section class="kids-word-grid">${todayWords.map((word, index) => { const flipped = kidsFlippedWords.includes(word.word) || wordProgress.words.includes(word.word) || wordProgress.completed; const done = wordProgress.words.includes(word.word); return `<article class="kids-word-card ${flipped ? "flipped" : ""} ${done ? "done" : ""}" data-card-type="${word.cardType}"><div class="kids-card-front">${kidsCardFront(word, index)}</div><div class="kids-card-back"><span class="kids-card-type">${kidsCardTypeLabel(word)}</span><h3>${word.word}</h3><strong>${word.meaning}</strong><button type="button" data-speak="${word.word}">${icon("volume",15)} 듣기</button><p>${word.example}</p><button class="primary" type="button" data-kids-word-done="${word.word}" ${done ? "disabled" : ""}>${icon("check",14)} ${done ? "확인했어요!" : "알겠어요"}</button></div></article>`; }).join("")}</section>`;
 }
 
 function kidsHomePage() {
   const requiredMissions = [
-    { id: "words", page: "words", icon: "book", title: "단어 카드 5장", desc: "그림 보고 단어 맞히기", time: "5분" },
+    { id: "words", page: "words", icon: "book", title: "단어 카드 5장", desc: "그림·문장·비교로 단어 익히기", time: "5분" },
     { id: "sentence", page: "sentence", icon: "message", title: "오늘의 문장 1개", desc: "듣고 따라 말하기", time: "2분" },
     { id: "test", page: "test", icon: "check", title: "확인 놀이 3문제", desc: "별 3개 모으기", time: "3분" },
   ];
@@ -5168,7 +5192,7 @@ function kidsVocabularyPage() {
   const quizWord = todayWords[quizStep % todayWords.length];
   const wrongWords = KIDS_WORDS.filter(word => !todayWords.some(item => item.word === word.word)).slice(0, 2);
   const choices = seededShuffle([quizWord, ...wrongWords], `${wordDateKey}-kids-${quizStep}`).slice(0, 3);
-  const quizPrompt = quizStep === 0 ? `${quizWord.emoji} 그림에 맞는 영어 단어는?` : `‘${quizWord.word}’의 뜻은?`;
+  const quizPrompt = quizStep === 0 ? `${kidsSentencePrompt(quizWord)} 빈칸에 알맞은 단어는?` : `‘${quizWord.word}’의 뜻은?`;
   const choiceLabel = choice => quizStep === 0 ? choice.word : choice.meaning;
   const learnedSummary = `<section class="kids-word-summary"><span>오늘 배운 단어</span><div>${todayWords.map(word => `<b>${word.word}<small>${word.meaning}</small></b>`).join("")}</div></section>`;
   const reviewPanel = sessionComplete ? `<section class="kids-done-banner"><span>★ ${dayLabel} 단어 완료</span><h3>단어 5개 성공! 오늘 머리에 쏙 들어왔어.</h3><p>아래 카드에서 발음을 다시 듣고 예문을 다시 읽어보세요.</p></section>` : "";
@@ -5179,7 +5203,7 @@ function kidsVocabularyPage() {
       : kidsWordCards(todayWords, wordProgress);
   const pageNavigation = `<nav class="kids-word-page-navigation" aria-label="초등 단어장 페이지 이동"><button type="button" data-kids-word-target="0" ${kidsWordDayOffset === 0 ? "disabled" : ""} aria-label="첫 페이지로 이동">&laquo;</button><button type="button" data-kids-word-target="${Math.max(0, kidsWordDayOffset - 1)}" ${kidsWordDayOffset === 0 ? "disabled" : ""} aria-label="이전 페이지로 이동">&lsaquo;</button><span>${visiblePages.map(pageIndex => `<button class="${pageIndex === kidsWordDayOffset ? "active" : ""}" type="button" data-kids-word-target="${pageIndex}" ${pageIndex === kidsWordDayOffset ? 'aria-current="page"' : ""}>${pageIndex + 1}</button>`).join("")}</span><button type="button" data-kids-word-target="${Math.min(pageCount - 1, kidsWordDayOffset + 1)}" ${kidsWordDayOffset === pageCount - 1 ? "disabled" : ""} aria-label="다음 페이지로 이동">&rsaquo;</button><button type="button" data-kids-word-target="${pageCount - 1}" ${kidsWordDayOffset === pageCount - 1 ? "disabled" : ""} aria-label="마지막 페이지로 이동">&raquo;</button><small>${kidsWordDayOffset + 1} / ${pageCount} 페이지 · 총 ${KIDS_WORDS.length}단어</small></nav>`;
 
-  return `${header("단어장")}<main class="kids-page">${reviewPanel}<section class="kids-page-head"><span>${dayLabel} · ${KIDS_WORDS.length}개 단어장</span><h2>${sessionComplete ? "단어 복습하기" : allDone ? "단어 5개 확인 완료!" : "그림 속 단어 5개를 찾아보자!"}</h2><p>${sessionComplete ? "처음부터 다시 하거나 완료를 취소할 수 있어요." : allDone ? "퀴즈 해볼까? 딱 2문제만 풀어요." : "카드를 열고 듣기 버튼으로 발음을 확인해요."}</p><div class="kids-mini-progress">${todayWords.map(word => `<i class="${wordProgress.words.includes(word.word) ? "done" : ""}">★</i>`).join("")}</div>${kidsStatusActions("words", sessionComplete, "단어 학습 완료", "단어 학습 중")}</section>${wordBody}${pageNavigation}${kidsParentMission("What word did you learn?", `I learned ${todayWords[0].word}.`, "words")}</main>`;
+  return `${header("단어장")}<main class="kids-page">${reviewPanel}<section class="kids-page-head"><span>${dayLabel} · ${KIDS_WORDS.length}개 단어장</span><h2>${sessionComplete ? "단어 복습하기" : allDone ? "단어 5개 확인 완료!" : "단어 카드 5개를 배워보자!"}</h2><p>${sessionComplete ? "처음부터 다시 하거나 완료를 취소할 수 있어요." : allDone ? "퀴즈 해볼까? 딱 2문제만 풀어요." : "그림·문장·비교를 보고 정답을 확인한 뒤 발음을 들어보세요."}</p><div class="kids-mini-progress">${todayWords.map(word => `<i class="${wordProgress.words.includes(word.word) ? "done" : ""}">★</i>`).join("")}</div>${kidsStatusActions("words", sessionComplete, "단어 학습 완료", "단어 학습 중")}</section>${wordBody}${pageNavigation}${kidsParentMission("What word did you learn?", `I learned ${todayWords[0].word}.`, "words")}</main>`;
 }
 
 function kidsSentencePage() {
