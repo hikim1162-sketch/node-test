@@ -204,13 +204,15 @@
 .csat-saved-word-list{display:grid;gap:12px}
 .csat-saved-word-list>article{padding:18px;border:1px solid #dce5e2;border-radius:13px;background:#fff}
 .csat-saved-word-list>article>header{display:flex;align-items:flex-start;justify-content:space-between;height:auto;padding:0;border:0;background:none}
-.csat-saved-word-list header span{color:#71817d;font-size:11px}.csat-saved-word-list h3{margin:5px 0 0;font:700 28px Georgia,serif}
+.csat-saved-word-list header span{color:#71817d;font-size:11px}.csat-saved-word-list h3{margin:8px 0 0}
+.csat-saved-word-list .csat-pronounceable-word,.csat-saved-word-list .csat-word-link{font:700 clamp(32px,4vw,40px)/1.15 Georgia,serif}
 .csat-saved-word-list header button,.csat-saved-word-list .meaning,.csat-saved-word-list blockquote button{padding:8px 11px;border:1px solid #d6e2de;border-radius:8px;background:#f6f9f8;color:#286d5b;font-size:12px;cursor:pointer}
 .csat-saved-word-list .meaning{width:100%;margin-top:12px;text-align:left}
 .csat-saved-word-list blockquote{margin:12px 0 0;padding:13px 15px;border-left:3px solid #4a8d7e;background:#f7faf9}
 .csat-saved-word-list blockquote b{display:block;font:600 20px/1.65 Georgia,serif}.csat-saved-word-list blockquote p{margin:8px 0 0;color:#687974;font-size:14px}
 .csat-saved-word-list blockquote>small{display:block;margin-bottom:6px;color:#357a6b;font-size:11px;font-weight:800;letter-spacing:.8px}
 @media(max-width:480px){.csat-example-sentence{align-items:stretch;flex-direction:column;gap:8px}.csat-example-speaker{align-self:flex-start}}
+@media(max-width:600px){.csat-saved-word-list .csat-pronounceable-word,.csat-saved-word-list .csat-word-link{font-size:34px}}
 .csat-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:600px){.csat-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .csat-tabs{gap:7px;padding:7px;border-color:#cfdcda;background:#eef3f1}
