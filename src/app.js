@@ -19,6 +19,7 @@ import { EXPRESSION_UPGRADE_STORAGE_KEY, expressionUpgradeSets, getTodayExpressi
 import { SYNONYM_STUDY_STORAGE_KEY, synonymStudySets, synonymContentSources, getTodaySynonymTheme, normalizeSynonymStudyState } from "../data/synonym-study/index.js";
 import { getSynonymPhonetic } from "../data/synonym-study/phonetics.js";
 import toeicPart5Questions from "../data/toeic-part5-101-500.json";
+import { elementarySentences } from "../data/elementary-sentences.js";
 
 const CATEGORIES = {
   word: { label: "단어", short: "단", icon: "book-open" },
@@ -4984,15 +4985,7 @@ const KIDS_IMAGE_CATEGORY_FALLBACKS = {
 const KIDS_WORD_PAGE_SIZE = 5;
 const KIDS_WORDS = buildKidsWordBank();
 const KIDS_SENTENCE_PAGE_SIZE = 1;
-const KIDS_SENTENCES = [
-  { en:"I like apples.", ko:"나는 사과를 좋아해요.", variation:"I like bananas." },
-  { en:"This is my book.", ko:"이것은 내 책이에요.", variation:"This is my bag." },
-  { en:"I can run fast.", ko:"나는 빨리 달릴 수 있어요.", variation:"I can jump high." },
-  { en:"How are you?", ko:"오늘 기분이 어때요?", variation:"I am happy." },
-  { en:"I go to school.", ko:"나는 학교에 가요.", variation:"I go home." },
-  { en:"The sky is blue.", ko:"하늘은 파란색이에요.", variation:"The sun is yellow." },
-  { en:"I love my family.", ko:"나는 가족을 사랑해요.", variation:"I love my friends." },
-];
+const KIDS_SENTENCES = elementarySentences;
 const KIDS_SENTENCE_BANK = buildKidsSentenceBank();
 
 function buildKidsWordBank() {
@@ -5054,34 +5047,7 @@ function buildKidsSentenceBank() {
     };
   };
   const base = KIDS_SENTENCES.map((item, index) => addSentence(item, index, "kids-base")).filter(Boolean);
-  const simpleSentenceForWord = (item, index) => {
-    const word = String(item.word || "").trim().toLowerCase();
-    const meaning = item.meaning || word;
-    const article = /^[aeiou]/.test(word) ? "an" : "a";
-    const example = String(item.example || "").trim();
-    const en = example && example.toLowerCase().includes(word) && example.length <= 90
-      ? example
-      : index % 4 === 0
-        ? `I can see ${article} ${word}.`
-        : index % 4 === 1
-          ? `This is my ${word}.`
-          : index % 4 === 2
-            ? `I like ${word}.`
-            : `The ${word} is here.`;
-    return {
-      en,
-      ko: `${meaning} 단어가 들어간 문장이에요.`,
-      variation: index % 2 === 0 ? `Can you see ${article} ${word}?` : `I can say ${word}.`,
-      variationKo: `${word}를 넣어 한 번 더 말해보세요.`,
-      pattern: en.replace(new RegExp(`\\b${word}\\b`, "i"), "+ 단어"),
-      meaning: `${word} = ${meaning}`,
-    };
-  };
-  const extra = KIDS_WORDS
-    .map(simpleSentenceForWord)
-    .map((item, index) => addSentence(item, index, "kids-word-sentence"))
-    .filter(Boolean);
-  return base.concat(extra).slice(0, 500);
+  return base;
 }
 
 function getKidsSentencePageCount() {

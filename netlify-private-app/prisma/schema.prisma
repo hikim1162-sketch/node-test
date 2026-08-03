@@ -55,6 +55,20 @@ model ElementaryVocabulary {
   @@map("elementary_vocabulary")
 }
 
+model ElementarySentence {
+  id        Int      @id
+  sentence  String
+  meaningKo String   @map("meaning_ko")
+  pattern   String
+  topic     String
+  level     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([topic, level])
+  @@map("elementary_sentences")
+}
+
 model LearningContent {
   id             String                @id @default(cuid())
   type           LearningContentType
