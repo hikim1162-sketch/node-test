@@ -19,17 +19,17 @@ function createCourse(definition, rawWords) {
 const basic = createCourse({ key: "basic", mode: "suneung", label: "Basic", description: "수능 기초", daySize: 40, questionTypes: QUESTION_TYPES.CSAT }, basicRaw);
 const csat2000 = createCourse({ key: "csat2000", mode: "suneung", label: "수능2000", description: "수능 핵심", daySize: 40, questionTypes: QUESTION_TYPES.CSAT }, csat2000Raw);
 const hyper1000 = createCourse({ key: "hyper1000", mode: "suneung", label: "Hyper1000", description: "고난도", daySize: 34, questionTypes: QUESTION_TYPES.CSAT }, hyper1000Raw);
-const elementary500 = createCourse({ key: "elementary500", mode: "kids", label: "기초500", description: "초등 전체", daySize: 20, questionTypes: QUESTION_TYPES.ELEMENTARY }, elementary500Raw);
+const elementary500 = createCourse({ key: "elementary500", mode: "kids", label: "기초500", description: "초등 전체", daySize: 10, questionTypes: QUESTION_TYPES.ELEMENTARY }, elementary500Raw);
 
 function buildElementaryLevelCourse(level, definition) {
   const words = elementary500Raw
     .filter((word) => word.level === level)
-    .map((word, index) => ({ ...word, series: definition.key, course: definition.key, day: Math.ceil((index + 1) / 20), order: (index % 20) + 1 }));
+    .map((word, index) => ({ ...word, series: definition.key, course: definition.key, day: Math.ceil((index + 1) / 10), order: (index % 10) + 1 }));
   return createCourse(definition, words);
 }
 
-const elementaryA1 = buildElementaryLevelCourse("A1", { key: "elementaryA1", mode: "kids", label: "A1 기초", description: "먼저 배워요", daySize: 20, questionTypes: QUESTION_TYPES.ELEMENTARY });
-const elementaryA2 = buildElementaryLevelCourse("A2", { key: "elementaryA2", mode: "kids", label: "A2 도전", description: "한 단계 높게", daySize: 20, questionTypes: QUESTION_TYPES.ELEMENTARY });
+const elementaryA1 = buildElementaryLevelCourse("A1", { key: "elementaryA1", mode: "kids", label: "A1 기초", description: "먼저 배워요", daySize: 10, questionTypes: QUESTION_TYPES.ELEMENTARY });
+const elementaryA2 = buildElementaryLevelCourse("A2", { key: "elementaryA2", mode: "kids", label: "A2 도전", description: "한 단계 높게", daySize: 10, questionTypes: QUESTION_TYPES.ELEMENTARY });
 
 export const SERIES = { basic, csat2000, hyper1000, elementary500, elementaryA1, elementaryA2 };
 

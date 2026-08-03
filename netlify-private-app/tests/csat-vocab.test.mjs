@@ -21,13 +21,13 @@ test("초등 설정은 같은 5개 탭과 초등형 평가 문구를 사용한�
   assert.equal(config.canonicalProgressSeries, "elementary500");
 });
 
-test("초등500 데이터는 20단어씩 25 Day로 구성된다", async () => {
+test("초등500 데이터는 10단어씩 50 Day로 구성된다", async () => {
   const words = JSON.parse(await readFile(elementaryPath, "utf8"));
   assert.equal(words.length, 500);
   const counts = new Map();
   words.forEach((word) => counts.set(Number(word.day), (counts.get(Number(word.day)) || 0) + 1));
-  assert.equal(counts.size, 25);
-  assert.ok([...counts.values()].every((count) => count === 20));
+  assert.equal(counts.size, 50);
+  assert.ok([...counts.values()].every((count) => count === 10));
   assert.equal(new Set(words.map((word) => word.id)).size, 500);
 });
 

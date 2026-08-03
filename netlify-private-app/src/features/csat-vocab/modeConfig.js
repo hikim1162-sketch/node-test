@@ -66,7 +66,7 @@ export const VOCAB_MODE_CONFIGS = {
     initialSeries: "elementary500",
     seriesKeys: ["elementary500", "elementaryA1", "elementaryA2"],
     canonicalProgressSeries: "elementary500",
-    daySize: 20,
+    daySize: 10,
     questionTypes: ["word-to-meaning", "meaning-to-word", "image-to-word", "sentence-blank"],
     labels: {
       ...commonLabels,

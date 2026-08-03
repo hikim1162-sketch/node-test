@@ -5118,7 +5118,7 @@ function kidsWordCards(todayWords, wordProgress) {
 
 function kidsHomePage() {
   const requiredMissions = [
-    { id: "words", page: "words", icon: "book", title: "오늘의 단어 20개", desc: "기초500 Day 학습하기", time: "10분" },
+    { id: "words", page: "words", icon: "book", title: "오늘의 단어 10개", desc: "기초500 Day 학습하기", time: "7분" },
     { id: "sentence", page: "sentence", icon: "message", title: "오늘의 문장 1개", desc: "듣고 따라 말하기", time: "2분" },
     { id: "test", page: "test", icon: "check", title: "확인 놀이 3문제", desc: "별 3개 모으기", time: "3분" },
   ];
