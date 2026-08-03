@@ -312,7 +312,7 @@ export default function CsatVocabPage({ embedded = false, mode = "suneung" }) {
       {tab === "saved" && <SavedWordsPanel progress={progress} updateProgress={updateProgress} onComplete={() => openMonthlyTest(progress)} />}
       {tab === "review" && <ReviewPanel progress={progress} sourceWords={SERIES[seriesKey].words} seriesKey={seriesKey} day={day} updateProgress={updateProgress} focusIds={monthlyFlowWrongIds} onReviewComplete={() => { setMonthlyFlowWrongIds([]); setTab("progress"); }} />}
       {tab === "progress" && <ProgressPanel progress={progress} seriesList={availableSeries} mode={mode} currentSeriesKey={seriesKey} currentDay={day} cloudProgress={cloudProgress} />}
-      <DayPagination days={days} day={day} onChange={changeDay} />
+      {(["study", "test"].includes(tab)) ? <DayPagination days={days} day={day} onChange={changeDay} /> : null}
       {resetConfirmOpen ? (
         <div className="csat-reset-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setResetConfirmOpen(false)}>
           <section className="csat-reset-dialog" role="alertdialog" aria-modal="true" aria-labelledby="csat-reset-title" aria-describedby="csat-reset-description">
