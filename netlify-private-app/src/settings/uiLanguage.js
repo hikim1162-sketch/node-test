@@ -303,6 +303,8 @@ const UI_TRANSLATIONS = new Map(Object.entries({
   "영어 교육 자료와 어휘·문법 교수 아이디어를 참고해요.": "Refer to English teaching resources and vocabulary and grammar ideas.",
   "학습 자료": "Learning Resources",
   "학습자용 영어 문법과 어휘 콘텐츠를 확인해요.": "Explore English grammar and vocabulary content for learners.",
+  "영어 학습 블로그": "English Learning Blog",
+  "네이버 블로그에서 영어 학습 콘텐츠와 표현 자료를 살펴봐요.": "Explore English-learning content and useful expressions on this Naver blog.",
   "매일 꺼내 보는 영어 표현": "Everyday English Expressions",
   "카드를 누르면 해당 블로그가 새 탭에서 열려요.": "Select a card to open the blog in a new tab.",
   "그동안 어떻게 지냈어요?": "How have you been?",

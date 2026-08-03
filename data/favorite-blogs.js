@@ -35,6 +35,13 @@ export const favoriteBlogSources = [
     description: "학습자용 영어 문법과 어휘 콘텐츠를 확인해요.",
     focus: "학습 자료",
   },
+  {
+    id: "maries-space",
+    name: "마리의 공간",
+    url: "https://blog.naver.com/fdbdd",
+    description: "네이버 블로그에서 영어 학습 콘텐츠와 표현 자료를 살펴봐요.",
+    focus: "영어 학습 블로그",
+  },
 ];
 
 // 유의어/어휘 확장 기능에서 사용하는 고정 참고 순서입니다.

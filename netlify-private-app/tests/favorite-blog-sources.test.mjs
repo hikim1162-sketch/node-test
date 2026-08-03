@@ -5,15 +5,17 @@ import {
   vocabularyExpansionSourcePriority,
 } from "../../data/favorite-blogs.js";
 
-test("favorite blog directory contains the requested five clickable sources", () => {
+test("favorite blog directory contains the requested six clickable sources", () => {
   assert.deepEqual(favoriteBlogSources.map((source) => source.name), [
     "Espresso English",
     "Speak English With Vanessa",
     "FluentU English Blog",
     "Ellii Blog",
     "Oxford House Barcelona Blog",
+    "마리의 공간",
   ]);
   assert.ok(favoriteBlogSources.every((source) => /^https:\/\//.test(source.url)));
+  assert.equal(favoriteBlogSources.at(-1).url, "https://blog.naver.com/fdbdd");
 });
 
 test("Espresso English is first and marked as recommended", () => {
