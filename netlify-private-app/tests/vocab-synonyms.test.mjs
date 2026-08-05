@@ -18,7 +18,8 @@ test("일반모드 단어장 카드가 네이버 유의어 영역을 표시하�
   const appSource = await readFile(new URL("../../src/app.js", import.meta.url), "utf8");
   const css = await readFile(new URL("../../styles/app.css", import.meta.url), "utf8");
 
-  assert.match(appSource, /class="vocab-synonyms" data-vocab-synonyms="\$\{word\.word\}"/);
+  assert.match(appSource, /container\.className = "vocab-synonyms loading"/);
+  assert.match(appSource, /container\.dataset\.vocabSynonyms = word/);
   assert.match(appSource, /function bindVocabularySynonyms\(\)/);
   assert.match(appSource, /result\.synonyms/);
   assert.match(appSource, /네이버 영어사전/);

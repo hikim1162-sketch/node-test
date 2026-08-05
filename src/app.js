@@ -3333,6 +3333,45 @@ function bindSynonymPhonetics() {
   });
 }
 
+function bindVocabularySynonyms() {
+  document.querySelectorAll(".vocab-today-item").forEach(card => {
+    const word = String(card.querySelector(".vocab-today-top h4")?.textContent || "").trim().toLowerCase();
+    const sourceLink = card.querySelector(":scope > a");
+    if (!word || !sourceLink || card.querySelector(".vocab-synonyms")) return;
+
+    const container = document.createElement("section");
+    container.className = "vocab-synonyms loading";
+    container.dataset.vocabSynonyms = word;
+    container.setAttribute("aria-live", "polite");
+    container.innerHTML = `<b>유의어</b><span>네이버 영어사전에서 찾는 중…</span>`;
+    sourceLink.before(container);
+
+    const renderSynonyms = result => {
+      if (!container.isConnected) return;
+      const synonyms = Array.isArray(result?.synonyms) ? result.synonyms.slice(0, 4) : [];
+      if (!synonyms.length) {
+        container.remove();
+        return;
+      }
+      container.classList.remove("loading");
+      container.innerHTML = `<b>유의어</b><div>${synonyms.map(item => `<a href="${escapeMarkup(item.url)}" target="_blank" rel="noopener noreferrer">${escapeMarkup(item.word)}</a>`).join("")}</div><small>네이버 영어사전</small>`;
+    };
+
+    const cached = naverDictionaryCache.get(word);
+    if (cached) {
+      renderSynonyms(cached);
+      return;
+    }
+    fetch(`/api/naver-dictionary?word=${encodeURIComponent(word)}`, { cache: "force-cache" })
+      .then(response => response.ok ? response.json() : null)
+      .then(result => {
+        if (result?.ok) naverDictionaryCache.set(word, result);
+        renderSynonyms(result);
+      })
+      .catch(() => container.remove());
+  });
+}
+
 function synonymStudyPage() {
   const set = getActiveSynonymSet();
   const view = ["sets", "quiz", "result", "review"].includes(synonymStudyState.view)
@@ -6058,6 +6097,7 @@ function bindEvents(){
   bindSuneungDictionaryTooltips();
   bindSuneungPronunciation();
   bindSynonymPhonetics();
+  bindVocabularySynonyms();
   decorateEnglishSentences();
   document.querySelectorAll("[data-synonym-daily-answer]").forEach(button => button.addEventListener("click", event => {
     const theme = getTodaySynonymTheme();
