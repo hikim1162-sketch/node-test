@@ -29,3 +29,17 @@ test("set out 검색은 목적어가 포함된 네이버 구동사 항목도 함
 
   assert.deepEqual(selectNaverEntries(items, "set out"), items.slice(0, 2));
 });
+
+test("AI 문장 비서는 번역과 유사문장만 학습 카드로 표시한다", async () => {
+  const appSource = await readFile(new URL("../../src/app.js", import.meta.url), "utf8");
+  const aiSource = await readFile(new URL("../netlify/functions/ai-sentence-analysis.js", import.meta.url), "utf8");
+  const analysisSource = appSource.slice(
+    appSource.indexOf("function normalizeSentenceAssistantSections"),
+    appSource.indexOf("function positionSelectionTrigger"),
+  );
+
+  assert.doesNotMatch(analysisSource, /title: "단어별 뜻"/);
+  assert.doesNotMatch(analysisSource, /title: "자주 착각하는 문법"/);
+  assert.match(aiSource, /Use exactly two sections/);
+  assert.doesNotMatch(aiSource, /exactly four sections/);
+});
