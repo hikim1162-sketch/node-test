@@ -1,5 +1,6 @@
 import { json } from "./_response.js";
 import { get as httpsGet } from "node:https";
+import { isDictionaryLookupText } from "../../src/selectionAssistant/isDictionaryLookupText.js";
 
 const endpoint = "https://en.dict.naver.com/api3/enko/search";
 const cache = new Map();
@@ -71,7 +72,7 @@ export default async function handler(request) {
   const requestUrl = new URL(request.url);
   const word = (requestUrl.searchParams.get("word") || "").trim().toLowerCase();
   const audioOnly = requestUrl.searchParams.get("audio") === "1";
-  if (!/^[a-z][a-z'-]{0,48}$/.test(word)) return json(400, { ok: false, message: "조회할 영단어를 확인해 주세요." });
+  if (!isDictionaryLookupText(word)) return json(400, { ok: false, message: "조회할 영단어를 확인해 주세요." });
   if (cache.has(word)) {
     const cached = cache.get(word);
     if (audioOnly && cached.pronunciationAudioUrl) return Response.redirect(cached.pronunciationAudioUrl, 302);

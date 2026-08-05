@@ -20,6 +20,7 @@ import { SYNONYM_STUDY_STORAGE_KEY, synonymStudySets, synonymContentSources, get
 import { getSynonymPhonetic } from "../data/synonym-study/phonetics.js";
 import toeicPart5Questions from "../data/toeic-part5-101-500.json";
 import { elementarySentences } from "../data/elementary-sentences.js";
+import { isDictionaryLookupText } from "../netlify-private-app/src/selectionAssistant/isDictionaryLookupText.js";
 
 const CATEGORIES = {
   word: { label: "단어", short: "단", icon: "book-open" },
@@ -4670,7 +4671,7 @@ function commonMistakeAnalysis(text) {
 function detailedSelectionAnalysis(text) {
   const cleaned = text.replace(/\s+/g, " ").trim();
   const target = /has invested/i.test(cleaned) && /in an effort to/i.test(cleaned);
-  const singleWord = /^[-A-Za-z']+$/.test(cleaned);
+  const singleWord = isDictionaryLookupText(cleaned);
   if (singleWord) return [
     { title: "문장 번역", body: `선택한 단어 <b>${cleaned}</b>의 자연스러운 뜻은 현재 문맥과 함께 확인해야 합니다.<br><b>핵심 의미</b> 단독 의미보다 앞뒤 문장 속 쓰임을 우선하세요.` },
     { title: "단어별 뜻", body: sentenceWordMeanings(cleaned) },
@@ -4694,7 +4695,7 @@ function detailedSelectionAnalysis(text) {
 
 async function naverSingleWordAnalysis(text) {
   const word = String(text || "").trim().toLowerCase();
-  if (!/^[a-z][a-z'-]{0,48}$/.test(word)) return null;
+  if (!isDictionaryLookupText(word)) return null;
   try {
     const response = await fetch(`/api/naver-dictionary?word=${encodeURIComponent(word)}`, { cache: "no-store" });
     if (!response.ok) return null;
@@ -4749,8 +4750,7 @@ function captureLearningSelection() {
 async function appendSelectionAnalysis() {
   const chat = document.querySelector("[data-selection-ai-chat]");
   if (!chat) return;
-  const singleWord = /^[-A-Za-z']+$/.test(selectionAssistantState.text.trim());
-  const dictionaryCards = singleWord ? await naverSingleWordAnalysis(selectionAssistantState.text) : null;
+  const dictionaryCards = isDictionaryLookupText(selectionAssistantState.text) ? await naverSingleWordAnalysis(selectionAssistantState.text) : null;
   if (!document.querySelector("[data-selection-ai-chat]") || !selectionAssistantState.open) return;
   const fallbackCards = dictionaryCards || detailedSelectionAnalysis(selectionAssistantState.text);
   document.querySelector("[data-selection-ai-loading]")?.remove();
