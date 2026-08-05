@@ -41,6 +41,17 @@ export function parseNaverSynonyms(value = "") {
     .slice(0, 4);
 }
 
+export function selectNaverEntries(items = [], query = "") {
+  const target = clean(query).toLowerCase();
+  const normalizeEntry = item => first(item?.handleEntry, item?.expEntry)
+    .toLowerCase()
+    .replace(/\b(?:something|somebody|someone|one's|oneself)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const matches = items.filter(item => normalizeEntry(item) === target);
+  return matches.length ? matches.slice(0, 3) : items.slice(0, 1);
+}
+
 function fetchDictionary(url) {
   return new Promise((resolve, reject) => {
     const request = httpsGet(url, {
@@ -85,24 +96,27 @@ export default async function handler(request) {
     const items = payload?.searchResultMap?.searchResultListMap?.WORD?.items || [];
     const entry = items.find(item => first(item.handleEntry, item.expEntry).toLowerCase() === word) || items[0];
     if (!entry) return json(404, { ok: false, word, message: "네이버 영어사전에서 뜻을 찾지 못했습니다." });
+    const entries = selectNaverEntries(items, word);
 
     const meanings = [];
     const examples = [];
-    for (const group of entry.meansCollector || []) {
-      const partOfSpeech = first(group.partOfSpeech2, group.partOfSpeech, group.partOfSpeechCode);
-      for (const meaning of group.means || []) {
-        const value = clean(meaning.value);
-        if (value && !meanings.some(item => item.value === value) && meanings.length < 4) {
-          meanings.push({ partOfSpeech, value });
-        }
-        const exampleSentence = clean(meaning.exampleOri);
-        if (exampleSentence && !examples.some(item => item.exampleSentence === exampleSentence)) {
-          examples.push({
-            partOfSpeech,
-            meaning: value,
-            exampleSentence,
-            exampleTranslation: clean(meaning.exampleTrans),
-          });
+    for (const candidate of entries) {
+      for (const group of candidate.meansCollector || []) {
+        const partOfSpeech = first(group.partOfSpeech2, group.partOfSpeech, group.partOfSpeechCode);
+        for (const meaning of group.means || []) {
+          const value = clean(meaning.value);
+          if (value && !meanings.some(item => item.value === value) && meanings.length < 6) {
+            meanings.push({ partOfSpeech, value });
+          }
+          const exampleSentence = clean(meaning.exampleOri);
+          if (exampleSentence && !examples.some(item => item.exampleSentence === exampleSentence)) {
+            examples.push({
+              partOfSpeech,
+              meaning: value,
+              exampleSentence,
+              exampleTranslation: clean(meaning.exampleTrans),
+            });
+          }
         }
       }
     }
