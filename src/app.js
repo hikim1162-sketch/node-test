@@ -6419,6 +6419,22 @@ function bindEvents(){
     vocabMonthlyTestState.open = false;
     render();
   }));
+  const testWordHeading = document.querySelector(".vocab-test-modal > article h3");
+  if (testWordHeading) {
+    const testWord = String(testWordHeading.textContent || "").trim();
+    testWordHeading.dataset.vocabTestDictionary = testWord;
+    testWordHeading.tabIndex = 0;
+    testWordHeading.title = "더블클릭하면 네이버 영어사전에서 검색합니다.";
+    const openTestWordDictionary = () => window.open(
+      `https://en.dict.naver.com/#/search?query=${encodeURIComponent(testWord)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+    testWordHeading.addEventListener("dblclick", openTestWordDictionary);
+    testWordHeading.addEventListener("keydown", event => {
+      if (event.key === "Enter") openTestWordDictionary();
+    });
+  }
   document.querySelectorAll("[data-vocab-test-answer]").forEach(button => button.addEventListener("click", event => {
     if (Number.isInteger(vocabMonthlyTestState.answers[vocabMonthlyTestState.index])) return;
     const selectedAnswer = Number(event.currentTarget.dataset.vocabTestAnswer);

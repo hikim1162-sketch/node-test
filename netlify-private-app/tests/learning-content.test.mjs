@@ -78,6 +78,15 @@ test("monthly vocabulary test immediately refreshes an incorrect question withou
   assert.match(appSource, /correct && choiceIndex === question\.answer/);
 });
 
+test("월간 단어 시험의 영어 단어를 더블클릭하면 네이버 영어사전을 연다", () => {
+  const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
+
+  assert.match(appSource, /testWordHeading\.dataset\.vocabTestDictionary = testWord/);
+  assert.match(appSource, /querySelector\("\.vocab-test-modal > article h3"\)/);
+  assert.match(appSource, /addEventListener\("dblclick"/);
+  assert.match(appSource, /https:\/\/en\.dict\.naver\.com\/#\/search\?query=/);
+});
+
 test("monthly vocabulary test uses a meaning that matches the word part of speech", () => {
   const appSource = readFileSync(new URL("../../src/app.js", import.meta.url), "utf8");
   const vocabularySource = readFileSync(new URL("../../data/vocabulary.js", import.meta.url), "utf8");
