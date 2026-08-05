@@ -1426,13 +1426,13 @@ html[data-theme="dark"] #app .news-daily-focus-grid > article { border-color: #3
 
 #app .selection-ai-word-list b {
   color: #164f46;
-  font-size: 13px;
+  font-size: 20px;
 }
 
 #app .selection-ai-word-list span {
   color: #536b67;
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: 20px;
+  line-height: 1.55;
   text-align: right;
 }
 
@@ -2289,14 +2289,14 @@ html[data-theme="dark"] #app .news-daily-focus-grid > article { border-color: #3
 
 #app .selection-ai-learning-card > summary span {
   color: #173e36;
-  font-size: 11px;
+  font-size: 22px;
   font-weight: 900;
 }
 
 #app .selection-ai-learning-card > summary em {
   margin-top: 3px;
   color: #789089;
-  font-size: 8px;
+  font-size: 16px;
   font-style: normal;
 }
 
@@ -2308,12 +2308,17 @@ html[data-theme="dark"] #app .news-daily-focus-grid > article { border-color: #3
 #app .selection-ai-learning-card > div {
   padding: 14px;
   color: #415b55;
-  font-size: 10px;
-  line-height: 1.75;
+  font-size: 20px;
+  line-height: 1.6;
 }
 
 #app .selection-ai-learning-card > div b {
   color: #194f43;
+}
+
+#app .selection-ai-learning-card > div p,
+#app .selection-ai-learning-card > div a {
+  font-size: 20px;
 }
 
 #app .csat-question-passage details {
