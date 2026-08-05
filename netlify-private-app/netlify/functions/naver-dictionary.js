@@ -20,6 +20,26 @@ function first(...values) {
   return values.map(clean).find(Boolean) || "";
 }
 
+export function parseNaverSynonyms(value = "") {
+  const seen = new Set();
+  return String(value)
+    .split("|")
+    .map(item => {
+      const [rawWord, rawUrl] = item.split("^");
+      const word = clean(rawWord).toLowerCase();
+      if (!/^[a-z][a-z' -]{0,48}$/.test(word) || seen.has(word)) return null;
+      seen.add(word);
+      let url = `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`;
+      try {
+        const candidate = new URL(rawUrl || "");
+        if (candidate.protocol === "https:" && candidate.hostname.endsWith("naver.com")) url = candidate.href;
+      } catch {}
+      return { word, url };
+    })
+    .filter(Boolean)
+    .slice(0, 4);
+}
+
 function fetchDictionary(url) {
   return new Promise((resolve, reject) => {
     const request = httpsGet(url, {
@@ -101,6 +121,7 @@ export default async function handler(request) {
       pronunciationAudioUrl: pronunciation?.symbolFile || "",
       meanings,
       examples,
+      synonyms: parseNaverSynonyms(entry.expSynonym),
       source: "NAVER English Dictionary",
       sourceUrl: `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`,
     };
