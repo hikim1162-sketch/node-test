@@ -6424,13 +6424,13 @@ function bindEvents(){
     const testWord = String(testWordHeading.textContent || "").trim();
     testWordHeading.dataset.vocabTestDictionary = testWord;
     testWordHeading.tabIndex = 0;
-    testWordHeading.title = "더블클릭하면 네이버 영어사전에서 검색합니다.";
+    testWordHeading.title = "클릭하면 네이버 영어사전에서 검색합니다.";
     const openTestWordDictionary = () => window.open(
       `https://en.dict.naver.com/#/search?query=${encodeURIComponent(testWord)}`,
       "_blank",
       "noopener,noreferrer",
     );
-    testWordHeading.addEventListener("dblclick", openTestWordDictionary);
+    testWordHeading.addEventListener("click", openTestWordDictionary);
     testWordHeading.addEventListener("keydown", event => {
       if (event.key === "Enter") openTestWordDictionary();
     });
