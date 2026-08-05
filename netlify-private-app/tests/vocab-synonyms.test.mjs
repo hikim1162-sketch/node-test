@@ -24,4 +24,5 @@ test("일반모드 단어장 카드가 네이버 유의어 영역을 표시하�
   assert.match(appSource, /result\.synonyms/);
   assert.match(appSource, /네이버 영어사전/);
   assert.match(css, /\.vocab-synonyms\{/);
+  assert.match(css, /\.vocab-synonyms a\{font-size:13px\}/);
 });
