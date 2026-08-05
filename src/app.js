@@ -4541,9 +4541,9 @@ function reviewChatbotUi() {
 function selectionAssistantUi() {
   const selected = escapeMarkup(selectionAssistantState.text || "");
   const panel = selectionAssistantState.open ? `<aside class="selection-ai-panel" aria-label="선택 문장 AI 분석">
-    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>한글 번역부터 단어별 뜻과 유사문장까지 확인해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
+    <header><div><span>${icon("spark",18)}</span><section><b>AI 문장 비서</b><small>한글 번역과 유사문장을 간단히 확인해요</small></section></div><button type="button" data-selection-ai-close aria-label="닫기">${icon("x",18)}</button></header>
     <div class="selection-ai-context"><small>현재 분석 문장</small><p>${selected}</p></div>
-    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>${selectionAssistantState.origin === "icon" ? "문장 옆 AI 비서 요청" : "드래그 분석 요청"}</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i><span>한글 번역과 단어별 뜻을 정리하고 있어요</span></div></div>
+    <div class="selection-ai-chat" data-selection-ai-chat><div class="selection-ai-user"><small>${selectionAssistantState.origin === "icon" ? "문장 옆 AI 비서 요청" : "드래그 분석 요청"}</small><p>${selected}</p></div><div class="selection-ai-loading" data-selection-ai-loading><i></i><i></i><i></i><span>한글 번역과 유사문장을 정리하고 있어요</span></div></div>
   </aside>` : "";
   return `<button class="selection-ai-trigger" type="button" data-selection-ai-trigger aria-label="선택한 영어 분석">${icon("spark",14)} <span>문장 분석</span></button>${panel}<div class="selection-ai-toast" data-selection-ai-toast role="status">${icon("check",14)} 학습장에 문장과 분석 결과가 저장되었습니다.</div>`;
 }
@@ -4604,8 +4604,6 @@ function knownSentenceTranslation(text) {
 function normalizeSentenceAssistantSections(sections, fallbackSections) {
   const expected = [
     { title: "문장 번역", aliases: ["문장 번역", "자연스러운 해석", "번역"] },
-    { title: "단어별 뜻", aliases: ["단어별 뜻", "단어 뜻", "어휘 뜻"] },
-    { title: "자주 착각하는 문법", aliases: ["자주 착각하는 문법", "자주 하는 실수", "문법 함정"] },
     { title: "유사문장", aliases: ["유사문장", "유사 예문", "비슷한 문장"] },
   ];
   return expected.map((item, index) => {
@@ -4674,8 +4672,6 @@ function detailedSelectionAnalysis(text) {
   const singleWord = isDictionaryLookupText(cleaned);
   if (singleWord) return [
     { title: "문장 번역", body: `선택한 단어 <b>${cleaned}</b>의 자연스러운 뜻은 현재 문맥과 함께 확인해야 합니다.<br><b>핵심 의미</b> 단독 의미보다 앞뒤 문장 속 쓰임을 우선하세요.` },
-    { title: "단어별 뜻", body: sentenceWordMeanings(cleaned) },
-    { title: "자주 착각하는 문법", body: "같은 철자라도 품사와 문맥에 따라 뜻이 달라질 수 있습니다. 단어 하나보다 포함된 문장 전체를 선택해 분석하는 것이 정확합니다." },
     { title: "유사문장", body: "전체 문장을 선택하면 같은 단어와 패턴을 활용한 유사문장 2~3개를 제공합니다." },
   ];
   const verb = findSentenceVerb(cleaned);
@@ -4687,8 +4683,6 @@ function detailedSelectionAnalysis(text) {
   const naturalTranslation = target ? "회사는 글로벌 시장 점유율을 안정시키기 위한 노력의 일환으로 최신 기술에 투자해 왔습니다." : knownSentenceTranslation(cleaned);
   return [
     { title: "문장 번역", body: `<b>자연스러운 해석</b><br>${naturalTranslation}<br><br><b>직역</b><br>${naturalTranslation}<br><br><b>핵심 의미</b><br>${naturalTranslation}` },
-    { title: "단어별 뜻", body: sentenceWordMeanings(cleaned) },
-    { title: "자주 착각하는 문법", body: commonMistakeAnalysis(cleaned) },
     { title: "유사문장", body: `<b>공통 패턴</b><br>현재 문장의 중심 동사와 문법 구조를 같은 순서로 적용합니다.<br><br>${similarExamples.map(([english, korean]) => `<b>${english}</b><br>${korean}`).join("<br><br>")}` },
   ];
 }
@@ -4702,14 +4696,11 @@ async function naverSingleWordAnalysis(text) {
     const data = await response.json();
     const meanings = Array.isArray(data?.meanings) ? data.meanings.filter(item => item?.value) : [];
     if (!meanings.length) return null;
-    const primary = meanings[0];
     const meaningRows = meanings.map(item => `<p><b>${escapeMarkup(item.partOfSpeech || "뜻")}</b><span>${escapeMarkup(item.value)}</span></p>`).join("");
     const example = Array.isArray(data.examples) ? data.examples.find(item => item?.exampleSentence) : null;
     const sourceUrl = data.sourceUrl || `https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`;
     return [
-      { title: "문장 번역", body: `<b>${escapeMarkup(word)}</b><br>${escapeMarkup(primary.value)}${primary.partOfSpeech ? `<br><small>${escapeMarkup(primary.partOfSpeech)}</small>` : ""}` },
-      { title: "단어별 뜻", body: `<div class="selection-ai-word-list">${meaningRows}</div><a class="selection-ai-dictionary-link" href="${escapeMarkup(sourceUrl)}" target="_blank" rel="noopener noreferrer">네이버 영어사전에서 더 보기 ${icon("arrow",12)}</a>` },
-      { title: "자주 착각하는 문법", body: "같은 철자라도 품사와 문맥에 따라 뜻이 달라질 수 있습니다. 문장 안에서 사용되었다면 앞뒤 문맥과 함께 의미를 확인하세요." },
+      { title: "문장 번역", body: `<b>${escapeMarkup(word)}</b><div class="selection-ai-word-list">${meaningRows}</div><a class="selection-ai-dictionary-link" href="${escapeMarkup(sourceUrl)}" target="_blank" rel="noopener noreferrer">네이버 영어사전에서 더 보기 ${icon("arrow",12)}</a>` },
       { title: "유사문장", body: example ? `<b>${escapeMarkup(example.exampleSentence)}</b>${example.exampleTranslation ? `<br>${escapeMarkup(example.exampleTranslation)}` : ""}` : "네이버 사전에 등록된 예문이 없습니다." },
     ];
   } catch {
@@ -4754,7 +4745,7 @@ async function appendSelectionAnalysis() {
   if (!document.querySelector("[data-selection-ai-chat]") || !selectionAssistantState.open) return;
   const fallbackCards = dictionaryCards || detailedSelectionAnalysis(selectionAssistantState.text);
   document.querySelector("[data-selection-ai-loading]")?.remove();
-  fallbackCards.forEach((item, index) => chat.insertAdjacentHTML("beforeend", `<details class="selection-ai-card selection-ai-learning-card" data-selection-ai-section="${index}" open><summary><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeMarkup(item.title)}</span><em>${index === 0 ? "한글 뜻을 먼저 확인하세요" : index === 1 ? "문장 속 단어 뜻을 확인하세요" : index === 2 ? "실수 포인트를 확인하세요" : "같은 패턴을 연습하세요"}</em></summary><div>${item.body}</div></details>`));
+  fallbackCards.forEach((item, index) => chat.insertAdjacentHTML("beforeend", `<details class="selection-ai-card selection-ai-learning-card" data-selection-ai-section="${index}" open><summary><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeMarkup(item.title)}</span><em>${index === 0 ? "한글 뜻을 먼저 확인하세요" : "같은 패턴을 연습하세요"}</em></summary><div>${item.body}</div></details>`));
   chat.scrollTo({ top: 0, behavior: "smooth" });
 
   let web = { results: [], searchUrl: `https://www.bing.com/search?q=${encodeURIComponent(`"${selectionAssistantState.text}" English grammar`)}` };
@@ -6484,7 +6475,7 @@ function bindEvents(){
     setTimeout(() => {
       const text = selectionAssistantState.text;
       const analysis = detailedSelectionAnalysis(text);
-      const item = { id: `selection:${text.toLowerCase()}`, type: text.trim().includes(" ") ? "sentence" : "word", text, meaning: analysis[0]?.body || "AI 문장 분석", example: text, savedAt: new Date().toISOString(), sourceType: "selection", sourceTitle: "AI 문장 분석", sourceUrl: location.href, sourceSnippet: analysis[2]?.body || "" };
+      const item = { id: `selection:${text.toLowerCase()}`, type: text.trim().includes(" ") ? "sentence" : "word", text, meaning: analysis[0]?.body || "AI 문장 분석", example: text, savedAt: new Date().toISOString(), sourceType: "selection", sourceTitle: "AI 문장 분석", sourceUrl: location.href, sourceSnippet: analysis[1]?.body || "" };
       if (!state.savedBlogItems.some(saved => saved.id === item.id)) state.savedBlogItems.push(item);
       profileStorage.setItem("value_time_saved_blog_items_v1", JSON.stringify(state.savedBlogItems));
       selectionAssistantState.saved = true;
