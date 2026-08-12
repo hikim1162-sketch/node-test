@@ -2321,6 +2321,107 @@ html[data-theme="dark"] #app .news-daily-focus-grid > article { border-color: #3
   font-size: 20px;
 }
 
+/* AI sentence assistant: readable typography and a layout that fits its narrow panel. */
+#app .selection-ai-panel {
+  width: min(480px, 100%);
+}
+
+#app .selection-ai-panel > header {
+  padding: 20px 22px;
+}
+
+#app .selection-ai-panel header section b {
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+#app .selection-ai-panel header section small {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+#app .selection-ai-context {
+  padding: 15px 22px;
+}
+
+#app .selection-ai-context small,
+#app .selection-ai-user small,
+#app .selection-ai-loading span {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+#app .selection-ai-context p,
+#app .selection-ai-user p {
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+#app .selection-ai-context p {
+  max-height: none;
+}
+
+#app .selection-ai-chat {
+  padding: 20px 22px 28px;
+}
+
+#app .selection-ai-user {
+  width: min(88%, 390px);
+  padding: 15px 17px;
+}
+
+#app .selection-ai-word-list {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+#app .selection-ai-word-list p {
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 13px 14px;
+}
+
+#app .selection-ai-word-list b {
+  flex: 0 0 auto;
+  min-width: 100px;
+  line-height: 1.5;
+}
+
+#app .selection-ai-word-list span {
+  min-width: 0;
+  text-align: left;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+#app .selection-ai-save {
+  min-height: 48px;
+  font-size: 15px;
+}
+
+@media (max-width: 600px) {
+  #app .selection-ai-panel {
+    width: calc(100% - 12px);
+    height: 88vh;
+    right: 6px;
+    bottom: 6px;
+  }
+
+  #app .selection-ai-panel > header,
+  #app .selection-ai-context,
+  #app .selection-ai-chat {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  #app .selection-ai-learning-card > summary,
+  #app .selection-ai-learning-card > div {
+    padding: 16px;
+  }
+}
+
 #app .csat-question-passage details {
   margin-top: 10px;
   border-top: 1px solid #e3e9ee;

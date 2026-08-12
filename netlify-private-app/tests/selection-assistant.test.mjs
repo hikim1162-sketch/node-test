@@ -47,3 +47,13 @@ test("AI 문장 비서는 뜻과 유사문장만 큰 글씨의 학습 카드로 
   assert.match(css, /#app \.selection-ai-learning-card > summary span \{[^}]*font-size: 22px;/s);
   assert.match(css, /#app \.selection-ai-learning-card > div \{[^}]*font-size: 20px;/s);
 });
+
+test("AI 문장 비서는 좁은 패널에서도 본문이 세로로 찢어지지 않는 읽기 쉬운 크기를 사용한다", async () => {
+  const css = await readFile(new URL("../src/legacy-overrides.css", import.meta.url), "utf8");
+
+  assert.match(css, /#app \.selection-ai-word-list \{[^}]*grid-template-columns: 1fr;/s);
+  assert.match(css, /#app \.selection-ai-panel header section b \{[^}]*font-size: 18px;/s);
+  assert.match(css, /#app \.selection-ai-context p[^}]*font-size: 16px;/s);
+  assert.match(css, /#app \.selection-ai-user p[^}]*font-size: 16px;/s);
+  assert.match(css, /#app \.selection-ai-word-list p \{[^}]*align-items: flex-start;/s);
+});
